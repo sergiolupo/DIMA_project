@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'login_page.dart';
-import 'home_page.dart';
+import 'pages/login_page.dart';
+import 'pages/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return LoginPage();
+          return const LoginPage();
         }),
     GoRoute(
         path: '/home',
