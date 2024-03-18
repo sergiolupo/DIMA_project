@@ -1,3 +1,4 @@
+import 'package:dima_project/pages/forgotpassword_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +25,12 @@ final GoRouter _router = GoRouter(
         path: '/home',
         builder: (BuildContext context, GoRouterState state) {
           return const HomePage();
-        })
+        }),
+    GoRoute(
+        path: '/forgotpassword',
+        builder: (BuildContext context, GoRouterState state) {
+          return ForgotPasswordPage();
+        }),
   ],
 );
 

@@ -5,15 +5,14 @@ import 'package:go_router/go_router.dart';
 class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   LoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
     return Form(
-      key: formKey,
+      key: _formKey,
       child: Container(
         color: CupertinoColors.white,
         padding: const EdgeInsets.all(20.0),
@@ -25,13 +24,22 @@ class LoginForm extends StatelessWidget {
             CupertinoButton(
               onPressed: () {
                 // Validate the form before proceeding
-                if (formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate()) {
                   _checkCredentials(context, _usernameController.text,
                       _passwordController.text);
                 }
               },
               color: CupertinoColors.systemPink,
               child: const Text('Login'),
+            ),
+            CupertinoButton(
+              onPressed: () {
+                context.go('/forgotpassword');
+              },
+              child: const Text(
+                'Forgot Password?',
+                style: TextStyle(color: CupertinoColors.activeBlue),
+              ),
             ),
           ],
         ),
@@ -92,7 +100,7 @@ class UsernameInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTextFormFieldRow(
       controller: _usernameController,
-      placeholder: 'Username',
+      placeholder: 'Email',
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         color: CupertinoColors.white,
@@ -103,8 +111,8 @@ class UsernameInputField extends StatelessWidget {
         ),
       ),
       validator: (String? value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a username';
+        if (value == null || value.isEmpty || !value.contains('@')) {
+          return 'Please enter a valid email address';
         }
         return null; // Return null if the input is valid
       },
