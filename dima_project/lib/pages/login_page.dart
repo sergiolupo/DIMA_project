@@ -2,7 +2,8 @@ import 'package:dima_project/widgets/login/loginform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final void Function()? onTap;
+  const LoginPage({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {

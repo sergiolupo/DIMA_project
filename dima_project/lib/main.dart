@@ -1,7 +1,10 @@
 import 'package:dima_project/pages/forgotpassword_page.dart';
+import 'package:dima_project/pages/register_page.dart';
+import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
@@ -11,7 +14,12 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AuthService(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 final GoRouter _router = GoRouter(
@@ -22,10 +30,16 @@ final GoRouter _router = GoRouter(
           return const LoginPage();
         }),
     GoRoute(
-        path: '/home',
+        path: '/register',
         builder: (BuildContext context, GoRouterState state) {
-          return const HomePage();
+          return const RegisterPage();
         }),
+    GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        return const HomePage();
+      },
+    ),
     GoRoute(
         path: '/forgotpassword',
         builder: (BuildContext context, GoRouterState state) {
