@@ -1,5 +1,8 @@
 import 'package:dima_project/services/auth/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -13,48 +16,64 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Container(
-        color: CupertinoColors.white,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            UsernameInputField(_usernameController),
-            PasswordInputField(_passwordController),
-            CupertinoButton(
-              onPressed: () {
-                // Validate the form before proceeding
-                if (_formKey.currentState!.validate()) {
-                  _checkCredentials(context, _usernameController.text,
-                      _passwordController.text);
-                }
-              },
-              color: CupertinoColors.systemPink,
-              child: const Text('Login'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          EmailInputField(_usernameController),
+          PasswordInputField(_passwordController),
+          CupertinoButton(
+            onPressed: () {
+              // Validate the form before proceeding
+              if (_formKey.currentState!.validate()) {
+                _checkCredentials(context, _usernameController.text,
+                    _passwordController.text);
+              }
+            },
+            color: CupertinoColors.systemPink,
+            child: const Text('Login'),
+          ),
+          const SizedBox(height: 20),
+          CupertinoButton(
+              onPressed: () => _signInWithGoogle(context),
+              color: CupertinoColors.systemBlue,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.google,
+                    color: CupertinoColors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Sign In with Google',
+                    style: TextStyle(
+                      color: CupertinoColors.white,
+                    ),
+                  ),
+                ],
+              )),
+          CupertinoButton(
+            onPressed: () {
+              context.go('/forgotpassword');
+            },
+            child: const Text(
+              'Forgot Password?',
+              style: TextStyle(color: CupertinoColors.activeBlue),
             ),
-            CupertinoButton(
-              onPressed: () {
-                context.go('/forgotpassword');
-              },
-              child: const Text(
-                'Forgot Password?',
-                style: TextStyle(color: CupertinoColors.activeBlue),
-              ),
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text('Not a member?'),
-              const SizedBox(width: 4),
-              GestureDetector(
-                  onTap: () {
-                    context.go('/register');
-                  },
-                  child: const Text('Register now',
-                      style: TextStyle(
-                          color: CupertinoColors.activeBlue,
-                          fontWeight: FontWeight.bold))),
-            ]),
-          ],
-        ),
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Text('Not a member?'),
+            const SizedBox(width: 4),
+            GestureDetector(
+                onTap: () {
+                  context.go('/register');
+                },
+                child: const Text('Register now',
+                    style: TextStyle(
+                        color: CupertinoColors.activeBlue,
+                        fontWeight: FontWeight.bold))),
+          ]),
+        ],
       ),
     );
   }
@@ -80,7 +99,7 @@ class LoginForm extends StatelessWidget {
       Navigator.of(context).pop();
       debugPrint("Navigating to Home Page");
       context.go('/home');
-    } on Exception catch (e) {
+    } on FirebaseAuthException catch (e) {
       Navigator.of(context).pop();
       debugPrint("Failed to login: $e");
       showCupertinoDialog(
@@ -89,6 +108,50 @@ class LoginForm extends StatelessWidget {
           return CupertinoAlertDialog(
             title: const Text('Login Failed'),
             content: const Text('Invalid username or password'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.signInWithGoogle();
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      debugPrint("Navigating to Home Page");
+      context.go('/home');
+    } catch (e) {
+      Navigator.of(context).pop();
+      // Handle other exceptions
+      debugPrint("Failed to login: $e");
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('Login Failed'),
+            content:
+                const Text('Failed to login with Google. Please try again.'),
             actions: <Widget>[
               CupertinoDialogAction(
                 child: const Text('OK'),
@@ -134,10 +197,10 @@ class PasswordInputField extends StatelessWidget {
   }
 }
 
-class UsernameInputField extends StatelessWidget {
+class EmailInputField extends StatelessWidget {
   final TextEditingController _usernameController;
 
-  const UsernameInputField(this._usernameController, {super.key});
+  const EmailInputField(this._usernameController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +217,12 @@ class UsernameInputField extends StatelessWidget {
         ),
       ),
       validator: (String? value) {
-        if (value == null || value.isEmpty || !value.contains('@')) {
+        final RegExp emailRegex = RegExp(
+          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+          caseSensitive: false,
+          multiLine: false,
+        );
+        if (value == null || value.isEmpty || !emailRegex.hasMatch(value)) {
           return 'Please enter a valid email address';
         }
         return null; // Return null if the input is valid

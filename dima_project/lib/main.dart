@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoApp.router(
       routerConfig: _router,
-      title: "myApp",
+      title: "AGORAPP",
     );
   }
 }

@@ -2,35 +2,35 @@ import 'package:dima_project/widgets/login/loginform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class LoginPage extends StatelessWidget {
-  final void Function()? onTap;
-  const LoginPage({super.key, this.onTap});
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: CupertinoColors.white,
       navigationBar: const CupertinoNavigationBar(
+        backgroundColor: CupertinoColors.white,
         middle: Text(
-          'Login',
+          'AGORAPP',
           style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.systemPink, // Adjust text color as needed
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: CupertinoColors.systemPink,
           ),
         ),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 150),
+            Expanded(
+              child: SingleChildScrollView(
                 child: LoginForm(),
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

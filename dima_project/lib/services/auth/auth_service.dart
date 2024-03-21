@@ -1,21 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<UserCredential> signInWithEmailandPassword(
       String email, String password) async {
-    try {
-      debugPrint("Trying to Login...");
-      UserCredential userCredential = await _firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
+    debugPrint("Trying to Login...");
+    UserCredential userCredential = await _firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password);
 
-      debugPrint("Signed In");
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e);
-    }
+    debugPrint("Signed In");
+    return userCredential;
   }
 
   Future<void> signOut() async {
@@ -25,14 +22,30 @@ class AuthService extends ChangeNotifier {
 
   Future<UserCredential> signUpWithEmailandPassword(
       String email, String password) async {
-    try {
-      debugPrint("Trying to Register...");
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      debugPrint("Registered");
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e);
+    debugPrint("Trying to Register...");
+    UserCredential userCredential = await _firebaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    debugPrint("Registered");
+    return userCredential;
+  }
+
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    if (googleAuth != null) {
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+
+      final UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      return userCredential.user;
+    } else {
+      return null; // Return null if googleAuth is null
     }
   }
 }
