@@ -48,4 +48,9 @@ class AuthService extends ChangeNotifier {
       return null; // Return null if googleAuth is null
     }
   }
+
+  Future<void> registerUser(String email, String password) async {
+    await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+  }
 }

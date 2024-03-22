@@ -1,7 +1,6 @@
 import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -169,14 +168,21 @@ class LoginForm extends StatelessWidget {
 
 class PasswordInputField extends StatelessWidget {
   final TextEditingController _passwordController;
+  final bool isConfirmPassword;
+  final TextEditingController? confirmValue;
 
-  const PasswordInputField(this._passwordController, {super.key});
+  const PasswordInputField(
+    this._passwordController, {
+    this.isConfirmPassword = false,
+    this.confirmValue,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTextFormFieldRow(
       controller: _passwordController,
-      placeholder: 'Password',
+      placeholder: isConfirmPassword ? 'Confirm password' : 'Password',
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         color: CupertinoColors.white,
@@ -188,7 +194,10 @@ class PasswordInputField extends StatelessWidget {
       ),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a password';
+          return 'Please enter a ${isConfirmPassword ? 'password' : 'password'}';
+        }
+        if (isConfirmPassword && value != confirmValue?.text) {
+          return 'Passwords do not match';
         }
         return null; // Return null if the input is valid
       },
@@ -198,14 +207,14 @@ class PasswordInputField extends StatelessWidget {
 }
 
 class EmailInputField extends StatelessWidget {
-  final TextEditingController _usernameController;
+  final TextEditingController _emailController;
 
-  const EmailInputField(this._usernameController, {super.key});
+  const EmailInputField(this._emailController, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTextFormFieldRow(
-      controller: _usernameController,
+      controller: _emailController,
       placeholder: 'Email',
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
