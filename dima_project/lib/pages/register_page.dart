@@ -1,5 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
+import 'package:dima_project/widgets/login/categoriesform_widget.dart';
 import 'package:dima_project/widgets/login/registrationform_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +20,7 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,11 @@ class RegisterPageState extends State<RegisterPage> {
         page = PersonalInformationForm(
           nameController: _nameController,
           surnameController: _surnameController,
+          usernameController: _usernameController,
         );
+        break;
+      case 3:
+        page = const CategorySelectionPage();
         break;
       default:
         page = CredentialsInformationForm(
@@ -62,37 +68,39 @@ class RegisterPageState extends State<RegisterPage> {
         ),
       ),
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  page,
-                  const SizedBox(height: 32.0),
-                  CupertinoButton(
-                    onPressed: () =>
-                        {if (_formKey.currentState!.validate()) managePage()},
-                    child: _currentPage < 2
-                        ? const Text('Next')
-                        : const Text('Register'),
-                  ),
-                  const SizedBox(
-                      height: 20), // Added spacing between button and text
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    page,
+                    const SizedBox(height: 20.0),
+                    CupertinoButton(
+                      onPressed: () => {
+                        //if (_formKey.currentState!.validate())
+                        managePage()
+                      },
+                      color: CupertinoColors.systemPink,
+                      child: _currentPage < 3
+                          ? const Text('Next')
+                          : const Text('Register'),
+                    ),
+                    const SizedBox(
+                        height: 20), // Added spacing between button and text
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20), // Added spacing between text and row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Already a member?'),
-                const SizedBox(width: 4),
-                Hero(
-                  tag: 'button',
-                  child: GestureDetector(
+              const SizedBox(height: 20), // Added spacing between text and row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Already a member?'),
+                  const SizedBox(width: 4),
+                  GestureDetector(
                     onTap: () {
                       context.go('/');
                     },
@@ -104,10 +112,11 @@ class RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -124,7 +133,7 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void managePage() {
-    if (_currentPage < 2) {
+    if (_currentPage < 3) {
       setState(() {
         _currentPage = _currentPage + 1;
       });
@@ -135,13 +144,14 @@ class RegisterPageState extends State<RegisterPage> {
         surname: _surnameController.text,
         email: _emailController.text,
         password: _passwordController.text,
+        username: _usernameController.text,
       ));
     }
   }
 
   void registerUser(User user) {
     debugPrint(
-        'Registering user: ${user.email} : ${user.password}, ${user.name} : ${user.surname}');
+        'Registering user: ${user.email} : ${user.password}, ${user.name} : ${user.surname}, ${user.username}');
     // Register the user
     final authService = Provider.of<AuthService>(context, listen: false);
     authService.registerUser(user.email, user.password);

@@ -196,9 +196,13 @@ class PasswordInputField extends StatelessWidget {
         if (value == null || value.isEmpty) {
           return 'Please enter a ${isConfirmPassword ? 'password' : 'password'}';
         }
+        if (!isConfirmPassword && value.length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
         if (isConfirmPassword && value != confirmValue?.text) {
           return 'Passwords do not match';
         }
+
         return null; // Return null if the input is valid
       },
       obscureText: true,
