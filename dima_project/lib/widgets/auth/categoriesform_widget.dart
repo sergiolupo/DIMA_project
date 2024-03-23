@@ -1,14 +1,20 @@
 import 'package:flutter/cupertino.dart';
 
-class CategorySelectionPage extends StatefulWidget {
-  const CategorySelectionPage({super.key});
-
+class CategorySelectionForm extends StatefulWidget {
+  final List<String>? selectedCategories;
+  const CategorySelectionForm({super.key, this.selectedCategories});
   @override
-  CategorySelectionPageState createState() => CategorySelectionPageState();
+  CategorySelectionFormState createState() => CategorySelectionFormState();
 }
 
-class CategorySelectionPageState extends State<CategorySelectionPage> {
-  List<String> selectedCategories = [];
+class CategorySelectionFormState extends State<CategorySelectionForm> {
+  late List<String> selectedCategories;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCategories = widget.selectedCategories ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,5 +120,10 @@ class CategorySelectionPageState extends State<CategorySelectionPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

@@ -1,4 +1,4 @@
-import 'package:dima_project/widgets/login/loginform_widget.dart';
+import 'package:dima_project/widgets/auth/loginform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class PersonalInformationForm extends StatelessWidget {

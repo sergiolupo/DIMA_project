@@ -50,6 +50,7 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> registerUser(String email, String password) async {
+    // Register the user
     await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
   }

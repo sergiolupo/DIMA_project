@@ -1,4 +1,4 @@
-import 'package:dima_project/widgets/login/loginform_widget.dart';
+import 'package:dima_project/widgets/auth/loginform_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';

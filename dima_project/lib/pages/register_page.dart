@@ -1,7 +1,8 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
-import 'package:dima_project/widgets/login/categoriesform_widget.dart';
-import 'package:dima_project/widgets/login/registrationform_widget.dart';
+import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
+import 'package:dima_project/widgets/auth/imageform_widget.dart';
+import 'package:dima_project/widgets/auth/registrationform_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,11 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  List<String> selectedCategories = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  ValueChanged<String>? onImageSelected;
+  String selectedImagePath = '';
+
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -34,7 +39,17 @@ class RegisterPageState extends State<RegisterPage> {
         );
         break;
       case 3:
-        page = const CategorySelectionPage();
+        page = ImageInsertPage(
+          imagePath: selectedImagePath,
+          imageInsertPageKey: (String selectedImagePath) {
+            this.selectedImagePath = selectedImagePath;
+          },
+        );
+        break;
+      case 4:
+        page = CategorySelectionForm(
+          selectedCategories: selectedCategories,
+        );
         break;
       default:
         page = CredentialsInformationForm(
@@ -80,12 +95,10 @@ class RegisterPageState extends State<RegisterPage> {
                     page,
                     const SizedBox(height: 20.0),
                     CupertinoButton(
-                      onPressed: () => {
-                        //if (_formKey.currentState!.validate())
-                        managePage()
-                      },
+                      onPressed: () =>
+                          {if (_formKey.currentState!.validate()) managePage()},
                       color: CupertinoColors.systemPink,
-                      child: _currentPage < 3
+                      child: _currentPage < 4
                           ? const Text('Next')
                           : const Text('Register'),
                     ),
@@ -124,32 +137,76 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    selectedCategories.clear();
     _nameController.dispose();
     _surnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPassword.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 
   void managePage() {
-    if (_currentPage < 3) {
+    if (_currentPage == 3 && selectedImagePath.isEmpty) {
+      debugPrint('Please select an image');
+      showCupertinoDialog(
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text('Invalid choice'),
+          content: const Text('Please select an image.'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    if (_currentPage < 4) {
       setState(() {
         _currentPage = _currentPage + 1;
       });
     } else {
-      // Register the user
-      registerUser(User(
-        name: _nameController.text,
-        surname: _surnameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        username: _usernameController.text,
-      ));
+      if (selectedCategories.isEmpty) {
+        debugPrint('Please select at least one category');
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Invalid choice'),
+            content: const Text('Please select at least one category.'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      } else {
+        debugPrint('Registering user...');
+        // Register the user
+        registerUser(
+            User(
+              name: _nameController.text,
+              surname: _surnameController.text,
+              email: _emailController.text,
+              password: _passwordController.text,
+              username: _usernameController.text,
+            ),
+            selectedCategories,
+            selectedImagePath);
+      }
     }
   }
 
-  void registerUser(User user) {
+  void registerUser(
+      User user, List<String> categories, String selectedImagePath) {
+    debugPrint('Selected Image Path: $selectedImagePath');
+    debugPrint('Selected Categories: $categories');
     debugPrint(
         'Registering user: ${user.email} : ${user.password}, ${user.name} : ${user.surname}, ${user.username}');
     // Register the user
