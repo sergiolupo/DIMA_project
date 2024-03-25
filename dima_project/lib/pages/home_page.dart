@@ -1,10 +1,12 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final UserData user;
+  const HomePage({super.key, required this.user});
 
   void signOut(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);

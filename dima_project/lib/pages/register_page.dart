@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
@@ -24,8 +26,7 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _usernameController = TextEditingController();
   List<String> selectedCategories = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  ValueChanged<String>? onImageSelected;
-  String selectedImagePath = '';
+  Uint8List selectedImagePath = Uint8List(0);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class RegisterPageState extends State<RegisterPage> {
       case 3:
         page = ImageInsertPage(
           imagePath: selectedImagePath,
-          imageInsertPageKey: (String selectedImagePath) {
+          imageInsertPageKey: (Uint8List selectedImagePath) {
             this.selectedImagePath = selectedImagePath;
           },
         );
@@ -190,28 +191,26 @@ class RegisterPageState extends State<RegisterPage> {
         debugPrint('Registering user...');
         // Register the user
         registerUser(
-            User(
-              name: _nameController.text,
-              surname: _surnameController.text,
-              email: _emailController.text,
-              password: _passwordController.text,
-              username: _usernameController.text,
-            ),
-            selectedCategories,
-            selectedImagePath);
+          UserData(
+            name: _nameController.text,
+            surname: _surnameController.text,
+            email: _emailController.text,
+            password: _passwordController.text,
+            username: _usernameController.text,
+            categories: selectedCategories,
+            imagePath: selectedImagePath,
+          ),
+        );
       }
     }
   }
 
-  void registerUser(
-      User user, List<String> categories, String selectedImagePath) {
-    debugPrint('Selected Image Path: $selectedImagePath');
-    debugPrint('Selected Categories: $categories');
-    debugPrint(
-        'Registering user: ${user.email} : ${user.password}, ${user.name} : ${user.surname}, ${user.username}');
+  void registerUser(UserData user) {
     // Register the user
     final authService = Provider.of<AuthService>(context, listen: false);
-    authService.registerUser(user.email, user.password);
+    authService.registerUser(
+      user,
+    );
     context.go('/');
   }
 }

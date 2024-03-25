@@ -1,9 +1,15 @@
+import 'package:dima_project/services/utils/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:dima_project/models/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<UserCredential> signInWithEmailandPassword(
       String email, String password) async {
@@ -20,13 +26,27 @@ class AuthService extends ChangeNotifier {
     debugPrint("Signed Out");
   }
 
-  Future<UserCredential> signUpWithEmailandPassword(
+  Future<UserData> signUpWithEmailandPassword(
       String email, String password) async {
     debugPrint("Trying to Register...");
     UserCredential userCredential = await _firebaseAuth
         .createUserWithEmailAndPassword(email: email, password: password);
+
+    DocumentSnapshot documentSnapshot = await _firestore
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .get();
+    UserData user = UserData(
+        name: documentSnapshot['name'],
+        surname: documentSnapshot['surname'],
+        username: documentSnapshot['username'],
+        email: documentSnapshot['email'],
+        password: password,
+        imagePath: documentSnapshot['imageUrl'],
+        categories: documentSnapshot['selectedCategories']);
+
     debugPrint("Registered");
-    return userCredential;
+    return user;
   }
 
   Future<User?> signInWithGoogle() async {
@@ -49,9 +69,25 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> registerUser(String email, String password) async {
+  Future<void> registerUser(UserData user) async {
     // Register the user
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+    UserCredential userCredential =
+        await _firebaseAuth.createUserWithEmailAndPassword(
+            email: user.email, password: user.password);
+
+    debugPrint('User Registered: ${userCredential.user!.uid}');
+
+    String imageUrl = await StorageService.uploadImageToStorage(
+        'profile_images/${userCredential.user!.uid}.jpg', user.imagePath);
+
+    // Store additional user information including image URL in Firestore
+    await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      'name': user.name,
+      'surname': user.surname,
+      'username': user.username,
+      'email': user.email,
+      'imageUrl': imageUrl,
+      'selectedCategories': user.categories.toList(),
+    });
   }
 }

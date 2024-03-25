@@ -1,3 +1,4 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/forgotpassword_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
@@ -37,7 +38,8 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomePage();
+        UserData user = state.extra as UserData;
+        return HomePage(user: user);
       },
     ),
     GoRoute(
