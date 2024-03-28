@@ -3,57 +3,42 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
-  final TextEditingController _usernameController = TextEditingController();
+class ForgotPasswordForm extends StatelessWidget {
+  final TextEditingController _usernameController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  ForgotPasswordPage({super.key});
+  ForgotPasswordForm(this._usernameController, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text(
-          'Forgot Password',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Please enter your email to receive a password reset link',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          EmailInputField(_usernameController),
+          const SizedBox(height: 20),
+          CupertinoButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                resetPassword(context, _usernameController.text);
+              }
+            },
             color: CupertinoColors.systemPink,
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Please enter your email to receive a password reset link',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
+            child: const Text(
+              'Reset Password',
+              style: TextStyle(
+                color: CupertinoColors.white,
               ),
-              EmailInputField(_usernameController),
-              const SizedBox(height: 20),
-              CupertinoButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    resetPassword(context, _usernameController.text);
-                  }
-                },
-                color: CupertinoColors.systemPink,
-                child: const Text(
-                  'Reset Password',
-                  style: TextStyle(
-                    color: CupertinoColors.white,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

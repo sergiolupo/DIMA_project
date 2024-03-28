@@ -6,7 +6,7 @@ class UserData {
   final String name;
   final String surname;
   final String username;
-  List<String> categories;
+  List<dynamic> categories;
   Uint8List imagePath;
   UserData({
     required this.categories,

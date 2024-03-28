@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dima_project/services/utils/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,43 +12,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<UserCredential> signInWithEmailandPassword(
+  Future<UserData> signInWithEmailandPassword(
       String email, String password) async {
     debugPrint("Trying to Login...");
     UserCredential userCredential = await _firebaseAuth
         .signInWithEmailAndPassword(email: email, password: password);
 
     debugPrint("Signed In");
-    return userCredential;
-  }
-
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-    debugPrint("Signed Out");
-  }
-
-  Future<UserData> signUpWithEmailandPassword(
-      String email, String password) async {
-    debugPrint("Trying to Register...");
-    UserCredential userCredential = await _firebaseAuth
-        .createUserWithEmailAndPassword(email: email, password: password);
-
     DocumentSnapshot documentSnapshot = await _firestore
         .collection('users')
         .doc(userCredential.user!.uid)
         .get();
+
     UserData user = UserData(
         name: documentSnapshot['name'],
         surname: documentSnapshot['surname'],
         username: documentSnapshot['username'],
         email: documentSnapshot['email'],
         password: password,
-        imagePath: documentSnapshot['imageUrl'],
+        imagePath: utf8.encode(documentSnapshot['imageUrl']),
         categories: documentSnapshot['selectedCategories']);
 
     debugPrint("Registered");
     return user;
+  }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+    debugPrint("Signed Out");
   }
 
   Future<User?> signInWithGoogle() async {

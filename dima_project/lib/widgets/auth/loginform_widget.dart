@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LoginForm extends StatelessWidget {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _usernameController;
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  LoginForm({super.key});
+  LoginForm(this._usernameController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,33 +51,13 @@ class LoginForm extends StatelessWidget {
                   ),
                 ],
               )),
-          CupertinoButton(
-            onPressed: () {
-              context.go('/forgotpassword');
-            },
-            child: const Text(
-              'Forgot Password?',
-              style: TextStyle(color: CupertinoColors.activeBlue),
-            ),
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('Not a member?'),
-            const SizedBox(width: 4),
-            GestureDetector(
-                onTap: () {
-                  context.go('/register');
-                },
-                child: const Text('Register now',
-                    style: TextStyle(
-                        color: CupertinoColors.activeBlue,
-                        fontWeight: FontWeight.bold))),
-          ]),
         ],
       ),
     );
   }
 
-  void _checkCredentials(BuildContext context, String email, String password) {
+  Future<void> _checkCredentials(
+      BuildContext context, String email, String password) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -90,7 +70,7 @@ class LoginForm extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     try {
-      final user = authService.signInWithEmailandPassword(
+      final user = await authService.signInWithEmailandPassword(
         email,
         password,
       );

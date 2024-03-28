@@ -4,14 +4,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final UserData user;
   const HomePage({super.key, required this.user});
+
+  @override
+  HomePageState createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  late final UserData user;
 
   void signOut(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     authService.signOut();
     context.go('/');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    user = widget.user;
   }
 
   @override
@@ -57,31 +70,30 @@ class HomePage extends StatelessWidget {
             color: CupertinoColors.black, // Adjust text color as needed
           ),
         ),
-        trailing: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          GestureDetector(
-              onTap: () => signOut(context),
-              child: const Text(
-                'Logout',
-                style: TextStyle(
-                  color: CupertinoColors.black,
-                  fontSize: 16,
-                ),
-              )),
-        ]),
+        trailing: GestureDetector(
+          onTap: () => signOut(context),
+          child: const Text(
+            'Logout',
+            style: TextStyle(
+              color: CupertinoColors.black,
+              fontSize: 16,
+            ),
+          ),
+        ),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Welcome to the home page!',
-              style: TextStyle(
+            Text(
+              'Welcome, ${user.name}!', // Displaying user's name
+              style: const TextStyle(
                 fontSize: 24, // Adjust font size as needed
                 fontWeight: FontWeight.bold, // Adjust font weight as needed
                 color: CupertinoColors.black, // Adjust text color as needed
               ),
             ),
-            const SizedBox(height: 20), // Added spacing between text and row
+            const SizedBox(height: 20), // Added spacing between text and button
             CupertinoButton(
               onPressed: () => signOut(context),
               child: const Text('Logout'),
