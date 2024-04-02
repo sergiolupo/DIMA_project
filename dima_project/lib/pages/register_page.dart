@@ -30,7 +30,7 @@ class RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isEnteredWithGoogle = false;
   Uint8List selectedImagePath = Uint8List(0);
-
+  String pageName = 'Credentials Information';
   @override
   void initState() {
     super.initState();
@@ -50,6 +50,7 @@ class RegisterPageState extends State<RegisterPage> {
           surnameController: _surnameController,
           usernameController: _usernameController,
         );
+        pageName = 'Personal Information';
         break;
       case 3:
         page = ImageInsertPage(
@@ -58,11 +59,13 @@ class RegisterPageState extends State<RegisterPage> {
             this.selectedImagePath = selectedImagePath;
           },
         );
+        pageName = 'Image Selection';
         break;
       case 4:
         page = CategorySelectionForm(
           selectedCategories: selectedCategories,
         );
+        pageName = 'Category Selection';
         break;
       default:
         page = CredentialsInformationForm(
@@ -70,6 +73,7 @@ class RegisterPageState extends State<RegisterPage> {
           passwordController: _passwordController,
           confirmPasswordController: _confirmPassword,
         );
+        pageName = 'Credentials Information';
         break;
     }
 
@@ -88,12 +92,12 @@ class RegisterPageState extends State<RegisterPage> {
             }
           },
         ),
-        middle: const Text(
-          'Register',
-          style: TextStyle(
+        middle: Text(
+          pageName,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: CupertinoColors.black,
+            color: CupertinoColors.systemPink,
           ),
         ),
       ),
@@ -238,18 +242,41 @@ class RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void registerUser(UserData user) {
+  Future<void> registerUser(UserData user) async {
     // Register the user
     final authService = Provider.of<AuthService>(context, listen: false);
-    authService.registerUser(
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+
+    await authService.registerUser(
       user,
     );
+    if (!mounted) return;
+    Navigator.of(context).pop();
     context.go('/');
   }
 
-  void registerUserGoogle(UserData userData, String uuid) {
+  void registerUserGoogle(UserData userData, String uuid) async {
     final authService = Provider.of<AuthService>(context, listen: false);
-    authService.registerUserGoogle(userData, uuid);
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+    await authService.registerUserWithUUID(userData, uuid);
+    debugPrint('Navigating to Home Page');
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
     context.go('/home', extra: userData);
   }
 }

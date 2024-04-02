@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CategorySelectionForm extends StatefulWidget {
   final List<String>? selectedCategories;
@@ -28,7 +29,7 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
             ),
             buildCategoryItem(
               title: 'Cooking',
-              icon: CupertinoIcons.bolt_fill,
+              icon: FontAwesomeIcons.utensils,
             ),
             buildCategoryItem(
               title: 'Culture',
@@ -52,14 +53,14 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
             ),
             buildCategoryItem(
               title: 'Politics',
-              icon: CupertinoIcons.person_2_square_stack_fill,
+              icon: FontAwesomeIcons.landmark,
             ),
             buildCategoryItem(
               title: 'Health & Wellness',
               icon: CupertinoIcons.heart_fill,
             ),
             buildCategoryItem(
-                title: 'School & Education', icon: CupertinoIcons.news),
+                title: 'School & Education', icon: CupertinoIcons.news_solid),
             buildCategoryItem(
                 title: 'Sports', icon: CupertinoIcons.sportscourt),
             buildCategoryItem(

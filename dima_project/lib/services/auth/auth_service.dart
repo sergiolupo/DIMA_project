@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dima_project/services/utils/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,7 +44,7 @@ class AuthService extends ChangeNotifier {
           await _firebaseAuth.signInWithCredential(credential);
       return userCredential.user;
     } else {
-      return null; // Return null if googleAuth is null
+      return null;
     }
   }
 
@@ -55,19 +55,7 @@ class AuthService extends ChangeNotifier {
             email: user.email, password: user.password);
 
     debugPrint('User Registered: ${userCredential.user!.uid}');
-
-    String imageUrl = await StorageService.uploadImageToStorage(
-        'profile_images/${userCredential.user!.uid}.jpg', user.imagePath);
-
-    // Store additional user information including image URL in Firestore
-    await _firestore.collection('users').doc(userCredential.user!.uid).set({
-      'name': user.name,
-      'surname': user.surname,
-      'username': user.username,
-      'email': user.email,
-      'imageUrl': imageUrl,
-      'selectedCategories': user.categories.toList(),
-    });
+    await registerUserWithUUID(user, userCredential.user!.uid);
   }
 
   Future<bool> checkUserExist(String email) async {
@@ -84,18 +72,19 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> registerUserGoogle(UserData user, String uuid) async {
+  Future<void> registerUserWithUUID(UserData user, String uuid) async {
     String imageUrl = await StorageService.uploadImageToStorage(
-        'profile_images/$uuid.jpg', user.imagePath);
+        'profile_images/$uuid.jpg', user.imagePath as Uint8List);
 
-    // Store additional user information including image URL in Firestore
+    List<Map<String, dynamic>> serializedList =
+        user.categories.map((item) => {'value': item}).toList();
     await _firestore.collection('users').doc(uuid).set({
       'name': user.name,
       'surname': user.surname,
       'username': user.username,
       'email': user.email,
       'imageUrl': imageUrl,
-      'selectedCategories': user.categories.toList(),
+      'selectedCategories': serializedList,
     });
   }
 
@@ -108,8 +97,12 @@ class AuthService extends ChangeNotifier {
         username: documentSnapshot['username'],
         email: documentSnapshot['email'],
         password: '',
-        imagePath: utf8.encode(documentSnapshot['imageUrl']),
-        categories: documentSnapshot['selectedCategories']);
+        imagePath: await StorageService.downloadImageFromStorage(
+            documentSnapshot['imageUrl']),
+        categories: documentSnapshot['selectedCategories']
+            .map((categoryMap) => categoryMap['value'].toString())
+            .toList()
+            .cast<String>());
     return user;
   }
 }

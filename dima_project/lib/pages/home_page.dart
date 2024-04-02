@@ -1,6 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -65,15 +66,15 @@ class HomePageState extends State<HomePage> {
         middle: const Text(
           'Home',
           style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: CupertinoColors.black,
           ),
         ),
         trailing: GestureDetector(
-          onTap: () => signOut(context),
+          //onTap: () => _editProfile(context),
           child: const Text(
-            'Logout',
+            'Edit Profile',
             style: TextStyle(
               color: CupertinoColors.black,
               fontSize: 16,
@@ -85,18 +86,41 @@ class HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            if (user.imagePath != null)
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: MemoryImage(user.imagePath!),
+              ),
+            const SizedBox(height: 20),
             Text(
-              'Welcome, ${user.name}!', // Displaying user's name
+              'Welcome, ${user.name} ${user.surname}!',
               style: const TextStyle(
-                fontSize: 24, // Adjust font size as needed
-                fontWeight: FontWeight.bold, // Adjust font weight as needed
-                color: CupertinoColors.black, // Adjust text color as needed
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: CupertinoColors.black,
               ),
             ),
-            const SizedBox(height: 20), // Added spacing between text and button
-            CupertinoButton(
-              onPressed: () => signOut(context),
-              child: const Text('Logout'),
+            const SizedBox(height: 20),
+            const Text(
+              'Your Interests:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: CupertinoColors.black,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: user.categories
+                  .map((category) => Text(
+                        '- $category',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: CupertinoColors.black,
+                        ),
+                      ))
+                  .toList(),
             ),
           ],
         ),
