@@ -17,22 +17,8 @@ class AuthService extends ChangeNotifier {
     debugPrint("Trying to Login...");
     UserCredential userCredential = await _firebaseAuth
         .signInWithEmailAndPassword(email: email, password: password);
-
     debugPrint("Signed In");
-    DocumentSnapshot documentSnapshot = await _firestore
-        .collection('users')
-        .doc(userCredential.user!.uid)
-        .get();
-
-    UserData user = UserData(
-        name: documentSnapshot['name'],
-        surname: documentSnapshot['surname'],
-        username: documentSnapshot['username'],
-        email: documentSnapshot['email'],
-        password: password,
-        imagePath: utf8.encode(documentSnapshot['imageUrl']),
-        categories: documentSnapshot['selectedCategories']);
-
+    UserData user = await getUserData(userCredential.user!.uid);
     debugPrint("Registered");
     return user;
   }
@@ -82,5 +68,48 @@ class AuthService extends ChangeNotifier {
       'imageUrl': imageUrl,
       'selectedCategories': user.categories.toList(),
     });
+  }
+
+  Future<bool> checkUserExist(String email) async {
+    debugPrint('Checking if user exists... $email');
+    final QuerySnapshot result = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if (documents.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> registerUserGoogle(UserData user, String uuid) async {
+    String imageUrl = await StorageService.uploadImageToStorage(
+        'profile_images/$uuid.jpg', user.imagePath);
+
+    // Store additional user information including image URL in Firestore
+    await _firestore.collection('users').doc(uuid).set({
+      'name': user.name,
+      'surname': user.surname,
+      'username': user.username,
+      'email': user.email,
+      'imageUrl': imageUrl,
+      'selectedCategories': user.categories.toList(),
+    });
+  }
+
+  Future<UserData> getUserData(String uid) async {
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection('users').doc(uid).get();
+    UserData user = UserData(
+        name: documentSnapshot['name'],
+        surname: documentSnapshot['surname'],
+        username: documentSnapshot['username'],
+        email: documentSnapshot['email'],
+        password: '',
+        imagePath: utf8.encode(documentSnapshot['imageUrl']),
+        categories: documentSnapshot['selectedCategories']);
+    return user;
   }
 }

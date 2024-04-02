@@ -1,5 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/register_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,7 +33,8 @@ final GoRouter _router = GoRouter(
     GoRoute(
         path: '/register',
         builder: (BuildContext context, GoRouterState state) {
-          return const RegisterPage();
+          User? user = state.extra as User?;
+          return RegisterPage(user: user);
         }),
     GoRoute(
       path: '/home',

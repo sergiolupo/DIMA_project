@@ -35,12 +35,8 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
               icon: CupertinoIcons.globe,
             ),
             buildCategoryItem(
-              title: 'Film',
+              title: 'Film & TV Series',
               icon: CupertinoIcons.film_fill,
-            ),
-            buildCategoryItem(
-              title: 'TV Series',
-              icon: CupertinoIcons.tv_fill,
             ),
             buildCategoryItem(
               title: 'Books',

@@ -1,3 +1,4 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -115,12 +116,25 @@ class LoginForm extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     try {
-      await authService.signInWithGoogle();
+      final User? user = await authService.signInWithGoogle();
 
-      if (!context.mounted) return;
-      Navigator.of(context).pop();
-      debugPrint("Navigating to Home Page");
-      context.go('/home');
+      if (user == null) {
+        throw Exception("Failed to login with Google");
+      }
+      final bool userExists = await authService.checkUserExist(user.email!);
+
+      if (!userExists) {
+        if (!context.mounted) return;
+        Navigator.of(context).pop();
+        context.go('/register', extra: user);
+      } else {
+        debugPrint("Navigating to Home Page");
+
+        final UserData userData = await authService.getUserData(user.uid);
+        if (!context.mounted) return;
+        Navigator.of(context).pop();
+        context.go('/home', extra: userData);
+      }
     } catch (e) {
       Navigator.of(context).pop();
       // Handle other exceptions

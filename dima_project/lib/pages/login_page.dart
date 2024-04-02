@@ -71,7 +71,7 @@ class LoginPageState extends State<LoginPage> {
               const SizedBox(width: 4),
               GestureDetector(
                   onTap: () {
-                    context.go('/register');
+                    context.go('/register', extra: null);
                   },
                   child: const Text('Register now',
                       style: TextStyle(
