@@ -1,5 +1,5 @@
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/services/auth/auth_service.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -161,7 +161,7 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-class PasswordInputField extends StatelessWidget {
+class PasswordInputField extends StatefulWidget {
   final TextEditingController _passwordController;
   final bool isConfirmPassword;
   final TextEditingController? confirmValue;
@@ -172,6 +172,22 @@ class PasswordInputField extends StatelessWidget {
     this.confirmValue,
     super.key,
   });
+
+  @override
+  PasswordInputFieldState createState() => PasswordInputFieldState();
+}
+
+class PasswordInputFieldState extends State<PasswordInputField> {
+  late final TextEditingController _passwordController;
+  late final bool isConfirmPassword;
+  late final TextEditingController? confirmValue;
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = widget._passwordController;
+    isConfirmPassword = widget.isConfirmPassword;
+    confirmValue = widget.confirmValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +205,7 @@ class PasswordInputField extends StatelessWidget {
       ),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a ${isConfirmPassword ? 'password' : 'password'}';
+          return 'Please enter a ${isConfirmPassword ? 'confirm password' : 'password'}';
         }
         if (!isConfirmPassword && value.length < 6) {
           return 'Password must be at least 6 characters long';
@@ -201,6 +217,13 @@ class PasswordInputField extends StatelessWidget {
         return null; // Return null if the input is valid
       },
       obscureText: true,
+      prefix: const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: Icon(
+          CupertinoIcons.lock,
+          color: CupertinoColors.systemGrey,
+        ),
+      ),
     );
   }
 }
@@ -235,6 +258,13 @@ class EmailInputField extends StatelessWidget {
         }
         return null; // Return null if the input is valid
       },
+      prefix: const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: Icon(
+          CupertinoIcons.mail,
+          color: CupertinoColors.systemGrey,
+        ),
+      ),
     );
   }
 }

@@ -18,24 +18,30 @@ class PersonalInformationForm extends StatelessWidget {
     return Column(
       children: [
         CupertinoTextFormFieldRow(
-          controller: nameController,
-          padding: const EdgeInsets.all(12.0),
-          placeholder: 'Name',
-          decoration: BoxDecoration(
-            color: CupertinoColors.white,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(
-              color: CupertinoColors.systemGrey4,
-              width: 2.0,
+            controller: nameController,
+            padding: const EdgeInsets.all(12.0),
+            placeholder: 'Name',
+            decoration: BoxDecoration(
+              color: CupertinoColors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: CupertinoColors.systemGrey4,
+                width: 2.0,
+              ),
             ),
-          ),
-          validator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your name';
-            }
-            return null; // Return null if the input is valid
-          },
-        ),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your name';
+              }
+              return null; // Return null if the input is valid
+            },
+            prefix: const Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Icon(
+                CupertinoIcons.person_crop_circle_fill,
+                color: CupertinoColors.systemGrey,
+              ),
+            )),
         CupertinoTextFormFieldRow(
           controller: surnameController,
           padding: const EdgeInsets.all(12.0),
@@ -54,6 +60,13 @@ class PersonalInformationForm extends StatelessWidget {
             }
             return null; // Return null if the input is valid
           },
+          prefix: const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(
+              CupertinoIcons.person_crop_circle_fill,
+              color: CupertinoColors.systemGrey,
+            ),
+          ),
         ),
         UsernameInputTextField(usernameController),
       ],
@@ -85,6 +98,13 @@ class UsernameInputTextField extends StatelessWidget {
         }
         return null; // Return null if the input is valid
       },
+      prefix: const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: Icon(
+          CupertinoIcons.person,
+          color: CupertinoColors.systemGrey,
+        ),
+      ),
     );
   }
 }

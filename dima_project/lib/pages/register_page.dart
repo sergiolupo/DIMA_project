@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/services/auth/auth_service.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
@@ -109,7 +109,6 @@ class RegisterPageState extends State<RegisterPage> {
               Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     page,
                     const SizedBox(height: 20.0),
@@ -220,7 +219,6 @@ class RegisterPageState extends State<RegisterPage> {
               username: _usernameController.text,
               categories: selectedCategories,
               imagePath: selectedImagePath,
-              password: '',
             ),
             widget.user!.uid,
           );

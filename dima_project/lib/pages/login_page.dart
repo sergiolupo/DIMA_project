@@ -48,38 +48,36 @@ class LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _showLogin
-                ? LoginForm(_usernameController)
-                : ForgotPasswordForm(_usernameController),
-            CupertinoButton(
-              onPressed: () {
-                setState(() {
-                  _showLogin = !_showLogin;
-                });
-              },
-              child: Text(
-                _showLogin ? 'Forgot Password?' : 'Back to Login',
-                style: const TextStyle(color: CupertinoColors.activeBlue),
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _showLogin
+              ? LoginForm(_usernameController)
+              : ForgotPasswordForm(_usernameController),
+          CupertinoButton(
+            onPressed: () {
+              setState(() {
+                _showLogin = !_showLogin;
+              });
+            },
+            child: Text(
+              _showLogin ? 'Forgot Password?' : 'Back to Login',
+              style: const TextStyle(color: CupertinoColors.activeBlue),
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text('Not a member?'),
-              const SizedBox(width: 4),
-              GestureDetector(
-                  onTap: () {
-                    context.go('/register', extra: null);
-                  },
-                  child: const Text('Register now',
-                      style: TextStyle(
-                          color: CupertinoColors.activeBlue,
-                          fontWeight: FontWeight.bold))),
-            ]),
-          ],
-        ),
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Text('Not a member?'),
+            const SizedBox(width: 4),
+            GestureDetector(
+                onTap: () {
+                  context.go('/register', extra: null);
+                },
+                child: const Text('Register now',
+                    style: TextStyle(
+                        color: CupertinoColors.activeBlue,
+                        fontWeight: FontWeight.bold))),
+          ]),
+        ],
       ),
     );
   }

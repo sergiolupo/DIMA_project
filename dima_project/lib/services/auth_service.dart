@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:dima_project/services/utils/storage_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,7 @@ class AuthService extends ChangeNotifier {
     // Register the user
     UserCredential userCredential =
         await _firebaseAuth.createUserWithEmailAndPassword(
-            email: user.email, password: user.password);
+            email: user.email, password: user.password!);
 
     debugPrint('User Registered: ${userCredential.user!.uid}');
     await registerUserWithUUID(user, userCredential.user!.uid);
@@ -104,5 +104,35 @@ class AuthService extends ChangeNotifier {
             .toList()
             .cast<String>());
     return user;
+  }
+
+  Future<String> findUUID(String email) async {
+    final QuerySnapshot result = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if (documents.isNotEmpty) {
+      return documents[0].id;
+    } else {
+      return '';
+    }
+  }
+
+  Future<void> updateUserData(UserData user) async {
+    String uuid = await findUUID(user.email);
+    String imageUrl = await StorageService.uploadImageToStorage(
+        'profile_images/$uuid.jpg', user.imagePath as Uint8List);
+
+    List<Map<String, dynamic>> serializedList =
+        user.categories.map((item) => {'value': item}).toList();
+    await _firestore.collection('users').doc(uuid).update({
+      'name': user.name,
+      'surname': user.surname,
+      'username': user.username,
+      'email': user.email,
+      'imageUrl': imageUrl,
+      'selectedCategories': serializedList,
+    });
   }
 }

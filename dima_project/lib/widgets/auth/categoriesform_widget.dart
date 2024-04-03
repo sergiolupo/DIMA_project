@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:dima_project/models/categories.dart';
 
 class CategorySelectionForm extends StatefulWidget {
   final List<String>? selectedCategories;
@@ -19,58 +19,57 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            buildCategoryItem(
-              title: 'Environment',
-              icon: CupertinoIcons.leaf_arrow_circlepath,
-            ),
-            buildCategoryItem(
-              title: 'Cooking',
-              icon: FontAwesomeIcons.utensils,
-            ),
-            buildCategoryItem(
-              title: 'Culture',
-              icon: CupertinoIcons.globe,
-            ),
-            buildCategoryItem(
-              title: 'Film & TV Series',
-              icon: CupertinoIcons.film_fill,
-            ),
-            buildCategoryItem(
-              title: 'Books',
-              icon: CupertinoIcons.book,
-            ),
-            buildCategoryItem(
-              title: 'Gossip',
-              icon: CupertinoIcons.chat_bubble_2_fill,
-            ),
-            buildCategoryItem(
-              title: 'Music',
-              icon: CupertinoIcons.music_note,
-            ),
-            buildCategoryItem(
-              title: 'Politics',
-              icon: FontAwesomeIcons.landmark,
-            ),
-            buildCategoryItem(
-              title: 'Health & Wellness',
-              icon: CupertinoIcons.heart_fill,
-            ),
-            buildCategoryItem(
-                title: 'School & Education', icon: CupertinoIcons.news_solid),
-            buildCategoryItem(
-                title: 'Sports', icon: CupertinoIcons.sportscourt),
-            buildCategoryItem(
-                title: 'Technology',
-                icon: CupertinoIcons.device_phone_portrait),
-            buildCategoryItem(
-                title: 'Volunteering', icon: CupertinoIcons.hand_raised),
-          ],
+    return Column(
+      children: <Widget>[
+        buildCategoryItem(
+          title: 'Environment',
+          icon: CategoryIconMapper.iconForCategory('Environment'),
         ),
-      ),
+        buildCategoryItem(
+          title: 'Cooking',
+          icon: CategoryIconMapper.iconForCategory('Cooking'),
+        ),
+        buildCategoryItem(
+          title: 'Culture',
+          icon: CategoryIconMapper.iconForCategory('Culture'),
+        ),
+        buildCategoryItem(
+          title: 'Film & TV Series',
+          icon: CategoryIconMapper.iconForCategory('Film & TV Series'),
+        ),
+        buildCategoryItem(
+          title: 'Books',
+          icon: CategoryIconMapper.iconForCategory('Books'),
+        ),
+        buildCategoryItem(
+          title: 'Gossip',
+          icon: CategoryIconMapper.iconForCategory('Gossip'),
+        ),
+        buildCategoryItem(
+          title: 'Music',
+          icon: CategoryIconMapper.iconForCategory('Music'),
+        ),
+        buildCategoryItem(
+          title: 'Politics',
+          icon: CategoryIconMapper.iconForCategory('Politics'),
+        ),
+        buildCategoryItem(
+          title: 'Health & Wellness',
+          icon: CategoryIconMapper.iconForCategory('Health & Wellness'),
+        ),
+        buildCategoryItem(
+            title: 'School & Education',
+            icon: CategoryIconMapper.iconForCategory('School & Education')),
+        buildCategoryItem(
+            title: 'Sports',
+            icon: CategoryIconMapper.iconForCategory('Sports')),
+        buildCategoryItem(
+            title: 'Technology',
+            icon: CategoryIconMapper.iconForCategory('Technology')),
+        buildCategoryItem(
+            title: 'Volunteering',
+            icon: CategoryIconMapper.iconForCategory('Volunteering')),
+      ],
     );
   }
 
