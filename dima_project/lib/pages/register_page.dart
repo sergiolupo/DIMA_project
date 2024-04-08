@@ -2,13 +2,14 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/helper_functions.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   final User? user;
@@ -136,7 +137,7 @@ class RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 4),
                         GestureDetector(
                           onTap: () {
-                            context.go('/');
+                            context.go('/login');
                           },
                           child: const Text(
                             'Sign in',
@@ -242,7 +243,6 @@ class RegisterPageState extends State<RegisterPage> {
 
   Future<void> registerUser(UserData user) async {
     // Register the user
-    final authService = Provider.of<AuthService>(context, listen: false);
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -252,16 +252,15 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
 
-    await authService.registerUser(
+    await AuthService.registerUser(
       user,
     );
     if (!mounted) return;
     Navigator.of(context).pop();
-    context.go('/');
+    context.go('/login');
   }
 
   void registerUserGoogle(UserData userData, String uuid) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -270,7 +269,13 @@ class RegisterPageState extends State<RegisterPage> {
         );
       },
     );
-    await authService.registerUserWithUUID(userData, uuid);
+    try {
+      await DatabaseService.registerUserWithUUID(userData, uuid);
+      await HelperFunctions.saveUserLoggedInStatus(true);
+      await HelperFunctions.saveUid(uuid);
+    } catch (e) {
+      return;
+    }
     debugPrint('Navigating to Home Page');
 
     if (!mounted) return;

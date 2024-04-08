@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:dima_project/models/categories.dart';
+import 'package:dima_project/utils/categories_icon_mapper.dart';
 
 class CategorySelectionForm extends StatefulWidget {
   final List<String>? selectedCategories;

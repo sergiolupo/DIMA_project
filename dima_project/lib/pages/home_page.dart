@@ -1,22 +1,18 @@
-import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/group_page.dart';
 import 'package:dima_project/widgets/home/userprofile_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class HomePage extends StatefulWidget {
-  final UserData? user;
-  const HomePage({super.key, this.user});
+  const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  late final UserData user;
-
   @override
   void initState() {
     super.initState();
-    user = widget.user!;
   }
 
   @override
@@ -49,13 +45,13 @@ class HomePageState extends State<HomePage> {
             page = _buildNewsPage(context);
             break;
           case 1:
-            page = _buildChatPage(context);
+            page = const GroupPage();
             break;
           case 2:
             page = _buildSearchPage(context);
             break;
           case 3:
-            page = UserProfile(user: user);
+            page = const UserProfile();
             break;
           default:
             page = _buildNewsPage(context);
@@ -80,31 +76,6 @@ class HomePageState extends State<HomePage> {
       child: Center(
         child: Text(
           'News Page',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChatPage(BuildContext context) {
-    return const CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Chat',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'Chat Page',
           style: TextStyle(
             fontSize: 24, // Adjust font size as needed
             fontWeight: FontWeight.bold, // Adjust font weight as needed

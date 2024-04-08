@@ -39,12 +39,12 @@ dependencies:
   firebase_auth: ^4.17.9
   google_sign_in: ^6.2.1
   firebase_core: ^2.27.1
-  provider: ^6.1.1
   font_awesome_flutter: ^9.2.0
   image_picker: ^1.0.7
   firebase_storage: ^11.6.10
   cloud_firestore: ^4.15.9
   http: ^1.2.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

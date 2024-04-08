@@ -1,10 +1,11 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController;
@@ -68,13 +69,12 @@ class LoginForm extends StatelessWidget {
       },
     );
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-
     try {
-      final user = await authService.signInWithEmailandPassword(
+      final user = await AuthService.signInWithEmailandPassword(
         email,
         password,
       );
+
       if (!context.mounted) return;
       Navigator.of(context).pop();
       debugPrint("Navigating to Home Page");
@@ -113,15 +113,13 @@ class LoginForm extends StatelessWidget {
       },
     );
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-
     try {
-      final User? user = await authService.signInWithGoogle();
+      final User? user = await AuthService.signInWithGoogle();
 
       if (user == null) {
         throw Exception("Failed to login with Google");
       }
-      final bool userExists = await authService.checkUserExist(user.email!);
+      final bool userExists = await DatabaseService.checkUserExist(user.email!);
 
       if (!userExists) {
         if (!context.mounted) return;
@@ -130,7 +128,10 @@ class LoginForm extends StatelessWidget {
       } else {
         debugPrint("Navigating to Home Page");
 
-        final UserData userData = await authService.getUserData(user.uid);
+        await HelperFunctions.saveUserLoggedInStatus(true);
+        await HelperFunctions.saveUid(user.uid);
+
+        final UserData userData = await DatabaseService.getUserData(user.uid);
         if (!context.mounted) return;
         Navigator.of(context).pop();
         context.go('/home', extra: userData);

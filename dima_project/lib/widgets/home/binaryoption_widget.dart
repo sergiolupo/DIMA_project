@@ -7,14 +7,14 @@ class CustomBinaryOption extends StatefulWidget {
   const CustomBinaryOption({
     required this.textLeft,
     required this.textRight,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _CustomBinaryOptionState createState() => _CustomBinaryOptionState();
+  CustomBinaryOptionState createState() => CustomBinaryOptionState();
 }
 
-class _CustomBinaryOptionState extends State<CustomBinaryOption> {
+class CustomBinaryOptionState extends State<CustomBinaryOption> {
   bool lr = false;
 
   @override

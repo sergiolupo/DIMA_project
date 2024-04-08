@@ -73,7 +73,7 @@ Future<void> resetPassword(BuildContext context, String email) async {
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                context.go('/');
+                context.go('/login');
               },
             ),
           ],
