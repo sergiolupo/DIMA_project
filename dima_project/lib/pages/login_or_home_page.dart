@@ -3,20 +3,20 @@ import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 
-class LoginHomePage extends StatefulWidget {
-  const LoginHomePage({super.key});
+class LoginOrHomePage extends StatefulWidget {
+  const LoginOrHomePage({super.key});
 
   @override
-  LoginHomePageState createState() => LoginHomePageState();
+  LoginOrHomePageState createState() => LoginOrHomePageState();
 }
 
-class LoginHomePageState extends State<LoginHomePage> {
+class LoginOrHomePageState extends State<LoginOrHomePage> {
   bool _isSignedIn = false;
 
   @override
   void initState() {
     super.initState();
-    //getUserStatuts();
+    getUserStatuts();
   }
 
   getUserStatuts() async {

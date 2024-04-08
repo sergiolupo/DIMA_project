@@ -1,4 +1,3 @@
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
@@ -131,10 +130,9 @@ class LoginForm extends StatelessWidget {
         await HelperFunctions.saveUserLoggedInStatus(true);
         await HelperFunctions.saveUid(user.uid);
 
-        final UserData userData = await DatabaseService.getUserData(user.uid);
         if (!context.mounted) return;
         Navigator.of(context).pop();
-        context.go('/home', extra: userData);
+        context.go('/home');
       }
     } catch (e) {
       Navigator.of(context).pop();

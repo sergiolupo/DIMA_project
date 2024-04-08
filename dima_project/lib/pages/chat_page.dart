@@ -1,17 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class ChatPage extends StatefulWidget {
-  final String groupId;
-  final String groupName;
+  final Group group;
   final String username;
   const ChatPage({
     super.key,
-    required this.groupId,
-    required this.groupName,
+    required this.group,
     required this.username,
   });
 
@@ -22,22 +21,16 @@ class ChatPage extends StatefulWidget {
 class ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageEditingController = TextEditingController();
-  String admin = "";
   @override
   void initState() {
-    getChatAndAdmin();
+    getChats();
     super.initState();
   }
 
-  getChatAndAdmin() async {
-    DatabaseService.getChats(widget.groupId).then((val) {
+  getChats() async {
+    DatabaseService.getChats(widget.group.id).then((val) {
       setState(() {
         chats = val;
-      });
-    });
-    DatabaseService.getGroupAdmin(widget.groupId).then((val) {
-      setState(() {
-        admin = val;
       });
     });
   }
@@ -46,17 +39,25 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.groupName),
+        middle: Text(widget.group.name, style: const TextStyle(fontSize: 20)),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
+        leading: CupertinoButton(
+          onPressed: () {
+            context.go("/home", extra: 1);
+          },
+          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
+        ),
         trailing: CupertinoButton(
           onPressed: () {
-            context.go("/groupinfo", extra: {
-              "groupId": widget.groupId,
-              "groupName": widget.groupName,
-              "admin": admin,
-            });
+            context.go(
+              "/groupinfo",
+              extra: widget.group,
+            );
           },
-          child: const Icon(CupertinoIcons.info),
+          child: const Icon(
+            CupertinoIcons.info,
+            color: CupertinoColors.white,
+          ),
         ),
       ),
       child: Stack(
@@ -129,7 +130,7 @@ class ChatPageState extends State<ChatPage> {
         "sender": widget.username,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
-      DatabaseService.sendMessage(widget.groupId, chatMessageMap);
+      DatabaseService.sendMessage(widget.group.id, chatMessageMap);
       setState(() {
         messageEditingController.clear();
       });

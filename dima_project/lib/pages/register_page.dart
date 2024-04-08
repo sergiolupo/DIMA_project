@@ -280,6 +280,6 @@ class RegisterPageState extends State<RegisterPage> {
 
     if (!mounted) return;
     Navigator.of(context).pop();
-    context.go('/home', extra: userData);
+    context.go('/home');
   }
 }

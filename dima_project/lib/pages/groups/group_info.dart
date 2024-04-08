@@ -1,16 +1,16 @@
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 class GroupInfo extends StatefulWidget {
-  final String groupId;
-  final String groupName;
-  final String adminName;
+  final Group group;
   const GroupInfo({
     super.key,
-    required this.groupId,
-    required this.groupName,
-    required this.adminName,
+    required this.group,
   });
 
   @override
@@ -19,17 +19,27 @@ class GroupInfo extends StatefulWidget {
 
 class GroupInfoState extends State<GroupInfo> {
   Stream? members;
+  UserData? user;
   @override
   void initState() {
     getMembers();
+    getUserData();
     super.initState();
   }
 
   getMembers() async {
     // Get group members
-    DatabaseService.getGroupMembers(widget.groupId).then((val) {
+    DatabaseService.getGroupMembers(widget.group.id).then((val) {
       setState(() {
         members = val;
+      });
+    });
+  }
+
+  void getUserData() async {
+    await HelperFunctions.getUserData().then((value) {
+      setState(() {
+        user = value;
       });
     });
   }
@@ -38,6 +48,15 @@ class GroupInfoState extends State<GroupInfo> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: CupertinoButton(
+          onPressed: () {
+            context.go('/chat', extra: {
+              "username": user?.username,
+              "group": widget.group,
+            });
+          },
+          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
+        ),
         middle: const Text("Group Info"),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         trailing: CupertinoButton(
@@ -64,7 +83,7 @@ class GroupInfoState extends State<GroupInfo> {
                 children: [
                   ClipOval(
                     child: Text(
-                      widget.groupName.substring(0, 1).toUpperCase(),
+                      widget.group.name.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -76,14 +95,14 @@ class GroupInfoState extends State<GroupInfo> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.groupName,
+                        widget.group.name,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "Admin: ${widget.adminName}",
+                        "Admin: ${widget.group.admin}",
                         style: const TextStyle(
                           fontSize: 16,
                           color: CupertinoColors.systemGrey,
@@ -104,49 +123,49 @@ class GroupInfoState extends State<GroupInfo> {
   Widget memberList() {
     return StreamBuilder(
       stream: members,
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data['members'] != null) {
-            if (snapshot.data['members'].length > 0) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data['members'].length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                    child: CupertinoListTile(
-                      leading: ClipOval(
-                        child: Text(
-                          snapshot.data['members'][index].substring(0, 1),
-                          style: const TextStyle(
-                            color: CupertinoColors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      title: Text(snapshot.data['members'][index]),
-                    ),
-                  );
-                },
-              );
-            } else {
-              return const Center(
-                child: Text("No members yet"),
-              );
-            }
-          } else {
-            return const Center(
-              child: Text("No members yet"),
-            );
-          }
-        } else {
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CupertinoActivityIndicator(
               radius: 16,
             ),
           );
         }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+        final data = snapshot.data?.data();
+        if (data == null ||
+            data['members'] == null ||
+            data['members'].isEmpty) {
+          return const Center(
+            child: Text("No members yet"),
+          );
+        }
+        final List<dynamic> members = data['members'];
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: members.length,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              child: CupertinoListTile(
+                leading: ClipOval(
+                  child: Text(
+                    members[index].substring(0, 1),
+                    style: const TextStyle(
+                      color: CupertinoColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                title: Text(members[index]),
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -166,13 +185,15 @@ class GroupInfoState extends State<GroupInfo> {
               child: const Text("Cancel"),
             ),
             CupertinoDialogAction(
-              onPressed: () {
-                DatabaseService.toggleGroupJoin(
-                  widget.groupId,
+              onPressed: () async {
+                await DatabaseService.toggleGroupJoin(
+                  widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
+                  user!.username,
                 );
+                if (!context.mounted) return;
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                context.go('/home', extra: 1);
               },
               child: const Text("Leave"),
             ),

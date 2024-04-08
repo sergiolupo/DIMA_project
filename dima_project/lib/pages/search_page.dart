@@ -1,39 +1,52 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
-  SearchPageState createState() => SearchPageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
-  final TextEditingController searchController = TextEditingController();
-  bool _isLoading = false;
-  QuerySnapshot? searchSnapshot;
-  bool hasUserSearched = false;
-  UserData? user;
-  bool isJoined = false;
+class _SearchPageState extends State<SearchPage> {
+  final TextEditingController _searchController = TextEditingController();
+  late final StreamController<QuerySnapshot> _searchStreamController =
+      StreamController<QuerySnapshot>();
+  UserData? _user;
+  StreamSubscription<QuerySnapshot>? _searchStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    getUserData();
+    _getUserData();
   }
 
-  getUserData() async {
-    await DatabaseService.getUserData((await HelperFunctions.getUid())!)
-        .then((value) {
-      setState(() {
-        user = value;
-      });
+  void _getUserData() async {
+    final uid = await HelperFunctions.getUid();
+    final userData = await DatabaseService.getUserData(uid!);
+    setState(() {
+      _user = userData;
     });
+  }
+
+  void _initiateSearchMethod() {
+    final searchText = _searchController.text.trim();
+    if (searchText.isNotEmpty) {
+      // Cancel the previous subscription if it exists
+      _searchStreamSubscription?.cancel();
+      // Add a new stream subscription
+      _searchStreamSubscription =
+          DatabaseService.searchByNameStream(searchText).listen((snapshot) {
+        _searchStreamController.add(snapshot);
+      });
+    }
   }
 
   @override
@@ -59,7 +72,8 @@ class SearchPageState extends State<SearchPage> {
               children: [
                 Expanded(
                   child: CupertinoTextField(
-                    controller: searchController,
+                    controller: _searchController,
+                    onChanged: (_) => _initiateSearchMethod(),
                     placeholder: "Search groups...",
                     placeholderStyle:
                         const TextStyle(color: CupertinoColors.white),
@@ -68,7 +82,7 @@ class SearchPageState extends State<SearchPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: initiateSearchMethod,
+                  onTap: _initiateSearchMethod,
                   child: Container(
                     width: 40,
                     height: 40,
@@ -86,165 +100,147 @@ class SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
-          _isLoading
-              ? const Center(
-                  child: CupertinoActivityIndicator(
-                    radius: 16,
-                  ),
-                )
-              : Expanded(child: groupList()),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _searchStreamController.stream,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+                final docs = snapshot.data?.docs ?? [];
+                if (docs.isEmpty) {
+                  return const Center(
+                    child: Text("No groups found"),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final group = Group(
+                      id: docs[index]['groupId'],
+                      name: docs[index]['groupName'],
+                      admin: docs[index]['admin'],
+                    );
+                    return GroupSearchTile(
+                      user: _user!,
+                      group: group,
+                    );
+                  },
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  initiateSearchMethod() async {
-    if (searchController.text.isNotEmpty) {
-      setState(() {
-        _isLoading = true;
-      });
-      await DatabaseService.searchByName(searchController.text).then((val) {
-        setState(() {
-          searchSnapshot = val;
-          _isLoading = false;
-          hasUserSearched = true;
-        });
-      });
-    }
+  @override
+  void dispose() {
+    _searchStreamController.close();
+    _searchStreamSubscription?.cancel(); // Cancel the subscription
+    super.dispose();
   }
+}
 
-  Widget groupList() {
-    return hasUserSearched
-        ? searchSnapshot!.docs.isEmpty
-            ? const Center(
-                child: Text("No groups found"),
-              )
-            : ListView.builder(
-                shrinkWrap: true,
-                itemCount: searchSnapshot!.docs.length,
-                itemBuilder: (context, index) {
-                  return groupTile(
-                    user!,
-                    searchSnapshot!.docs[index]['groupId'],
-                    searchSnapshot!.docs[index]['groupName'],
-                    searchSnapshot!.docs[index]['admin'],
-                  );
-                },
-              )
-        : const Center(
-            child: Text("Search for groups"),
-          );
-  }
+class GroupSearchTile extends StatelessWidget {
+  final UserData user;
+  final Group group;
 
-  joinedOrNot(String userName, String groupId, String groupName, String admin) {
-    DatabaseService.isUserJoined(
-      groupId,
-      FirebaseAuth.instance.currentUser!.uid,
-    ).then((value) {
-      setState(() {
-        isJoined = value;
-      });
-    });
-  }
+  const GroupSearchTile({
+    super.key,
+    required this.user,
+    required this.group,
+  });
 
-  Widget groupTile(
-    UserData user,
-    String groupId,
-    String groupName,
-    String admin,
-  ) {
-    joinedOrNot(user.username, groupId, groupName, admin);
+  @override
+  Widget build(BuildContext context) {
     return CupertinoListTile(
       leading: ClipOval(
         child: Text(
-          groupName.substring(0, 1).toUpperCase(),
+          group.name.substring(0, 1).toUpperCase(),
           style: const TextStyle(color: CupertinoColors.white),
         ),
       ),
       title: Text(
-        groupName,
+        group.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text("Admin: $admin"),
-      trailing: GestureDetector(
-        onTap: () async {
-          await DatabaseService.toggleGroupJoin(
-            groupId,
-            FirebaseAuth.instance.currentUser!.uid,
-          );
-          if (isJoined) {
-            setState(() {
-              isJoined = !isJoined;
-              showCupertinoDialog(
-                context: context,
-                builder: (context) {
-                  return CupertinoAlertDialog(
-                    content: const Text("You have joined the group"),
-                    actions: [
-                      CupertinoDialogAction(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            });
-          } else {
-            setState(() {
-              isJoined = !isJoined;
-              showCupertinoDialog(
-                context: context,
-                builder: (context) {
-                  return CupertinoAlertDialog(
-                    content: const Text(
-                        "You have left the group\nYou can join again by clicking the join button"),
-                    actions: [
-                      CupertinoDialogAction(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          context.go('/chat', extra: {
-                            "username": user.username,
-                            "groupName": groupName,
-                            "groupId": groupId,
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            });
-          }
-        },
-        child: isJoined
-            ? Container(
-                decoration: BoxDecoration(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: CupertinoColors.white),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: const Text(
-                  "Joined",
-                  style: TextStyle(color: CupertinoColors.white),
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: CupertinoColors.white),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: const Text("Join Now",
-                    style: TextStyle(color: CupertinoColors.white)),
-              ),
+      subtitle: Text("Admin: ${group.admin}"),
+      trailing: GroupJoinButton(user: user, group: group),
+    );
+  }
+}
+
+class GroupJoinButton extends StatefulWidget {
+  final UserData user;
+  final Group group;
+
+  const GroupJoinButton({
+    super.key,
+    required this.user,
+    required this.group,
+  });
+
+  @override
+  GroupJoinButtonState createState() => GroupJoinButtonState();
+}
+
+class GroupJoinButtonState extends State<GroupJoinButton> {
+  bool _isJoined = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfJoined();
+  }
+
+  void _checkIfJoined() {
+    DatabaseService.isUserJoined(widget.group.id, widget.user.username)
+        .then((value) {
+      if (mounted) {
+        setState(() {
+          _isJoined = value; // Use default value if value is null
+        });
+      }
+    }).catchError((error) {
+      debugPrint("Error occurred: $error");
+      if (mounted) {
+        setState(() {
+          _isJoined = false; // Handle error by setting _isJoined to false
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        await DatabaseService.toggleGroupJoin(
+          widget.group.id,
+          FirebaseAuth.instance.currentUser!.uid,
+          widget.user.username,
+        );
+        if (mounted) {
+          setState(() {
+            _isJoined = !_isJoined;
+          });
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: CupertinoTheme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: CupertinoColors.white),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Text(
+          _isJoined ? "Joined" : "Join Now",
+          style: const TextStyle(color: CupertinoColors.white),
+        ),
       ),
     );
   }

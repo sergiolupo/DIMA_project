@@ -7,13 +7,15 @@ import 'package:flutter/cupertino.dart';
 
 class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final groupRef = _firestore.collection('groups');
+  static final userRef = _firestore.collection('users');
   static Future<void> registerUserWithUUID(UserData user, String uuid) async {
     String imageUrl = await StorageService.uploadImageToStorage(
         'profile_images/$uuid.jpg', user.imagePath as Uint8List);
 
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
-    await _firestore.collection('users').doc(uuid).set({
+    await userRef.doc(uuid).set({
       'name': user.name,
       'surname': user.surname,
       'username': user.username,
@@ -25,8 +27,7 @@ class DatabaseService {
   }
 
   static Future<UserData> getUserData(String uid) async {
-    DocumentSnapshot documentSnapshot =
-        await _firestore.collection('users').doc(uid).get();
+    DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
     UserData user = UserData(
         name: documentSnapshot['name'],
         surname: documentSnapshot['surname'],
@@ -43,10 +44,8 @@ class DatabaseService {
   }
 
   Future<String> findUUID(String email) async {
-    final QuerySnapshot result = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get();
+    final QuerySnapshot result =
+        await userRef.where('email', isEqualTo: email).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return documents[0].id;
@@ -62,7 +61,7 @@ class DatabaseService {
 
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
-    await _firestore.collection('users').doc(uuid).update({
+    await userRef.doc(uuid).update({
       'name': user.name,
       'surname': user.surname,
       'username': user.username,
@@ -75,10 +74,8 @@ class DatabaseService {
 
   static Future<bool> checkUserExist(String email) async {
     debugPrint('Checking if user exists... $email');
-    final QuerySnapshot result = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get();
+    final QuerySnapshot result =
+        await userRef.where('email', isEqualTo: email).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return true;
@@ -90,45 +87,40 @@ class DatabaseService {
   static Future<List<DocumentSnapshot<Map<String, dynamic>>>> getGroups(
       String uid) async {
     DocumentSnapshot<Map<String, dynamic>> groupsSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        await userRef.doc(uid).get();
 
     List<Map<String, dynamic>> groups =
         List<Map<String, dynamic>>.from(groupsSnapshot['groups']);
-    debugPrint(groups.toString());
 
     List<DocumentSnapshot<Map<String, dynamic>>> result = [];
     if (groups.isNotEmpty) {
       for (Map<String, dynamic> groupId in groups) {
         DocumentSnapshot<Map<String, dynamic>> groupDoc =
-            await FirebaseFirestore.instance
-                .collection('groups')
-                .doc(groupId["groupId"])
-                .get();
+            await groupRef.doc(groupId["groupId"]).get();
         result.add(groupDoc);
       }
     }
-    debugPrint(result.toString());
     return result;
   }
 
   //create a group
-  static Future<void> createGroup(String groupName, String uid) async {
-    DocumentReference docRef = await _firestore.collection('groups').add({
+  static Future<void> createGroup(
+      String groupName, String username, String uid) async {
+    DocumentReference docRef = await groupRef.add({
       'groupName': groupName,
       'groupIcon': "",
-      'admin': uid,
+      'admin': username,
       'messages': [],
       'groupId': "",
       'recentMessage': "",
       'recentMessageSender': "",
     });
 
-    await _firestore.collection('groups').doc(docRef.id).update({
-      "members": FieldValue.arrayUnion([uid]),
+    await groupRef.doc(docRef.id).update({
+      "members": FieldValue.arrayUnion([username]),
       'groupId': docRef.id,
     });
-    DocumentReference userDocumentReference =
-        _firestore.collection('users').doc(uid);
+    DocumentReference userDocumentReference = userRef.doc(uid);
 
     return await userDocumentReference.update({
       'groups': FieldValue.arrayUnion([
@@ -140,8 +132,7 @@ class DatabaseService {
   }
 
   static getChats(String groupId) async {
-    return _firestore
-        .collection('groups')
+    return groupRef
         .doc(groupId)
         .collection('messages')
         .orderBy('time')
@@ -150,66 +141,77 @@ class DatabaseService {
 
   static Future getGroupAdmin(String groupId) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await _firestore.collection('groups').doc(groupId).get();
+        await groupRef.doc(groupId).get();
     return groupDoc['admin'];
   }
 
   static Future getGroupMembers(String groupId) async {
-    return _firestore.collection('groups').doc(groupId).snapshots();
+    return groupRef.doc(groupId).snapshots();
   }
 
-  static searchByName(String groupName) async {
-    return _firestore
-        .collection('groups')
-        .where('groupName', isEqualTo: groupName)
-        .get();
+  /*static Stream<QuerySnapshot> searchByNameStream(String searchText) {
+    final CollectionReference groupsRef =
+        FirebaseFirestore.instance.collection('groups');
+    return groupsRef.where('groupName', isEqualTo: searchText).snapshots();
+  }*/
+  static Stream<QuerySnapshot> searchByNameStream(String searchText) {
+    final CollectionReference groupsRef =
+        FirebaseFirestore.instance.collection('groups');
+    return groupsRef.where('groupName', isEqualTo: searchText).snapshots();
   }
 
-  static Future<bool> isUserJoined(String groupId, String uid) async {
+  static Future<bool> isUserJoined(String groupId, String username) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await _firestore.collection('groups').doc(groupId).get();
+        await groupRef.doc(groupId).get();
+    if (groupDoc.data() == null) {
+      return false;
+    }
     List<dynamic> members = groupDoc['members'];
-    return members.contains(uid);
+    return members.contains(username);
   }
 
-  static Future toggleGroupJoin(String groupId, String uid) {
-    return isUserJoined(groupId, uid).then((value) {
-      if (value) {
-        return _firestore.collection('groups').doc(groupId).update({
-          'members': FieldValue.arrayRemove([uid])
-        }).then((value) {
-          return _firestore.collection('users').doc(uid).update({
+  static Future toggleGroupJoin(String groupId, String uid, String username) {
+    return isUserJoined(groupId, username).then((isJoined) {
+      if (isJoined) {
+        return Future.wait([
+          groupRef.doc(groupId).update({
+            'members': FieldValue.arrayRemove([username])
+          }),
+          userRef.doc(uid).update({
             'groups': FieldValue.arrayRemove([
-              {
-                'groupId': groupId,
-              }
+              {'groupId': groupId}
             ])
+          }),
+        ]).then((_) {
+          return groupRef.doc(groupId).get().then((groupDoc) {
+            if (groupDoc['members'].isEmpty) {
+              return groupRef.doc(groupId).delete();
+            } else if (groupDoc['admin'] == username) {
+              return groupRef
+                  .doc(groupId)
+                  .update({'admin': groupDoc['members'][0]});
+            }
           });
         });
       } else {
-        return _firestore.collection('groups').doc(groupId).update({
-          'members': FieldValue.arrayUnion([uid])
-        }).then((value) {
-          return _firestore.collection('users').doc(uid).update({
+        return Future.wait([
+          groupRef.doc(groupId).update({
+            'members': FieldValue.arrayUnion([username])
+          }),
+          userRef.doc(groupId).update({
             'groups': FieldValue.arrayUnion([
-              {
-                'groupId': groupId,
-              }
+              {'groupId': groupId}
             ])
-          });
-        });
+          }),
+        ]);
       }
     });
   }
 
   static void sendMessage(
       String groupId, Map<String, dynamic> chatMessageData) {
-    _firestore
-        .collection('groups')
-        .doc(groupId)
-        .collection('messages')
-        .add(chatMessageData);
-    _firestore.collection('groups').doc(groupId).update({
+    groupRef.doc(groupId).collection('messages').add(chatMessageData);
+    groupRef.doc(groupId).update({
       'recentMessage': chatMessageData['message'],
       'recentMessageSender': chatMessageData['sender'],
       'recentMessageTime': chatMessageData['time'].toString(),

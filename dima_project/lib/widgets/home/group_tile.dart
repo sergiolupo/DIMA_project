@@ -1,23 +1,18 @@
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-class GroupTile extends StatefulWidget {
+class GroupChatTile extends StatefulWidget {
   final UserData user;
-  final String groupId;
-  final String groupName;
-  const GroupTile({
-    super.key,
-    required this.user,
-    required this.groupId,
-    required this.groupName,
-  });
+  final Group group;
+  const GroupChatTile({super.key, required this.user, required this.group});
 
   @override
-  GroupTileState createState() => GroupTileState();
+  GroupChatTileState createState() => GroupChatTileState();
 }
 
-class GroupTileState extends State<GroupTile> {
+class GroupChatTileState extends State<GroupChatTile> {
   @override
   void initState() {
     super.initState();
@@ -29,8 +24,7 @@ class GroupTileState extends State<GroupTile> {
       onTap: () {
         context.go('/chat', extra: {
           "username": widget.user.username,
-          "groupName": widget.groupName,
-          "groupId": widget.groupId,
+          "group": widget.group,
         });
       },
       child: Container(
@@ -39,20 +33,19 @@ class GroupTileState extends State<GroupTile> {
           onPressed: () {
             context.go('/chat', extra: {
               "username": widget.user.username,
-              "groupName": widget.groupName,
-              "groupId": widget.groupId,
+              "group": widget.group,
             });
           },
           padding: EdgeInsets.zero,
           child: CupertinoListTile(
             leading: ClipOval(
               child: Text(
-                widget.groupName.substring(0, 1).toUpperCase(),
+                widget.group.name.substring(0, 1).toUpperCase(),
                 textAlign: TextAlign.center,
               ),
             ),
             title: Text(
-              widget.groupName,
+              widget.group.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text("Join the conversation as ${widget.user.username}"),

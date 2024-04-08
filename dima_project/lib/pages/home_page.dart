@@ -1,24 +1,34 @@
-import 'package:dima_project/pages/group_page.dart';
-import 'package:dima_project/widgets/home/userprofile_widget.dart';
+import 'package:dima_project/pages/groups/group_page.dart';
+import 'package:dima_project/pages/search_page.dart';
+import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:flutter/cupertino.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int? index;
+  const HomePage({super.key, this.index});
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
+  late int? _currentIndex;
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.index ?? 0;
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
+        currentIndex: _currentIndex!,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.news),
@@ -48,7 +58,7 @@ class HomePageState extends State<HomePage> {
             page = const GroupPage();
             break;
           case 2:
-            page = _buildSearchPage(context);
+            page = const SearchPage();
             break;
           case 3:
             page = const UserProfile();
@@ -76,31 +86,6 @@ class HomePageState extends State<HomePage> {
       child: Center(
         child: Text(
           'News Page',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchPage(BuildContext context) {
-    return const CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Search',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'Search Page',
           style: TextStyle(
             fontSize: 24, // Adjust font size as needed
             fontWeight: FontWeight.bold, // Adjust font weight as needed

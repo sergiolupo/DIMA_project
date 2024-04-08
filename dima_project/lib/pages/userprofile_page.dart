@@ -52,8 +52,8 @@ class UserProfileState extends State<UserProfile> {
                     )
                   : const SizedBox(),
               trailing: GestureDetector(
-                onTap: () {},
-                child: const Icon(CupertinoIcons.share,
+                onTap: () => _signOut(context),
+                child: const Icon(CupertinoIcons.power,
                     color: CupertinoColors.black),
               ),
             ),

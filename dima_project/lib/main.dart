@@ -1,6 +1,8 @@
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chat_page.dart';
-import 'package:dima_project/pages/group_info.dart';
-import 'package:dima_project/pages/login_home_page.dart';
+import 'package:dima_project/pages/groups/group_info.dart';
+import 'package:dima_project/pages/groups/group_page.dart';
+import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -27,7 +29,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginHomePage();
+          return const LoginOrHomePage();
         }),
     GoRoute(
         path: '/login',
@@ -43,38 +45,36 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomePage();
+        int? index = state.extra as int?;
+        return HomePage(index: index);
       },
     ),
     GoRoute(
       path: '/chat',
       builder: (BuildContext context, GoRouterState state) {
-        String groupId =
-            (state.extra as Map<String, dynamic>)['groupId'] as String;
-        String groupName =
-            (state.extra as Map<String, dynamic>)['groupName'] as String;
-        String username =
-            (state.extra as Map<String, dynamic>)['username'] as String;
-        return ChatPage(
-            groupId: groupId, groupName: groupName, username: username);
+        Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+        Group group = data['group'] as Group;
+        String username = data['username'] as String;
+        return ChatPage(group: group, username: username);
       },
     ),
     GoRoute(
       path: '/groupinfo',
       builder: (BuildContext context, GoRouterState state) {
-        String groupId =
-            (state.extra as Map<String, dynamic>)['groupId'] as String;
-        String groupName =
-            (state.extra as Map<String, dynamic>)['groupName'] as String;
-        String admin = (state.extra as Map<String, dynamic>)['admin'] as String;
-        return GroupInfo(
-            groupId: groupId, groupName: groupName, adminName: admin);
+        Group group = state.extra as Group;
+        return GroupInfo(group: group);
       },
     ),
     GoRoute(
       path: '/search',
       builder: (BuildContext context, GoRouterState state) {
         return const SearchPage();
+      },
+    ),
+    GoRoute(
+      path: '/groups',
+      builder: (BuildContext context, GoRouterState state) {
+        return const GroupPage();
       },
     ),
   ],

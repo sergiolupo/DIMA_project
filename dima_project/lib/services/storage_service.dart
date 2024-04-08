@@ -16,12 +16,10 @@ class StorageService {
   }
 
   static Future<Uint8List?> downloadImageFromStorage(String url) async {
-    debugPrint("Fetching image from storage");
     try {
       final ref = _storage.refFromURL(url);
 
       final Uint8List? bytes = await ref.getData();
-      debugPrint("Image data downloaded");
 
       return bytes;
     } catch (e) {

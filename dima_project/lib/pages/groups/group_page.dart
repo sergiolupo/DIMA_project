@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -25,23 +25,28 @@ class GroupPageState extends State<GroupPage> {
   @override
   void initState() {
     super.initState();
-    getUserData();
-    getGroups();
+    _loadData();
   }
 
-  void getGroups() async {
+  void _loadData() async {
+    await Future.wait([
+      getUserData(),
+      getGroups(),
+    ]);
+  }
+
+  Future<void> getUserData() async {
+    final value = await HelperFunctions.getUserData();
+    setState(() {
+      user = value;
+    });
+  }
+
+  Future<void> getGroups() async {
     final fetchedGroups =
         await DatabaseService.getGroups(FirebaseAuth.instance.currentUser!.uid);
     setState(() {
       groups = fetchedGroups;
-    });
-  }
-
-  void getUserData() async {
-    await HelperFunctions.getUserData().then((value) {
-      setState(() {
-        user = value;
-      });
     });
   }
 
@@ -50,11 +55,12 @@ class GroupPageState extends State<GroupPage> {
     return (groups == null || user == null)
         ? const CupertinoPageScaffold(
             child: Center(
-              child: Text("Loading..."),
+              child: CupertinoActivityIndicator(),
             ),
           )
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              backgroundColor: CupertinoTheme.of(context).primaryColor,
               middle: const Text(
                 "Chat",
                 style: TextStyle(
@@ -62,13 +68,6 @@ class GroupPageState extends State<GroupPage> {
                   fontWeight: FontWeight.bold,
                   fontSize: 27,
                 ),
-              ),
-              trailing: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  context.go('/search');
-                },
-                child: const Icon(CupertinoIcons.search),
               ),
             ),
             child: SafeArea(
@@ -126,11 +125,11 @@ class GroupPageState extends State<GroupPage> {
                   setState(() {
                     _isLoading = true;
                   });
-                  String? uid = await HelperFunctions.getUid();
 
                   await DatabaseService.createGroup(
                     groupName,
-                    uid!,
+                    user!.username,
+                    FirebaseAuth.instance.currentUser!.uid,
                   ).then((value) {
                     setState(() {
                       _isLoading = false;
@@ -163,11 +162,12 @@ class GroupPageState extends State<GroupPage> {
               itemCount: data.length,
               itemBuilder: (context, index) {
                 int reverseIndex = data.length - 1 - index;
-                return GroupTile(
+                return GroupChatTile(
                   user: user!,
-                  groupId: data[reverseIndex].id,
-                  groupName: data[reverseIndex][
-                      'groupName'], // Assuming 'groupName' is also part of the data
+                  group: Group(
+                      id: data[reverseIndex].id,
+                      name: data[reverseIndex]['groupName'],
+                      admin: data[reverseIndex]['admin']),
                 );
               },
             );
