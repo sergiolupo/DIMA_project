@@ -8,6 +8,7 @@ import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/home/binaryoption_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchPage extends StatefulWidget {
   final UserData user;
@@ -172,6 +173,7 @@ class SearchPageState extends State<SearchPage> {
                                       user: userData,
                                       group: null,
                                       searchUsers: true,
+                                      myUsername: widget.user.username,
                                     );
                                   }
                                 },
@@ -211,81 +213,73 @@ class SearchTile extends StatelessWidget {
   final UserData user;
   final Group? group;
   final bool searchUsers;
+  final String? myUsername;
   const SearchTile({
     super.key,
     required this.user,
     this.group,
+    this.myUsername,
     required this.searchUsers,
   });
 
   @override
   Widget build(BuildContext context) {
-    return searchUsers ? _buildUserTile() : _buildGroupTile();
+    return searchUsers ? _buildUserTile(context) : _buildGroupTile();
   }
 
-  Widget _buildUserTile() {
-    return CupertinoListTile(
-      leading: ClipOval(
-        child: Container(
-          width: 100,
-          height: 100,
-          color: CupertinoColors.lightBackgroundGray,
-          child: user.imagePath != null
-              ? Image.memory(
-                  user.imagePath!,
-                  fit: BoxFit.cover,
-                )
-              : const Icon(
-                  CupertinoIcons.photo,
-                  size: 50,
-                  color: CupertinoColors.systemGrey,
-                ),
+  Widget _buildUserTile(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        context.go('/userprofile',
+            extra: {"user": user, "isMyProfile": myUsername == user.username});
+      },
+      child: CupertinoListTile(
+        leading: ClipOval(
+          child: Container(
+            width: 100,
+            height: 100,
+            color: CupertinoColors.lightBackgroundGray,
+            child: user.imagePath != null
+                ? Image.memory(
+                    user.imagePath!,
+                    fit: BoxFit.cover,
+                  )
+                : const Icon(
+                    CupertinoIcons.photo,
+                    size: 50,
+                    color: CupertinoColors.systemGrey,
+                  ),
+          ),
         ),
+        title: Text(
+          user.username,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text("${user.name} ${user.surname}"),
       ),
-      title: Text(
-        user.username,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text("${user.name} ${user.surname}"),
     );
   }
 
   Widget _buildGroupTile() {
-    return CupertinoListTile(
-      leading: ClipOval(
-        child: Text(
-          group!.name.substring(0, 1).toUpperCase(),
-          style: const TextStyle(color: CupertinoColors.white),
-        ),
-      ),
-      title: Text(
-        group!.name,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text("Admin ${group!.admin}"),
-      trailing: GroupJoinButton(
-        user: user,
-        group: group!,
-      ),
-    );
+    return GroupTile(user: user, group: group!);
   }
 }
 
-class GroupJoinButton extends StatefulWidget {
+class GroupTile extends StatefulWidget {
   final UserData user;
   final Group group;
 
-  const GroupJoinButton({
+  const GroupTile({
     super.key,
     required this.user,
     required this.group,
   });
 
   @override
-  GroupJoinButtonState createState() => GroupJoinButtonState();
+  GroupTileState createState() => GroupTileState();
 }
 
-class GroupJoinButtonState extends State<GroupJoinButton> {
+class GroupTileState extends State<GroupTile> {
   late bool _isJoined;
 
   @override
@@ -319,35 +313,67 @@ class GroupJoinButtonState extends State<GroupJoinButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        try {
-          await DatabaseService.toggleGroupJoin(
-            widget.group.id,
-            FirebaseAuth.instance.currentUser!.uid,
-            widget.user.username,
-          );
-          if (mounted) {
-            setState(() {
-              _checkIfJoined();
-            });
-          }
-        } catch (error) {
-          debugPrint("Error occurred: $error");
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: CupertinoTheme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: CupertinoColors.white),
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              if (_isJoined) {
+                context.go('/chat', extra: {
+                  "group": widget.group,
+                  "username": widget.user.username
+                });
+              }
+            },
+            child: CupertinoListTile(
+              leading: ClipOval(
+                child: Text(
+                  widget.group.name.substring(0, 1).toUpperCase(),
+                  style: const TextStyle(color: CupertinoColors.systemPink),
+                ),
+              ),
+              title: Text(
+                widget.group.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text("Admin: ${widget.group.admin}"),
+            ),
+          ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Text(
-          _isJoined ? "Joined" : "Join Now",
-          style: const TextStyle(color: CupertinoColors.white),
+        GestureDetector(
+          onTap: () async {
+            try {
+              await DatabaseService.toggleGroupJoin(
+                widget.group.id,
+                FirebaseAuth.instance.currentUser!.uid,
+                widget.user.username,
+              );
+              if (mounted) {
+                setState(() {
+                  _checkIfJoined();
+                });
+              }
+            } catch (error) {
+              debugPrint("Error occurred: $error");
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.only(right: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: CupertinoTheme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: CupertinoColors.white),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Text(
+                _isJoined ? "Joined" : "Join Now",
+                style: const TextStyle(color: CupertinoColors.white),
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

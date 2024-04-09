@@ -69,7 +69,7 @@ class LoginForm extends StatelessWidget {
     );
 
     try {
-      final user = await AuthService.signInWithEmailandPassword(
+      await AuthService.signInWithEmailandPassword(
         email,
         password,
       );
@@ -78,7 +78,7 @@ class LoginForm extends StatelessWidget {
       Navigator.of(context).pop();
       debugPrint("Navigating to Home Page");
       //pass the user object to the home page
-      context.go('/home', extra: user);
+      context.go('/home');
     } on FirebaseAuthException catch (e) {
       Navigator.of(context).pop();
       debugPrint("Failed to login: $e");
