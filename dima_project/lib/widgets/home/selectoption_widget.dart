@@ -1,23 +1,25 @@
 import 'package:flutter/cupertino.dart';
 
-class CustomBinaryOption extends StatefulWidget {
+class CustomSelectOption extends StatefulWidget {
   final String textLeft;
+  final String? textMiddle;
   final String textRight;
-  final void Function(bool selectedOption) onChanged;
+  final void Function(int idx) onChanged;
 
-  const CustomBinaryOption({
+  const CustomSelectOption({
     required this.textLeft,
     required this.textRight,
+    this.textMiddle,
     required this.onChanged,
     super.key,
   });
 
   @override
-  CustomBinaryOptionState createState() => CustomBinaryOptionState();
+  CustomSelectOptionState createState() => CustomSelectOptionState();
 }
 
-class CustomBinaryOptionState extends State<CustomBinaryOption> {
-  bool lr = false;
+class CustomSelectOptionState extends State<CustomSelectOption> {
+  int idx = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +38,8 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      lr = false;
-                      widget.onChanged(
-                          lr); // Notify parent widget about the change
+                      idx = 0;
+                      widget.onChanged(idx);
                     });
                   },
                   child: Column(
@@ -48,15 +49,15 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                         widget.textLeft,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: lr == false
+                          color: idx == 0
                               ? CupertinoTheme.of(context).primaryColor
                               : CupertinoColors.inactiveGray,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Container(
-                        height: lr == false ? 3 : 1,
-                        color: lr == false
+                        height: idx == 0 ? 3 : 1,
+                        color: idx == 0
                             ? CupertinoTheme.of(context).primaryColor
                             : CupertinoColors.opaqueSeparator,
                       ),
@@ -64,13 +65,44 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                   ),
                 ),
               ),
+              if (widget.textMiddle != null)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        idx = 1;
+                        widget.onChanged(idx);
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.textMiddle!,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: idx == 1
+                                ? CupertinoTheme.of(context).primaryColor
+                                : CupertinoColors.inactiveGray,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          height: idx == 1 ? 3 : 1,
+                          color: idx == 1
+                              ? CupertinoTheme.of(context).primaryColor
+                              : CupertinoColors.opaqueSeparator,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               Expanded(
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      lr = true;
-                      widget.onChanged(
-                          lr); // Notify parent widget about the change
+                      idx = widget.textMiddle != null ? 2 : 1;
+                      widget.onChanged(idx);
                     });
                   },
                   child: Column(
@@ -80,15 +112,16 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                         widget.textRight,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: lr == true
+                          color: idx == (widget.textMiddle != null ? 2 : 1)
                               ? CupertinoTheme.of(context).primaryColor
                               : CupertinoColors.inactiveGray,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Container(
-                        height: lr == true ? 3 : 1,
-                        color: lr == true
+                        height:
+                            idx == (widget.textMiddle != null ? 2 : 1) ? 3 : 1,
+                        color: idx == (widget.textMiddle != null ? 2 : 1)
                             ? CupertinoTheme.of(context).primaryColor
                             : CupertinoColors.opaqueSeparator,
                       ),

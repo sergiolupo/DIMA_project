@@ -5,7 +5,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/storage_service.dart';
-import 'package:dima_project/widgets/home/binaryoption_widget.dart';
+import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +25,7 @@ class SearchPageState extends State<SearchPage> {
 
   StreamSubscription<QuerySnapshot>? _searchStreamSubscription;
 
-  bool searchUsers = false;
+  int searchIdx = 0;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class SearchPageState extends State<SearchPage> {
     if (searchText.isNotEmpty) {
       _searchStreamSubscription?.cancel();
 
-      if (searchUsers) {
+      if (searchIdx == 0) {
         _searchStreamSubscription =
             DatabaseService.searchByUsernameStream(searchText)
                 .listen((snapshot) {
@@ -95,7 +95,7 @@ class SearchPageState extends State<SearchPage> {
                     controller: _searchController,
                     onChanged: (_) => _initiateSearchMethod(),
                     placeholder:
-                        "Search${searchUsers ? " users" : " groups"}...",
+                        "Search${searchIdx == 0 ? " users" : " groups"}...",
                     placeholderStyle:
                         const TextStyle(color: CupertinoColors.white),
                     style: const TextStyle(color: CupertinoColors.white),
@@ -122,12 +122,13 @@ class SearchPageState extends State<SearchPage> {
             ),
           ),
           const SizedBox(height: 10),
-          CustomBinaryOption(
-            textLeft: "Groups",
-            textRight: "Users",
+          CustomSelectOption(
+            textLeft: "Users",
+            textRight: "Events",
+            textMiddle: "Groups",
             onChanged: (value) {
               setState(() {
-                searchUsers = value;
+                searchIdx = value;
                 _initiateSearchMethod();
               });
             },
@@ -145,14 +146,15 @@ class SearchPageState extends State<SearchPage> {
                 final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
                   return Center(
-                    child: Text("No ${searchUsers ? "users" : "groups"} found"),
+                    child:
+                        Text("No ${searchIdx == 0 ? "users" : "groups"} found"),
                   );
                 }
 
                 return ListView.builder(
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
-                    return searchUsers
+                    return searchIdx == 0
                         ? ((docs[index].data() as Map<String, dynamic>)
                                 .containsKey('email'))
                             ? FutureBuilder<UserData>(

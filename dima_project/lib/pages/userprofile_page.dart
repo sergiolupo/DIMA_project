@@ -1,7 +1,7 @@
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/widgets/home/binaryoption_widget.dart';
+import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,10 +35,13 @@ class UserProfileState extends State<UserProfile> {
                     color: CupertinoColors.black),
               )
             : const SizedBox(),
-        trailing: GestureDetector(
-          onTap: () => _signOut(context),
-          child: const Icon(CupertinoIcons.power, color: CupertinoColors.black),
-        ),
+        trailing: isMyProfile
+            ? GestureDetector(
+                onTap: () => _signOut(context),
+                child: const Icon(CupertinoIcons.power,
+                    color: CupertinoColors.black),
+              )
+            : const SizedBox(),
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -184,7 +187,7 @@ class UserProfileState extends State<UserProfile> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  CustomBinaryOption(
+                  CustomSelectOption(
                     textLeft: 'Events created',
                     textRight: 'Events joined',
                     onChanged: (value) {},
