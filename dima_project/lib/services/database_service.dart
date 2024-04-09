@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -106,17 +107,25 @@ class DatabaseService {
 
   //create a group
   static Future<void> createGroup(
-      String groupName, String uid, String username) async {
+    Group group,
+    String uid,
+  ) async {
     try {
+      String imageUrl = group.imagePath.toString() == '[]'
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'group_images/$uid.jpg', group.imagePath as Uint8List);
+
       DocumentReference docRef = await groupRef.add({
-        'groupName': groupName,
-        'groupIcon': "",
-        'admin': username,
+        'groupName': group.name,
+        'groupImage': imageUrl,
+        'admin': group.admin,
+        'description': group.description,
         'messages': [],
         'groupId': '',
         'recentMessage': "",
         'recentMessageSender': "",
-        "members": FieldValue.arrayUnion([username]),
+        "members": FieldValue.arrayUnion([group.admin]),
       });
 
       await groupRef.doc(docRef.id).update({
@@ -132,7 +141,7 @@ class DatabaseService {
         ])
       });
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("Error while creating the group: $e");
     }
   }
 

@@ -1,7 +1,8 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chat_page.dart';
-import 'package:dima_project/pages/groups/group_info.dart';
+import 'package:dima_project/pages/groups/create_group_page.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/groups/group_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
@@ -97,6 +98,13 @@ final GoRouter _router = GoRouter(
           user: user,
           isMyProfile: isMyProfile ?? true,
         );
+      },
+    ),
+    GoRoute(
+      path: '/creategroup',
+      builder: (BuildContext context, GoRouterState state) {
+        UserData user = state.extra as UserData;
+        return CreateGroupPage(user: user);
       },
     ),
   ],

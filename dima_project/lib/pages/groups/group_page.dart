@@ -5,8 +5,8 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 class GroupPage extends StatefulWidget {
   final UserData user;
@@ -18,7 +18,6 @@ class GroupPage extends StatefulWidget {
 
 class GroupPageState extends State<GroupPage> {
   Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _groupsStream;
-  bool _isLoading = false;
   String groupName = "";
 
   @override
@@ -60,7 +59,7 @@ class GroupPageState extends State<GroupPage> {
                     right: 20,
                     child: CupertinoButton(
                       onPressed: () {
-                        popUpDialog(context);
+                        context.go("/createGroup", extra: widget.user);
                       },
                       child: const Icon(CupertinoIcons.add, size: 30),
                     ),
@@ -69,62 +68,6 @@ class GroupPageState extends State<GroupPage> {
               ),
             ),
           );
-  }
-
-  void popUpDialog(BuildContext context) {
-    showCupertinoDialog(
-      barrierDismissible: true,
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text("Create Group"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _isLoading
-                  ? const CupertinoActivityIndicator()
-                  : CupertinoTextField(
-                      placeholder: "Enter group name",
-                      onChanged: (value) {
-                        setState(() {
-                          groupName = value;
-                        });
-                      },
-                    ),
-            ],
-          ),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancel"),
-            ),
-            CupertinoDialogAction(
-              onPressed: () async {
-                if (groupName != "") {
-                  setState(() {
-                    _isLoading = true;
-                  });
-
-                  await DatabaseService.createGroup(
-                    groupName,
-                    FirebaseAuth.instance.currentUser!.uid,
-                    widget.user.username,
-                  ).then((value) {
-                    setState(() {
-                      _isLoading = false;
-                      Navigator.of(context).pop();
-                    });
-                  });
-                }
-              },
-              child: const Text("Create"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Widget groupList() {

@@ -6,8 +6,12 @@ import 'package:image_picker/image_picker.dart';
 class ImageInsertPage extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
+  final bool? imageForGroup;
   const ImageInsertPage(
-      {super.key, this.imagePath, required this.imageInsertPageKey});
+      {super.key,
+      this.imagePath,
+      required this.imageInsertPageKey,
+      this.imageForGroup});
 
   @override
   ImageInsertPageState createState() => ImageInsertPageState();
@@ -62,10 +66,16 @@ class ImageInsertPageState extends State<ImageInsertPage> {
           ),
         ),
         const SizedBox(height: 20),
-        CupertinoButton.filled(
-          onPressed: _pickImage,
-          child: const Text('Pick an Image'),
-        ),
+        widget.imageForGroup == true
+            ? CupertinoButton.filled(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                onPressed: _pickImage,
+                child: const Text('Pick a Group Image'),
+              )
+            : CupertinoButton.filled(
+                onPressed: _pickImage,
+                child: const Text('Pick an Image'),
+              ),
       ],
     );
   }
