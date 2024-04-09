@@ -233,4 +233,15 @@ class DatabaseService {
     return query.snapshots().map((snapshot) =>
         snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
   }
+
+  static Future<bool> isUsernameTaken(String username) async {
+    final QuerySnapshot result =
+        await userRef.where('username', isEqualTo: username).get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if (documents.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

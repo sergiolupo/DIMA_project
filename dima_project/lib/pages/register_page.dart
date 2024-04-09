@@ -170,7 +170,30 @@ class RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void managePage() {
+  Future<void> managePage() async {
+    if (_currentPage == 2) {
+      bool isUsernameTaken =
+          await DatabaseService.isUsernameTaken(_usernameController.text);
+      if (isUsernameTaken) {
+        debugPrint('Username is already taken');
+        if (!mounted) return;
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Invalid choice'),
+            content: const Text('Username is already taken.'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+    }
+    if (!mounted) return;
     if (_currentPage == 3 && selectedImagePath.isEmpty) {
       debugPrint('Please select an image');
       showCupertinoDialog(
