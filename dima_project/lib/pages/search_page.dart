@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/storage_service.dart';
+import 'package:dima_project/widgets/home/binaryoption_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -19,7 +21,10 @@ class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   late final StreamController<QuerySnapshot> _searchStreamController =
       StreamController<QuerySnapshot>();
+
   StreamSubscription<QuerySnapshot>? _searchStreamSubscription;
+
+  bool searchUsers = false;
 
   @override
   void initState() {
@@ -29,14 +34,38 @@ class SearchPageState extends State<SearchPage> {
   void _initiateSearchMethod() {
     final searchText = _searchController.text.trim();
     if (searchText.isNotEmpty) {
-      // Cancel the previous subscription if it exists
       _searchStreamSubscription?.cancel();
-      // Add a new stream subscription
-      _searchStreamSubscription =
-          DatabaseService.searchByNameStream(searchText).listen((snapshot) {
-        _searchStreamController.add(snapshot);
-      });
+
+      if (searchUsers) {
+        _searchStreamSubscription =
+            DatabaseService.searchByUsernameStream(searchText)
+                .listen((snapshot) {
+          _searchStreamController.add(snapshot);
+        });
+      } else {
+        _searchStreamSubscription =
+            DatabaseService.searchByGroupNameStream(searchText)
+                .listen((snapshot) {
+          _searchStreamController.add(snapshot);
+        });
+      }
     }
+  }
+
+  Future<UserData> convertToUserData(DocumentSnapshot documentSnapshot) async {
+    return UserData(
+      name: documentSnapshot['name'],
+      surname: documentSnapshot['surname'],
+      username: documentSnapshot['username'],
+      email: documentSnapshot['email'],
+      password: '',
+      imagePath: await StorageService.downloadImageFromStorage(
+          documentSnapshot['imageUrl']),
+      categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
+          .map((categoryMap) => categoryMap['value'].toString())
+          .toList()
+          .cast<String>(),
+    );
   }
 
   @override
@@ -64,7 +93,8 @@ class SearchPageState extends State<SearchPage> {
                   child: CupertinoTextField(
                     controller: _searchController,
                     onChanged: (_) => _initiateSearchMethod(),
-                    placeholder: "Search groups...",
+                    placeholder:
+                        "Search${searchUsers ? " users" : " groups"}...",
                     placeholderStyle:
                         const TextStyle(color: CupertinoColors.white),
                     style: const TextStyle(color: CupertinoColors.white),
@@ -90,6 +120,18 @@ class SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          CustomBinaryOption(
+            textLeft: "Groups",
+            textRight: "Users",
+            onChanged: (value) {
+              setState(() {
+                searchUsers = value;
+                _initiateSearchMethod();
+              });
+            },
+          ),
+          const SizedBox(height: 10),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _searchStreamController.stream,
@@ -101,22 +143,52 @@ class SearchPageState extends State<SearchPage> {
                 }
                 final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
-                  return const Center(
-                    child: Text("No groups found"),
+                  return Center(
+                    child: Text("No ${searchUsers ? "users" : "groups"} found"),
                   );
                 }
+
                 return ListView.builder(
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
-                    final group = Group(
-                      id: docs[index]['groupId'],
-                      name: docs[index]['groupName'],
-                      admin: docs[index]['admin'],
-                    );
-                    return GroupSearchTile(
-                      user: widget.user,
-                      group: group,
-                    );
+                    return searchUsers
+                        ? ((docs[index].data() as Map<String, dynamic>)
+                                .containsKey('email'))
+                            ? FutureBuilder<UserData>(
+                                future: convertToUserData(docs[index]),
+                                builder: (context, userSnapshot) {
+                                  if (userSnapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CupertinoActivityIndicator(
+                                        radius: 16,
+                                      ),
+                                    );
+                                  } else if (userSnapshot.hasError) {
+                                    return Text('Error: ${userSnapshot.error}');
+                                  } else {
+                                    final userData = userSnapshot.data!;
+                                    return SearchTile(
+                                      user: userData,
+                                      group: null,
+                                      searchUsers: true,
+                                    );
+                                  }
+                                },
+                              )
+                            : const SizedBox()
+                        : ((docs[index].data() as Map<String, dynamic>)
+                                .containsKey('groupId'))
+                            ? SearchTile(
+                                user: widget.user,
+                                group: Group(
+                                  id: docs[index]['groupId'],
+                                  name: docs[index]['groupName'],
+                                  admin: docs[index]['admin'],
+                                ),
+                                searchUsers: false,
+                              )
+                            : const SizedBox();
                   },
                 );
               },
@@ -129,39 +201,71 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
-    _searchStreamController.close();
+    _searchStreamController.close(); // Close the stream controller
     _searchStreamSubscription?.cancel(); // Cancel the subscription
     super.dispose();
   }
 }
 
-class GroupSearchTile extends StatelessWidget {
+class SearchTile extends StatelessWidget {
   final UserData user;
-  final Group group;
-
-  const GroupSearchTile({
+  final Group? group;
+  final bool searchUsers;
+  const SearchTile({
     super.key,
     required this.user,
-    required this.group,
+    this.group,
+    required this.searchUsers,
   });
 
   @override
   Widget build(BuildContext context) {
+    return searchUsers ? _buildUserTile() : _buildGroupTile();
+  }
+
+  Widget _buildUserTile() {
+    return CupertinoListTile(
+      leading: ClipOval(
+        child: Container(
+          width: 100,
+          height: 100,
+          color: CupertinoColors.lightBackgroundGray,
+          child: user.imagePath != null
+              ? Image.memory(
+                  user.imagePath!,
+                  fit: BoxFit.cover,
+                )
+              : const Icon(
+                  CupertinoIcons.photo,
+                  size: 50,
+                  color: CupertinoColors.systemGrey,
+                ),
+        ),
+      ),
+      title: Text(
+        user.username,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text("${user.name} ${user.surname}"),
+    );
+  }
+
+  Widget _buildGroupTile() {
     return CupertinoListTile(
       leading: ClipOval(
         child: Text(
-          group.name.substring(0, 1).toUpperCase(),
+          group!.name.substring(0, 1).toUpperCase(),
           style: const TextStyle(color: CupertinoColors.white),
         ),
       ),
       title: Text(
-        group.name,
+        group!.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text("Admin ${group.admin}"),
+      subtitle: Text("Admin ${group!.admin}"),
       trailing: GroupJoinButton(
         user: user,
-        group: group,
+        group: group!,
       ),
     );
   }

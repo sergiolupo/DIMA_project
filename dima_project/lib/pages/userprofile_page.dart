@@ -182,11 +182,12 @@ class UserProfileState extends State<UserProfile> {
             Container(
               color: CupertinoColors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Column(
+              child: Column(
                 children: [
                   CustomBinaryOption(
                     textLeft: 'Events created',
                     textRight: 'Events joined',
+                    onChanged: (value) {},
                   ),
                   /*GridView.count(
                     physics: const NeverScrollableScrollPhysics(),

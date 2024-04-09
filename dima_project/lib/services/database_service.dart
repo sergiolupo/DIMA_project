@@ -154,11 +154,15 @@ class DatabaseService {
     return groupRef.doc(groupId).snapshots();
   }
 
-  static Stream<QuerySnapshot> searchByNameStream(String searchText) {
+  static searchByGroupNameStream(String searchText) {
     return groupRef
         .where('groupName', isEqualTo: searchText)
         .where('groupId', isNotEqualTo: '')
         .snapshots();
+  }
+
+  static searchByUsernameStream(String searchText) {
+    return userRef.where('username', isEqualTo: searchText).snapshots();
   }
 
   static isUserJoined(String groupId, String username) async {

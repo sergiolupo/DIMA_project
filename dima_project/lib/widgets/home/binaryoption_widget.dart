@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 class CustomBinaryOption extends StatefulWidget {
   final String textLeft;
   final String textRight;
+  final void Function(bool selectedOption) onChanged;
 
   const CustomBinaryOption({
     required this.textLeft,
     required this.textRight,
+    required this.onChanged,
     super.key,
   });
 
@@ -35,6 +37,8 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                   onTap: () {
                     setState(() {
                       lr = false;
+                      widget.onChanged(
+                          lr); // Notify parent widget about the change
                     });
                   },
                   child: Column(
@@ -65,6 +69,8 @@ class CustomBinaryOptionState extends State<CustomBinaryOption> {
                   onTap: () {
                     setState(() {
                       lr = true;
+                      widget.onChanged(
+                          lr); // Notify parent widget about the change
                     });
                   },
                   child: Column(
