@@ -51,7 +51,7 @@ class ChatPageState extends State<ChatPage> {
           onPressed: () {
             context.go(
               "/groupinfo",
-              extra: widget.group,
+              extra: {"group": widget.group, "username": widget.username},
             );
           },
           child: const Icon(

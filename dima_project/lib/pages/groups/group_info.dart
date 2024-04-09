@@ -1,16 +1,17 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class GroupInfo extends StatefulWidget {
   final Group group;
+  final String username;
   const GroupInfo({
     super.key,
     required this.group,
+    required this.username,
   });
 
   @override
@@ -19,11 +20,9 @@ class GroupInfo extends StatefulWidget {
 
 class GroupInfoState extends State<GroupInfo> {
   Stream? members;
-  UserData? user;
   @override
   void initState() {
     getMembers();
-    getUserData();
     super.initState();
   }
 
@@ -36,14 +35,6 @@ class GroupInfoState extends State<GroupInfo> {
     });
   }
 
-  void getUserData() async {
-    await HelperFunctions.getUserData().then((value) {
-      setState(() {
-        user = value;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -51,7 +42,7 @@ class GroupInfoState extends State<GroupInfo> {
         leading: CupertinoButton(
           onPressed: () {
             context.go('/chat', extra: {
-              "username": user?.username,
+              "username": widget.username,
               "group": widget.group,
             });
           },
@@ -63,7 +54,7 @@ class GroupInfoState extends State<GroupInfo> {
           onPressed: () {
             showLeaveGroupDialog(context);
           },
-          child: const Icon(CupertinoIcons.trash_fill,
+          child: const Icon(FontAwesomeIcons.signOutAlt,
               color: CupertinoColors.white),
         ),
       ),
@@ -189,7 +180,7 @@ class GroupInfoState extends State<GroupInfo> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  user!.username,
+                  widget.username,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();

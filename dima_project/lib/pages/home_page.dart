@@ -1,6 +1,9 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,62 +16,84 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late int? _currentIndex;
+  UserData? _userData;
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.index ?? 0;
+    _getUserData();
+  }
+
+  void _getUserData() async {
+    final uid = await HelperFunctions.getUid();
+    final userData = await DatabaseService.getUserData(uid!);
+    setState(() {
+      _userData = userData;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        currentIndex: _currentIndex!,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.news),
-            label: 'News',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chat_bubble),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.home),
-            label: 'Home',
-          ),
-        ],
-      ),
-      tabBuilder: (BuildContext context, int index) {
-        late Widget page;
-        switch (index) {
-          case 0:
-            page = _buildNewsPage(context);
-            break;
-          case 1:
-            page = const GroupPage();
-            break;
-          case 2:
-            page = const SearchPage();
-            break;
-          case 3:
-            page = const UserProfile();
-            break;
-          default:
-            page = _buildNewsPage(context);
-        }
-        return page;
-      },
-    );
+    return _userData == null
+        ? const CupertinoPageScaffold(
+            child: Center(
+              child: CupertinoActivityIndicator(),
+            ),
+          )
+        : CupertinoTabScaffold(
+            tabBar: CupertinoTabBar(
+              currentIndex: _currentIndex!,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.news),
+                  label: 'News',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.chat_bubble),
+                  label: 'Chat',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.home),
+                  label: 'Home',
+                ),
+              ],
+            ),
+            tabBuilder: (BuildContext context, int index) {
+              late Widget page;
+              switch (index) {
+                case 0:
+                  page = _buildNewsPage(context);
+                  break;
+                case 1:
+                  page = GroupPage(
+                    user: _userData!,
+                  );
+                  break;
+                case 2:
+                  page = SearchPage(
+                    user: _userData!,
+                  );
+                  break;
+                case 3:
+                  page = UserProfile(
+                    user: _userData!,
+                  );
+                  break;
+                default:
+                  page = _buildNewsPage(context);
+              }
+              return page;
+            },
+          );
   }
 
   Widget _buildNewsPage(BuildContext context) {

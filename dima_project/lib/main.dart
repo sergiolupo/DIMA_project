@@ -1,4 +1,5 @@
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/pages/groups/group_info.dart';
 import 'package:dima_project/pages/groups/group_page.dart';
@@ -61,20 +62,29 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/groupinfo',
       builder: (BuildContext context, GoRouterState state) {
-        Group group = state.extra as Group;
-        return GroupInfo(group: group);
+        Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+        Group group = data['group'] as Group;
+        String username = data['username'] as String;
+        return GroupInfo(group: group, username: username);
       },
     ),
     GoRoute(
       path: '/search',
       builder: (BuildContext context, GoRouterState state) {
-        return const SearchPage();
+        UserData user = state.extra as UserData;
+        return SearchPage(
+          user: user,
+        );
       },
     ),
     GoRoute(
       path: '/groups',
       builder: (BuildContext context, GoRouterState state) {
-        return const GroupPage();
+        UserData user = state.extra as UserData;
+
+        return GroupPage(
+          user: user,
+        );
       },
     ),
   ],

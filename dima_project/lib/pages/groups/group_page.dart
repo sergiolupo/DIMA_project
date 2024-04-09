@@ -4,55 +4,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupPage extends StatefulWidget {
-  const GroupPage({super.key});
+  final UserData user;
+  const GroupPage({super.key, required this.user});
 
   @override
   GroupPageState createState() => GroupPageState();
 }
 
 class GroupPageState extends State<GroupPage> {
-  List<dynamic>? groups;
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _groupsStream;
   bool _isLoading = false;
   String groupName = "";
-  UserData? user;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _subscribeToGroups();
   }
 
-  void _loadData() async {
-    await Future.wait([
-      getUserData(),
-      getGroups(),
-    ]);
-  }
-
-  Future<void> getUserData() async {
-    final value = await HelperFunctions.getUserData();
-    setState(() {
-      user = value;
-    });
-  }
-
-  Future<void> getGroups() async {
-    final fetchedGroups =
-        await DatabaseService.getGroups(FirebaseAuth.instance.currentUser!.uid);
-    setState(() {
-      groups = fetchedGroups;
-    });
+  void _subscribeToGroups() {
+    _groupsStream = DatabaseService.getGroupsStream(widget.user.username);
   }
 
   @override
   Widget build(BuildContext context) {
-    return (groups == null || user == null)
+    return (_groupsStream == null)
         ? const CupertinoPageScaffold(
             child: Center(
               child: CupertinoActivityIndicator(),
@@ -128,13 +109,12 @@ class GroupPageState extends State<GroupPage> {
 
                   await DatabaseService.createGroup(
                     groupName,
-                    user!.username,
                     FirebaseAuth.instance.currentUser!.uid,
+                    widget.user.username,
                   ).then((value) {
                     setState(() {
                       _isLoading = false;
                       Navigator.of(context).pop();
-                      getGroups();
                     });
                   });
                 }
@@ -149,12 +129,8 @@ class GroupPageState extends State<GroupPage> {
 
   Widget groupList() {
     return StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-      stream:
-          Stream.value(groups!.cast<DocumentSnapshot<Map<String, dynamic>>>()),
-      builder: (context,
-          AsyncSnapshot<List<DocumentSnapshot<Map<String, dynamic>>>>
-              snapshot) {
-        // Make some checks
+      stream: _groupsStream,
+      builder: (context, snapshot) {
         if (snapshot.hasData) {
           var data = snapshot.data!;
           if (data.isNotEmpty) {
@@ -163,7 +139,7 @@ class GroupPageState extends State<GroupPage> {
               itemBuilder: (context, index) {
                 int reverseIndex = data.length - 1 - index;
                 return GroupChatTile(
-                  user: user!,
+                  user: widget.user,
                   group: Group(
                       id: data[reverseIndex].id,
                       name: data[reverseIndex]['groupName'],
@@ -184,30 +160,30 @@ class GroupPageState extends State<GroupPage> {
       },
     );
   }
+}
 
-  Widget noGroupWidget() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(CupertinoIcons.group,
-              size: 100, color: CupertinoColors.systemGrey),
-          SizedBox(height: 20),
-          Text(
-            "No groups yet",
-            style: TextStyle(
-              color: CupertinoColors.systemGrey,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+Widget noGroupWidget() {
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Icon(CupertinoIcons.group,
+            size: 100, color: CupertinoColors.systemGrey),
+        SizedBox(height: 20),
+        Text(
+          "No groups yet",
+          style: TextStyle(
+            color: CupertinoColors.systemGrey,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(height: 20),
-          Text(
-            "Create a group to start chatting",
-            style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 15),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        SizedBox(height: 20),
+        Text(
+          "Create a group to start chatting",
+          style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 15),
+        ),
+      ],
+    ),
+  );
 }

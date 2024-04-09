@@ -9,6 +9,7 @@ class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final groupRef = _firestore.collection('groups');
   static final userRef = _firestore.collection('users');
+
   static Future<void> registerUserWithUUID(UserData user, String uuid) async {
     String imageUrl = await StorageService.uploadImageToStorage(
         'profile_images/$uuid.jpg', user.imagePath as Uint8List);
@@ -105,30 +106,34 @@ class DatabaseService {
 
   //create a group
   static Future<void> createGroup(
-      String groupName, String username, String uid) async {
-    DocumentReference docRef = await groupRef.add({
-      'groupName': groupName,
-      'groupIcon': "",
-      'admin': username,
-      'messages': [],
-      'groupId': "",
-      'recentMessage': "",
-      'recentMessageSender': "",
-    });
+      String groupName, String uid, String username) async {
+    try {
+      DocumentReference docRef = await groupRef.add({
+        'groupName': groupName,
+        'groupIcon': "",
+        'admin': username,
+        'messages': [],
+        'groupId': '',
+        'recentMessage': "",
+        'recentMessageSender': "",
+        "members": FieldValue.arrayUnion([username]),
+      });
 
-    await groupRef.doc(docRef.id).update({
-      "members": FieldValue.arrayUnion([username]),
-      'groupId': docRef.id,
-    });
-    DocumentReference userDocumentReference = userRef.doc(uid);
+      await groupRef.doc(docRef.id).update({
+        'groupId': docRef.id,
+      });
+      DocumentReference userDocumentReference = userRef.doc(uid);
 
-    return await userDocumentReference.update({
-      'groups': FieldValue.arrayUnion([
-        {
-          'groupId': docRef.id,
-        }
-      ])
-    });
+      return await userDocumentReference.update({
+        'groups': FieldValue.arrayUnion([
+          {
+            'groupId': docRef.id,
+          }
+        ])
+      });
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
   }
 
   static getChats(String groupId) async {
@@ -149,23 +154,17 @@ class DatabaseService {
     return groupRef.doc(groupId).snapshots();
   }
 
-  /*static Stream<QuerySnapshot> searchByNameStream(String searchText) {
-    final CollectionReference groupsRef =
-        FirebaseFirestore.instance.collection('groups');
-    return groupsRef.where('groupName', isEqualTo: searchText).snapshots();
-  }*/
   static Stream<QuerySnapshot> searchByNameStream(String searchText) {
-    final CollectionReference groupsRef =
-        FirebaseFirestore.instance.collection('groups');
-    return groupsRef.where('groupName', isEqualTo: searchText).snapshots();
+    return groupRef
+        .where('groupName', isEqualTo: searchText)
+        .where('groupId', isNotEqualTo: '')
+        .snapshots();
   }
 
-  static Future<bool> isUserJoined(String groupId, String username) async {
+  static isUserJoined(String groupId, String username) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
         await groupRef.doc(groupId).get();
-    if (groupDoc.data() == null) {
-      return false;
-    }
+
     List<dynamic> members = groupDoc['members'];
     return members.contains(username);
   }
@@ -198,7 +197,7 @@ class DatabaseService {
           groupRef.doc(groupId).update({
             'members': FieldValue.arrayUnion([username])
           }),
-          userRef.doc(groupId).update({
+          userRef.doc(uid).update({
             'groups': FieldValue.arrayUnion([
               {'groupId': groupId}
             ])
@@ -216,5 +215,18 @@ class DatabaseService {
       'recentMessageSender': chatMessageData['sender'],
       'recentMessageTime': chatMessageData['time'].toString(),
     });
+  }
+
+  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>> getGroupsStream(
+      String username) {
+    // Create a reference to the 'groups' collection
+    final CollectionReference groupsRef =
+        FirebaseFirestore.instance.collection('groups');
+
+    // Query groups where the user is a member
+    final query = groupsRef.where('members', arrayContains: username);
+    // Return a stream of snapshots of the documents in the query result
+    return query.snapshots().map((snapshot) =>
+        snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
   }
 }

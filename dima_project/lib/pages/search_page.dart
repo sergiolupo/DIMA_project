@@ -4,36 +4,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final UserData user;
+  const SearchPage({super.key, required this.user});
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  SearchPageState createState() => SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   late final StreamController<QuerySnapshot> _searchStreamController =
       StreamController<QuerySnapshot>();
-  UserData? _user;
   StreamSubscription<QuerySnapshot>? _searchStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    _getUserData();
-  }
-
-  void _getUserData() async {
-    final uid = await HelperFunctions.getUid();
-    final userData = await DatabaseService.getUserData(uid!);
-    setState(() {
-      _user = userData;
-    });
   }
 
   void _initiateSearchMethod() {
@@ -124,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                       admin: docs[index]['admin'],
                     );
                     return GroupSearchTile(
-                      user: _user!,
+                      user: widget.user,
                       group: group,
                     );
                   },
@@ -168,8 +158,11 @@ class GroupSearchTile extends StatelessWidget {
         group.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text("Admin: ${group.admin}"),
-      trailing: GroupJoinButton(user: user, group: group),
+      subtitle: Text("Admin ${group.admin}"),
+      trailing: GroupJoinButton(
+        user: user,
+        group: group,
+      ),
     );
   }
 }
@@ -189,45 +182,54 @@ class GroupJoinButton extends StatefulWidget {
 }
 
 class GroupJoinButtonState extends State<GroupJoinButton> {
-  bool _isJoined = false;
+  late bool _isJoined;
 
   @override
   void initState() {
     super.initState();
-    _checkIfJoined();
+    _isJoined = false; // Initialize _isJoined state
+    _checkIfJoined(); // Check if user is already joined when widget is initialized
   }
 
-  void _checkIfJoined() {
-    DatabaseService.isUserJoined(widget.group.id, widget.user.username)
-        .then((value) {
-      if (mounted) {
-        setState(() {
-          _isJoined = value; // Use default value if value is null
-        });
-      }
-    }).catchError((error) {
+  void _checkIfJoined() async {
+    try {
+      await DatabaseService.isUserJoined(
+        widget.group.id,
+        widget.user.username,
+      ).then((isJoined) {
+        if (mounted) {
+          setState(() {
+            _isJoined = isJoined;
+          });
+        }
+      });
+    } catch (error) {
       debugPrint("Error occurred: $error");
       if (mounted) {
         setState(() {
           _isJoined = false; // Handle error by setting _isJoined to false
         });
       }
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        await DatabaseService.toggleGroupJoin(
-          widget.group.id,
-          FirebaseAuth.instance.currentUser!.uid,
-          widget.user.username,
-        );
-        if (mounted) {
-          setState(() {
-            _isJoined = !_isJoined;
-          });
+        try {
+          await DatabaseService.toggleGroupJoin(
+            widget.group.id,
+            FirebaseAuth.instance.currentUser!.uid,
+            widget.user.username,
+          );
+          if (mounted) {
+            setState(() {
+              _checkIfJoined();
+            });
+          }
+        } catch (error) {
+          debugPrint("Error occurred: $error");
         }
       },
       child: Container(
