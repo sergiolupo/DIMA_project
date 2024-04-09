@@ -56,24 +56,6 @@ class DatabaseService {
     }
   }
 
-  Future<void> updateUserData(UserData user) async {
-    String uuid = await findUUID(user.email);
-    String imageUrl = await StorageService.uploadImageToStorage(
-        'profile_images/$uuid.jpg', user.imagePath!);
-
-    List<Map<String, dynamic>> serializedList =
-        user.categories.map((item) => {'value': item}).toList();
-    await userRef.doc(uuid).update({
-      'name': user.name,
-      'surname': user.surname,
-      'username': user.username,
-      'email': user.email,
-      'imageUrl': imageUrl,
-      'selectedCategories': serializedList,
-      'groups': [],
-    });
-  }
-
   static Future<bool> checkUserExist(String email) async {
     debugPrint('Checking if user exists... $email');
     final QuerySnapshot result =
@@ -116,6 +98,9 @@ class DatabaseService {
           : await StorageService.uploadImageToStorage(
               'group_images/$uid.jpg', group.imagePath as Uint8List);
 
+      List<Map<String, dynamic>> serializedList =
+          group.categories!.map((item) => {'value': item}).toList();
+
       DocumentReference docRef = await groupRef.add({
         'groupName': group.name,
         'groupImage': imageUrl,
@@ -126,6 +111,7 @@ class DatabaseService {
         'recentMessage': "",
         'recentMessageSender': "",
         "members": FieldValue.arrayUnion([group.admin]),
+        "categories": serializedList,
       });
 
       await groupRef.doc(docRef.id).update({
@@ -159,8 +145,14 @@ class DatabaseService {
     return groupDoc['admin'];
   }
 
-  static Future getGroupMembers(String groupId) async {
-    return groupRef.doc(groupId).snapshots();
+  static Future<Stream<List<DocumentSnapshot<Map<String, dynamic>>>>>
+      getGroupMembers(String groupId) {
+    return groupRef.doc(groupId).get().then((groupDoc) {
+      return userRef
+          .where('username', whereIn: groupDoc['members'])
+          .snapshots()
+          .map((querySnapshot) => querySnapshot.docs.toList());
+    });
   }
 
   static searchByGroupNameStream(String searchText) {

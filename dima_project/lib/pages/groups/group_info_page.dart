@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +11,7 @@ import 'package:go_router/go_router.dart';
 class GroupInfo extends StatefulWidget {
   final Group group;
   final String username;
+
   const GroupInfo({
     super.key,
     required this.group,
@@ -19,19 +23,19 @@ class GroupInfo extends StatefulWidget {
 }
 
 class GroupInfoState extends State<GroupInfo> {
-  Stream? members;
+  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream =
+      null;
+
   @override
   void initState() {
-    getMembers();
     super.initState();
+    getMembers();
   }
 
-  getMembers() async {
-    // Get group members
-    DatabaseService.getGroupMembers(widget.group.id).then((val) {
-      setState(() {
-        members = val;
-      });
+  void getMembers() async {
+    final members = await DatabaseService.getGroupMembers(widget.group.id);
+    setState(() {
+      _membersStream = members;
     });
   }
 
@@ -58,62 +62,145 @@ class GroupInfoState extends State<GroupInfo> {
               color: CupertinoColors.white),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: const BoxDecoration(
-                color: CupertinoColors.white,
-                border: Border(
-                    bottom: BorderSide(color: CupertinoColors.systemGrey)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ClipOval(
-                    child: Text(
-                      widget.group.name.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+      child: CupertinoScrollbar(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  decoration: const BoxDecoration(
+                    color: CupertinoColors.white,
+                    border: Border(
+                        bottom: BorderSide(color: CupertinoColors.systemGrey)),
                   ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.group.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      ClipOval(
+                        child: widget.group.imagePath != null
+                            ? Container(
+                                width: 100,
+                                height: 100,
+                                color: CupertinoColors.lightBackgroundGray,
+                                child: Image.memory(
+                                  widget.group.imagePath!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Container(
+                                width: 100,
+                                height: 100,
+                                color: CupertinoColors.lightBackgroundGray,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  widget.group.name
+                                      .substring(0, 1)
+                                      .toUpperCase(),
+                                  style: const TextStyle(
+                                      color: CupertinoColors.systemPink),
+                                ),
+                              ),
                       ),
-                      Text(
-                        "Admin: ${widget.group.admin}",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: CupertinoColors.systemGrey,
-                        ),
+                      const SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.group.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "Admin: ${widget.group.admin}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.group.description!,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: widget.group.categories!
+                            .map((category) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        CategoryIconMapper.iconForCategory(
+                                            category),
+                                        size: 24,
+                                        color: CupertinoColors.black,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        category,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: CupertinoColors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  constraints: const BoxConstraints(
+                      maxHeight: 300), // Limit height of ListView
+                  child: memberList(),
+                ),
+              ],
             ),
-            Expanded(child: memberList()),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget memberList() {
-    return StreamBuilder(
-      stream: members,
+    if (_membersStream == null) {
+      return const Center(
+        child: CupertinoActivityIndicator(
+          radius: 16,
+        ),
+      );
+    }
+    return StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+      stream: _membersStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -127,33 +214,81 @@ class GroupInfoState extends State<GroupInfo> {
             child: Text('Error: ${snapshot.error}'),
           );
         }
-        final data = snapshot.data?.data();
-        if (data == null ||
-            data['members'] == null ||
-            data['members'].isEmpty) {
+        if (snapshot.data!.isEmpty) {
           return const Center(
-            child: Text("No members yet"),
+            child: Text("No members in this group"),
           );
         }
-        final List<dynamic> members = data['members'];
+        var members = snapshot.data!;
+
         return ListView.builder(
           shrinkWrap: true,
           itemCount: members.length,
           itemBuilder: (context, index) {
-            return Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-              child: CupertinoListTile(
-                leading: ClipOval(
-                  child: Text(
-                    members[index].substring(0, 1),
-                    style: const TextStyle(
-                      color: CupertinoColors.white,
-                      fontWeight: FontWeight.bold,
+            return FutureBuilder<UserData>(
+              future: UserData.convertToUserData(members[index]),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CupertinoActivityIndicator(
+                      radius: 16,
+                    ),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+                var user = snapshot.data!;
+                return GestureDetector(
+                  onTap: () {
+                    context.go('/userprofile', extra: {
+                      "user": user,
+                      "isMyProfile": user.username == widget.username
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: CupertinoColors.systemGrey,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            color: CupertinoColors.lightBackgroundGray,
+                            child: user.imagePath != null
+                                ? Image.memory(
+                                    user.imagePath!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(
+                                    CupertinoIcons.person,
+                                    size: 30,
+                                    color: CupertinoColors.systemPink,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Text(
+                          user.username,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                title: Text(members[index]),
-              ),
+                );
+              },
             );
           },
         );

@@ -80,13 +80,26 @@ class GroupPageState extends State<GroupPage> {
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
-                int reverseIndex = data.length - 1 - index;
-                return GroupChatTile(
-                  user: widget.user,
-                  group: Group(
-                      id: data[reverseIndex].id,
-                      name: data[reverseIndex]['groupName'],
-                      admin: data[reverseIndex]['admin']),
+                return FutureBuilder<Group>(
+                  future: Group.convertToGroup(data[index]),
+                  builder: (context, groupSnapshot) {
+                    if (groupSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child: CupertinoActivityIndicator(
+                          radius: 16,
+                        ),
+                      );
+                    } else if (groupSnapshot.hasError) {
+                      return Text('Error: ${groupSnapshot.error}');
+                    } else {
+                      final group = groupSnapshot.data!;
+                      return GroupChatTile(
+                        user: widget.user,
+                        group: group,
+                      );
+                    }
+                  },
                 );
               },
             );

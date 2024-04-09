@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,22 +50,6 @@ class SearchPageState extends State<SearchPage> {
         });
       }
     }
-  }
-
-  Future<UserData> convertToUserData(DocumentSnapshot documentSnapshot) async {
-    return UserData(
-      name: documentSnapshot['name'],
-      surname: documentSnapshot['surname'],
-      username: documentSnapshot['username'],
-      email: documentSnapshot['email'],
-      password: '',
-      imagePath: await StorageService.downloadImageFromStorage(
-          documentSnapshot['imageUrl']),
-      categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
-          .map((categoryMap) => categoryMap['value'].toString())
-          .toList()
-          .cast<String>(),
-    );
   }
 
   @override
@@ -158,7 +141,7 @@ class SearchPageState extends State<SearchPage> {
                         ? ((docs[index].data() as Map<String, dynamic>)
                                 .containsKey('email'))
                             ? FutureBuilder<UserData>(
-                                future: convertToUserData(docs[index]),
+                                future: UserData.convertToUserData(docs[index]),
                                 builder: (context, userSnapshot) {
                                   if (userSnapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -183,14 +166,29 @@ class SearchPageState extends State<SearchPage> {
                             : const SizedBox()
                         : ((docs[index].data() as Map<String, dynamic>)
                                 .containsKey('groupId'))
-                            ? SearchTile(
-                                user: widget.user,
-                                group: Group(
-                                  id: docs[index]['groupId'],
-                                  name: docs[index]['groupName'],
-                                  admin: docs[index]['admin'],
-                                ),
-                                searchUsers: false,
+                            ? FutureBuilder<Group>(
+                                future: Group.convertToGroup(docs[index]),
+                                builder: (context, groupSnapshot) {
+                                  if (groupSnapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CupertinoActivityIndicator(
+                                        radius: 16,
+                                      ),
+                                    );
+                                  } else if (groupSnapshot.hasError) {
+                                    return Text(
+                                        'Error: ${groupSnapshot.error}');
+                                  } else {
+                                    final group = groupSnapshot.data!;
+                                    return SearchTile(
+                                      user: widget.user,
+                                      group: group,
+                                      searchUsers: false,
+                                      myUsername: widget.user.username,
+                                    );
+                                  }
+                                },
                               )
                             : const SizedBox();
                   },
@@ -329,10 +327,21 @@ class GroupTileState extends State<GroupTile> {
             },
             child: CupertinoListTile(
               leading: ClipOval(
-                child: Text(
-                  widget.group.name.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(color: CupertinoColors.systemPink),
-                ),
+                child: widget.group.imagePath != null
+                    ? Container(
+                        width: 100,
+                        height: 100,
+                        color: CupertinoColors.lightBackgroundGray,
+                        child: Image.memory(
+                          widget.group.imagePath!,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Text(
+                        widget.group.name.substring(0, 1).toUpperCase(),
+                        style:
+                            const TextStyle(color: CupertinoColors.systemPink),
+                      ),
               ),
               title: Text(
                 widget.group.name,
