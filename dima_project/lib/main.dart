@@ -7,6 +7,7 @@ import 'package:dima_project/pages/groups/group_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/pages/search_page.dart';
+import 'package:dima_project/pages/show_groups_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -93,10 +94,10 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         UserData user = data['user'] as UserData;
-        bool? isMyProfile = data['isMyProfile'] as bool?;
+        UserData visitor = data['visitor'] as UserData;
         return UserProfile(
           user: user,
-          isMyProfile: isMyProfile ?? true,
+          visitor: visitor,
         );
       },
     ),
@@ -105,6 +106,15 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         UserData user = state.extra as UserData;
         return CreateGroupPage(user: user);
+      },
+    ),
+    GoRoute(
+      path: '/showgroups',
+      builder: (BuildContext context, GoRouterState state) {
+        Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+        UserData user = data['user'] as UserData;
+        UserData? visitor = data['visitor'] as UserData?;
+        return ShowGroupsPage(user: user, visitor: visitor);
       },
     ),
   ],

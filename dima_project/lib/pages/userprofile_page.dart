@@ -8,9 +8,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class UserProfile extends StatefulWidget {
-  final bool isMyProfile;
   final UserData user;
-  const UserProfile({super.key, this.isMyProfile = true, required this.user});
+  final UserData? visitor;
+  const UserProfile({super.key, this.visitor, required this.user});
 
   @override
   State<UserProfile> createState() => UserProfileState();
@@ -22,7 +22,8 @@ class UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    isMyProfile = widget.isMyProfile;
+    isMyProfile = widget.visitor == null ||
+        widget.visitor!.username == widget.user.username;
   }
 
   @override
@@ -104,21 +105,28 @@ class UserProfileState extends State<UserProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          children: [
-                            Text("789",
+                        GestureDetector(
+                          onTap: () => context.go('/showgroups', extra: {
+                            'user': widget.user,
+                            'visitor': widget.visitor
+                          }),
+                          child: Column(
+                            children: [
+                              Text("789",
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle),
+                              const SizedBox(height: 10),
+                              Text(
+                                "Groups",
                                 style: CupertinoTheme.of(context)
                                     .textTheme
-                                    .textStyle),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Groups",
-                              style: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .copyWith(color: CupertinoColors.systemGrey),
-                            ),
-                          ],
+                                    .textStyle
+                                    .copyWith(
+                                        color: CupertinoColors.systemGrey),
+                              ),
+                            ],
+                          ),
                         ),
                         Column(
                           children: [

@@ -205,10 +205,8 @@ class GroupInfoState extends State<GroupInfo> {
 
             return GestureDetector(
               onTap: () {
-                context.go('/userprofile', extra: {
-                  "user": user,
-                  "isMyProfile": user.username == widget.user.username
-                });
+                context.go('/userprofile',
+                    extra: {"user": user, "visitor": widget.user});
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),

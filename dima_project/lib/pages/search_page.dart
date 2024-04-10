@@ -143,20 +143,19 @@ class SearchPageState extends State<SearchPage> {
                             .containsKey('email')) {
                       final userData = UserData.convertToUserData(docs[index]);
                       return SearchTile(
-                        user: userData,
+                        searchedUser: userData,
                         group: null,
                         searchUsers: true,
-                        myUsername: widget.user.username,
+                        user: widget.user,
                       );
                     } else if (searchIdx != 0 &&
                         (docs[index].data() as Map<String, dynamic>)
                             .containsKey('groupId')) {
                       final group = Group.convertToGroup(docs[index]);
                       return SearchTile(
-                        user: widget.user,
                         group: group,
                         searchUsers: false,
-                        myUsername: widget.user.username,
+                        user: widget.user,
                       );
                     } else {
                       return Container();
@@ -180,15 +179,15 @@ class SearchPageState extends State<SearchPage> {
 }
 
 class SearchTile extends StatelessWidget {
-  final UserData user;
+  final UserData? searchedUser;
   final Group? group;
   final bool searchUsers;
-  final String? myUsername;
+  final UserData user;
   const SearchTile({
     super.key,
-    required this.user,
+    this.searchedUser,
     this.group,
-    this.myUsername,
+    required this.user,
     required this.searchUsers,
   });
 
@@ -200,8 +199,8 @@ class SearchTile extends StatelessWidget {
   Widget _buildUserTile(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go('/userprofile',
-            extra: {"user": user, "isMyProfile": myUsername == user.username});
+        context
+            .go('/userprofile', extra: {"user": searchedUser, "visitor": user});
       },
       child: CupertinoListTile(
         leading: ClipOval(
@@ -209,14 +208,14 @@ class SearchTile extends StatelessWidget {
             width: 100,
             height: 100,
             color: CupertinoColors.lightBackgroundGray,
-            child: CreateImageWidget.getUserImage(user.imagePath!),
+            child: CreateImageWidget.getUserImage(searchedUser!.imagePath!),
           ),
         ),
         title: Text(
-          user.username,
+          searchedUser!.username,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("${user.name} ${user.surname}"),
+        subtitle: Text("${searchedUser!.name} ${searchedUser!.surname}"),
       ),
     );
   }
@@ -229,11 +228,12 @@ class SearchTile extends StatelessWidget {
 class GroupTile extends StatefulWidget {
   final UserData user;
   final Group group;
-
+  final UserData? visitor;
   const GroupTile({
     super.key,
     required this.user,
     required this.group,
+    this.visitor,
   });
 
   @override
@@ -252,16 +252,29 @@ class GroupTileState extends State<GroupTile> {
 
   void _checkIfJoined() async {
     try {
-      await DatabaseService.isUserJoined(
-        widget.group.id,
-        widget.user.username,
-      ).then((isJoined) {
-        if (mounted) {
-          setState(() {
-            _isJoined = isJoined;
-          });
-        }
-      });
+      if (widget.visitor != null) {
+        await DatabaseService.isUserJoined(
+          widget.group.id,
+          widget.visitor!.username,
+        ).then((isJoined) {
+          if (mounted) {
+            setState(() {
+              _isJoined = isJoined;
+            });
+          }
+        });
+      } else {
+        await DatabaseService.isUserJoined(
+          widget.group.id,
+          widget.user.username,
+        ).then((isJoined) {
+          if (mounted) {
+            setState(() {
+              _isJoined = isJoined;
+            });
+          }
+        });
+      }
     } catch (error) {
       debugPrint("Error occurred: $error");
       if (mounted) {
@@ -297,11 +310,20 @@ class GroupTileState extends State<GroupTile> {
         GestureDetector(
           onTap: () async {
             try {
-              await DatabaseService.toggleGroupJoin(
-                widget.group.id,
-                FirebaseAuth.instance.currentUser!.uid,
-                widget.user.username,
-              );
+              if (widget.visitor != null) {
+                await DatabaseService.toggleGroupJoin(
+                  widget.group.id,
+                  FirebaseAuth.instance.currentUser!.uid,
+                  widget.visitor!.username,
+                );
+              } else {
+                await DatabaseService.toggleGroupJoin(
+                  widget.group.id,
+                  FirebaseAuth.instance.currentUser!.uid,
+                  widget.user.username,
+                );
+              }
+
               if (mounted) {
                 setState(() {
                   _checkIfJoined();
