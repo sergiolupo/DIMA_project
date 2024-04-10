@@ -23,7 +23,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   final TextEditingController _groupDescriptionController =
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
-  final imageInsertPageKey = GlobalKey<ImageInsertPageState>();
+  final imageInsertPageKey = GlobalKey<ImageInsertFormState>();
   List<String> selectedCategories = [];
 
   @override
@@ -51,7 +51,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ImageInsertPage(
+                ImageInsertForm(
                   imageForGroup: true,
                   imagePath: selectedImagePath,
                   imageInsertPageKey: (Uint8List selectedImagePath) {

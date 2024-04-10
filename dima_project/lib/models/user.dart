@@ -29,8 +29,10 @@ class UserData {
       username: documentSnapshot['username'],
       email: documentSnapshot['email'],
       password: '',
-      imagePath: await StorageService.downloadImageFromStorage(
-          documentSnapshot['imageUrl']),
+      imagePath: documentSnapshot['imageUrl'] == ''
+          ? null
+          : await StorageService.downloadImageFromStorage(
+              documentSnapshot['imageUrl']),
       categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
           .map((categoryMap) => categoryMap['value'].toString())
           .toList()

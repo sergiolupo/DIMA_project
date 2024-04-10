@@ -54,7 +54,7 @@ class RegisterPageState extends State<RegisterPage> {
         pageName = 'Personal Information';
         break;
       case 3:
-        page = ImageInsertPage(
+        page = ImageInsertForm(
           imagePath: selectedImagePath,
           imageInsertPageKey: (Uint8List selectedImagePath) {
             this.selectedImagePath = selectedImagePath;
@@ -193,30 +193,13 @@ class RegisterPageState extends State<RegisterPage> {
         return;
       }
     }
-    if (!mounted) return;
-    if (_currentPage == 3 && selectedImagePath.isEmpty) {
-      debugPrint('Please select an image');
-      showCupertinoDialog(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: const Text('Invalid choice'),
-          content: const Text('Please select an image.'),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
 
     if (_currentPage < 4) {
       setState(() {
         _currentPage = _currentPage + 1;
       });
     } else {
+      if (!mounted) return;
       if (selectedCategories.isEmpty) {
         debugPrint('Please select at least one category');
         showCupertinoDialog(

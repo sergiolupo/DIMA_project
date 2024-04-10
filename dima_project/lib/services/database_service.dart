@@ -12,9 +12,10 @@ class DatabaseService {
   static final userRef = _firestore.collection('users');
 
   static Future<void> registerUserWithUUID(UserData user, String uuid) async {
-    String imageUrl = await StorageService.uploadImageToStorage(
-        'profile_images/$uuid.jpg', user.imagePath as Uint8List);
-
+    String imageUrl = user.imagePath.toString() == '[]'
+        ? ''
+        : await StorageService.uploadImageToStorage(
+            'profile_images/$uuid.jpg', user.imagePath as Uint8List);
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
     await userRef.doc(uuid).set({
@@ -30,18 +31,7 @@ class DatabaseService {
 
   static Future<UserData> getUserData(String uid) async {
     DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
-    UserData user = UserData(
-        name: documentSnapshot['name'],
-        surname: documentSnapshot['surname'],
-        username: documentSnapshot['username'],
-        email: documentSnapshot['email'],
-        password: '',
-        imagePath: await StorageService.downloadImageFromStorage(
-            documentSnapshot['imageUrl']),
-        categories: documentSnapshot['selectedCategories']
-            .map((categoryMap) => categoryMap['value'].toString())
-            .toList()
-            .cast<String>());
+    UserData user = await UserData.convertToUserData(documentSnapshot);
     return user;
   }
 
@@ -93,17 +83,12 @@ class DatabaseService {
     String uid,
   ) async {
     try {
-      String imageUrl = group.imagePath.toString() == '[]'
-          ? ''
-          : await StorageService.uploadImageToStorage(
-              'group_images/$uid.jpg', group.imagePath as Uint8List);
-
       List<Map<String, dynamic>> serializedList =
           group.categories!.map((item) => {'value': item}).toList();
 
       DocumentReference docRef = await groupRef.add({
         'groupName': group.name,
-        'groupImage': imageUrl,
+        'groupImage': '',
         'admin': group.admin,
         'description': group.description,
         'messages': [],
@@ -114,8 +99,14 @@ class DatabaseService {
         "categories": serializedList,
       });
 
+      String imageUrl = group.imagePath.toString() == '[]'
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'group_images/${docRef.id}.jpg', group.imagePath as Uint8List);
+
       await groupRef.doc(docRef.id).update({
         'groupId': docRef.id,
+        'groupImage': imageUrl,
       });
       DocumentReference userDocumentReference = userRef.doc(uid);
 

@@ -1,5 +1,6 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,23 +39,7 @@ class GroupChatTileState extends State<GroupChatTile> {
           },
           padding: EdgeInsets.zero,
           child: CupertinoListTile(
-            leading: ClipOval(
-              child: widget.group.imagePath != null
-                  ? Container(
-                      width: 100,
-                      height: 100,
-                      color: CupertinoColors.lightBackgroundGray,
-                      child: Image.memory(
-                        widget.group.imagePath!,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Text(
-                      widget.group.name.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(color: CupertinoColors.systemPink),
-                      textAlign: TextAlign.center,
-                    ),
-            ),
+            leading: CreateImageWidget.getGroupImage(widget.group.imagePath),
             title: Text(
               widget.group.name,
               style: const TextStyle(fontWeight: FontWeight.bold),

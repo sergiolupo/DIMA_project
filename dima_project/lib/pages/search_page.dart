@@ -5,6 +5,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -239,16 +240,7 @@ class SearchTile extends StatelessWidget {
             width: 100,
             height: 100,
             color: CupertinoColors.lightBackgroundGray,
-            child: user.imagePath != null
-                ? Image.memory(
-                    user.imagePath!,
-                    fit: BoxFit.cover,
-                  )
-                : const Icon(
-                    CupertinoIcons.photo,
-                    size: 50,
-                    color: CupertinoColors.systemGrey,
-                  ),
+            child: CreateImageWidget.getUserImage(user.imagePath),
           ),
         ),
         title: Text(
@@ -326,23 +318,7 @@ class GroupTileState extends State<GroupTile> {
               }
             },
             child: CupertinoListTile(
-              leading: ClipOval(
-                child: widget.group.imagePath != null
-                    ? Container(
-                        width: 100,
-                        height: 100,
-                        color: CupertinoColors.lightBackgroundGray,
-                        child: Image.memory(
-                          widget.group.imagePath!,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Text(
-                        widget.group.name.substring(0, 1).toUpperCase(),
-                        style:
-                            const TextStyle(color: CupertinoColors.systemPink),
-                      ),
-              ),
+              leading: CreateImageWidget.getGroupImage(widget.group.imagePath),
               title: Text(
                 widget.group.name,
                 style: const TextStyle(fontWeight: FontWeight.bold),

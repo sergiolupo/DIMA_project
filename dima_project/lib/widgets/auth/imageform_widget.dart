@@ -3,21 +3,21 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageInsertPage extends StatefulWidget {
+class ImageInsertForm extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
   final bool? imageForGroup;
-  const ImageInsertPage(
+  const ImageInsertForm(
       {super.key,
       this.imagePath,
       required this.imageInsertPageKey,
       this.imageForGroup});
 
   @override
-  ImageInsertPageState createState() => ImageInsertPageState();
+  ImageInsertFormState createState() => ImageInsertFormState();
 }
 
-class ImageInsertPageState extends State<ImageInsertPage> {
+class ImageInsertFormState extends State<ImageInsertForm> {
   final ImagePicker _picker = ImagePicker();
   Uint8List _selectedImagePath = Uint8List(0);
 

@@ -2,6 +2,7 @@ import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -54,23 +55,7 @@ class UserProfileState extends State<UserProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ClipOval(
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        color: CupertinoColors.lightBackgroundGray,
-                        child: widget.user.imagePath != null
-                            ? Image.memory(
-                                widget.user.imagePath!,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(
-                                CupertinoIcons.photo,
-                                size: 50,
-                                color: CupertinoColors.systemGrey,
-                              ),
-                      ),
-                    ),
+                    CreateImageWidget.getUserImage(widget.user.imagePath),
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Text(

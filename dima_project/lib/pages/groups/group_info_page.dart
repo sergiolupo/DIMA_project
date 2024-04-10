@@ -3,6 +3,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,9 +24,7 @@ class GroupInfo extends StatefulWidget {
 }
 
 class GroupInfoState extends State<GroupInfo> {
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream =
-      null;
-
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream = null;
   @override
   void initState() {
     super.initState();
@@ -79,31 +78,8 @@ class GroupInfoState extends State<GroupInfo> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      ClipOval(
-                        child: widget.group.imagePath != null
-                            ? Container(
-                                width: 100,
-                                height: 100,
-                                color: CupertinoColors.lightBackgroundGray,
-                                child: Image.memory(
-                                  widget.group.imagePath!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Container(
-                                width: 100,
-                                height: 100,
-                                color: CupertinoColors.lightBackgroundGray,
-                                alignment: Alignment.center,
-                                child: Text(
-                                  widget.group.name
-                                      .substring(0, 1)
-                                      .toUpperCase(),
-                                  style: const TextStyle(
-                                      color: CupertinoColors.systemPink),
-                                ),
-                              ),
-                      ),
+                      CreateImageWidget.getGroupImage(widget.group.imagePath,
+                          small: true),
                       const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,23 +235,8 @@ class GroupInfoState extends State<GroupInfo> {
                     ),
                     child: Row(
                       children: [
-                        ClipOval(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: CupertinoColors.lightBackgroundGray,
-                            child: user.imagePath != null
-                                ? Image.memory(
-                                    user.imagePath!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : const Icon(
-                                    CupertinoIcons.person,
-                                    size: 30,
-                                    color: CupertinoColors.systemPink,
-                                  ),
-                          ),
-                        ),
+                        CreateImageWidget.getUserImage(user.imagePath,
+                            small: true),
                         const SizedBox(width: 20),
                         Text(
                           user.username,
