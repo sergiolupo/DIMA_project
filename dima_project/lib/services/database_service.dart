@@ -238,4 +238,10 @@ class DatabaseService {
       return false;
     }
   }
+
+  static Future<String> getUserImage(String uid) async {
+    return await userRef.doc(uid).get().then((documentSnapshot) {
+      return documentSnapshot['imageUrl'];
+    });
+  }
 }

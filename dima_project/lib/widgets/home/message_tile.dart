@@ -1,5 +1,4 @@
 import 'package:dima_project/models/message.dart';
-import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class MessageTile extends StatefulWidget {
@@ -57,8 +56,22 @@ class MessageTileState extends State<MessageTile> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              CreateImageWidget.getUserImage(widget.message.imagePath,
-                  small: true),
+              ClipOval(
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  color: CupertinoColors.lightBackgroundGray,
+                  child: widget.message.senderImage != ""
+                      ? Image.network(
+                          widget.message.senderImage,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          'assets/default_group_image.png',
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
               const SizedBox(height: 8),
               Text(
                 widget.message.sender,

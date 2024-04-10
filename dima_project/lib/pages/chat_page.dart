@@ -4,6 +4,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -118,7 +119,7 @@ class ChatPageState extends State<ChatPage> {
                     sender: snapshot.data.docs[index]["sender"],
                     sentByMe: widget.user.username ==
                         snapshot.data.docs[index]["sender"],
-                    imagePath: null,
+                    senderImage: snapshot.data.docs[index]["senderImage"],
                     isGroupMessage: true,
                     time: snapshot.data.docs[index]["time"],
                   ));
@@ -129,14 +130,15 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  void sendMessage() {
+  void sendMessage() async {
     if (messageEditingController.text.isNotEmpty) {
       Message message = Message(
-        content: messageEditingController.text,
-        sender: widget.user.username,
-        isGroupMessage: true,
-        time: Timestamp.now(),
-      );
+          content: messageEditingController.text,
+          sender: widget.user.username,
+          isGroupMessage: true,
+          time: Timestamp.now(),
+          senderImage: await DatabaseService.getUserImage(
+              FirebaseAuth.instance.currentUser!.uid));
       DatabaseService.sendMessage(widget.group.id, message);
       setState(() {
         messageEditingController.clear();
