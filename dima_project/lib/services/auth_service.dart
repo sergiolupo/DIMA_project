@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,13 +54,14 @@ class AuthService {
     }
   }
 
-  static Future<void> registerUser(UserData user) async {
+  static Future<void> registerUser(UserData user, Uint8List imagePath) async {
     // Register the user
     UserCredential userCredential =
         await _firebaseAuth.createUserWithEmailAndPassword(
             email: user.email, password: user.password!);
 
     debugPrint('User Registered: ${userCredential.user!.uid}');
-    await DatabaseService.registerUserWithUUID(user, userCredential.user!.uid);
+    await DatabaseService.registerUserWithUUID(
+        user, userCredential.user!.uid, imagePath);
   }
 }

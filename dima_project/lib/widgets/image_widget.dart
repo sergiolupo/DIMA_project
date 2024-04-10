@@ -1,16 +1,14 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 
 class CreateImageWidget {
-  static Widget getUserImage(Uint8List? imagePath, {bool small = false}) {
+  static Widget getUserImage(String imagePath, {bool small = false}) {
     return ClipOval(
       child: Container(
         width: small ? 30 : 100,
         height: small ? 30 : 100,
         color: CupertinoColors.lightBackgroundGray,
-        child: imagePath != null
-            ? Image.memory(
+        child: imagePath != ''
+            ? Image.network(
                 imagePath,
                 fit: BoxFit.cover,
               )
@@ -22,14 +20,14 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getGroupImage(Uint8List? imagePath, {bool small = false}) {
+  static Widget getGroupImage(String imagePath, {bool small = false}) {
     return ClipOval(
       child: Container(
         width: small ? 50 : 100,
         height: small ? 50 : 100,
         color: CupertinoColors.lightBackgroundGray,
-        child: imagePath != null
-            ? Image.memory(
+        child: imagePath != ''
+            ? Image.network(
                 imagePath,
                 fit: BoxFit.cover,
               )

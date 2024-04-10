@@ -225,9 +225,9 @@ class RegisterPageState extends State<RegisterPage> {
               email: widget.user!.email!,
               username: _usernameController.text,
               categories: selectedCategories,
-              imagePath: selectedImagePath,
             ),
             widget.user!.uid,
+            selectedImagePath,
           );
         } else {
           // Register the user
@@ -239,15 +239,15 @@ class RegisterPageState extends State<RegisterPage> {
               password: _passwordController.text,
               username: _usernameController.text,
               categories: selectedCategories,
-              imagePath: selectedImagePath,
             ),
+            selectedImagePath,
           );
         }
       }
     }
   }
 
-  Future<void> registerUser(UserData user) async {
+  Future<void> registerUser(UserData user, Uint8List imagePath) async {
     // Register the user
     showCupertinoDialog(
       context: context,
@@ -260,13 +260,15 @@ class RegisterPageState extends State<RegisterPage> {
 
     await AuthService.registerUser(
       user,
+      imagePath,
     );
     if (!mounted) return;
     Navigator.of(context).pop();
     context.go('/login');
   }
 
-  void registerUserGoogle(UserData userData, String uuid) async {
+  void registerUserGoogle(
+      UserData userData, String uuid, Uint8List imagePath) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -276,7 +278,7 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
     try {
-      await DatabaseService.registerUserWithUUID(userData, uuid);
+      await DatabaseService.registerUserWithUUID(userData, uuid, imagePath);
       await HelperFunctions.saveUserLoggedInStatus(true);
       await HelperFunctions.saveUid(uuid);
     } catch (e) {

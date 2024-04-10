@@ -80,26 +80,10 @@ class GroupPageState extends State<GroupPage> {
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
-                return FutureBuilder<Group>(
-                  future: Group.convertToGroup(data[index]),
-                  builder: (context, groupSnapshot) {
-                    if (groupSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                        child: CupertinoActivityIndicator(
-                          radius: 16,
-                        ),
-                      );
-                    } else if (groupSnapshot.hasError) {
-                      return Text('Error: ${groupSnapshot.error}');
-                    } else {
-                      final group = groupSnapshot.data!;
-                      return GroupChatTile(
-                        user: widget.user,
-                        group: group,
-                      );
-                    }
-                  },
+                final group = Group.convertToGroup(data[index]);
+                return GroupChatTile(
+                  user: widget.user,
+                  group: group,
                 );
               },
             );
@@ -116,30 +100,30 @@ class GroupPageState extends State<GroupPage> {
       },
     );
   }
-}
 
-Widget noGroupWidget() {
-  return const Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(CupertinoIcons.group,
-            size: 100, color: CupertinoColors.systemGrey),
-        SizedBox(height: 20),
-        Text(
-          "No groups yet",
-          style: TextStyle(
-            color: CupertinoColors.systemGrey,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+  Widget noGroupWidget() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(CupertinoIcons.group,
+              size: 100, color: CupertinoColors.systemGrey),
+          SizedBox(height: 20),
+          Text(
+            "No groups yet",
+            style: TextStyle(
+              color: CupertinoColors.systemGrey,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        SizedBox(height: 20),
-        Text(
-          "Create a group to start chatting",
-          style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 15),
-        ),
-      ],
-    ),
-  );
+          SizedBox(height: 20),
+          Text(
+            "Create a group to start chatting",
+            style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
 }

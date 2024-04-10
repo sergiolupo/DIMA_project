@@ -12,11 +12,12 @@ class DatabaseService {
   static final groupRef = _firestore.collection('groups');
   static final userRef = _firestore.collection('users');
 
-  static Future<void> registerUserWithUUID(UserData user, String uuid) async {
-    String imageUrl = user.imagePath.toString() == '[]'
+  static Future<void> registerUserWithUUID(
+      UserData user, String uuid, Uint8List imagePath) async {
+    String imageUrl = imagePath.toString() == '[]'
         ? ''
         : await StorageService.uploadImageToStorage(
-            'profile_images/$uuid.jpg', user.imagePath as Uint8List);
+            'profile_images/$uuid.jpg', imagePath);
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
     await userRef.doc(uuid).set({
@@ -32,7 +33,7 @@ class DatabaseService {
 
   static Future<UserData> getUserData(String uid) async {
     DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
-    UserData user = await UserData.convertToUserData(documentSnapshot);
+    UserData user = UserData.convertToUserData(documentSnapshot);
     return user;
   }
 
@@ -82,6 +83,7 @@ class DatabaseService {
   static Future<void> createGroup(
     Group group,
     String uid,
+    Uint8List imagePath,
   ) async {
     try {
       List<Map<String, dynamic>> serializedList =
@@ -100,10 +102,10 @@ class DatabaseService {
         "categories": serializedList,
       });
 
-      String imageUrl = group.imagePath.toString() == '[]'
+      String imageUrl = imagePath.toString() == '[]'
           ? ''
           : await StorageService.uploadImageToStorage(
-              'group_images/${docRef.id}.jpg', group.imagePath as Uint8List);
+              'group_images/${docRef.id}.jpg', imagePath);
 
       await groupRef.doc(docRef.id).update({
         'groupId': docRef.id,

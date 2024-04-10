@@ -128,13 +128,15 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                       );
                       return;
                     } else {
-                      createGroup(Group(
-                          name: _groupNameController.text,
-                          id: '',
-                          admin: widget.user.username,
-                          imagePath: selectedImagePath,
-                          description: _groupDescriptionController.text,
-                          categories: selectedCategories));
+                      createGroup(
+                        Group(
+                            name: _groupNameController.text,
+                            id: '',
+                            admin: widget.user.username,
+                            description: _groupDescriptionController.text,
+                            categories: selectedCategories),
+                        selectedImagePath,
+                      );
                     }
                   },
                   child: const Text('Create Group'),
@@ -147,8 +149,9 @@ class CreateGroupPageState extends State<CreateGroupPage> {
     );
   }
 
-  void createGroup(Group group) {
-    DatabaseService.createGroup(group, FirebaseAuth.instance.currentUser!.uid);
+  void createGroup(Group group, Uint8List imagePath) {
+    DatabaseService.createGroup(
+        group, FirebaseAuth.instance.currentUser!.uid, imagePath);
     context.go(
       '/home',
       extra: 1,

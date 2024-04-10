@@ -1,7 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/services/storage_service.dart';
 
 class UserData {
   final String email;
@@ -10,10 +7,10 @@ class UserData {
   final String surname;
   final String username;
   final List<String> categories;
-  final Uint8List? imagePath;
+  final String? imagePath;
   UserData({
     required this.categories,
-    required this.imagePath,
+    this.imagePath,
     required this.email,
     this.password,
     required this.name,
@@ -21,18 +18,14 @@ class UserData {
     required this.username,
   });
 
-  static Future<UserData> convertToUserData(
-      DocumentSnapshot documentSnapshot) async {
+  static UserData convertToUserData(DocumentSnapshot documentSnapshot) {
     return UserData(
       name: documentSnapshot['name'],
       surname: documentSnapshot['surname'],
       username: documentSnapshot['username'],
       email: documentSnapshot['email'],
       password: '',
-      imagePath: documentSnapshot['imageUrl'] == ''
-          ? null
-          : await StorageService.downloadImageFromStorage(
-              documentSnapshot['imageUrl']),
+      imagePath: documentSnapshot['imageUrl'],
       categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
           .map((categoryMap) => categoryMap['value'].toString())
           .toList()

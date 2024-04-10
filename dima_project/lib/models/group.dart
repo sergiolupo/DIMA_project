@@ -1,13 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/services/storage_service.dart';
 
 class Group {
   final String name;
   final String id;
   final String? admin;
-  final Uint8List? imagePath;
+  final String? imagePath;
   final String? description;
   final List<String>? categories;
   Group({
@@ -19,15 +16,12 @@ class Group {
     this.categories,
   });
 
-  static Future<Group> convertToGroup(DocumentSnapshot documentSnapshot) async {
+  static Group convertToGroup(DocumentSnapshot documentSnapshot) {
     return Group(
       name: documentSnapshot['groupName'],
       id: documentSnapshot['groupId'],
       admin: documentSnapshot['admin'],
-      imagePath: documentSnapshot['groupImage'] == ''
-          ? null
-          : await StorageService.downloadImageFromStorage(
-              documentSnapshot['groupImage'] as String),
+      imagePath: documentSnapshot['groupImage'],
       description: documentSnapshot['description'],
       categories: (documentSnapshot['categories'] as List<dynamic>)
           .map((categoryMap) => categoryMap['value'].toString())

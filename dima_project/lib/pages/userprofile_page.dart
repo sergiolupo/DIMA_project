@@ -4,6 +4,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class UserProfile extends StatefulWidget {
@@ -55,7 +56,7 @@ class UserProfileState extends State<UserProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CreateImageWidget.getUserImage(widget.user.imagePath),
+                    CreateImageWidget.getUserImage(widget.user.imagePath!),
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Text(
@@ -155,12 +156,28 @@ class UserProfileState extends State<UserProfile> {
                     ),
                     const SizedBox(height: 20),
                     !isMyProfile
-                        ? CupertinoButton.filled(
-                            onPressed: () {},
-                            child: const Text(
-                              'Follow',
-                            ),
-                          )
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                CupertinoButton.filled(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 40, vertical: 8),
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Follow',
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                CupertinoButton.filled(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  onPressed: () {},
+                                  child: const Icon(
+                                    FontAwesomeIcons.envelope,
+                                    color: CupertinoColors.white,
+                                  ),
+                                ),
+                              ])
                         : const SizedBox(),
                   ],
                 ),

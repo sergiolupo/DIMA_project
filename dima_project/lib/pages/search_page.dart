@@ -138,60 +138,29 @@ class SearchPageState extends State<SearchPage> {
                 return ListView.builder(
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
-                    return searchIdx == 0
-                        ? ((docs[index].data() as Map<String, dynamic>)
-                                .containsKey('email'))
-                            ? FutureBuilder<UserData>(
-                                future: UserData.convertToUserData(docs[index]),
-                                builder: (context, userSnapshot) {
-                                  if (userSnapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CupertinoActivityIndicator(
-                                        radius: 16,
-                                      ),
-                                    );
-                                  } else if (userSnapshot.hasError) {
-                                    return Text('Error: ${userSnapshot.error}');
-                                  } else {
-                                    final userData = userSnapshot.data!;
-                                    return SearchTile(
-                                      user: userData,
-                                      group: null,
-                                      searchUsers: true,
-                                      myUsername: widget.user.username,
-                                    );
-                                  }
-                                },
-                              )
-                            : const SizedBox()
-                        : ((docs[index].data() as Map<String, dynamic>)
-                                .containsKey('groupId'))
-                            ? FutureBuilder<Group>(
-                                future: Group.convertToGroup(docs[index]),
-                                builder: (context, groupSnapshot) {
-                                  if (groupSnapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CupertinoActivityIndicator(
-                                        radius: 16,
-                                      ),
-                                    );
-                                  } else if (groupSnapshot.hasError) {
-                                    return Text(
-                                        'Error: ${groupSnapshot.error}');
-                                  } else {
-                                    final group = groupSnapshot.data!;
-                                    return SearchTile(
-                                      user: widget.user,
-                                      group: group,
-                                      searchUsers: false,
-                                      myUsername: widget.user.username,
-                                    );
-                                  }
-                                },
-                              )
-                            : const SizedBox();
+                    if (searchIdx == 0 &&
+                        (docs[index].data() as Map<String, dynamic>)
+                            .containsKey('email')) {
+                      final userData = UserData.convertToUserData(docs[index]);
+                      return SearchTile(
+                        user: userData,
+                        group: null,
+                        searchUsers: true,
+                        myUsername: widget.user.username,
+                      );
+                    } else if (searchIdx != 0 &&
+                        (docs[index].data() as Map<String, dynamic>)
+                            .containsKey('groupId')) {
+                      final group = Group.convertToGroup(docs[index]);
+                      return SearchTile(
+                        user: widget.user,
+                        group: group,
+                        searchUsers: false,
+                        myUsername: widget.user.username,
+                      );
+                    } else {
+                      return Container();
+                    }
                   },
                 );
               },
@@ -240,7 +209,7 @@ class SearchTile extends StatelessWidget {
             width: 100,
             height: 100,
             color: CupertinoColors.lightBackgroundGray,
-            child: CreateImageWidget.getUserImage(user.imagePath),
+            child: CreateImageWidget.getUserImage(user.imagePath!),
           ),
         ),
         title: Text(
@@ -316,7 +285,7 @@ class GroupTileState extends State<GroupTile> {
               }
             },
             child: CupertinoListTile(
-              leading: CreateImageWidget.getGroupImage(widget.group.imagePath),
+              leading: CreateImageWidget.getGroupImage(widget.group.imagePath!),
               title: Text(
                 widget.group.name,
                 style: const TextStyle(fontWeight: FontWeight.bold),

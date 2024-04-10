@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 
 final FirebaseStorage _storage = FirebaseStorage.instance;
 
@@ -13,19 +12,5 @@ class StorageService {
     final TaskSnapshot taskSnapshot = await uploadTask;
     final String url = await taskSnapshot.ref.getDownloadURL();
     return url;
-  }
-
-  static Future<Uint8List?> downloadImageFromStorage(String url) async {
-    try {
-      final ref = _storage.refFromURL(url);
-
-      final Uint8List? bytes = await ref.getData();
-
-      return bytes;
-    } catch (e) {
-      debugPrint(e.toString());
-      debugPrint("Error downloading image: $e");
-      return null;
-    }
   }
 }

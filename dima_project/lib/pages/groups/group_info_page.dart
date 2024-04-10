@@ -78,7 +78,7 @@ class GroupInfoState extends State<GroupInfo> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      CreateImageWidget.getGroupImage(widget.group.imagePath,
+                      CreateImageWidget.getGroupImage(widget.group.imagePath!,
                           small: true),
                       const SizedBox(width: 20),
                       Column(
@@ -201,55 +201,39 @@ class GroupInfoState extends State<GroupInfo> {
           shrinkWrap: true,
           itemCount: members.length,
           itemBuilder: (context, index) {
-            return FutureBuilder<UserData>(
-              future: UserData.convertToUserData(members[index]),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CupertinoActivityIndicator(
-                      radius: 16,
-                    ),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
-                var user = snapshot.data!;
-                return GestureDetector(
-                  onTap: () {
-                    context.go('/userprofile', extra: {
-                      "user": user,
-                      "isMyProfile": user.username == widget.user.username
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: CupertinoColors.systemGrey,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        CreateImageWidget.getUserImage(user.imagePath,
-                            small: true),
-                        const SizedBox(width: 20),
-                        Text(
-                          user.username,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+            final user = UserData.convertToUserData(members[index]);
+
+            return GestureDetector(
+              onTap: () {
+                context.go('/userprofile', extra: {
+                  "user": user,
+                  "isMyProfile": user.username == widget.user.username
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: CupertinoColors.systemGrey,
                     ),
                   ),
-                );
-              },
+                ),
+                child: Row(
+                  children: [
+                    CreateImageWidget.getUserImage(user.imagePath!,
+                        small: true),
+                    const SizedBox(width: 20),
+                    Text(
+                      user.username,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             );
           },
         );

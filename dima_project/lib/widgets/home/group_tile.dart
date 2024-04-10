@@ -39,7 +39,7 @@ class GroupChatTileState extends State<GroupChatTile> {
           },
           padding: EdgeInsets.zero,
           child: CupertinoListTile(
-            leading: CreateImageWidget.getGroupImage(widget.group.imagePath),
+            leading: CreateImageWidget.getGroupImage(widget.group.imagePath!),
             title: Text(
               widget.group.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
