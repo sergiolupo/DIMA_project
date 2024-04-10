@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -203,13 +204,14 @@ class DatabaseService {
     });
   }
 
-  static void sendMessage(
-      String groupId, Map<String, dynamic> chatMessageData) {
-    groupRef.doc(groupId).collection('messages').add(chatMessageData);
+  static void sendMessage(String groupId, Message message) {
+    Map<String, dynamic> messageMap = message.toMap();
+
+    groupRef.doc(groupId).collection('messages').add(messageMap);
     groupRef.doc(groupId).update({
-      'recentMessage': chatMessageData['message'],
-      'recentMessageSender': chatMessageData['sender'],
-      'recentMessageTime': chatMessageData['time'].toString(),
+      'recentMessage': message.content,
+      'recentMessageSender': message.sender,
+      'recentMessageTime': message.time,
     });
   }
 

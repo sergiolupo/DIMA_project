@@ -57,8 +57,8 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group group = data['group'] as Group;
-        String username = data['username'] as String;
-        return ChatPage(group: group, username: username);
+        UserData user = data['user'] as UserData;
+        return ChatPage(group: group, user: user);
       },
     ),
     GoRoute(
@@ -66,8 +66,8 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group group = data['group'] as Group;
-        String username = data['username'] as String;
-        return GroupInfo(group: group, username: username);
+        UserData user = data['user'] as UserData;
+        return GroupInfo(group: group, user: user);
       },
     ),
     GoRoute(

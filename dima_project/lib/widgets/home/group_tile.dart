@@ -24,7 +24,7 @@ class GroupChatTileState extends State<GroupChatTile> {
     return GestureDetector(
       onTap: () {
         context.go('/chat', extra: {
-          "username": widget.user.username,
+          "user": widget.user,
           "group": widget.group,
         });
       },
@@ -33,7 +33,7 @@ class GroupChatTileState extends State<GroupChatTile> {
         child: CupertinoButton(
           onPressed: () {
             context.go('/chat', extra: {
-              "username": widget.user.username,
+              "user": widget.user,
               "group": widget.group,
             });
           },

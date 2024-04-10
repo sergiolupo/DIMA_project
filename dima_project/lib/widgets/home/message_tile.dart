@@ -1,14 +1,12 @@
+import 'package:dima_project/models/message.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class MessageTile extends StatefulWidget {
-  final String message;
-  final String sender;
-  final bool sentByMe;
+  final Message message;
   const MessageTile({
     super.key,
     required this.message,
-    required this.sender,
-    required this.sentByMe,
   });
 
   @override
@@ -22,12 +20,14 @@ class MessageTileState extends State<MessageTile> {
       padding: EdgeInsets.only(
         top: 8,
         bottom: 8,
-        left: widget.sentByMe ? 0 : 24,
-        right: widget.sentByMe ? 24 : 0,
+        left: widget.message.sentByMe! ? 0 : 24,
+        right: widget.message.sentByMe! ? 24 : 0,
       ),
-      alignment: widget.sentByMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: widget.message.sentByMe!
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: Container(
-        margin: widget.sentByMe
+        margin: widget.message.sentByMe!
             ? const EdgeInsets.only(left: 30)
             : const EdgeInsets.only(
                 right: 30,
@@ -39,7 +39,7 @@ class MessageTileState extends State<MessageTile> {
           right: 20,
         ),
         decoration: BoxDecoration(
-          borderRadius: widget.sentByMe
+          borderRadius: widget.message.sentByMe!
               ? const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -50,29 +50,32 @@ class MessageTileState extends State<MessageTile> {
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
-          color: widget.sentByMe
+          color: widget.message.sentByMe!
               ? CupertinoTheme.of(context).primaryColor
               : CupertinoColors.systemGrey,
         ),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              CreateImageWidget.getUserImage(widget.message.imagePath,
+                  small: true),
+              const SizedBox(height: 8),
               Text(
-                widget.sender,
+                widget.message.sender,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: widget.sentByMe
+                  color: widget.message.sentByMe!
                       ? CupertinoColors.white
                       : CupertinoColors.black,
                   letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
-              Text(widget.message,
+              Text(widget.message.content,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: widget.sentByMe
+                    color: widget.message.sentByMe!
                         ? CupertinoColors.white
                         : CupertinoColors.black,
                     fontSize: 16,

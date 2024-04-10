@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/message.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,11 +9,11 @@ import 'package:go_router/go_router.dart';
 
 class ChatPage extends StatefulWidget {
   final Group group;
-  final String username;
+  final UserData user;
   const ChatPage({
     super.key,
     required this.group,
-    required this.username,
+    required this.user,
   });
 
   @override
@@ -51,7 +53,7 @@ class ChatPageState extends State<ChatPage> {
           onPressed: () {
             context.go(
               "/groupinfo",
-              extra: {"group": widget.group, "username": widget.username},
+              extra: {"group": widget.group, "user": widget.user},
             );
           },
           child: const Icon(
@@ -111,11 +113,15 @@ class ChatPageState extends State<ChatPage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                    message: snapshot.data.docs[index]["message"],
+                      message: Message(
+                    content: snapshot.data.docs[index]["content"],
                     sender: snapshot.data.docs[index]["sender"],
-                    sentByMe:
-                        widget.username == snapshot.data.docs[index]["sender"],
-                  );
+                    sentByMe: widget.user.username ==
+                        snapshot.data.docs[index]["sender"],
+                    imagePath: null,
+                    isGroupMessage: true,
+                    time: snapshot.data.docs[index]["time"],
+                  ));
                 },
               )
             : Container();
@@ -125,12 +131,13 @@ class ChatPageState extends State<ChatPage> {
 
   void sendMessage() {
     if (messageEditingController.text.isNotEmpty) {
-      Map<String, dynamic> chatMessageMap = {
-        "message": messageEditingController.text,
-        "sender": widget.username,
-        "time": DateTime.now().millisecondsSinceEpoch,
-      };
-      DatabaseService.sendMessage(widget.group.id, chatMessageMap);
+      Message message = Message(
+        content: messageEditingController.text,
+        sender: widget.user.username,
+        isGroupMessage: true,
+        time: Timestamp.now(),
+      );
+      DatabaseService.sendMessage(widget.group.id, message);
       setState(() {
         messageEditingController.clear();
       });

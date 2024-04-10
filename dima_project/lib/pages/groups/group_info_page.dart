@@ -11,12 +11,12 @@ import 'package:go_router/go_router.dart';
 
 class GroupInfo extends StatefulWidget {
   final Group group;
-  final String username;
+  final UserData user;
 
   const GroupInfo({
     super.key,
     required this.group,
-    required this.username,
+    required this.user,
   });
 
   @override
@@ -45,7 +45,7 @@ class GroupInfoState extends State<GroupInfo> {
         leading: CupertinoButton(
           onPressed: () {
             context.go('/chat', extra: {
-              "username": widget.username,
+              "user": widget.user,
               "group": widget.group,
             });
           },
@@ -221,7 +221,7 @@ class GroupInfoState extends State<GroupInfo> {
                   onTap: () {
                     context.go('/userprofile', extra: {
                       "user": user,
-                      "isMyProfile": user.username == widget.username
+                      "isMyProfile": user.username == widget.user.username
                     });
                   },
                   child: Container(
@@ -276,7 +276,7 @@ class GroupInfoState extends State<GroupInfo> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.username,
+                  widget.user.username,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();

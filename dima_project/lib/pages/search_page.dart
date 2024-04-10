@@ -311,10 +311,8 @@ class GroupTileState extends State<GroupTile> {
           child: GestureDetector(
             onTap: () {
               if (_isJoined) {
-                context.go('/chat', extra: {
-                  "group": widget.group,
-                  "username": widget.user.username
-                });
+                context.go('/chat',
+                    extra: {"group": widget.group, "user": widget.user});
               }
             },
             child: CupertinoListTile(
