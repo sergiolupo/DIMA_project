@@ -1,8 +1,10 @@
-import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +12,7 @@ import 'package:go_router/go_router.dart';
 class UserProfile extends StatefulWidget {
   final UserData user;
   final UserData? visitor;
+
   const UserProfile({super.key, this.visitor, required this.user});
 
   @override
@@ -18,12 +21,36 @@ class UserProfile extends StatefulWidget {
 
 class UserProfileState extends State<UserProfile> {
   late final bool isMyProfile;
-
+  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _stream;
+  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _followersStream;
+  bool _isFollowing = false;
+  int _groupsCount = 0;
+  int _followersCount = 0;
+  int _followingCount = 0;
   @override
   void initState() {
     super.initState();
     isMyProfile = widget.visitor == null ||
         widget.visitor!.username == widget.user.username;
+    _subscribeToStream();
+    debugPrint('isMyProfile: $isMyProfile');
+    if (!isMyProfile) _checkFollow();
+  }
+
+  _subscribeToStream() {
+    _stream = DatabaseService.getGroupsStream(widget.user.username);
+    _stream.listen((event) {
+      setState(() {
+        _groupsCount = event.length;
+      });
+    });
+    _followersStream = DatabaseService.getFollowersStream(widget.user.username);
+    _followersStream.listen((event) {
+      setState(() {
+        _followersCount = event[0].data()!['followers'].length;
+        _followingCount = event[0].data()!['following'].length;
+      });
+    });
   }
 
   @override
@@ -105,58 +132,92 @@ class UserProfileState extends State<UserProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () => context.go('/showgroups', extra: {
-                            'user': widget.user,
-                            'visitor': widget.visitor
-                          }),
-                          child: Column(
-                            children: [
-                              Text("789",
-                                  style: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Groups",
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .copyWith(
-                                        color: CupertinoColors.systemGrey),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
+                        Row(
                           children: [
-                            Text("1.2000",
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Followers",
-                              style: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .copyWith(color: CupertinoColors.systemGrey),
+                            Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () =>
+                                      context.go('/showgroups', extra: {
+                                    'user': widget.user,
+                                    'visitor': widget.visitor,
+                                  }),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _groupsCount.toString(),
+                                        style: CupertinoTheme.of(context)
+                                            .textTheme
+                                            .textStyle,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        "Groups",
+                                        style: CupertinoTheme.of(context)
+                                            .textTheme
+                                            .textStyle
+                                            .copyWith(
+                                                color:
+                                                    CupertinoColors.systemGrey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text("789",
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Following",
-                              style: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .copyWith(color: CupertinoColors.systemGrey),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () => context.go('/showfollowers', extra: {
+                                'user': widget.user,
+                                'visitor': widget.visitor,
+                                'followers': true,
+                              }),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _followersCount.toString(),
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Followers",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: CupertinoColors.systemGrey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () => context.go('/showfollowers', extra: {
+                                'user': widget.user,
+                                'visitor': widget.visitor,
+                                'followers': false,
+                              }),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _followingCount.toString(),
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Following",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: CupertinoColors.systemGrey),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -167,25 +228,33 @@ class UserProfileState extends State<UserProfile> {
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                                CupertinoButton.filled(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40, vertical: 8),
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Follow',
-                                  ),
+                              CupertinoButton.filled(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 8),
+                                onPressed: () async {
+                                  DatabaseService.toggleFollowUnfollow(
+                                      widget.user.username,
+                                      widget.visitor!.username);
+                                  setState(() {
+                                    _isFollowing = !_isFollowing;
+                                  });
+                                },
+                                child: Text(
+                                  _isFollowing ? 'Unfollow' : 'Follow',
                                 ),
-                                const SizedBox(width: 10),
-                                CupertinoButton.filled(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 8),
-                                  onPressed: () {},
-                                  child: const Icon(
-                                    FontAwesomeIcons.envelope,
-                                    color: CupertinoColors.white,
-                                  ),
+                              ),
+                              const SizedBox(width: 10),
+                              CupertinoButton.filled(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 8),
+                                onPressed: () {},
+                                child: const Icon(
+                                  FontAwesomeIcons.envelope,
+                                  color: CupertinoColors.white,
                                 ),
-                              ])
+                              ),
+                            ],
+                          )
                         : const SizedBox(),
                   ],
                 ),
@@ -218,8 +287,22 @@ class UserProfileState extends State<UserProfile> {
     );
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _stream.drain();
+  }
+
   void _signOut(BuildContext context) {
     AuthService.signOut();
     context.go('/login');
+  }
+
+  _checkFollow() async {
+    await DatabaseService.isFollowing(
+            widget.user.username, widget.visitor!.username)
+        .then((value) => setState(() {
+              _isFollowing = value;
+            }));
   }
 }

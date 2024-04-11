@@ -9,9 +9,9 @@ import 'package:flutter/cupertino.dart';
 
 class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static final groupRef = _firestore.collection('groups');
-  static final userRef = _firestore.collection('users');
-
+  static final groupsRef = _firestore.collection('groups');
+  static final usersRef = _firestore.collection('users');
+  static final followersRef = _firestore.collection('followers');
   static Future<void> registerUserWithUUID(
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
@@ -20,7 +20,7 @@ class DatabaseService {
             'profile_images/$uuid.jpg', imagePath);
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
-    await userRef.doc(uuid).set({
+    await usersRef.doc(uuid).set({
       'name': user.name,
       'surname': user.surname,
       'username': user.username,
@@ -29,17 +29,32 @@ class DatabaseService {
       'selectedCategories': serializedList,
       'groups': [],
     });
+
+    await followersRef.doc(user.username).set({
+      'followers': [],
+      'following': [],
+    });
   }
 
   static Future<UserData> getUserData(String uid) async {
-    DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
+    DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
+    UserData user = UserData.convertToUserData(documentSnapshot);
+    return user;
+  }
+
+  static Future<UserData> getUserDataFromUsername(String username) async {
+    username = username.replaceAll('[', '').replaceAll(']', '');
+
+    QuerySnapshot querySnapshot =
+        await usersRef.where('username', isEqualTo: username).get();
+    DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
     UserData user = UserData.convertToUserData(documentSnapshot);
     return user;
   }
 
   Future<String> findUUID(String email) async {
     final QuerySnapshot result =
-        await userRef.where('email', isEqualTo: email).get();
+        await usersRef.where('email', isEqualTo: email).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return documents[0].id;
@@ -51,7 +66,7 @@ class DatabaseService {
   static Future<bool> checkUserExist(String email) async {
     debugPrint('Checking if user exists... $email');
     final QuerySnapshot result =
-        await userRef.where('email', isEqualTo: email).get();
+        await usersRef.where('email', isEqualTo: email).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return true;
@@ -63,7 +78,7 @@ class DatabaseService {
   static Future<List<DocumentSnapshot<Map<String, dynamic>>>> getGroups(
       String uid) async {
     DocumentSnapshot<Map<String, dynamic>> groupsSnapshot =
-        await userRef.doc(uid).get();
+        await usersRef.doc(uid).get();
 
     List<Map<String, dynamic>> groups =
         List<Map<String, dynamic>>.from(groupsSnapshot['groups']);
@@ -72,7 +87,7 @@ class DatabaseService {
     if (groups.isNotEmpty) {
       for (Map<String, dynamic> groupId in groups) {
         DocumentSnapshot<Map<String, dynamic>> groupDoc =
-            await groupRef.doc(groupId["groupId"]).get();
+            await groupsRef.doc(groupId["groupId"]).get();
         result.add(groupDoc);
       }
     }
@@ -89,7 +104,7 @@ class DatabaseService {
       List<Map<String, dynamic>> serializedList =
           group.categories!.map((item) => {'value': item}).toList();
 
-      DocumentReference docRef = await groupRef.add({
+      DocumentReference docRef = await groupsRef.add({
         'groupName': group.name,
         'groupImage': '',
         'admin': group.admin,
@@ -107,11 +122,11 @@ class DatabaseService {
           : await StorageService.uploadImageToStorage(
               'group_images/${docRef.id}.jpg', imagePath);
 
-      await groupRef.doc(docRef.id).update({
+      await groupsRef.doc(docRef.id).update({
         'groupId': docRef.id,
         'groupImage': imageUrl,
       });
-      DocumentReference userDocumentReference = userRef.doc(uid);
+      DocumentReference userDocumentReference = usersRef.doc(uid);
 
       return await userDocumentReference.update({
         'groups': FieldValue.arrayUnion([
@@ -126,7 +141,7 @@ class DatabaseService {
   }
 
   static getChats(String groupId) async {
-    return groupRef
+    return groupsRef
         .doc(groupId)
         .collection('messages')
         .orderBy('time')
@@ -135,14 +150,14 @@ class DatabaseService {
 
   static Future getGroupAdmin(String groupId) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await groupRef.doc(groupId).get();
+        await groupsRef.doc(groupId).get();
     return groupDoc['admin'];
   }
 
   static Future<Stream<List<DocumentSnapshot<Map<String, dynamic>>>>>
       getGroupMembers(String groupId) {
-    return groupRef.doc(groupId).get().then((groupDoc) {
-      return userRef
+    return groupsRef.doc(groupId).get().then((groupDoc) {
+      return usersRef
           .where('username', whereIn: groupDoc['members'])
           .snapshots()
           .map((querySnapshot) => querySnapshot.docs.toList());
@@ -150,19 +165,19 @@ class DatabaseService {
   }
 
   static searchByGroupNameStream(String searchText) {
-    return groupRef
+    return groupsRef
         .where('groupName', isEqualTo: searchText)
         .where('groupId', isNotEqualTo: '')
         .snapshots();
   }
 
   static searchByUsernameStream(String searchText) {
-    return userRef.where('username', isEqualTo: searchText).snapshots();
+    return usersRef.where('username', isEqualTo: searchText).snapshots();
   }
 
   static isUserJoined(String groupId, String username) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await groupRef.doc(groupId).get();
+        await groupsRef.doc(groupId).get();
 
     List<dynamic> members = groupDoc['members'];
     return members.contains(username);
@@ -172,20 +187,20 @@ class DatabaseService {
     return isUserJoined(groupId, username).then((isJoined) {
       if (isJoined) {
         return Future.wait([
-          groupRef.doc(groupId).update({
+          groupsRef.doc(groupId).update({
             'members': FieldValue.arrayRemove([username])
           }),
-          userRef.doc(uid).update({
+          usersRef.doc(uid).update({
             'groups': FieldValue.arrayRemove([
               {'groupId': groupId}
             ])
           }),
         ]).then((_) {
-          return groupRef.doc(groupId).get().then((groupDoc) {
+          return groupsRef.doc(groupId).get().then((groupDoc) {
             if (groupDoc['members'].isEmpty) {
-              return groupRef.doc(groupId).delete();
+              return groupsRef.doc(groupId).delete();
             } else if (groupDoc['admin'] == username) {
-              return groupRef
+              return groupsRef
                   .doc(groupId)
                   .update({'admin': groupDoc['members'][0]});
             }
@@ -193,10 +208,10 @@ class DatabaseService {
         });
       } else {
         return Future.wait([
-          groupRef.doc(groupId).update({
+          groupsRef.doc(groupId).update({
             'members': FieldValue.arrayUnion([username])
           }),
-          userRef.doc(uid).update({
+          usersRef.doc(uid).update({
             'groups': FieldValue.arrayUnion([
               {'groupId': groupId}
             ])
@@ -209,8 +224,8 @@ class DatabaseService {
   static void sendMessage(String groupId, Message message) {
     Map<String, dynamic> messageMap = message.toMap();
 
-    groupRef.doc(groupId).collection('messages').add(messageMap);
-    groupRef.doc(groupId).update({
+    groupsRef.doc(groupId).collection('messages').add(messageMap);
+    groupsRef.doc(groupId).update({
       'recentMessage': message.content,
       'recentMessageSender': message.sender,
       'recentMessageTime': message.time,
@@ -220,8 +235,6 @@ class DatabaseService {
   static Stream<List<DocumentSnapshot<Map<String, dynamic>>>> getGroupsStream(
       String username) {
     // Create a reference to the 'groups' collection
-    final CollectionReference groupsRef =
-        FirebaseFirestore.instance.collection('groups');
 
     // Query groups where the user is a member
     final query = groupsRef.where('members', arrayContains: username);
@@ -232,7 +245,7 @@ class DatabaseService {
 
   static Future<bool> isUsernameTaken(String username) async {
     final QuerySnapshot result =
-        await userRef.where('username', isEqualTo: username).get();
+        await usersRef.where('username', isEqualTo: username).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return true;
@@ -242,8 +255,56 @@ class DatabaseService {
   }
 
   static Future<String> getUserImage(String uid) async {
-    return await userRef.doc(uid).get().then((documentSnapshot) {
+    return await usersRef.doc(uid).get().then((documentSnapshot) {
       return documentSnapshot['imageUrl'];
+    });
+  }
+
+  static Future<bool> isFollowing(String user, String visitor) async {
+    DocumentSnapshot userDoc = await followersRef.doc(user).get();
+    List<dynamic> followers = userDoc['followers'];
+    return followers.contains(visitor);
+  }
+
+  static void toggleFollowUnfollow(String user, String visitor) async {
+    debugPrint('Toggling follow/unfollow');
+
+    debugPrint('User: $user');
+    debugPrint('Visitor: $visitor');
+    DocumentSnapshot userDoc = await followersRef.doc(user).get();
+    DocumentSnapshot visitorDoc = await followersRef.doc(visitor).get();
+
+    debugPrint('User document exists');
+    // Check if the visitor is already following the user
+    List<dynamic> followers = userDoc['followers'];
+    List<dynamic> following = visitorDoc['following'];
+    if (followers.contains(visitor)) {
+      // Visitor is following the user, unfollow
+      debugPrint('Visitor is following the user, unfollowing');
+      followers.remove(visitor);
+      following.remove(user);
+      followersRef.doc(user).update({'followers': followers});
+      followersRef.doc(visitor).update({'following': following});
+    } else {
+      // Visitor is not following the user, follow
+      debugPrint('Visitor is not following the user, following');
+      followers.add(visitor);
+      following.add(user);
+      followersRef.doc(user).update({'followers': followers});
+      followersRef.doc(visitor).update({'following': following});
+    }
+  }
+
+  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>>
+      getFollowersStream(String username) {
+    return followersRef.doc(username).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        final List<DocumentSnapshot<Map<String, dynamic>>> snapshots = [];
+        snapshots.add(snapshot);
+        return snapshots;
+      } else {
+        return [];
+      }
     });
   }
 }

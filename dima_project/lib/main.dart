@@ -7,9 +7,10 @@ import 'package:dima_project/pages/groups/group_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/pages/search_page.dart';
-import 'package:dima_project/pages/show_groups_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/utils/constants.dart';
+import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
+import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -115,6 +116,17 @@ final GoRouter _router = GoRouter(
         UserData user = data['user'] as UserData;
         UserData? visitor = data['visitor'] as UserData?;
         return ShowGroupsPage(user: user, visitor: visitor);
+      },
+    ),
+    GoRoute(
+      path: '/showfollowers',
+      builder: (BuildContext context, GoRouterState state) {
+        Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+        UserData user = data['user'] as UserData;
+        UserData? visitor = data['visitor'] as UserData?;
+        bool followers = data['followers'] as bool;
+        return ShowFollowers(
+            user: user, visitor: visitor, followers: followers);
       },
     ),
   ],

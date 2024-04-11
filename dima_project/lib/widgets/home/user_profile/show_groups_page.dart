@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/group.dart'; // Import the Group model
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -8,23 +8,27 @@ import 'package:flutter/cupertino.dart';
 class ShowGroupsPage extends StatefulWidget {
   final UserData user;
   final UserData? visitor;
-  const ShowGroupsPage({super.key, required this.user, this.visitor});
+  const ShowGroupsPage({
+    super.key,
+    required this.user,
+    this.visitor,
+  });
 
   @override
   ShowGroupsPageState createState() => ShowGroupsPageState();
 }
 
 class ShowGroupsPageState extends State<ShowGroupsPage> {
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _groupsStream;
+  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> groupsStream;
 
   @override
   void initState() {
     super.initState();
-    _subscribeToGroups();
+    init();
   }
 
-  _subscribeToGroups() {
-    _groupsStream = DatabaseService.getGroupsStream(widget.user.username);
+  init() {
+    groupsStream = DatabaseService.getGroupsStream(widget.user.username);
   }
 
   @override
@@ -34,7 +38,7 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
         middle: Text('Groups'),
       ),
       child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-        stream: _groupsStream,
+        stream: groupsStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
