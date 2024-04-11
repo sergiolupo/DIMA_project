@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Message {
   final String content;
   final String sender;
+  final String? receiver;
   final bool? sentByMe;
   final String senderImage;
   final bool isGroupMessage;
@@ -14,6 +15,7 @@ class Message {
     required this.senderImage,
     required this.isGroupMessage,
     required this.time,
+    this.receiver,
   });
   toMap() {
     return {

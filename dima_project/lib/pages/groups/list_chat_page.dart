@@ -1,0 +1,202 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/widgets/home/chat_tile.dart';
+import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
+
+class ListChatPage extends StatefulWidget {
+  final UserData user;
+  const ListChatPage({super.key, required this.user});
+
+  @override
+  ListChatPageState createState() => ListChatPageState();
+}
+
+class ListChatPageState extends State<ListChatPage> {
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _stream;
+  String groupName = "";
+  int idx = 0;
+  @override
+  void initState() {
+    super.initState();
+    _subscribe();
+  }
+
+  void _subscribe() {
+    if (idx == 1) {
+      _stream = DatabaseService.getPrivateChatsStream(widget.user.username);
+    } else {
+      _stream = DatabaseService.getGroupsStream(widget.user.username);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (_stream == null)
+        ? const CupertinoPageScaffold(
+            child: Center(
+              child: CupertinoActivityIndicator(),
+            ),
+          )
+        : MediaQuery(
+            data: MediaQuery.of(context),
+            child: CupertinoPageScaffold(
+              navigationBar: CupertinoNavigationBar(
+                backgroundColor: CupertinoTheme.of(context).primaryColor,
+                middle: const Text(
+                  "Chat",
+                  style: TextStyle(
+                    color: CupertinoColors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 27,
+                  ),
+                ),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    CustomSelectOption(
+                      textLeft: "Groups",
+                      textRight: "Private",
+                      onChanged: (value) {
+                        setState(() {
+                          idx = value;
+                          _subscribe();
+                        });
+                      },
+                    ),
+                    Stack(
+                      children: [
+                        idx == 0 ? groupList() : privateChatList(),
+                        Positioned(
+                          bottom: 20,
+                          right: 20,
+                          child: CupertinoButton(
+                            onPressed: () {
+                              context.go("/createGroup", extra: widget.user);
+                            },
+                            child: const Icon(CupertinoIcons.add, size: 30),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+  }
+
+  Widget groupList() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 200,
+      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+        stream: _stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data!;
+            if (data.isNotEmpty) {
+              return ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  if ((data[index].data() as Map<String, dynamic>)
+                      .containsKey("groupId")) {
+                    final group = Group.convertToGroup(data[index]);
+                    return ChatTile(
+                      user: widget.user,
+                      group: group,
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              );
+            } else {
+              return noChatWidget();
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          } else {
+            return Container(); // Return an empty container or handle other cases as needed
+          }
+        },
+      ),
+    );
+  }
+
+  Widget noChatWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(idx == 0 ? CupertinoIcons.group : CupertinoIcons.person,
+              size: 100, color: CupertinoColors.systemGrey),
+          const SizedBox(height: 20),
+          Text(
+            "No ${idx == 0 ? "groups" : "chats"} yet",
+            style: const TextStyle(
+              color: CupertinoColors.systemGrey,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            idx == 0
+                ? "Create a group to start chatting "
+                : "Start a private chat to start chatting",
+            style: const TextStyle(
+                color: CupertinoColors.systemGrey, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget privateChatList() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 200,
+      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+        stream: _stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data!;
+            if (data.isNotEmpty) {
+              return ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  if (data[index].data()!.containsKey("groupId")) {
+                    return Container();
+                  }
+                  final privateChat =
+                      PrivateChat.convertToPrivateChat(data[index]);
+                  return ChatTile(
+                    user: widget.user,
+                    privateChat: privateChat,
+                  );
+                },
+              );
+            } else {
+              return noChatWidget();
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          } else {
+            return Container(); // Return an empty container or handle other cases as needed
+          }
+        },
+      ),
+    );
+  }
+}

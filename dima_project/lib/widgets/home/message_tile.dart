@@ -67,7 +67,7 @@ class MessageTileState extends State<MessageTile> {
                           fit: BoxFit.cover,
                         )
                       : Image.asset(
-                          'assets/default_group_image.png',
+                          'assets/default_user_image.png',
                           fit: BoxFit.cover,
                         ),
                 ),

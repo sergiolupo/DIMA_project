@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -33,7 +34,6 @@ class UserProfileState extends State<UserProfile> {
     isMyProfile = widget.visitor == null ||
         widget.visitor!.username == widget.user.username;
     _subscribeToStream();
-    debugPrint('isMyProfile: $isMyProfile');
     if (!isMyProfile) _checkFollow();
   }
 
@@ -247,7 +247,15 @@ class UserProfileState extends State<UserProfile> {
                               CupertinoButton.filled(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 8),
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.go('/chat', extra: {
+                                    'privateChat': PrivateChat(
+                                      visitor: widget.visitor!.username,
+                                      user: widget.user.username,
+                                    ),
+                                    'user': widget.user,
+                                  });
+                                },
                                 child: const Icon(
                                   FontAwesomeIcons.envelope,
                                   color: CupertinoColors.white,

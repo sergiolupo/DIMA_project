@@ -12,6 +12,7 @@ class DatabaseService {
   static final groupsRef = _firestore.collection('groups');
   static final usersRef = _firestore.collection('users');
   static final followersRef = _firestore.collection('followers');
+  static final privateChatRef = _firestore.collection('private_chats');
   static Future<void> registerUserWithUUID(
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
@@ -221,22 +222,29 @@ class DatabaseService {
     });
   }
 
-  static void sendMessage(String groupId, Message message) {
+  static void sendMessage(String id, Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
-    groupsRef.doc(groupId).collection('messages').add(messageMap);
-    groupsRef.doc(groupId).update({
-      'recentMessage': message.content,
-      'recentMessageSender': message.sender,
-      'recentMessageTime': message.time,
-    });
+    if (message.isGroupMessage) {
+      groupsRef.doc(id).collection('messages').add(messageMap);
+      groupsRef.doc(id).update({
+        'recentMessage': message.content,
+        'recentMessageSender': message.sender,
+        'recentMessageTime': message.time,
+      });
+    } else {
+      QuerySnapshot<Object?> value = await privateChatRef.where("members",
+          arrayContainsAny: [message.sender, message.receiver]).get();
+
+      await privateChatRef
+          .doc(value.docs.first.id)
+          .collection('messages')
+          .add(messageMap);
+    }
   }
 
   static Stream<List<DocumentSnapshot<Map<String, dynamic>>>> getGroupsStream(
       String username) {
-    // Create a reference to the 'groups' collection
-
-    // Query groups where the user is a member
     final query = groupsRef.where('members', arrayContains: username);
     // Return a stream of snapshots of the documents in the query result
     return query.snapshots().map((snapshot) =>
@@ -306,5 +314,40 @@ class DatabaseService {
         return [];
       }
     });
+  }
+
+// Assuming privateChatRef is your reference to the private chat collection
+
+  static Future<Stream<QuerySnapshot>> getPrivateChats(
+      String user, String visitor) async {
+    // Query private chats where both users are members
+    List<dynamic> members = [user, visitor];
+
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await privateChatRef.where("members", arrayContainsAny: members).get();
+    if (querySnapshot.docs.firstOrNull == null) {
+      DocumentReference newPrivateChatRef = await privateChatRef.add({
+        'members': [user, visitor],
+      });
+
+      return newPrivateChatRef
+          .collection('messages')
+          .orderBy('time')
+          .snapshots();
+    } else {
+      // If a private chat exists, return its message collection
+      return querySnapshot.docs.first.reference
+          .collection('messages')
+          .orderBy('time')
+          .snapshots();
+    }
+  }
+
+  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>>?
+      getPrivateChatsStream(String username) {
+    final query = privateChatRef.where('members', arrayContains: username);
+    // Return a stream of snapshots of the documents in the query result
+    return query.snapshots().map((snapshot) =>
+        snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
   }
 }
