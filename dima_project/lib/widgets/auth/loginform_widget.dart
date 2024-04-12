@@ -1,5 +1,6 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -194,14 +195,7 @@ class PasswordInputFieldState extends State<PasswordInputField> {
       controller: _passwordController,
       placeholder: isConfirmPassword ? 'Confirm password' : 'Password',
       padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: CupertinoColors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: CupertinoColors.systemGrey4,
-          width: 2.0,
-        ),
-      ),
+      decoration: Constants.inputDecoration,
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a ${isConfirmPassword ? 'confirm password' : 'password'}';
@@ -238,14 +232,7 @@ class EmailInputField extends StatelessWidget {
       controller: _emailController,
       placeholder: 'Email',
       padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: CupertinoColors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: CupertinoColors.systemGrey4,
-          width: 2.0,
-        ),
-      ),
+      decoration: Constants.inputDecoration,
       validator: (String? value) {
         final RegExp emailRegex = RegExp(
           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',

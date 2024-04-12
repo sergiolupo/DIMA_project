@@ -140,8 +140,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp.router(
-      theme: CupertinoThemeData(
-        primaryColor: Constants().primaryColor,
+      theme: const CupertinoThemeData(
+        primaryColor: Constants.primaryColor,
+        primaryContrastingColor: Constants.primaryColorDark,
         scaffoldBackgroundColor: CupertinoColors.white,
       ),
       routerConfig: _router,

@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/auth/loginform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -21,14 +22,7 @@ class PersonalInformationForm extends StatelessWidget {
             controller: nameController,
             padding: const EdgeInsets.all(12.0),
             placeholder: 'Name',
-            decoration: BoxDecoration(
-              color: CupertinoColors.white,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(
-                color: CupertinoColors.systemGrey4,
-                width: 2.0,
-              ),
-            ),
+            decoration: Constants.inputDecoration,
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your name';
@@ -46,14 +40,7 @@ class PersonalInformationForm extends StatelessWidget {
           controller: surnameController,
           padding: const EdgeInsets.all(12.0),
           placeholder: 'Surname',
-          decoration: BoxDecoration(
-            color: CupertinoColors.white,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(
-              color: CupertinoColors.systemGrey4,
-              width: 2.0,
-            ),
-          ),
+          decoration: Constants.inputDecoration,
           validator: (String? value) {
             if (value == null || value.isEmpty) {
               return 'Please enter your surname';
@@ -84,14 +71,7 @@ class UsernameInputTextField extends StatelessWidget {
       controller: usernameController,
       padding: const EdgeInsets.all(12.0),
       placeholder: 'Username',
-      decoration: BoxDecoration(
-        color: CupertinoColors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: CupertinoColors.systemGrey4,
-          width: 2.0,
-        ),
-      ),
+      decoration: Constants.inputDecoration,
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a username';
