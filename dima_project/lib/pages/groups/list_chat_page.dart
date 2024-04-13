@@ -19,7 +19,9 @@ class ListChatPage extends StatefulWidget {
 }
 
 class ListChatPageState extends State<ListChatPage> {
-  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _stream;
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _privateChatsStream;
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _groupsStream;
+
   String groupName = "";
   int idx = 0;
   @override
@@ -29,16 +31,14 @@ class ListChatPageState extends State<ListChatPage> {
   }
 
   void _subscribe() {
-    if (idx == 1) {
-      _stream = DatabaseService.getPrivateChatsStream(widget.user.username);
-    } else {
-      _stream = DatabaseService.getGroupsStream(widget.user.username);
-    }
+    _privateChatsStream =
+        DatabaseService.getPrivateChatsStream(widget.user.username);
+    _groupsStream = DatabaseService.getGroupsStream(widget.user.username);
   }
 
   @override
   Widget build(BuildContext context) {
-    return (_stream == null)
+    return (_groupsStream == null || _privateChatsStream == null)
         ? const CupertinoPageScaffold(
             child: Center(
               child: CupertinoActivityIndicator(),
@@ -74,7 +74,8 @@ class ListChatPageState extends State<ListChatPage> {
                     ),
                     Stack(
                       children: [
-                        idx == 0 ? groupList() : privateChatList(),
+                        groupList(),
+                        privateChatList(),
                         Positioned(
                           bottom: 20,
                           right: 20,
@@ -95,40 +96,43 @@ class ListChatPageState extends State<ListChatPage> {
   }
 
   Widget groupList() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 200,
-      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-        stream: _stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = snapshot.data!;
-            if (data.isNotEmpty) {
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  if ((data[index].data() as Map<String, dynamic>)
-                      .containsKey("groupId")) {
-                    final group = Group.convertToGroup(data[index]);
-                    return ChatTile(
-                      user: widget.user,
-                      group: group,
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
+    return Visibility(
+      visible: idx == 0,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height - 200,
+        child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+          stream: _groupsStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data!;
+              if (data.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    if ((data[index].data() as Map<String, dynamic>)
+                        .containsKey("groupId")) {
+                      final group = Group.convertToGroup(data[index]);
+                      return ChatTile(
+                        user: widget.user,
+                        group: group,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
+              } else {
+                return noChatWidget();
+              }
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CupertinoActivityIndicator(),
               );
             } else {
-              return noChatWidget();
+              return Container(); // Return an empty container or handle other cases as needed
             }
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          } else {
-            return Container(); // Return an empty container or handle other cases as needed
-          }
-        },
+          },
+        ),
       ),
     );
   }
@@ -163,39 +167,42 @@ class ListChatPageState extends State<ListChatPage> {
   }
 
   Widget privateChatList() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 200,
-      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-        stream: _stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = snapshot.data!;
-            if (data.isNotEmpty) {
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  if (data[index].data()!.containsKey("groupId")) {
-                    return Container();
-                  }
-                  final privateChat =
-                      PrivateChat.convertToPrivateChat(data[index]);
-                  return ChatTile(
-                    user: widget.user,
-                    privateChat: privateChat,
-                  );
-                },
+    return Visibility(
+      visible: idx == 1,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height - 200,
+        child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+          stream: _privateChatsStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data!;
+              if (data.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    if (data[index].data()!.containsKey("groupId")) {
+                      return Container();
+                    }
+                    final privateChat = PrivateChat.convertToPrivateChat(
+                        data[index], widget.user.username);
+                    return ChatTile(
+                      user: widget.user,
+                      privateChat: privateChat,
+                    );
+                  },
+                );
+              } else {
+                return noChatWidget();
+              }
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CupertinoActivityIndicator(),
               );
             } else {
-              return noChatWidget();
+              return Container(); // Return an empty container or handle other cases as needed
             }
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          } else {
-            return Container(); // Return an empty container or handle other cases as needed
-          }
-        },
+          },
+        ),
       ),
     );
   }

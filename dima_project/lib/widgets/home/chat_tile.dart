@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,22 @@ class ChatTile extends StatefulWidget {
 }
 
 class ChatTileState extends State<ChatTile> {
+  UserData? _user;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.privateChat != null) {
+      getUserData();
+    }
+  }
+
+  getUserData() async {
+    await DatabaseService.getUserDataFromUsername(widget.privateChat!.user)
+        .then((value) => setState(() {
+              _user = value;
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -56,7 +73,9 @@ class ChatTileState extends State<ChatTile> {
           child: CupertinoListTile(
             leading: widget.group != null
                 ? CreateImageWidget.getGroupImage(widget.group!.imagePath!)
-                : const SizedBox(),
+                : (_user != null)
+                    ? CreateImageWidget.getUserImage(_user!.imagePath!)
+                    : const SizedBox(),
             title: Text(
               widget.group == null
                   ? widget.privateChat!.user

@@ -9,10 +9,12 @@ class PrivateChat {
     required this.user,
   });
 
-  static PrivateChat convertToPrivateChat(DocumentSnapshot documentSnapshot) {
+  static PrivateChat convertToPrivateChat(
+      DocumentSnapshot documentSnapshot, String username) {
+    documentSnapshot['members'].remove(username);
     return PrivateChat(
       user: documentSnapshot['members'][0],
-      visitor: documentSnapshot['members'][1],
+      visitor: username,
     );
   }
 }

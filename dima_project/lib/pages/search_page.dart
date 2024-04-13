@@ -141,21 +141,12 @@ class SearchPageState extends State<SearchPage> {
                         (docs[index].data() as Map<String, dynamic>)
                             .containsKey('email')) {
                       final userData = UserData.convertToUserData(docs[index]);
-                      return SearchTile(
-                        searchedUser: userData,
-                        group: null,
-                        searchUsers: true,
-                        user: widget.user,
-                      );
+                      return UserTile(user: userData, visitor: widget.user);
                     } else if (searchIdx != 0 &&
                         (docs[index].data() as Map<String, dynamic>)
                             .containsKey('groupId')) {
                       final group = Group.convertToGroup(docs[index]);
-                      return SearchTile(
-                        group: group,
-                        searchUsers: false,
-                        user: widget.user,
-                      );
+                      return GroupTile(user: widget.user, group: group);
                     } else {
                       return Container();
                     }
@@ -174,32 +165,5 @@ class SearchPageState extends State<SearchPage> {
     _searchStreamController.close(); // Close the stream controller
     _searchStreamSubscription?.cancel(); // Cancel the subscription
     super.dispose();
-  }
-}
-
-class SearchTile extends StatelessWidget {
-  final UserData? searchedUser;
-  final Group? group;
-  final bool searchUsers;
-  final UserData user;
-  const SearchTile({
-    super.key,
-    this.searchedUser,
-    this.group,
-    required this.user,
-    required this.searchUsers,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return searchUsers ? _buildUserTile(context) : _buildGroupTile();
-  }
-
-  Widget _buildUserTile(BuildContext context) {
-    return UserTile(user: searchedUser!, visitor: user);
-  }
-
-  Widget _buildGroupTile() {
-    return GroupTile(user: user, group: group!);
   }
 }
