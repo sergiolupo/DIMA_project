@@ -19,10 +19,12 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  late final StreamController<QuerySnapshot> _searchStreamController =
-      StreamController<QuerySnapshot>();
+  late final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      _searchStreamController =
+      StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>();
 
-  StreamSubscription<QuerySnapshot>? _searchStreamSubscription;
+  StreamSubscription<List<QueryDocumentSnapshot<Map<String, dynamic>>>>?
+      _searchStreamSubscription;
 
   int searchIdx = 0;
 
@@ -118,7 +120,8 @@ class SearchPageState extends State<SearchPage> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            child: StreamBuilder<
+                List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
               stream: _searchStreamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -126,7 +129,7 @@ class SearchPageState extends State<SearchPage> {
                     child: Text('Error: ${snapshot.error}'),
                   );
                 }
-                final docs = snapshot.data?.docs ?? [];
+                final docs = snapshot.data ?? [];
                 if (docs.isEmpty) {
                   return Center(
                     child:
@@ -138,13 +141,11 @@ class SearchPageState extends State<SearchPage> {
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     if (searchIdx == 0 &&
-                        (docs[index].data() as Map<String, dynamic>)
-                            .containsKey('email')) {
+                        (docs[index].data()).containsKey('email')) {
                       final userData = UserData.convertToUserData(docs[index]);
                       return UserTile(user: userData, visitor: widget.user);
                     } else if (searchIdx != 0 &&
-                        (docs[index].data() as Map<String, dynamic>)
-                            .containsKey('groupId')) {
+                        (docs[index].data()).containsKey('groupId')) {
                       final group = Group.convertToGroup(docs[index]);
                       return GroupTile(user: widget.user, group: group);
                     } else {

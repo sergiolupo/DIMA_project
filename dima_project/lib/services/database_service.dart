@@ -165,15 +165,34 @@ class DatabaseService {
     });
   }
 
-  static searchByGroupNameStream(String searchText) {
-    return groupsRef
-        .where('groupName', isEqualTo: searchText)
-        .where('groupId', isNotEqualTo: '')
-        .snapshots();
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      searchByGroupNameStream(String searchText) {
+    // Fetch all documents from Firestore collection
+    return groupsRef.snapshots().map((snapshot) {
+      // Filter documents on the client side using regex and group ID check
+      return snapshot.docs.where((doc) {
+        // Match the 'groupName' field using a regex pattern
+        bool nameMatches =
+            RegExp(searchText, caseSensitive: false).hasMatch(doc['groupName']);
+        // Check if the 'groupId' field is not empty
+        bool validGroupId = doc['groupId'] != '';
+        // Return true if both conditions are met
+        return nameMatches && validGroupId;
+      }).toList();
+    });
   }
 
-  static searchByUsernameStream(String searchText) {
-    return usersRef.where('username', isEqualTo: searchText).snapshots();
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      searchByUsernameStream(String searchText) {
+    // Fetch all documents from Firestore collection
+    return usersRef.snapshots().map((snapshot) {
+      // Filter documents on the client side using regex
+      return snapshot.docs.where((doc) {
+        // Match the 'username' field using a regex pattern
+        return RegExp(searchText, caseSensitive: false)
+            .hasMatch(doc['username']);
+      }).toList();
+    });
   }
 
   static isUserJoined(String groupId, String username) async {
