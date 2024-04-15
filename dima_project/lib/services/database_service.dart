@@ -288,6 +288,25 @@ class DatabaseService {
         snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
   }
 
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getGroupsStreamUser(String username) {
+    // Fetch all documents from Firestore collection
+    final query =
+        groupsRef.where('members', arrayContains: username).snapshots();
+    return query.map((snapshot) {
+      return snapshot.docs;
+    });
+  }
+
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getFollowersStreamUser(
+      String username) {
+    final stream = followersRef.doc(username).snapshots();
+
+    return stream.map((snapshot) {
+      return snapshot;
+    });
+  }
+
   static Future<bool> isUsernameTaken(String username) async {
     final QuerySnapshot result =
         await usersRef.where('username', isEqualTo: username).get();

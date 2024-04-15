@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -6,9 +11,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 
 class UserProfile extends StatefulWidget {
   final UserData user;
@@ -22,12 +24,24 @@ class UserProfile extends StatefulWidget {
 
 class UserProfileState extends State<UserProfile> {
   late final bool isMyProfile;
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _stream;
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _followersStream;
+
+  late final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      _groupsStreamController =
+      StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>();
+
+  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
+      _followersStreamController =
+      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
+  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
+      _followingStreamController =
+      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
+  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _followersStreamSubscription;
+  late StreamSubscription<List<QueryDocumentSnapshot<Map<String, dynamic>>>>?
+      _groupsStreamSubscription;
+
   bool _isFollowing = false;
-  int _groupsCount = 0;
-  int _followersCount = 0;
-  int _followingCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -38,18 +52,19 @@ class UserProfileState extends State<UserProfile> {
   }
 
   _subscribeToStream() {
-    _stream = DatabaseService.getGroupsStream(widget.user.username);
-    _stream.listen((event) {
-      setState(() {
-        _groupsCount = event.length;
-      });
+    _groupsStreamSubscription =
+        DatabaseService.getGroupsStreamUser(widget.user.username)
+            .listen((snapshot) {
+      final dataList =
+          snapshot.cast<QueryDocumentSnapshot<Map<String, dynamic>>>();
+      _groupsStreamController.add(dataList);
     });
-    _followersStream = DatabaseService.getFollowersStream(widget.user.username);
-    _followersStream.listen((event) {
-      setState(() {
-        _followersCount = event[0].data()!['followers'].length;
-        _followingCount = event[0].data()!['following'].length;
-      });
+
+    _followersStreamSubscription =
+        DatabaseService.getFollowersStreamUser(widget.user.username)
+            .listen((snapshot) {
+      _followersStreamController.add(snapshot);
+      _followingStreamController.add(snapshot);
     });
   }
 
@@ -130,95 +145,16 @@ class UserProfileState extends State<UserProfile> {
                     ),
                     const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () =>
-                                      context.go('/showgroups', extra: {
-                                    'user': widget.user,
-                                    'visitor': widget.visitor,
-                                  }),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        _groupsCount.toString(),
-                                        style: CupertinoTheme.of(context)
-                                            .textTheme
-                                            .textStyle,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        "Groups",
-                                        style: CupertinoTheme.of(context)
-                                            .textTheme
-                                            .textStyle
-                                            .copyWith(
-                                                color:
-                                                    CupertinoColors.systemGrey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                            getGroup(),
                             const SizedBox(width: 20),
-                            GestureDetector(
-                              onTap: () => context.go('/showfollowers', extra: {
-                                'user': widget.user,
-                                'visitor': widget.visitor,
-                                'followers': true,
-                              }),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _followersCount.toString(),
-                                    style: CupertinoTheme.of(context)
-                                        .textTheme
-                                        .textStyle,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    "Followers",
-                                    style: CupertinoTheme.of(context)
-                                        .textTheme
-                                        .textStyle
-                                        .copyWith(
-                                            color: CupertinoColors.systemGrey),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            getFollowers(),
                             const SizedBox(width: 20),
-                            GestureDetector(
-                              onTap: () => context.go('/showfollowers', extra: {
-                                'user': widget.user,
-                                'visitor': widget.visitor,
-                                'followers': false,
-                              }),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _followingCount.toString(),
-                                    style: CupertinoTheme.of(context)
-                                        .textTheme
-                                        .textStyle,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    "Following",
-                                    style: CupertinoTheme.of(context)
-                                        .textTheme
-                                        .textStyle
-                                        .copyWith(
-                                            color: CupertinoColors.systemGrey),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            getFollowings(),
                           ],
                         ),
                       ],
@@ -295,10 +231,150 @@ class UserProfileState extends State<UserProfile> {
     );
   }
 
+  Widget getGroup() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => context.go('/showgroups', extra: {
+            'user': widget.user,
+            'visitor': widget.visitor,
+          }),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 200,
+            child: Column(
+              children: [
+                StreamBuilder<
+                    List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+                  stream: _groupsStreamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.data!.length.toString(),
+                        style: CupertinoTheme.of(context).textTheme.textStyle,
+                      );
+                    } else {
+                      return const CupertinoActivityIndicator();
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Groups",
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(color: CupertinoColors.systemGrey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getFollowers() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => context.go('/showfollowers', extra: {
+            'user': widget.user,
+            'visitor': widget.visitor,
+            'followers': true,
+          }),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 200,
+            child: Column(
+              children: [
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: _followersStreamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.hasData && snapshot.data!.data() != null
+                            ? snapshot.data!
+                                .data()!["followers"]
+                                .length
+                                .toString()
+                            : '0',
+                        style: CupertinoTheme.of(context).textTheme.textStyle,
+                      );
+                    } else {
+                      return const CupertinoActivityIndicator();
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Followers",
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(color: CupertinoColors.systemGrey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getFollowings() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => context.go('/showfollowers', extra: {
+            'user': widget.user,
+            'visitor': widget.visitor,
+            'followers': false,
+          }),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 200,
+            child: Column(
+              children: [
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: _followingStreamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.hasData && snapshot.data!.data() != null
+                            ? snapshot.data!
+                                .data()!["following"]
+                                .length
+                                .toString()
+                            : '0',
+                        style: CupertinoTheme.of(context).textTheme.textStyle,
+                      );
+                    } else {
+                      return const CupertinoActivityIndicator();
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Following",
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(color: CupertinoColors.systemGrey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
+    _groupsStreamController.close();
+    _followersStreamController.close();
+    _followingStreamController.close();
+    _followersStreamSubscription?.cancel();
+    _groupsStreamSubscription?.cancel();
     super.dispose();
-    _stream.drain();
   }
 
   void _signOut(BuildContext context) {
@@ -307,10 +383,14 @@ class UserProfileState extends State<UserProfile> {
   }
 
   _checkFollow() async {
-    await DatabaseService.isFollowing(
-            widget.user.username, widget.visitor!.username)
-        .then((value) => setState(() {
-              _isFollowing = value;
-            }));
+    if (widget.visitor != null) {
+      await DatabaseService.isFollowing(
+              widget.user.username, widget.visitor!.username)
+          .then((value) {
+        setState(() {
+          _isFollowing = value;
+        });
+      });
+    }
   }
 }

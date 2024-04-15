@@ -24,7 +24,7 @@ class GroupInfo extends StatefulWidget {
 }
 
 class GroupInfoState extends State<GroupInfo> {
-  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream = null;
+  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream;
   @override
   void initState() {
     super.initState();
@@ -75,46 +75,36 @@ class GroupInfoState extends State<GroupInfo> {
                     border: Border(
                         bottom: BorderSide(color: CupertinoColors.systemGrey)),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  child: Column(
                     children: [
-                      CreateImageWidget.getGroupImage(widget.group.imagePath!,
-                          small: true),
-                      const SizedBox(width: 20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.group.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            "Admin: ${widget.group.admin}",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: CupertinoColors.systemGrey,
-                            ),
+                          CreateImageWidget.getGroupImage(
+                              widget.group.imagePath!,
+                              small: true),
+                          const SizedBox(width: 20),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.group.name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "Admin: ${widget.group.admin}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: CupertinoColors.systemGrey,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: CupertinoColors.systemGrey,
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
                       const SizedBox(height: 10),
                       Text(
                         widget.group.description!,

@@ -74,39 +74,42 @@ class UserTileState extends State<UserTile> {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: () async {
-            try {
-              DatabaseService.toggleFollowUnfollow(
-                widget.user.username,
-                widget.visitor.username,
-              );
+        widget.user.username != widget.visitor.username
+            ? GestureDetector(
+                onTap: () async {
+                  try {
+                    DatabaseService.toggleFollowUnfollow(
+                      widget.user.username,
+                      widget.visitor.username,
+                    );
 
-              if (mounted) {
-                setState(() {
-                  _isFollowing = !_isFollowing;
-                });
-              }
-            } catch (error) {
-              debugPrint("Error occurred: $error");
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.only(right: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: CupertinoTheme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: CupertinoColors.white),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                _isFollowing ? "Following" : "Follow",
-                style: const TextStyle(color: CupertinoColors.white),
-              ),
-            ),
-          ),
-        ),
+                    if (mounted) {
+                      setState(() {
+                        _isFollowing = !_isFollowing;
+                      });
+                    }
+                  } catch (error) {
+                    debugPrint("Error occurred: $error");
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: CupertinoColors.white),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Text(
+                      _isFollowing ? "Following" : "Follow",
+                      style: const TextStyle(color: CupertinoColors.white),
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }

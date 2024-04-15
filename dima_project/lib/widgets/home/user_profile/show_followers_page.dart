@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -20,16 +22,25 @@ class ShowFollowers extends StatefulWidget {
 }
 
 class ShowFollowersState extends State<ShowFollowers> {
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> _followerStream;
-
+  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _followersStreamSubscription;
+  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
+      _followersStreamController =
+      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
   @override
   void initState() {
     super.initState();
     init();
+    debugPrint('visitor: ${widget.visitor?.username}');
+    debugPrint('user: ${widget.user.username}');
   }
 
   init() {
-    _followerStream = DatabaseService.getFollowersStream(widget.user.username);
+    _followersStreamSubscription =
+        DatabaseService.getFollowersStreamUser(widget.user.username)
+            .listen((snapshot) {
+      _followersStreamController.add(snapshot);
+    });
   }
 
   @override
@@ -40,27 +51,36 @@ class ShowFollowersState extends State<ShowFollowers> {
             ? const Text('Followers')
             : const Text('Following'),
       ),
-      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-        stream: _followerStream,
+      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _followersStreamController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
           }
-          final docs = snapshot.data ?? [];
-          if (docs.isEmpty) {
-            return Center(
-              child: widget.followers
-                  ? const Text('No followers')
-                  : const Text('Not following anyone'),
+          if (!snapshot.hasData || snapshot.data!.data() == null) {
+            return const CupertinoActivityIndicator();
+          }
+          if (widget.followers &&
+              snapshot.data!.data()!["followers"].length == 0) {
+            return const Center(
+              child: Text('No followers'),
+            );
+          }
+          if (!widget.followers &&
+              snapshot.data!.data()!["following"].length == 0) {
+            return const Center(
+              child: Text('Not following anyone'),
             );
           }
           return ListView.builder(
-            itemCount: docs.length,
+            itemCount: widget.followers
+                ? snapshot.data!.data()!["followers"].length
+                : snapshot.data!.data()!["following"].length,
             itemBuilder: (context, index) {
-              final followers = docs[index]['followers'] as List<dynamic>;
-              final following = docs[index]['following'] as List<dynamic>;
+              final followers = snapshot.data!.data()!["followers"];
+              final following = snapshot.data!.data()!["following"];
 
               final List<dynamic> usernames =
                   widget.followers ? followers : following;
@@ -73,9 +93,8 @@ class ShowFollowersState extends State<ShowFollowers> {
                 );
               }
 
-              final String username = usernames.first.toString();
+              final String username = usernames[index].toString();
 
-              debugPrint('username: $username');
               return FutureBuilder<UserData>(
                 future: DatabaseService.getUserDataFromUsername(
                     username.toString()),
@@ -98,5 +117,12 @@ class ShowFollowersState extends State<ShowFollowers> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _followersStreamSubscription?.cancel();
+    _followersStreamController.close();
+    super.dispose();
   }
 }

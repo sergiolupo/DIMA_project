@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 class Constants {
   static const primaryColor = CupertinoColors.systemPink;
-  static const primaryColorDark = CupertinoColors.systemBlue;
+  static const primaryColorDark = CupertinoColors.white;
   static final inputDecoration = BoxDecoration(
       color: CupertinoColors.white,
       borderRadius: BorderRadius.circular(8.0),
