@@ -48,34 +48,38 @@ class ImageInsertFormState extends State<ImageInsertForm> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        ClipOval(
-          child: Container(
-            width: 100,
-            height: 100,
-            color: CupertinoColors.lightBackgroundGray,
-            child: _selectedImagePath.isNotEmpty
-                ? Image.memory(
-                    _selectedImagePath,
-                    fit: BoxFit.cover,
-                  )
-                : const Icon(
-                    CupertinoIcons.photo,
-                    size: 50,
-                    color: CupertinoColors.systemGrey,
-                  ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        widget.imageForGroup == true
-            ? CupertinoButton.filled(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                onPressed: _pickImage,
-                child: const Text('Pick a Group Image'),
-              )
-            : CupertinoButton.filled(
-                onPressed: _pickImage,
-                child: const Text('Pick an Image'),
+        Stack(
+          children: [
+            ClipOval(
+              child: Container(
+                width: 100,
+                height: 100,
+                color: CupertinoColors.lightBackgroundGray,
+                child: _selectedImagePath.isNotEmpty
+                    ? Image.memory(
+                        _selectedImagePath,
+                        fit: BoxFit.cover,
+                      )
+                    : const Icon(
+                        CupertinoIcons.photo,
+                        size: 50,
+                        color: CupertinoColors.systemGrey,
+                      ),
               ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: CupertinoButton(
+                onPressed: _pickImage,
+                child: Icon(
+                  CupertinoIcons.photo_camera,
+                  color: CupertinoTheme.of(context).primaryColor,
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

@@ -128,14 +128,16 @@ class UserProfileState extends State<UserProfile> {
                                       CategoryIconMapper.iconForCategory(
                                           category),
                                       size: 24,
-                                      color: CupertinoColors.black,
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
                                       category,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                       ),
                                     ),
                                   ],
@@ -145,18 +147,13 @@ class UserProfileState extends State<UserProfile> {
                     ),
                     const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            getGroup(),
-                            const SizedBox(width: 20),
-                            getFollowers(),
-                            const SizedBox(width: 20),
-                            getFollowings(),
-                          ],
-                        ),
+                        getGroup(),
+                        const SizedBox(width: 20),
+                        getFollowers(),
+                        const SizedBox(width: 20),
+                        getFollowings(),
                       ],
                     ),
                     const SizedBox(height: 20),

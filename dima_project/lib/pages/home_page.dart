@@ -58,6 +58,10 @@ class HomePageState extends State<HomePage> {
                   label: 'Chat',
                 ),
                 BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.add),
+                  label: 'Create',
+                ),
+                BottomNavigationBarItem(
                   icon: Icon(CupertinoIcons.search),
                   label: 'Search',
                 ),
@@ -79,11 +83,14 @@ class HomePageState extends State<HomePage> {
                   );
                   break;
                 case 2:
+                  page = _buildCreatePage(context);
+                  break;
+                case 3:
                   page = SearchPage(
                     user: _userData!,
                   );
                   break;
-                case 3:
+                case 4:
                   page = UserProfile(
                     user: _userData!,
                   );
@@ -111,6 +118,31 @@ class HomePageState extends State<HomePage> {
       child: Center(
         child: Text(
           'News Page',
+          style: TextStyle(
+            fontSize: 24, // Adjust font size as needed
+            fontWeight: FontWeight.bold, // Adjust font weight as needed
+            color: CupertinoColors.black, // Adjust text color as needed
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreatePage(BuildContext context) {
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(
+          'Create',
+          style: TextStyle(
+            fontSize: 24, // Adjust font size as needed
+            fontWeight: FontWeight.bold, // Adjust font weight as needed
+            color: CupertinoColors.black, // Adjust text color as needed
+          ),
+        ),
+      ),
+      child: Center(
+        child: Text(
+          'Create Page',
           style: TextStyle(
             fontSize: 24, // Adjust font size as needed
             fontWeight: FontWeight.bold, // Adjust font weight as needed
