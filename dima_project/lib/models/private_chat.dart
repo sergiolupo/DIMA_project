@@ -11,9 +11,10 @@ class PrivateChat {
 
   static PrivateChat convertToPrivateChat(
       DocumentSnapshot documentSnapshot, String username) {
-    documentSnapshot['members'].remove(username);
     return PrivateChat(
-      user: documentSnapshot['members'][0],
+      user: documentSnapshot['members'][0] == username
+          ? documentSnapshot['members'][1]
+          : documentSnapshot['members'][0],
       visitor: username,
     );
   }

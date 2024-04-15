@@ -166,10 +166,21 @@ class ChatPageState extends State<ChatPage> {
 
       widget.privateChat == null
           ? DatabaseService.sendMessage(widget.group!.id, message)
-          : DatabaseService.sendMessage("", message);
+          : chats == null
+              ? await DatabaseService.sendFirstPrivateMessage(message)
+              : DatabaseService.sendMessage(null, message);
 
       setState(() {
         messageEditingController.clear();
+        if (widget.privateChat != null && chats == null) {
+          DatabaseService.getPrivateChats(
+                  widget.privateChat!.user, widget.privateChat!.visitor)
+              .then((val) {
+            setState(() {
+              chats = val;
+            });
+          });
+        }
       });
     }
   }

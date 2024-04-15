@@ -222,10 +222,10 @@ class DatabaseService {
     });
   }
 
-  static void sendMessage(String id, Message message) async {
+  static void sendMessage(String? id, Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
-    if (message.isGroupMessage) {
+    if (id != null) {
       groupsRef.doc(id).collection('messages').add(messageMap);
       groupsRef.doc(id).update({
         'recentMessage': message.content,
@@ -233,14 +233,32 @@ class DatabaseService {
         'recentMessageTime': message.time,
       });
     } else {
-      QuerySnapshot<Object?> value = await privateChatRef.where("members",
-          arrayContainsAny: [message.sender, message.receiver]).get();
+      List<dynamic> members = [message.sender, message.receiver];
+      members.sort();
 
+      QuerySnapshot<Object?> value =
+          await privateChatRef.where("members", isEqualTo: members).get();
       await privateChatRef
           .doc(value.docs.first.id)
           .collection('messages')
           .add(messageMap);
     }
+  }
+
+  static Future sendFirstPrivateMessage(Message message) async {
+    Map<String, dynamic> messageMap = message.toMap();
+
+    List<dynamic> members = [message.sender, message.receiver];
+    members.sort();
+
+    await privateChatRef.add({
+      'members': members,
+    }).then((value) async {
+      return await privateChatRef
+          .doc(value.id)
+          .collection('messages')
+          .add(messageMap);
+    });
   }
 
   static Stream<List<DocumentSnapshot<Map<String, dynamic>>>> getGroupsStream(
@@ -318,22 +336,15 @@ class DatabaseService {
 
 // Assuming privateChatRef is your reference to the private chat collection
 
-  static Future<Stream<QuerySnapshot>> getPrivateChats(
+  static Future<Stream<QuerySnapshot>?> getPrivateChats(
       String user, String visitor) async {
-    // Query private chats where both users are members
     List<dynamic> members = [user, visitor];
-
+    members.sort();
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await privateChatRef.where("members", arrayContainsAny: members).get();
-    if (querySnapshot.docs.firstOrNull == null) {
-      DocumentReference newPrivateChatRef = await privateChatRef.add({
-        'members': [user, visitor],
-      });
+        await privateChatRef.where("members", isEqualTo: members).get();
 
-      return newPrivateChatRef
-          .collection('messages')
-          .orderBy('time')
-          .snapshots();
+    if (querySnapshot.docs.firstOrNull == null) {
+      return null;
     } else {
       // If a private chat exists, return its message collection
       return querySnapshot.docs.first.reference
