@@ -2,6 +2,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
+import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
@@ -75,7 +76,7 @@ class HomePageState extends State<HomePage> {
               late Widget page;
               switch (index) {
                 case 0:
-                  page = _buildNewsPage(context);
+                  page = NewsPage(user: _userData!);
                   break;
                 case 1:
                   page = ListChatPage(

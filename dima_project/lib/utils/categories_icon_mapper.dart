@@ -1,3 +1,4 @@
+import 'package:dima_project/models/news/category_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -17,6 +18,43 @@ class CategoryIconMapper {
     'Technology',
     'Volunteering',
   ];
+
+  static getCategoryModel(String category) {
+    switch (category) {
+      case 'Environment':
+        return CategoryModel(
+            'Environment', 'assets/categories/environment.jpg');
+      case 'Cooking':
+        return CategoryModel('Cooking', 'assets/categories/cooking.jpg');
+      case 'Culture':
+        return CategoryModel('Culture', 'assets/categories/culture.jpg');
+      case 'Film & TV Series':
+        return CategoryModel('Film & TV Series', 'assets/categories/films.jpg');
+      case 'Books':
+        return CategoryModel('Books', 'assets/categories/books.jpg');
+      case 'Gossip':
+        return CategoryModel('Gossip', 'assets/categories/gossip.jpg');
+      case 'Music':
+        return CategoryModel('Music', 'assets/categories/music.jpg');
+      case 'Politics':
+        return CategoryModel('Politics', 'assets/categories/politics.jpg');
+      case 'Health & Wellness':
+        return CategoryModel(
+            'Health & Wellness', 'assets/categories/health.jpg');
+      case 'School & Education':
+        return CategoryModel(
+            'School & Education', 'assets/categories/school.jpg');
+      case 'Sports':
+        return CategoryModel('Sports', 'assets/categories/sports.jpg');
+      case 'Technology':
+        return CategoryModel('Technology', 'assets/categories/technology.jpg');
+      case 'Volunteering':
+        return CategoryModel(
+            'Volunteering', 'assets/categories/volunteering.jpg');
+      default:
+        return CategoryModel('Politics', 'assets/categories/politics.jpg');
+    }
+  }
 
   static iconForCategory(String category) {
     switch (category) {
