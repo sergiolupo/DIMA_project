@@ -76,7 +76,8 @@ class HomePageState extends State<HomePage> {
               late Widget page;
               switch (index) {
                 case 0:
-                  page = NewsPage(user: _userData!);
+                  page =
+                      _buildCreatePage(context); //NewsPage(user: _userData!);
                   break;
                 case 1:
                   page = ListChatPage(
@@ -99,7 +100,11 @@ class HomePageState extends State<HomePage> {
                 default:
                   page = _buildNewsPage(context);
               }
-              return page;
+              return CupertinoTabView(
+                builder: (BuildContext context) {
+                  return page;
+                },
+              );
             },
           );
   }

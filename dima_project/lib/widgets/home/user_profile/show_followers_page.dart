@@ -47,6 +47,13 @@ class ShowFollowersState extends State<ShowFollowers> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: const Icon(CupertinoIcons.back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         middle: widget.followers
             ? const Text('Followers')
             : const Text('Following'),

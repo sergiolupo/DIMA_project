@@ -93,18 +93,6 @@ final GoRouter _router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/userprofile',
-      builder: (BuildContext context, GoRouterState state) {
-        Map<String, dynamic> data = state.extra as Map<String, dynamic>;
-        UserData user = data['user'] as UserData;
-        UserData visitor = data['visitor'] as UserData;
-        return UserProfile(
-          user: user,
-          visitor: visitor,
-        );
-      },
-    ),
-    GoRoute(
       path: '/creategroup',
       builder: (BuildContext context, GoRouterState state) {
         UserData user = state.extra as UserData;

@@ -1,8 +1,8 @@
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 class UserTile extends StatefulWidget {
   final UserData user;
@@ -54,8 +54,12 @@ class UserTileState extends State<UserTile> {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              context.go('/userprofile',
-                  extra: {"user": widget.user, "visitor": widget.visitor});
+              Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                return UserProfile(
+                  user: widget.user,
+                  visitor: widget.visitor,
+                );
+              }));
             },
             child: CupertinoListTile(
               leading: ClipOval(

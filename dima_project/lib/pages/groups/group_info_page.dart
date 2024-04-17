@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -195,8 +196,11 @@ class GroupInfoState extends State<GroupInfo> {
 
             return GestureDetector(
               onTap: () {
-                context.go('/userprofile',
-                    extra: {"user": user, "visitor": widget.user});
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) =>
+                            UserProfile(user: user, visitor: widget.user)));
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),
