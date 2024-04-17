@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -193,40 +193,7 @@ class GroupInfoState extends State<GroupInfo> {
           itemCount: members.length,
           itemBuilder: (context, index) {
             final user = UserData.convertToUserData(members[index]);
-
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) =>
-                            UserProfile(user: user, visitor: widget.user)));
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: CupertinoColors.systemGrey,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    CreateImageWidget.getUserImage(user.imagePath!,
-                        small: true),
-                    const SizedBox(width: 20),
-                    Text(
-                      user.username,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return UserTile(user: user, visitor: widget.user);
           },
         );
       },

@@ -8,7 +8,6 @@ import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/pages/search_page.dart';
-import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';

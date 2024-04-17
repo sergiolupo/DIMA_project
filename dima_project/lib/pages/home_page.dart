@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   late int? _currentIndex;
   UserData? _userData;
+  final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
   @override
   void initState() {
     super.initState();
@@ -34,6 +35,7 @@ class HomePageState extends State<HomePage> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return _userData == null
         ? const CupertinoPageScaffold(
@@ -45,9 +47,17 @@ class HomePageState extends State<HomePage> {
             tabBar: CupertinoTabBar(
               currentIndex: _currentIndex!,
               onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
+                if (_currentIndex == index) {
+                  // Get the current tab's navigator key
+                  final navigatorKey = _navigatorKeys[index];
+                  // Pop to the first route of the current tab's navigator
+                  navigatorKey?.currentState
+                      ?.popUntil((route) => route.isFirst);
+                } else {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                }
               },
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
@@ -76,8 +86,9 @@ class HomePageState extends State<HomePage> {
               late Widget page;
               switch (index) {
                 case 0:
-                  page =
-                      _buildCreatePage(context); //NewsPage(user: _userData!);
+                  page = NewsPage(
+                    user: _userData!,
+                  );
                   break;
                 case 1:
                   page = ListChatPage(
@@ -100,7 +111,11 @@ class HomePageState extends State<HomePage> {
                 default:
                   page = _buildNewsPage(context);
               }
+              // Initialize a GlobalKey for each tab's navigator
+              _navigatorKeys.putIfAbsent(
+                  index, () => GlobalKey<NavigatorState>());
               return CupertinoTabView(
+                navigatorKey: _navigatorKeys[index], // Assign the navigator key
                 builder: (BuildContext context) {
                   return page;
                 },
