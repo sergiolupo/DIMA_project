@@ -60,8 +60,8 @@ class _NewsPageState extends State<NewsPage> {
         middle: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Flutter"),
-            Text("News",
+            Text("AGOR"),
+            Text("APP",
                 style: TextStyle(
                     color: CupertinoColors.activeBlue,
                     fontWeight: FontWeight.bold))
