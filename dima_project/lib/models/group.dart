@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/last_message.dart';
 
 class Group {
   final String name;
@@ -7,6 +8,8 @@ class Group {
   final String? imagePath;
   final String? description;
   final List<String>? categories;
+  final LastMessage? lastMessage;
+
   Group({
     required this.name,
     required this.id,
@@ -14,6 +17,7 @@ class Group {
     this.imagePath,
     this.description,
     this.categories,
+    this.lastMessage,
   });
 
   static Group convertToGroup(DocumentSnapshot documentSnapshot) {
@@ -27,6 +31,13 @@ class Group {
           .map((categoryMap) => categoryMap['value'].toString())
           .toList()
           .cast<String>(),
+      lastMessage: documentSnapshot['recentMessage'] == ""
+          ? null
+          : LastMessage(
+              recentMessage: documentSnapshot['recentMessage'],
+              recentMessageSender: documentSnapshot['recentMessageSender'],
+              recentMessageTimestamp: documentSnapshot['recentMessageTime'],
+            ),
     );
   }
 }

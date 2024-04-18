@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/last_message.dart';
 
 class PrivateChat {
   final String user;
   final String visitor;
-
+  final LastMessage? lastMessage;
   PrivateChat({
     required this.visitor,
     required this.user,
+    this.lastMessage,
   });
 
   static PrivateChat convertToPrivateChat(
@@ -16,6 +18,13 @@ class PrivateChat {
           ? documentSnapshot['members'][1]
           : documentSnapshot['members'][0],
       visitor: username,
+      lastMessage: documentSnapshot['recentMessage'] == ""
+          ? null
+          : LastMessage(
+              recentMessage: documentSnapshot['recentMessage'],
+              recentMessageSender: documentSnapshot['recentMessageSender'],
+              recentMessageTimestamp: documentSnapshot['recentMessageTime'],
+            ),
     );
   }
 }

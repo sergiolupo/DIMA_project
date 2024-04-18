@@ -110,10 +110,10 @@ class DatabaseService {
         'groupImage': '',
         'admin': group.admin,
         'description': group.description,
-        'messages': [],
         'groupId': '',
         'recentMessage': "",
         'recentMessageSender': "",
+        'recentMessageTime': "",
         "members": FieldValue.arrayUnion([group.admin]),
         "categories": serializedList,
       });
@@ -261,6 +261,11 @@ class DatabaseService {
           .doc(value.docs.first.id)
           .collection('messages')
           .add(messageMap);
+      privateChatRef.doc(value.docs.first.id).update({
+        'recentMessage': message.content,
+        'recentMessageSender': message.sender,
+        'recentMessageTime': message.time,
+      });
     }
   }
 
@@ -272,6 +277,9 @@ class DatabaseService {
 
     await privateChatRef.add({
       'members': members,
+      'recentMessage': message.content,
+      'recentMessageSender': message.sender,
+      'recentMessageTime': message.time,
     }).then((value) async {
       return await privateChatRef
           .doc(value.id)

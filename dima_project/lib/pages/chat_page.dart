@@ -85,42 +85,42 @@ class ChatPageState extends State<ChatPage> {
               )
             : null,
       ),
-      child: Stack(
+      child: Column(
         children: <Widget>[
-          chatMessages(),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: CupertinoColors.inactiveGray,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CupertinoTextField(
-                      controller: messageEditingController,
-                      style: const TextStyle(color: CupertinoColors.white),
-                      placeholder: "Type a message...",
-                      placeholderStyle:
-                          const TextStyle(color: CupertinoColors.white),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: CupertinoColors.white),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      sendMessage();
-                    },
-                    child: const Icon(CupertinoIcons.paperplane_fill,
-                        color: CupertinoColors.white),
-                  ),
-                ],
+          Expanded(
+            child: chatMessages(),
+          ),
+          _buildInputBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputBar() {
+    return Container(
+      color: CupertinoColors.inactiveGray,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      child: Row(
+        children: [
+          Expanded(
+            child: CupertinoTextField(
+              controller: messageEditingController,
+              style: const TextStyle(color: CupertinoColors.white),
+              placeholder: "Type a message...",
+              placeholderStyle: const TextStyle(color: CupertinoColors.white),
+              decoration: BoxDecoration(
+                border: Border.all(color: CupertinoColors.white),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
+          ),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () {
+              sendMessage();
+            },
+            child: const Icon(CupertinoIcons.paperplane_fill,
+                color: CupertinoColors.white),
           ),
         ],
       ),
@@ -133,6 +133,8 @@ class ChatPageState extends State<ChatPage> {
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? ListView.builder(
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
