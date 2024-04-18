@@ -49,6 +49,13 @@ class ChatTileState extends State<ChatTile> {
               user: widget.user,
               group: widget.group,
               privateChat: widget.privateChat,
+              onGoBack: () {
+                setState(() {
+                  _lastMessage = widget.group != null
+                      ? widget.group!.lastMessage
+                      : widget.privateChat!.lastMessage;
+                });
+              },
             ),
           ),
         );

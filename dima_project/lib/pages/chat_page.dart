@@ -13,11 +13,13 @@ class ChatPage extends StatefulWidget {
   final Group? group;
   final UserData user;
   final PrivateChat? privateChat;
+  final Function? onGoBack;
   const ChatPage({
     super.key,
     this.group,
     required this.user,
     this.privateChat,
+    this.onGoBack,
   });
 
   @override
@@ -63,6 +65,7 @@ class ChatPageState extends State<ChatPage> {
         leading: CupertinoButton(
           onPressed: () {
             if (Navigator.of(context).canPop()) {
+              if (widget.onGoBack != null) widget.onGoBack!();
               Navigator.of(context).pop();
             } else {
               context.go("/home", extra: 1);
