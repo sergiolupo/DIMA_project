@@ -1,10 +1,10 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 class GroupTile extends StatefulWidget {
   final UserData user;
@@ -73,8 +73,14 @@ class GroupTileState extends State<GroupTile> {
           child: GestureDetector(
             onTap: () {
               if (_isJoined) {
-                context.go('/chat',
-                    extra: {"group": widget.group, "user": widget.user});
+                Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute(
+                    builder: (context) => ChatPage(
+                      user: widget.user,
+                      group: widget.group,
+                    ),
+                  ),
+                );
               }
             },
             child: CupertinoListTile(

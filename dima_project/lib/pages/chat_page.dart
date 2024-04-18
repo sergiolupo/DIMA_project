@@ -62,7 +62,11 @@ class ChatPageState extends State<ChatPage> {
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
-            context.go("/home", extra: 1);
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go("/home", extra: 1);
+            }
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),

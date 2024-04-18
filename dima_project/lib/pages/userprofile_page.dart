@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -182,13 +183,18 @@ class UserProfileState extends State<UserProfile> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 8),
                               onPressed: () {
-                                context.go('/chat', extra: {
-                                  'privateChat': PrivateChat(
-                                    visitor: widget.visitor!.username,
-                                    user: widget.user.username,
+                                final chat = PrivateChat(
+                                  visitor: widget.visitor!.username,
+                                  user: widget.user.username,
+                                );
+                                Navigator.of(context, rootNavigator: true).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => ChatPage(
+                                      user: widget.user,
+                                      privateChat: chat,
+                                    ),
                                   ),
-                                  'user': widget.user,
-                                });
+                                );
                               },
                               child: const Icon(
                                 FontAwesomeIcons.envelope,
