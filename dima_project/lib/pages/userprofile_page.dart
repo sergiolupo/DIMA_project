@@ -393,13 +393,20 @@ class UserProfileState extends State<UserProfile> {
 
   _checkFollow() async {
     if (widget.visitor != null) {
-      await DatabaseService.isFollowing(
-              widget.user.username, widget.visitor!.username)
-          .then((value) {
-        setState(() {
-          _isFollowing = value;
-        });
-      });
+      // Listen for updates on the isFollowing stream
+      final isFollowingStream = DatabaseService.isFollowing(
+        widget.user.username,
+        widget.visitor!.username,
+      );
+
+      // Listen for updates and update _isFollowing accordingly
+      await for (final isFollowing in isFollowingStream) {
+        if (mounted) {
+          setState(() {
+            _isFollowing = isFollowing;
+          });
+        }
+      }
     }
   }
 }

@@ -177,21 +177,11 @@ class DatabaseService {
     });
   }
 
-  static isUserJoined(String groupId, String username) async* {
-    DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await groupsRef.doc(groupId).get();
-    yield groupDoc['members'].contains(username);
-
-    final snapshos = groupsRef.doc(groupId).snapshots();
-    await for (var snapshot in snapshos) {
-      yield snapshot['members'].contains(username);
-    }
-  }
-
   static Future<void> toggleGroupJoin(
       String groupId, String uid, String username) async {
-    bool isJoined = await isUserJoined(groupId, username)
-        .first; // Wait for the first value from the stream
+    DocumentSnapshot<Map<String, dynamic>> groupDoc =
+        await groupsRef.doc(groupId).get();
+    bool isJoined = groupDoc['members'].contains(username);
 
     if (isJoined) {
       await Future.wait([
@@ -423,13 +413,16 @@ class DatabaseService {
     });
   }
 
-  static Future<bool> isFollowing(String user, String visitor) async {
+  static isFollowing(String user, String visitor) async* {
     DocumentSnapshot userDoc = await followersRef.doc(user).get();
-    List<dynamic> followers = userDoc['followers'];
-    return followers.contains(visitor);
+    yield userDoc['followers'].contains(visitor);
+    final snapshot = followersRef.doc(user).snapshots();
+    await for (var snapshot in snapshot) {
+      yield snapshot['followers'].contains(visitor);
+    }
   }
 
-  static void toggleFollowUnfollow(String user, String visitor) async {
+  static Future<void> toggleFollowUnfollow(String user, String visitor) async {
     debugPrint('Toggling follow/unfollow');
 
     debugPrint('User: $user');
@@ -446,15 +439,15 @@ class DatabaseService {
       debugPrint('Visitor is following the user, unfollowing');
       followers.remove(visitor);
       following.remove(user);
-      followersRef.doc(user).update({'followers': followers});
-      followersRef.doc(visitor).update({'following': following});
+      await followersRef.doc(user).update({'followers': followers});
+      await followersRef.doc(visitor).update({'following': following});
     } else {
       // Visitor is not following the user, follow
       debugPrint('Visitor is not following the user, following');
       followers.add(visitor);
       following.add(user);
-      followersRef.doc(user).update({'followers': followers});
-      followersRef.doc(visitor).update({'following': following});
+      await followersRef.doc(user).update({'followers': followers});
+      await followersRef.doc(visitor).update({'following': following});
     }
   }
 
