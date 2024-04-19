@@ -9,6 +9,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -176,12 +177,15 @@ class DatabaseService {
     });
   }
 
-  static isUserJoined(String groupId, String username) async {
+  static isUserJoined(String groupId, String username) async* {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
         await groupsRef.doc(groupId).get();
+    yield groupDoc['members'].contains(username);
 
-    List<dynamic> members = groupDoc['members'];
-    return members.contains(username);
+    final snapshos = groupsRef.doc(groupId).snapshots();
+    await for (var snapshot in snapshos) {
+      yield snapshot['members'].contains(username);
+    }
   }
 
   static Future toggleGroupJoin(String groupId, String uid, String username) {
@@ -304,11 +308,13 @@ class DatabaseService {
       for (var change in snapshot.docChanges) {
         final groupId = change.doc.id;
         final group = Group.convertToGroup(change.doc);
+        final members = group.members;
 
-        if (groupIds.contains(groupId)) {
-          if (change.type == DocumentChangeType.removed) {
-            groupsList.removeWhere((g) => g.id == groupId);
-          } else {
+        if (change.type == DocumentChangeType.removed) {
+          groupsList.removeWhere((g) => g.id == groupId);
+          yield groupsList;
+        } else {
+          if (members!.contains(username)) {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
                 groupsList.indexWhere((g) => g.id == groupId);
@@ -317,8 +323,11 @@ class DatabaseService {
             } else {
               groupsList.add(group);
             }
+            yield groupsList;
+          } else {
+            groupsList.removeWhere((g) => g.id == groupId);
+            yield groupsList;
           }
-          yield groupsList;
         }
       }
     }

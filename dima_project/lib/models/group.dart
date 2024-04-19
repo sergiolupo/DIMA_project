@@ -9,7 +9,7 @@ class Group {
   final String? description;
   final List<String>? categories;
   final LastMessage? lastMessage;
-
+  final List<String>? members;
   Group({
     required this.name,
     required this.id,
@@ -18,6 +18,7 @@ class Group {
     this.description,
     this.categories,
     this.lastMessage,
+    this.members,
   });
 
   static Group convertToGroup(DocumentSnapshot documentSnapshot) {
@@ -38,6 +39,10 @@ class Group {
               recentMessageSender: documentSnapshot['recentMessageSender'],
               recentMessageTimestamp: documentSnapshot['recentMessageTime'],
             ),
+      members: (documentSnapshot['members'] as List<dynamic>)
+          .map((member) => member.toString())
+          .toList()
+          .cast<String>(),
     );
   }
 }
