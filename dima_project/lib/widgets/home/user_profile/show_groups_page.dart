@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -19,7 +18,7 @@ class ShowGroupsPage extends StatefulWidget {
 }
 
 class ShowGroupsPageState extends State<ShowGroupsPage> {
-  late Stream<List<DocumentSnapshot<Map<String, dynamic>>>> groupsStream;
+  late Stream<List<Group>> groupsStream;
 
   @override
   void initState() {
@@ -44,7 +43,7 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
         ),
         middle: const Text('Groups'),
       ),
-      child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+      child: StreamBuilder<List<Group>>(
         stream: groupsStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -53,7 +52,8 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
             );
           }
           final docs = snapshot.data ?? [];
-          if (docs.isEmpty) {
+          if (docs.isEmpty &&
+              snapshot.connectionState == ConnectionState.active) {
             return const Center(
               child: Text("No groups found"),
             );
@@ -62,10 +62,9 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final group = Group.convertToGroup(docs[index]);
               return GroupTile(
                 user: widget.user,
-                group: group,
+                group: docs[index],
                 visitor: widget.visitor,
               );
             },

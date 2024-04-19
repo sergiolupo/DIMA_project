@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -19,8 +18,8 @@ class ListChatPage extends StatefulWidget {
 }
 
 class ListChatPageState extends State<ListChatPage> {
-  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _privateChatsStream;
-  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _groupsStream;
+  Stream<List<PrivateChat>>? _privateChatsStream;
+  Stream<List<Group>>? _groupsStream;
 
   String groupName = "";
   int idx = 0;
@@ -100,25 +99,26 @@ class ListChatPageState extends State<ListChatPage> {
       visible: idx == 0,
       child: SizedBox(
         height: MediaQuery.of(context).size.height - 200,
-        child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+        child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
+            debugPrint("snapshot1: $snapshot");
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CupertinoActivityIndicator(),
+              );
+            }
+
             if (snapshot.hasData) {
               var data = snapshot.data!;
               if (data.isNotEmpty) {
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-                    if ((data[index].data() as Map<String, dynamic>)
-                        .containsKey("groupId")) {
-                      final group = Group.convertToGroup(data[index]);
-                      return ChatTile(
-                        user: widget.user,
-                        group: group,
-                      );
-                    } else {
-                      return Container();
-                    }
+                    return ChatTile(
+                      user: widget.user,
+                      group: data[index],
+                    );
                   },
                 );
               } else {
@@ -171,7 +171,7 @@ class ListChatPageState extends State<ListChatPage> {
       visible: idx == 1,
       child: SizedBox(
         height: MediaQuery.of(context).size.height - 200,
-        child: StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+        child: StreamBuilder<List<PrivateChat>>(
           stream: _privateChatsStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -180,14 +180,9 @@ class ListChatPageState extends State<ListChatPage> {
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-                    if (data[index].data()!.containsKey("groupId")) {
-                      return Container();
-                    }
-                    final privateChat = PrivateChat.convertToPrivateChat(
-                        data[index], widget.user.username);
                     return ChatTile(
                       user: widget.user,
-                      privateChat: privateChat,
+                      privateChat: data[index],
                     );
                   },
                 );

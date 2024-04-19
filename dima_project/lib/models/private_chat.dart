@@ -5,10 +5,12 @@ class PrivateChat {
   final String user;
   final String visitor;
   final LastMessage? lastMessage;
+  final String? id;
   PrivateChat({
     required this.visitor,
     required this.user,
     this.lastMessage,
+    this.id,
   });
 
   static PrivateChat convertToPrivateChat(
@@ -25,6 +27,7 @@ class PrivateChat {
               recentMessageSender: documentSnapshot['recentMessageSender'],
               recentMessageTimestamp: documentSnapshot['recentMessageTime'],
             ),
+      id: documentSnapshot.id,
     );
   }
 }

@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class DatabaseService {
@@ -29,6 +31,7 @@ class DatabaseService {
       'imageUrl': imageUrl,
       'selectedCategories': serializedList,
       'groups': [],
+      'privateChats': [],
     });
 
     await followersRef.doc(user.username).set({
@@ -76,25 +79,6 @@ class DatabaseService {
     }
   }
 
-  static Future<List<DocumentSnapshot<Map<String, dynamic>>>> getGroups(
-      String uid) async {
-    DocumentSnapshot<Map<String, dynamic>> groupsSnapshot =
-        await usersRef.doc(uid).get();
-
-    List<Map<String, dynamic>> groups =
-        List<Map<String, dynamic>>.from(groupsSnapshot['groups']);
-
-    List<DocumentSnapshot<Map<String, dynamic>>> result = [];
-    if (groups.isNotEmpty) {
-      for (Map<String, dynamic> groupId in groups) {
-        DocumentSnapshot<Map<String, dynamic>> groupDoc =
-            await groupsRef.doc(groupId["groupId"]).get();
-        result.add(groupDoc);
-      }
-    }
-    return result;
-  }
-
   //create a group
   static Future<void> createGroup(
     Group group,
@@ -114,8 +98,8 @@ class DatabaseService {
         'recentMessage': "",
         'recentMessageSender': "",
         'recentMessageTime': "",
-        "members": FieldValue.arrayUnion([group.admin]),
-        "categories": serializedList,
+        'members': FieldValue.arrayUnion([group.admin]),
+        'categories': serializedList,
       });
 
       String imageUrl = imagePath.toString() == '[]'
@@ -127,13 +111,9 @@ class DatabaseService {
         'groupId': docRef.id,
         'groupImage': imageUrl,
       });
-      DocumentReference userDocumentReference = usersRef.doc(uid);
-
-      return await userDocumentReference.update({
+      return await usersRef.doc(uid).update({
         'groups': FieldValue.arrayUnion([
-          {
-            'groupId': docRef.id,
-          }
+          docRef.id,
         ])
       });
     } catch (e) {
@@ -211,9 +191,7 @@ class DatabaseService {
             'members': FieldValue.arrayRemove([username])
           }),
           usersRef.doc(uid).update({
-            'groups': FieldValue.arrayRemove([
-              {'groupId': groupId}
-            ])
+            'groups': FieldValue.arrayRemove([groupId])
           }),
         ]).then((_) {
           return groupsRef.doc(groupId).get().then((groupDoc) {
@@ -281,6 +259,22 @@ class DatabaseService {
       'recentMessageSender': message.sender,
       'recentMessageTime': message.time,
     }).then((value) async {
+      final id = value.id;
+
+      usersRef.where('username', isEqualTo: message.sender).get().then((value) {
+        usersRef.doc(value.docs.first.id).update({
+          'privateChats': FieldValue.arrayUnion([id])
+        });
+      });
+      usersRef
+          .where('username', isEqualTo: message.receiver)
+          .get()
+          .then((value) {
+        usersRef.doc(value.docs.first.id).update({
+          'privateChats': FieldValue.arrayUnion([id])
+        });
+      });
+
       return await privateChatRef
           .doc(value.id)
           .collection('messages')
@@ -288,22 +282,91 @@ class DatabaseService {
     });
   }
 
-  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>> getGroupsStream(
-      String username) {
-    final query = groupsRef.where('members', arrayContains: username);
-    // Return a stream of snapshots of the documents in the query result
-    return query.snapshots().map((snapshot) =>
-        snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
+  static Stream<List<Group>> getGroupsStream(String username) async* {
+    final groupIds = await usersRef
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) {
+      return value['groups'];
+    });
+
+    final groupsList = <Group>[];
+    for (var groupId in groupIds) {
+      final snapshot = await groupsRef.doc(groupId).get();
+      if (snapshot.exists) {
+        groupsList.add(Group.convertToGroup(snapshot));
+      }
+    }
+    yield groupsList; // yield the initial list of groups
+    final snapshots =
+        groupsRef.snapshots(); // listen to changes in the groups collection
+
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final groupId = change.doc.id;
+        final group = Group.convertToGroup(change.doc);
+
+        if (groupIds.contains(groupId)) {
+          if (change.type == DocumentChangeType.removed) {
+            groupsList.removeWhere((g) => g.id == groupId);
+          } else {
+            // DocumentChangeType.added or DocumentChangeType.modified
+            final existingGroupIndex =
+                groupsList.indexWhere((g) => g.id == groupId);
+            if (existingGroupIndex != -1) {
+              groupsList[existingGroupIndex] = group;
+            } else {
+              groupsList.add(group);
+            }
+          }
+          yield groupsList;
+        }
+      }
+    }
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getGroupsStreamUser(String username) {
-    // Fetch all documents from Firestore collection
-    final query =
-        groupsRef.where('members', arrayContains: username).snapshots();
-    return query.map((snapshot) {
-      return snapshot.docs;
+  static Stream<List<PrivateChat>> getPrivateChatsStream(
+      String username) async* {
+    final privateChats = await usersRef
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) {
+      return value['privateChats'];
     });
+    final chatsList = <PrivateChat>[];
+    for (var id in privateChats) {
+      final snapshot = await privateChatRef.doc(id).get();
+      if (snapshot.exists) {
+        chatsList.add(PrivateChat.convertToPrivateChat(snapshot, username));
+      }
+    }
+    yield chatsList; // yield the initial list of groups
+
+    final snapshots = privateChatRef
+        .snapshots(); // listen to changes in the groups collection
+
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final id = change.doc.id;
+        final privateChat =
+            PrivateChat.convertToPrivateChat(change.doc, username);
+
+        if (privateChats.contains(id)) {
+          if (change.type == DocumentChangeType.removed) {
+            chatsList.removeWhere((g) => g.id == id);
+          } else {
+            // DocumentChangeType.added or DocumentChangeType.modified
+            final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
+            if (existingGroupIndex != -1) {
+              chatsList[existingGroupIndex] = privateChat;
+            } else {
+              chatsList.add(privateChat);
+            }
+          }
+          yield chatsList;
+        }
+      }
+    }
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getFollowersStreamUser(
@@ -400,11 +463,13 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>>?
-      getPrivateChatsStream(String username) {
-    final query = privateChatRef.where('members', arrayContains: username);
-    // Return a stream of snapshots of the documents in the query result
-    return query.snapshots().map((snapshot) =>
-        snapshot.docs.cast<DocumentSnapshot<Map<String, dynamic>>>());
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getGroupsStreamUser(String username) {
+    // Fetch all documents from Firestore collection
+    final query =
+        groupsRef.where('members', arrayContains: username).snapshots();
+    return query.map((snapshot) {
+      return snapshot.docs;
+    });
   }
 }

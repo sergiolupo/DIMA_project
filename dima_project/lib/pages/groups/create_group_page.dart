@@ -172,14 +172,16 @@ class CreateGroupPageState extends State<CreateGroupPage> {
     );
   }
 
-  void createGroup(Group group, Uint8List imagePath) {
+  void createGroup(Group group, Uint8List imagePath) async {
     if (_formKey.currentState!.validate()) {
-      DatabaseService.createGroup(
+      await DatabaseService.createGroup(
           group, FirebaseAuth.instance.currentUser!.uid, imagePath);
-      context.go(
-        '/home',
-        extra: 1,
-      );
+      if (mounted) {
+        context.go(
+          '/home',
+          extra: 1,
+        );
+      }
     }
   }
 }
