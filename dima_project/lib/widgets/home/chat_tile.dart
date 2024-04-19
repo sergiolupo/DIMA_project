@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
@@ -21,7 +23,7 @@ class ChatTile extends StatefulWidget {
 class ChatTileState extends State<ChatTile> {
   UserData? _user;
 
-  LastMessage? _lastMessage;
+  Stream<LastMessage>? _lastMessage;
 
   @override
   void initState() {
@@ -29,9 +31,7 @@ class ChatTileState extends State<ChatTile> {
     if (widget.privateChat != null) {
       getUserData();
     }
-    _lastMessage = widget.group != null
-        ? widget.group!.lastMessage
-        : widget.privateChat!.lastMessage;
+    _subscribe();
   }
 
   getUserData() async {
@@ -39,6 +39,13 @@ class ChatTileState extends State<ChatTile> {
         .then((value) => setState(() {
               _user = value;
             }));
+  }
+
+  _subscribe() {
+    _lastMessage = DatabaseService.getLastMessageStream(
+      widget.group != null ? widget.group!.id : widget.privateChat!.id!,
+      widget.group != null ? true : false,
+    );
   }
 
   @override
@@ -72,14 +79,21 @@ class ChatTileState extends State<ChatTile> {
                 : widget.group!.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: _lastMessage == null
-              ? Text("Join the conversation as ${widget.user.username}")
-              : Text(
-                  _lastMessage!.recentMessageSender == widget.user.username
-                      ? "You: ${_lastMessage!.recentMessage}"
-                      : "${_lastMessage!.recentMessageSender}: ${_lastMessage!.recentMessage}",
+          subtitle: StreamBuilder<LastMessage>(
+            stream: _lastMessage,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.data!.recentMessageSender == widget.user.username
+                      ? "You: ${snapshot.data!.recentMessage}"
+                      : "${snapshot.data!.recentMessageSender}: ${snapshot.data!.recentMessage}",
                   overflow: TextOverflow.ellipsis,
-                ),
+                );
+              } else {
+                return Text("Join the conversation as ${widget.user.username}");
+              }
+            },
+          ),
         ),
       ),
     );

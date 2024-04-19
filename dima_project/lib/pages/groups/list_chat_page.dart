@@ -102,7 +102,6 @@ class ListChatPageState extends State<ListChatPage> {
         child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
-            debugPrint("snapshot1: $snapshot");
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CupertinoActivityIndicator(),
