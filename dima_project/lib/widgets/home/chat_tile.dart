@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
@@ -13,8 +11,13 @@ class ChatTile extends StatefulWidget {
   final UserData user;
   final Group? group;
   final PrivateChat? privateChat;
-
-  const ChatTile({super.key, required this.user, this.group, this.privateChat});
+  final LastMessage lastMessage;
+  const ChatTile(
+      {super.key,
+      required this.user,
+      this.group,
+      this.privateChat,
+      required this.lastMessage});
 
   @override
   ChatTileState createState() => ChatTileState();
@@ -22,16 +25,12 @@ class ChatTile extends StatefulWidget {
 
 class ChatTileState extends State<ChatTile> {
   UserData? _user;
-
-  Stream<LastMessage>? _lastMessage;
-
   @override
   void initState() {
     super.initState();
     if (widget.privateChat != null) {
       getUserData();
     }
-    _subscribe();
   }
 
   getUserData() async {
@@ -39,13 +38,6 @@ class ChatTileState extends State<ChatTile> {
         .then((value) => setState(() {
               _user = value;
             }));
-  }
-
-  _subscribe() {
-    _lastMessage = DatabaseService.getLastMessageStream(
-      widget.group != null ? widget.group!.id : widget.privateChat!.id!,
-      widget.group != null ? true : false,
-    );
   }
 
   @override
@@ -79,21 +71,14 @@ class ChatTileState extends State<ChatTile> {
                 : widget.group!.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: StreamBuilder<LastMessage>(
-            stream: _lastMessage,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                  snapshot.data!.recentMessageSender == widget.user.username
-                      ? "You: ${snapshot.data!.recentMessage}"
-                      : "${snapshot.data!.recentMessageSender}: ${snapshot.data!.recentMessage}",
+          subtitle: (widget.lastMessage.recentMessage != '')
+              ? Text(
+                  widget.lastMessage.recentMessageSender == widget.user.username
+                      ? "You: ${widget.lastMessage.recentMessage}"
+                      : "${widget.lastMessage.recentMessageSender}: ${widget.lastMessage.recentMessage}",
                   overflow: TextOverflow.ellipsis,
-                );
-              } else {
-                return Text("Join the conversation as ${widget.user.username}");
-              }
-            },
-          ),
+                )
+              : Text("Join the conversation as ${widget.user.username}"),
         ),
       ),
     );

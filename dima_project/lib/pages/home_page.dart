@@ -35,7 +35,6 @@ class HomePageState extends State<HomePage> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     return _userData == null
         ? const CupertinoPageScaffold(
@@ -86,10 +85,9 @@ class HomePageState extends State<HomePage> {
               late Widget page;
               switch (index) {
                 case 0:
-                  page = _buildCreatePage(
-                      context); /*NewsPage(
+                  page = NewsPage(
                     user: _userData!,
-                  );*/
+                  );
                   break;
                 case 1:
                   page = ListChatPage(

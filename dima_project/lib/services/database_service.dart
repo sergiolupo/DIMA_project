@@ -1,14 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class DatabaseService {
@@ -364,26 +360,6 @@ class DatabaseService {
           yield chatsList;
         }
       }
-    }
-  }
-
-  static Stream<LastMessage>? getLastMessageStream(String id, bool isGroup) {
-    if (isGroup) {
-      return groupsRef.doc(id).snapshots().map((snapshot) {
-        return LastMessage(
-          recentMessage: snapshot['recentMessage'],
-          recentMessageSender: snapshot['recentMessageSender'],
-          recentMessageTimestamp: snapshot['recentMessageTime'],
-        );
-      });
-    } else {
-      return privateChatRef.doc(id).snapshots().map((snapshot) {
-        return LastMessage(
-          recentMessage: snapshot['recentMessage'],
-          recentMessageSender: snapshot['recentMessageSender'],
-          recentMessageTimestamp: snapshot['recentMessageTime'],
-        );
-      });
     }
   }
 

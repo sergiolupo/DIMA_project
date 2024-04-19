@@ -114,9 +114,11 @@ class ListChatPageState extends State<ListChatPage> {
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
+                    final group = data[index];
                     return ChatTile(
                       user: widget.user,
-                      group: data[index],
+                      group: group,
+                      lastMessage: group.lastMessage!,
                     );
                   },
                 );
@@ -179,9 +181,11 @@ class ListChatPageState extends State<ListChatPage> {
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
+                    final privateChat = data[index];
                     return ChatTile(
                       user: widget.user,
-                      privateChat: data[index],
+                      privateChat: privateChat,
+                      lastMessage: privateChat.lastMessage!,
                     );
                   },
                 );
