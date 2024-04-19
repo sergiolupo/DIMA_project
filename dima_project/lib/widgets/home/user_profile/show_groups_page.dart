@@ -62,10 +62,14 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
+              final group = docs[index];
               return GroupTile(
                 user: widget.user,
                 group: docs[index],
                 visitor: widget.visitor,
+                isJoined: widget.visitor != null
+                    ? group.members!.contains(widget.visitor!.username)
+                    : group.members!.contains(widget.user.username),
               );
             },
           );

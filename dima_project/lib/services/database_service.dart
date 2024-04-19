@@ -188,38 +188,38 @@ class DatabaseService {
     }
   }
 
-  static Future toggleGroupJoin(String groupId, String uid, String username) {
-    return isUserJoined(groupId, username).then((isJoined) {
-      if (isJoined) {
-        return Future.wait([
-          groupsRef.doc(groupId).update({
-            'members': FieldValue.arrayRemove([username])
-          }),
-          usersRef.doc(uid).update({
-            'groups': FieldValue.arrayRemove([groupId])
-          }),
-        ]).then((_) {
-          return groupsRef.doc(groupId).get().then((groupDoc) {
-            if (groupDoc['members'].isEmpty) {
-              return groupsRef.doc(groupId).delete();
-            } else if (groupDoc['admin'] == username) {
-              return groupsRef
-                  .doc(groupId)
-                  .update({'admin': groupDoc['members'][0]});
-            }
-          });
-        });
-      } else {
-        return Future.wait([
-          groupsRef.doc(groupId).update({
-            'members': FieldValue.arrayUnion([username])
-          }),
-          usersRef.doc(uid).update({
-            'groups': FieldValue.arrayUnion([groupId])
-          }),
-        ]);
+  static Future<void> toggleGroupJoin(
+      String groupId, String uid, String username) async {
+    bool isJoined = await isUserJoined(groupId, username)
+        .first; // Wait for the first value from the stream
+
+    if (isJoined) {
+      await Future.wait([
+        groupsRef.doc(groupId).update({
+          'members': FieldValue.arrayRemove([username])
+        }),
+        usersRef.doc(uid).update({
+          'groups': FieldValue.arrayRemove([groupId])
+        }),
+      ]);
+
+      DocumentSnapshot<Map<String, dynamic>> groupDoc =
+          await groupsRef.doc(groupId).get();
+      if (groupDoc['members'].isEmpty) {
+        await groupsRef.doc(groupId).delete();
+      } else if (groupDoc['admin'] == username) {
+        await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
       }
-    });
+    } else {
+      await Future.wait([
+        groupsRef.doc(groupId).update({
+          'members': FieldValue.arrayUnion([username])
+        }),
+        usersRef.doc(uid).update({
+          'groups': FieldValue.arrayUnion([groupId])
+        }),
+      ]);
+    }
   }
 
   static void sendMessage(String? id, Message message) async {

@@ -10,11 +10,13 @@ class GroupTile extends StatefulWidget {
   final UserData user;
   final Group group;
   final UserData? visitor;
+  final bool isJoined;
   const GroupTile({
     super.key,
     required this.user,
     required this.group,
     this.visitor,
+    required this.isJoined, // Updated this
   });
 
   @override
@@ -22,49 +24,6 @@ class GroupTile extends StatefulWidget {
 }
 
 class GroupTileState extends State<GroupTile> {
-  bool _isJoined = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkIfJoined(); // Check if user is already joined when widget is initialized
-  }
-
-  void _checkIfJoined() async {
-    try {
-      if (widget.visitor != null) {
-        await DatabaseService.isUserJoined(
-          widget.group.id,
-          widget.visitor!.username,
-        ).then((isJoined) {
-          if (mounted) {
-            setState(() {
-              _isJoined = isJoined;
-            });
-          }
-        });
-      } else {
-        await DatabaseService.isUserJoined(
-          widget.group.id,
-          widget.user.username,
-        ).then((isJoined) {
-          if (mounted) {
-            setState(() {
-              _isJoined = isJoined;
-            });
-          }
-        });
-      }
-    } catch (error) {
-      debugPrint("Error occurred: $error");
-      if (mounted) {
-        setState(() {
-          _isJoined = false; // Handle error by setting _isJoined to false
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -72,7 +31,8 @@ class GroupTileState extends State<GroupTile> {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              if (_isJoined) {
+              if (widget.isJoined) {
+                // Updated this condition
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => ChatPage(
@@ -96,6 +56,7 @@ class GroupTileState extends State<GroupTile> {
         GestureDetector(
           onTap: () async {
             try {
+              // Updated this condition
               if (widget.visitor != null) {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
@@ -108,12 +69,6 @@ class GroupTileState extends State<GroupTile> {
                   FirebaseAuth.instance.currentUser!.uid,
                   widget.user.username,
                 );
-              }
-
-              if (mounted) {
-                setState(() {
-                  _checkIfJoined();
-                });
               }
             } catch (error) {
               debugPrint("Error occurred: $error");
@@ -129,7 +84,7 @@ class GroupTileState extends State<GroupTile> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(
-                _isJoined ? "Joined" : "Join Now",
+                widget.isJoined ? "Joined" : "Join Now", // Updated this text
                 style: const TextStyle(color: CupertinoColors.white),
               ),
             ),

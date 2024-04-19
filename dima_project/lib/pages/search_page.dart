@@ -147,7 +147,11 @@ class SearchPageState extends State<SearchPage> {
                     } else if (searchIdx != 0 &&
                         (docs[index].data()).containsKey('groupId')) {
                       final group = Group.convertToGroup(docs[index]);
-                      return GroupTile(user: widget.user, group: group);
+                      return GroupTile(
+                        user: widget.user,
+                        group: group,
+                        isJoined: group.members!.contains(widget.user.username),
+                      );
                     } else {
                       return Container();
                     }
