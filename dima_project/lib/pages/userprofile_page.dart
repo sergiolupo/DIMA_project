@@ -190,7 +190,7 @@ class UserProfileState extends State<UserProfile> {
                                 Navigator.of(context, rootNavigator: true).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ChatPage(
-                                      user: widget.user,
+                                      user: widget.visitor!,
                                       privateChat: chat,
                                     ),
                                   ),

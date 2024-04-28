@@ -5,7 +5,7 @@ class PrivateChat {
   final String user;
   final String visitor;
   final LastMessage? lastMessage;
-  final String? id;
+  String? id;
   PrivateChat({
     required this.visitor,
     required this.user,

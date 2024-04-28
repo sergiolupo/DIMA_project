@@ -43,7 +43,7 @@ class ReadTileState extends State<ReadTile> {
               ),
             ),
             subtitle: Text(
-              'Read at ${DateUtil.getFormattedDateAndTime(context: context, time: widget.user.readAt.toString())}',
+              'Read at ${DateUtil.getFormattedDateAndTime(context: context, time: widget.user.readAt.microsecondsSinceEpoch.toString())}',
               style: const TextStyle(
                 fontSize: 14,
               ),

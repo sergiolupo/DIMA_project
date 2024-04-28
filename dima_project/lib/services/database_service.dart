@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -212,7 +211,7 @@ class DatabaseService {
   static void sendMessage(String? id, Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
-    if (id != null) {
+    if (message.isGroupMessage) {
       groupsRef.doc(id).collection('messages').add(messageMap);
       groupsRef.doc(id).update({
         'recentMessage': message.content,
@@ -220,16 +219,8 @@ class DatabaseService {
         'recentMessageTime': message.time,
       });
     } else {
-      List<dynamic> members = [message.sender, message.receiver];
-      members.sort();
-
-      QuerySnapshot<Object?> value =
-          await privateChatRef.where("members", isEqualTo: members).get();
-      await privateChatRef
-          .doc(value.docs.first.id)
-          .collection('messages')
-          .add(messageMap);
-      privateChatRef.doc(value.docs.first.id).update({
+      privateChatRef.doc(id).collection('messages').add(messageMap);
+      privateChatRef.doc(id).update({
         'recentMessage': message.content,
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
@@ -237,46 +228,51 @@ class DatabaseService {
     }
   }
 
-  static Future<PrivateChat> sendFirstPrivateMessage(Message message) async {
-    Map<String, dynamic> messageMap = message.toMap();
-
-    List<dynamic> members = [message.sender, message.receiver];
+  static Future<PrivateChat> getPrivateChatsFromMember(
+      String current, String other) async {
+    List<dynamic> members = [current, other];
     members.sort();
+    QuerySnapshot<Object?> value =
+        await privateChatRef.where("members", isEqualTo: members).get();
+    return PrivateChat.fromSnapshot(
+        await privateChatRef.doc(value.docs.first.id).get(), current);
+  }
 
-    Future.wait(privateChatRef.add({
+  static Future sendFirstPrivateMessage(Message message, String id) async {
+    Map<String, dynamic> messageMap = message.toMap();
+    return await privateChatRef.doc(id).collection('messages').add(messageMap);
+  }
+
+  static Future<void> createPrivateChat(PrivateChat privateChat) async {
+    List<dynamic> members = [privateChat.user, privateChat.visitor];
+    members.sort();
+    debugPrint("Creating private chat with members: $members");
+    await privateChatRef.add({
       'members': members,
-      'recentMessage': message.content,
-      'recentMessageSender': message.sender,
-      'recentMessageTime': message.time,
+      'recentMessage': "",
+      'recentMessageSender': "",
+      'recentMessageTime': "",
     }).then((value) async {
       final id = value.id;
-
-      usersRef.where('username', isEqualTo: message.sender).get().then((value) {
-        usersRef.doc(value.docs.first.id).update({
-          'privateChats': FieldValue.arrayUnion([id])
-        });
-      });
-      usersRef
-          .where('username', isEqualTo: message.receiver)
+      privateChat.id = id;
+      await usersRef
+          .where('username', isEqualTo: privateChat.user)
           .get()
-          .then((value) {
-        usersRef.doc(value.docs.first.id).update({
+          .then((value) async {
+        await usersRef.doc(value.docs.first.id).update({
           'privateChats': FieldValue.arrayUnion([id])
         });
       });
-      await privateChatRef.doc(value.id).collection('messages').add(messageMap);
-      DocumentSnapshot snapshot = await privateChatRef.doc(value.id).get();
-      return PrivateChat.fromSnapshot(snapshot, message.sender);
-    }) as Iterable<Future>);
-    return PrivateChat(
-      user: message.sender,
-      visitor: message.receiver!,
-      lastMessage: LastMessage(
-        recentMessage: message.content,
-        recentMessageSender: message.sender,
-        recentMessageTimestamp: message.time,
-      ),
-    );
+      await usersRef
+          .where('username', isEqualTo: privateChat.visitor)
+          .get()
+          .then((value) async {
+        debugPrint("I am adding the private chat to the visitor");
+        return await usersRef.doc(value.docs.first.id).update({
+          'privateChats': FieldValue.arrayUnion([id])
+        });
+      });
+    });
   }
 
   static Stream<List<Group>> getGroupsStream(String username) async* {
@@ -342,7 +338,7 @@ class DatabaseService {
         chatsList.add(PrivateChat.fromSnapshot(snapshot, username));
       }
     }
-    yield chatsList; // yield the initial list of groups
+    yield chatsList; // yield the initial list of private chats
 
     final snapshots = privateChatRef
         .snapshots(); // listen to changes in the groups collection
@@ -351,11 +347,12 @@ class DatabaseService {
       for (var change in snapshot.docChanges) {
         final id = change.doc.id;
         final privateChat = PrivateChat.fromSnapshot(change.doc, username);
-
-        if (privateChats.contains(id)) {
-          if (change.type == DocumentChangeType.removed) {
-            chatsList.removeWhere((g) => g.id == id);
-          } else {
+        final members = [privateChat.user, privateChat.visitor];
+        if (change.type == DocumentChangeType.removed) {
+          chatsList.removeWhere((g) => g.id == id);
+          yield chatsList;
+        } else {
+          if (members.contains(username)) {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
             if (existingGroupIndex != -1) {
@@ -363,9 +360,10 @@ class DatabaseService {
             } else {
               chatsList.add(privateChat);
             }
+            yield chatsList;
           }
-          yield chatsList;
         }
+        yield chatsList;
       }
     }
   }

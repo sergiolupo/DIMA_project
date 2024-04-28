@@ -27,22 +27,23 @@ class ChatPage extends StatefulWidget {
 class ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageEditingController = TextEditingController();
+  PrivateChat? privateChat;
   @override
   void initState() {
+    privateChat = widget.privateChat;
     getChats();
     super.initState();
   }
 
   getChats() async {
-    if (widget.privateChat == null) {
+    if (privateChat == null) {
       DatabaseService.getChats(widget.group!.id).then((val) {
         setState(() {
           chats = val;
         });
       });
     } else {
-      DatabaseService.getPrivateChats(
-              widget.privateChat!.user, widget.privateChat!.visitor)
+      DatabaseService.getPrivateChats(privateChat!.user, privateChat!.visitor)
           .then((val) {
         setState(() {
           chats = val;
@@ -55,10 +56,9 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: widget.privateChat == null
+        middle: privateChat == null
             ? Text(widget.group!.name, style: const TextStyle(fontSize: 20))
-            : Text(widget.privateChat!.user,
-                style: const TextStyle(fontSize: 20)),
+            : Text(privateChat!.user, style: const TextStyle(fontSize: 20)),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
@@ -70,7 +70,7 @@ class ChatPageState extends State<ChatPage> {
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
-        trailing: widget.privateChat == null
+        trailing: privateChat == null
             ? CupertinoButton(
                 onPressed: () {
                   context.go(
@@ -145,7 +145,7 @@ class ChatPageState extends State<ChatPage> {
                         sentByMe: widget.group != null
                             ? (widget.user.username ==
                                 snapshot.data.docs[index]["sender"])
-                            : widget.privateChat!.visitor ==
+                            : privateChat!.visitor ==
                                 snapshot.data.docs[index]["sender"],
                         senderImage: snapshot.data.docs[index]["senderImage"],
                         isGroupMessage: snapshot.data.docs[index]
@@ -160,9 +160,9 @@ class ChatPageState extends State<ChatPage> {
                                 ))
                             .toList()
                             .cast<ReadBy>(),
-                        chatID: widget.privateChat == null
+                        chatID: privateChat == null
                             ? widget.group!.id
-                            : widget.privateChat!.id,
+                            : privateChat!.id,
                       ));
                 },
               )
@@ -175,27 +175,31 @@ class ChatPageState extends State<ChatPage> {
     if (messageEditingController.text.isNotEmpty) {
       Message message = Message(
           content: messageEditingController.text,
-          sender: widget.privateChat == null
-              ? widget.user.username
-              : widget.privateChat!.visitor,
-          receiver: widget.privateChat == null ? "" : widget.privateChat!.user,
-          isGroupMessage: widget.privateChat == null ? true : false,
+          sender:
+              privateChat == null ? widget.user.username : privateChat!.visitor,
+          receiver: privateChat == null ? "" : privateChat!.user,
+          isGroupMessage: privateChat == null ? true : false,
           time: Timestamp.now(),
           senderImage: await DatabaseService.getUserImage(
               FirebaseAuth.instance.currentUser!.uid),
           readBy: []);
 
-      widget.privateChat == null
-          ? DatabaseService.sendMessage(widget.group!.id, message)
-          : chats == null
-              ? await DatabaseService.sendFirstPrivateMessage(message)
-              : DatabaseService.sendMessage(null, message);
-
+      if (privateChat == null) {
+        DatabaseService.sendMessage(widget.group!.id, message);
+      } else {
+        if (chats == null) {
+          await DatabaseService.createPrivateChat(privateChat!);
+        }
+        privateChat = await DatabaseService.getPrivateChatsFromMember(
+            privateChat!.visitor, privateChat!.user);
+        debugPrint("privateChat: ${privateChat!.id}");
+        DatabaseService.sendMessage(privateChat!.id!, message);
+      }
       setState(() {
         messageEditingController.clear();
-        if (widget.privateChat != null && chats == null) {
+        if (privateChat != null && chats == null) {
           DatabaseService.getPrivateChats(
-                  widget.privateChat!.user, widget.privateChat!.visitor)
+                  privateChat!.user, privateChat!.visitor)
               .then((val) {
             setState(() {
               chats = val;

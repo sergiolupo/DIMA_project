@@ -141,6 +141,7 @@ class MessageTileState extends State<MessageTile> {
   Widget readBy() {
     bool hasRead = widget.message.readBy!
         .any((element) => element.username == widget.username);
+    debugPrint('User: ${widget.username} Has read: $hasRead');
     if (!hasRead) {
       DatabaseService.updateMessageReadStatus(widget.username, widget.message);
     }
