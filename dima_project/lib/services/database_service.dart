@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -236,13 +237,13 @@ class DatabaseService {
     }
   }
 
-  static Future sendFirstPrivateMessage(Message message) async {
+  static Future<PrivateChat> sendFirstPrivateMessage(Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
     List<dynamic> members = [message.sender, message.receiver];
     members.sort();
 
-    await privateChatRef.add({
+    Future.wait(privateChatRef.add({
       'members': members,
       'recentMessage': message.content,
       'recentMessageSender': message.sender,
@@ -263,12 +264,19 @@ class DatabaseService {
           'privateChats': FieldValue.arrayUnion([id])
         });
       });
-
-      return await privateChatRef
-          .doc(value.id)
-          .collection('messages')
-          .add(messageMap);
-    });
+      await privateChatRef.doc(value.id).collection('messages').add(messageMap);
+      DocumentSnapshot snapshot = await privateChatRef.doc(value.id).get();
+      return PrivateChat.fromSnapshot(snapshot, message.sender);
+    }) as Iterable<Future>);
+    return PrivateChat(
+      user: message.sender,
+      visitor: message.receiver!,
+      lastMessage: LastMessage(
+        recentMessage: message.content,
+        recentMessageSender: message.sender,
+        recentMessageTimestamp: message.time,
+      ),
+    );
   }
 
   static Stream<List<Group>> getGroupsStream(String username) async* {
@@ -472,9 +480,9 @@ class DatabaseService {
   static Future<void> updateMessageReadStatus(
       String username, Message message) async {
     debugPrint('Group message ? ${message.isGroupMessage}');
-
-    ReadBy readBy = ReadBy(
-        readAt: DateTime.now().millisecondsSinceEpoch, username: username);
+    debugPrint('Chat ID: ${message.chatID}');
+    debugPrint('Message ID: ${message.id}');
+    ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: username);
 
     if (message.isGroupMessage) {
       await groupsRef

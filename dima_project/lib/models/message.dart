@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 
 class ReadBy {
   final String username;
-  final int readAt;
+  final Timestamp readAt;
 
   ReadBy({
     required this.username,

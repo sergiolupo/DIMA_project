@@ -2,6 +2,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
+import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -202,32 +203,7 @@ class MessageTileState extends State<MessageTile> {
                   size: 26,
                 ),
                 text: 'Read By',
-                onPressed: () {
-                  Navigator.pop(context);
-                  showCupertinoDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return CupertinoAlertDialog(
-                        title: const Text('Read By'),
-                        content: Column(
-                          children: widget.message.readBy!
-                              .map((e) => CupertinoListTile(
-                                    title: Text(e.username),
-                                  ))
-                              .toList(),
-                        ),
-                        actions: <Widget>[
-                          CupertinoDialogAction(
-                            child: const Text('OK'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                onPressed: showReaders,
               )
           ],
           cancelButton: CupertinoActionSheetAction(
@@ -265,6 +241,74 @@ class MessageTileState extends State<MessageTile> {
           style: const TextStyle(color: CupertinoColors.systemPink),
         ),
       ),
+    );
+  }
+
+  void showReaders() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  color: CupertinoColors.black.withOpacity(0.5),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
+                decoration: const BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'Read By',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: widget.message.readBy!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final reader = widget.message.readBy![index];
+                          debugPrint(reader.username);
+                          if (widget.message.sentByMe! &&
+                              reader.username == widget.username) {
+                            return const SizedBox.shrink();
+                          }
+                          return ReadTile(user: reader);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
