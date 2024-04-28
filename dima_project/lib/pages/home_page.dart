@@ -85,9 +85,10 @@ class HomePageState extends State<HomePage> {
               late Widget page;
               switch (index) {
                 case 0:
-                  page = NewsPage(
+                  page = /*NewsPage(
                     user: _userData!,
-                  );
+                  );*/
+                      _buildNewsPage(context);
                   break;
                 case 1:
                   page = ListChatPage(

@@ -1,6 +1,7 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class MessageTile extends StatefulWidget {
@@ -60,57 +61,63 @@ class MessageTileState extends State<MessageTile> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              ClipOval(
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  color: CupertinoColors.lightBackgroundGray,
-                  child: widget.message.senderImage != ""
-                      ? Image.network(
-                          widget.message.senderImage,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset(
-                          'assets/default_user_image.png',
-                          fit: BoxFit.cover,
-                        ),
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                CreateImageWidget.getUserImage(
+                  widget.message.senderImage,
+                  small: true,
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.message.sender,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: widget.message.sentByMe!
-                      ? CupertinoColors.white
-                      : CupertinoColors.black,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(widget.message.content,
+                const SizedBox(width: 8),
+                Text(
+                  widget.message.sender,
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                    fontSize: 14,
                     color: widget.message.sentByMe!
                         ? CupertinoColors.white
                         : CupertinoColors.black,
-                    fontSize: 16,
-                  )),
-              Text(
-                DateUtil.getFormattedDate(
-                    context: context,
-                    time:
-                        widget.message.time.microsecondsSinceEpoch.toString()),
-                style: TextStyle(
-                  color: widget.message.sentByMe!
-                      ? CupertinoColors.white
-                      : CupertinoColors.black,
-                  fontSize: 12,
+                    letterSpacing: -0.5,
+                  ),
                 ),
+              ]),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(widget.message.content,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: widget.message.sentByMe!
+                            ? CupertinoColors.white
+                            : CupertinoColors.black,
+                        fontSize: 16,
+                      )),
+                  Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(width: 8),
+                            Text(
+                              DateUtil.getFormattedDate(
+                                  context: context,
+                                  time: widget
+                                      .message.time.microsecondsSinceEpoch
+                                      .toString()),
+                              style: TextStyle(
+                                color: widget.message.sentByMe!
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                fontSize: 9,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            readBy(),
+                          ]),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              readBy(),
             ]),
       ),
     );
@@ -128,9 +135,9 @@ class MessageTileState extends State<MessageTile> {
                 !widget.message.readBy!
                     .every((element) => element.username == widget.username)
             ? const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemBlue, size: 16)
+                color: CupertinoColors.systemBlue, size: 9)
             : const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemGreen, size: 16)
+                color: CupertinoColors.systemGreen, size: 9)
         : const SizedBox();
   }
 }
