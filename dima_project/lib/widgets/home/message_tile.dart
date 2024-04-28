@@ -1,6 +1,7 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
+import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -160,57 +161,74 @@ class MessageTileState extends State<MessageTile> {
       builder: (_) {
         return CupertinoActionSheet(
           actions: [
-            CupertinoActionSheetAction(
-              onPressed: () async {
-                await Clipboard.setData(
-                  ClipboardData(text: widget.message.content),
-                );
-                if (!context.mounted) return;
-                Navigator.pop(context);
-                _showCustomSnackbar('Copied to clipboard');
-              },
-              child: const Row(
-                children: [
-                  Icon(
-                    CupertinoIcons.doc_on_clipboard,
+            OptionItem(
+                icon: const Icon(
+                  CupertinoIcons.doc_on_clipboard,
+                  color: CupertinoColors.systemBlue,
+                  size: 26,
+                ),
+                text: 'Copy Text',
+                onPressed: () async {
+                  await Clipboard.setData(
+                    ClipboardData(text: widget.message.content),
+                  );
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+                  _showCustomSnackbar('Copied to clipboard');
+                }),
+            if (widget.message.sentByMe!)
+              OptionItem(
+                  icon: const Icon(
+                    CupertinoIcons.pencil,
                     color: CupertinoColors.systemBlue,
                     size: 26,
                   ),
-                  SizedBox(width: 8),
-                  Text('Copy Text'),
-                ],
-              ),
-            ),
+                  text: 'Edit Message',
+                  onPressed: () {}),
             if (widget.message.sentByMe!)
-              CupertinoActionSheetAction(
-                onPressed: () {},
-                child: const Row(
-                  children: [
-                    Icon(
-                      CupertinoIcons.pencil,
-                      color: CupertinoColors.systemBlue,
-                      size: 26,
-                    ),
-                    SizedBox(width: 8),
-                    Text('Edit Message'),
-                  ],
-                ),
-              ),
+              OptionItem(
+                  icon: const Icon(
+                    CupertinoIcons.delete,
+                    color: CupertinoColors.systemRed,
+                    size: 26,
+                  ),
+                  text: 'Delete Message',
+                  onPressed: () {}),
             if (widget.message.sentByMe!)
-              CupertinoActionSheetAction(
-                onPressed: () {},
-                child: const Row(
-                  children: [
-                    Icon(
-                      CupertinoIcons.delete,
-                      color: CupertinoColors.systemRed,
-                      size: 26,
-                    ),
-                    SizedBox(width: 8),
-                    Text('Delete Message'),
-                  ],
+              OptionItem(
+                icon: const Icon(
+                  CupertinoIcons.eye,
+                  color: CupertinoColors.systemBlue,
+                  size: 26,
                 ),
-              ),
+                text: 'Read By',
+                onPressed: () {
+                  Navigator.pop(context);
+                  showCupertinoDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: const Text('Read By'),
+                        content: Column(
+                          children: widget.message.readBy!
+                              .map((e) => CupertinoListTile(
+                                    title: Text(e.username),
+                                  ))
+                              .toList(),
+                        ),
+                        actions: <Widget>[
+                          CupertinoDialogAction(
+                            child: const Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              )
           ],
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(context),
