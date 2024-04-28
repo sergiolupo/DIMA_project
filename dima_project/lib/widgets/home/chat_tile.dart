@@ -83,7 +83,7 @@ class ChatTileState extends State<ChatTile> {
               : Text("Join the conversation as ${widget.user.username}"),
           trailing: (widget.lastMessage != null)
               ? Text(
-                  DateUtil.getFormattedDate(
+                  DateUtil.getFormattedTime(
                       context: context,
                       time: widget.lastMessage!.recentMessageTimestamp
                           .microsecondsSinceEpoch

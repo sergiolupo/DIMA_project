@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class DateUtil {
-  static String getFormattedDate(
+  static String getFormattedTime(
       {required BuildContext context, required String time}) {
     final date = DateTime.fromMicrosecondsSinceEpoch(int.parse(time));
     final localizations = CupertinoLocalizations.of(context);
@@ -12,6 +12,19 @@ class DateUtil {
         : localizations.postMeridiemAbbreviation;
     hour = _hourOfPeriod(hour);
     return '${_formatHour(hour)}:${_formatMinute(date.minute)} $period';
+  }
+
+  static String getFormattedDateAndTime(
+      {required BuildContext context, required String time}) {
+    final date = DateTime.fromMicrosecondsSinceEpoch(int.parse(time));
+    final localizations = CupertinoLocalizations.of(context);
+
+    int hour = date.hour;
+    final String period = hour < 12
+        ? localizations.anteMeridiemAbbreviation
+        : localizations.postMeridiemAbbreviation;
+    hour = _hourOfPeriod(hour);
+    return '${_formatHour(hour)}:${_formatMinute(date.minute)} $period, ${date.day}/${date.month}/${date.year}';
   }
 
   static int _hourOfPeriod(int hour) {

@@ -487,9 +487,6 @@ class DatabaseService {
         ])
       });
     } else {
-      debugPrint('Updating read status for private chat');
-      debugPrint('Chat ID: ${message.chatID}');
-      debugPrint('Message ID: ${message.id}');
       await privateChatRef
           .doc(message.chatID)
           .collection('messages')
