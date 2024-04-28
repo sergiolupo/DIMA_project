@@ -118,7 +118,7 @@ class ListChatPageState extends State<ListChatPage> {
                     return ChatTile(
                       user: widget.user,
                       group: group,
-                      lastMessage: group.lastMessage!,
+                      lastMessage: group.lastMessage,
                     );
                   },
                 );

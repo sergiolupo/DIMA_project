@@ -142,11 +142,11 @@ class SearchPageState extends State<SearchPage> {
                   itemBuilder: (context, index) {
                     if (searchIdx == 0 &&
                         (docs[index].data()).containsKey('email')) {
-                      final userData = UserData.convertToUserData(docs[index]);
+                      final userData = UserData.fromSnapshot(docs[index]);
                       return UserTile(user: userData, visitor: widget.user);
                     } else if (searchIdx != 0 &&
                         (docs[index].data()).containsKey('groupId')) {
-                      final group = Group.convertToGroup(docs[index]);
+                      final group = Group.fromSnapshot(docs[index]);
                       return GroupTile(
                         user: widget.user,
                         group: group,

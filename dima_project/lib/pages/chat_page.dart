@@ -138,18 +138,32 @@ class ChatPageState extends State<ChatPage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
+                      username: widget.user.username,
                       message: Message(
-                    content: snapshot.data.docs[index]["content"],
-                    sender: snapshot.data.docs[index]["sender"],
-                    sentByMe: widget.group != null
-                        ? (widget.user.username ==
-                            snapshot.data.docs[index]["sender"])
-                        : widget.privateChat!.visitor ==
-                            snapshot.data.docs[index]["sender"],
-                    senderImage: snapshot.data.docs[index]["senderImage"],
-                    isGroupMessage: true,
-                    time: snapshot.data.docs[index]["time"],
-                  ));
+                        content: snapshot.data.docs[index]["content"],
+                        sender: snapshot.data.docs[index]["sender"],
+                        sentByMe: widget.group != null
+                            ? (widget.user.username ==
+                                snapshot.data.docs[index]["sender"])
+                            : widget.privateChat!.visitor ==
+                                snapshot.data.docs[index]["sender"],
+                        senderImage: snapshot.data.docs[index]["senderImage"],
+                        isGroupMessage: snapshot.data.docs[index]
+                            ["isGroupMessage"],
+                        time: snapshot.data.docs[index]["time"],
+                        id: snapshot.data.docs[index].id,
+                        readBy: (snapshot.data.docs[index]['readBy']
+                                as List<dynamic>)
+                            .map((readBy) => ReadBy(
+                                  username: readBy['username'],
+                                  readAt: readBy['readAt'],
+                                ))
+                            .toList()
+                            .cast<ReadBy>(),
+                        chatID: widget.privateChat == null
+                            ? widget.group!.id
+                            : widget.privateChat!.id,
+                      ));
                 },
               )
             : Container();
@@ -168,7 +182,8 @@ class ChatPageState extends State<ChatPage> {
           isGroupMessage: widget.privateChat == null ? true : false,
           time: Timestamp.now(),
           senderImage: await DatabaseService.getUserImage(
-              FirebaseAuth.instance.currentUser!.uid));
+              FirebaseAuth.instance.currentUser!.uid),
+          readBy: []);
 
       widget.privateChat == null
           ? DatabaseService.sendMessage(widget.group!.id, message)

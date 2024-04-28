@@ -192,7 +192,7 @@ class GroupInfoState extends State<GroupInfo> {
           shrinkWrap: true,
           itemCount: members.length,
           itemBuilder: (context, index) {
-            final user = UserData.convertToUserData(members[index]);
+            final user = UserData.fromSnapshot(members[index]);
             return UserTile(user: user, visitor: widget.user);
           },
         );

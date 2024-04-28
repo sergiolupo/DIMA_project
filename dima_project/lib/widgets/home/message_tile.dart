@@ -1,11 +1,15 @@
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 
 class MessageTile extends StatefulWidget {
   final Message message;
+  final String username;
   const MessageTile({
     super.key,
     required this.message,
+    required this.username,
   });
 
   @override
@@ -93,8 +97,40 @@ class MessageTileState extends State<MessageTile> {
                         : CupertinoColors.black,
                     fontSize: 16,
                   )),
+              Text(
+                DateUtil.getFormattedDate(
+                    context: context,
+                    time:
+                        widget.message.time.microsecondsSinceEpoch.toString()),
+                style: TextStyle(
+                  color: widget.message.sentByMe!
+                      ? CupertinoColors.white
+                      : CupertinoColors.black,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 8),
+              readBy(),
             ]),
       ),
     );
+  }
+
+  Widget readBy() {
+    bool hasRead = widget.message.readBy!
+        .any((element) => element.username == widget.username);
+    if (!hasRead) {
+      DatabaseService.updateMessageReadStatus(widget.username, widget.message);
+    }
+
+    return widget.message.sentByMe == true
+        ? widget.message.readBy!.isNotEmpty &&
+                !widget.message.readBy!
+                    .every((element) => element.username == widget.username)
+            ? const Icon(CupertinoIcons.check_mark_circled,
+                color: CupertinoColors.systemBlue, size: 16)
+            : const Icon(CupertinoIcons.check_mark_circled,
+                color: CupertinoColors.systemGreen, size: 16)
+        : const SizedBox();
   }
 }

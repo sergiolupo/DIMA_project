@@ -40,7 +40,7 @@ class DatabaseService {
 
   static Future<UserData> getUserData(String uid) async {
     DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
-    UserData user = UserData.convertToUserData(documentSnapshot);
+    UserData user = UserData.fromSnapshot(documentSnapshot);
     return user;
   }
 
@@ -50,7 +50,7 @@ class DatabaseService {
     QuerySnapshot querySnapshot =
         await usersRef.where('username', isEqualTo: username).get();
     DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-    UserData user = UserData.convertToUserData(documentSnapshot);
+    UserData user = UserData.fromSnapshot(documentSnapshot);
     return user;
   }
 
@@ -283,7 +283,7 @@ class DatabaseService {
     for (var groupId in groupIds) {
       final snapshot = await groupsRef.doc(groupId).get();
       if (snapshot.exists) {
-        groupsList.add(Group.convertToGroup(snapshot));
+        groupsList.add(Group.fromSnapshot(snapshot));
       }
     }
     yield groupsList; // yield the initial list of groups
@@ -293,7 +293,7 @@ class DatabaseService {
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
         final groupId = change.doc.id;
-        final group = Group.convertToGroup(change.doc);
+        final group = Group.fromSnapshot(change.doc);
         final members = group.members;
 
         if (change.type == DocumentChangeType.removed) {
@@ -331,7 +331,7 @@ class DatabaseService {
     for (var id in privateChats) {
       final snapshot = await privateChatRef.doc(id).get();
       if (snapshot.exists) {
-        chatsList.add(PrivateChat.convertToPrivateChat(snapshot, username));
+        chatsList.add(PrivateChat.fromSnapshot(snapshot, username));
       }
     }
     yield chatsList; // yield the initial list of groups
@@ -342,8 +342,7 @@ class DatabaseService {
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
         final id = change.doc.id;
-        final privateChat =
-            PrivateChat.convertToPrivateChat(change.doc, username);
+        final privateChat = PrivateChat.fromSnapshot(change.doc, username);
 
         if (privateChats.contains(id)) {
           if (change.type == DocumentChangeType.removed) {
@@ -468,5 +467,36 @@ class DatabaseService {
     return query.map((snapshot) {
       return snapshot.docs;
     });
+  }
+
+  static Future<void> updateMessageReadStatus(
+      String username, Message message) async {
+    debugPrint('Group message ? ${message.isGroupMessage}');
+
+    ReadBy readBy = ReadBy(
+        readAt: DateTime.now().millisecondsSinceEpoch, username: username);
+
+    if (message.isGroupMessage) {
+      await groupsRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .update({
+        'readBy': FieldValue.arrayUnion([
+          readBy.toMap(),
+        ])
+      });
+    } else {
+      debugPrint('Updating read status for private chat');
+      debugPrint('Chat ID: ${message.chatID}');
+      debugPrint('Message ID: ${message.id}');
+      await privateChatRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .update({
+        'readBy': FieldValue.arrayUnion([readBy.toMap()])
+      });
+    }
   }
 }

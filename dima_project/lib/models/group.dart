@@ -21,7 +21,7 @@ class Group {
     this.members,
   });
 
-  static Group convertToGroup(DocumentSnapshot documentSnapshot) {
+  static Group fromSnapshot(DocumentSnapshot documentSnapshot) {
     return Group(
       name: documentSnapshot['groupName'],
       id: documentSnapshot['groupId'],

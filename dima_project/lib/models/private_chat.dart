@@ -13,7 +13,7 @@ class PrivateChat {
     this.id,
   });
 
-  static PrivateChat convertToPrivateChat(
+  static PrivateChat fromSnapshot(
       DocumentSnapshot documentSnapshot, String username) {
     return PrivateChat(
       user: documentSnapshot['members'][0] == username

@@ -4,6 +4,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -11,7 +12,7 @@ class ChatTile extends StatefulWidget {
   final UserData user;
   final Group? group;
   final PrivateChat? privateChat;
-  final LastMessage lastMessage;
+  final LastMessage? lastMessage;
   const ChatTile(
       {super.key,
       required this.user,
@@ -71,14 +72,25 @@ class ChatTileState extends State<ChatTile> {
                 : widget.group!.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: (widget.lastMessage.recentMessage != '')
+          subtitle: (widget.lastMessage != null)
               ? Text(
-                  widget.lastMessage.recentMessageSender == widget.user.username
-                      ? "You: ${widget.lastMessage.recentMessage}"
-                      : "${widget.lastMessage.recentMessageSender}: ${widget.lastMessage.recentMessage}",
+                  widget.lastMessage!.recentMessageSender ==
+                          widget.user.username
+                      ? "You: ${widget.lastMessage!.recentMessage}"
+                      : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
                   overflow: TextOverflow.ellipsis,
                 )
               : Text("Join the conversation as ${widget.user.username}"),
+          trailing: (widget.lastMessage != null)
+              ? Text(
+                  DateUtil.getFormattedDate(
+                      context: context,
+                      time: widget.lastMessage!.recentMessageTimestamp
+                          .microsecondsSinceEpoch
+                          .toString()),
+                  style: const TextStyle(fontSize: 12),
+                )
+              : const SizedBox(),
         ),
       ),
     );

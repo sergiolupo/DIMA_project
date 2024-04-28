@@ -18,7 +18,7 @@ class UserData {
     required this.username,
   });
 
-  static UserData convertToUserData(DocumentSnapshot documentSnapshot) {
+  static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
     return UserData(
       name: documentSnapshot['name'],
       surname: documentSnapshot['surname'],
