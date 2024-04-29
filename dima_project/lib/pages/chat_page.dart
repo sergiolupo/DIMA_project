@@ -159,7 +159,6 @@ class ChatPageState extends State<ChatPage> {
         DatabaseService.sendMessage(widget.group!.id, message);
       } else {
         if (privateChat!.id == null) {
-          debugPrint("private chat id is null");
           await DatabaseService.createPrivateChat(privateChat!);
           chats = DatabaseService.getPrivateChats(
               privateChat!.user, privateChat!.visitor);

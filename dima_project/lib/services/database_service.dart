@@ -568,4 +568,20 @@ class DatabaseService {
       });
     }
   }
+
+  static void deleteMessage(Message message) {
+    if (message.isGroupMessage) {
+      groupsRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .delete();
+    } else {
+      privateChatRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .delete();
+    }
+  }
 }

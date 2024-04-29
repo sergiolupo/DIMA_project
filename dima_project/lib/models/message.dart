@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 class ReadBy {
   final String username;
@@ -55,7 +54,6 @@ class Message {
 
   static fromSnapshot(
       DocumentSnapshot snapshot, String chatID, String currentUsername) {
-    debugPrint("current username: $currentUsername");
     return Message(
       chatID: chatID,
       content: snapshot['content'],

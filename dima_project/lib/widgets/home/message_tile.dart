@@ -141,7 +141,6 @@ class MessageTileState extends State<MessageTile> {
   Widget readBy() {
     bool hasRead = widget.message.readBy!
         .any((element) => element.username == widget.username);
-    debugPrint('User: ${widget.username} Has read: $hasRead');
     if (!hasRead) {
       DatabaseService.updateMessageReadStatus(widget.username, widget.message);
     }
@@ -195,7 +194,11 @@ class MessageTileState extends State<MessageTile> {
                     size: 26,
                   ),
                   text: 'Delete Message',
-                  onPressed: () {}),
+                  onPressed: () {
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    deleteMessage();
+                  }),
             if (widget.message.sentByMe!)
               OptionItem(
                 icon: const Icon(
@@ -294,7 +297,6 @@ class MessageTileState extends State<MessageTile> {
                         itemCount: widget.message.readBy!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final reader = widget.message.readBy![index];
-                          debugPrint(reader.username);
                           if (widget.message.sentByMe! &&
                               reader.username == widget.username) {
                             return const SizedBox.shrink();
@@ -311,5 +313,32 @@ class MessageTileState extends State<MessageTile> {
         );
       },
     );
+  }
+
+  void deleteMessage() {
+    showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: const Text('Delete Message'),
+            content:
+                const Text('Are you sure you want to delete this message?'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('Yes'),
+                onPressed: () {
+                  DatabaseService.deleteMessage(widget.message);
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoDialogAction(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }
