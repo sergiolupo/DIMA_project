@@ -53,13 +53,14 @@ class Message {
     };
   }
 
-  fromSnapshot(DocumentSnapshot snapshot) {
-    debugPrint('snapshot: $snapshot["readBy"]');
-
+  static fromSnapshot(
+      DocumentSnapshot snapshot, String chatID, String currentUsername) {
+    debugPrint("current username: $currentUsername");
     return Message(
+      chatID: chatID,
       content: snapshot['content'],
       sender: snapshot['sender'],
-      sentByMe: snapshot['sentByMe'],
+      sentByMe: snapshot['sender'] == currentUsername,
       senderImage: snapshot['senderImage'],
       isGroupMessage: snapshot['isGroupMessage'],
       time: snapshot['time'],

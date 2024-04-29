@@ -185,7 +185,7 @@ class ListChatPageState extends State<ListChatPage> {
                     return ChatTile(
                       user: widget.user,
                       privateChat: privateChat,
-                      lastMessage: privateChat.lastMessage!,
+                      lastMessage: privateChat.lastMessage,
                     );
                   },
                 );

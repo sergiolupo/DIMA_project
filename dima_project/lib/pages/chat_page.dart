@@ -25,7 +25,8 @@ class ChatPage extends StatefulWidget {
 }
 
 class ChatPageState extends State<ChatPage> {
-  Stream<QuerySnapshot>? chats;
+  Stream<List<Message>>? chats;
+
   TextEditingController messageEditingController = TextEditingController();
   PrivateChat? privateChat;
   @override
@@ -37,18 +38,10 @@ class ChatPageState extends State<ChatPage> {
 
   getChats() async {
     if (privateChat == null) {
-      DatabaseService.getChats(widget.group!.id).then((val) {
-        setState(() {
-          chats = val;
-        });
-      });
+      chats = DatabaseService.getChats(widget.group!.id, widget.user.username);
     } else {
-      DatabaseService.getPrivateChats(privateChat!.user, privateChat!.visitor)
-          .then((val) {
-        setState(() {
-          chats = val;
-        });
-      });
+      chats = DatabaseService.getPrivateChats(
+          privateChat!.user, privateChat!.visitor);
     }
   }
 
@@ -128,42 +121,20 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget chatMessages() {
-    return StreamBuilder(
+    return StreamBuilder<List<Message>>(
       stream: chats,
-      builder: (context, AsyncSnapshot snapshot) {
+      builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
                 shrinkWrap: true,
                 physics: const ClampingScrollPhysics(),
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
+                  final message = snapshot.data![index];
                   return MessageTile(
-                      username: widget.user.username,
-                      message: Message(
-                        content: snapshot.data.docs[index]["content"],
-                        sender: snapshot.data.docs[index]["sender"],
-                        sentByMe: widget.group != null
-                            ? (widget.user.username ==
-                                snapshot.data.docs[index]["sender"])
-                            : privateChat!.visitor ==
-                                snapshot.data.docs[index]["sender"],
-                        senderImage: snapshot.data.docs[index]["senderImage"],
-                        isGroupMessage: snapshot.data.docs[index]
-                            ["isGroupMessage"],
-                        time: snapshot.data.docs[index]["time"],
-                        id: snapshot.data.docs[index].id,
-                        readBy: (snapshot.data.docs[index]['readBy']
-                                as List<dynamic>)
-                            .map((readBy) => ReadBy(
-                                  username: readBy['username'],
-                                  readAt: readBy['readAt'],
-                                ))
-                            .toList()
-                            .cast<ReadBy>(),
-                        chatID: privateChat == null
-                            ? widget.group!.id
-                            : privateChat!.id,
-                      ));
+                    username: widget.user.username,
+                    message: message,
+                  );
                 },
               )
             : Container();
@@ -187,25 +158,18 @@ class ChatPageState extends State<ChatPage> {
       if (privateChat == null) {
         DatabaseService.sendMessage(widget.group!.id, message);
       } else {
-        if (chats == null) {
+        if (privateChat!.id == null) {
+          debugPrint("private chat id is null");
           await DatabaseService.createPrivateChat(privateChat!);
+          chats = DatabaseService.getPrivateChats(
+              privateChat!.user, privateChat!.visitor);
         }
         privateChat = await DatabaseService.getPrivateChatsFromMember(
             privateChat!.visitor, privateChat!.user);
-        debugPrint("privateChat: ${privateChat!.id}");
         DatabaseService.sendMessage(privateChat!.id!, message);
       }
       setState(() {
         messageEditingController.clear();
-        if (privateChat != null && chats == null) {
-          DatabaseService.getPrivateChats(
-                  privateChat!.user, privateChat!.visitor)
-              .then((val) {
-            setState(() {
-              chats = val;
-            });
-          });
-        }
       });
     }
   }

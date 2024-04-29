@@ -119,12 +119,41 @@ class DatabaseService {
     }
   }
 
-  static getChats(String groupId) async {
-    return groupsRef
+  static Stream<List<Message>> getChats(String groupId, String user) async* {
+    final chats = await groupsRef
         .doc(groupId)
         .collection('messages')
         .orderBy('time')
-        .snapshots();
+        .get();
+
+    final chatList = <Message>[];
+    for (var chat in chats.docs) {
+      chatList.add(Message.fromSnapshot(chat, groupId, user));
+    }
+    yield chatList; // yield the initial list of messages
+    final snapshots = groupsRef
+        .doc(groupId)
+        .collection('messages')
+        .orderBy('time')
+        .snapshots(); // listen to changes in the groups collection
+
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final chat = Message.fromSnapshot(change.doc, groupId, user);
+        if (change.type == DocumentChangeType.removed) {
+          chatList.removeWhere((c) => c.id == chat.id);
+          yield chatList;
+        } else {
+          final existingChatIndex = chatList.indexWhere((c) => c.id == chat.id);
+          if (existingChatIndex != -1) {
+            chatList[existingChatIndex] = chat;
+          } else {
+            chatList.add(chat);
+          }
+          yield chatList;
+        }
+      }
+    }
   }
 
   static Future getGroupAdmin(String groupId) async {
@@ -447,21 +476,58 @@ class DatabaseService {
 
 // Assuming privateChatRef is your reference to the private chat collection
 
-  static Future<Stream<QuerySnapshot>?> getPrivateChats(
-      String user, String visitor) async {
+  static Stream<List<Message>> getPrivateChats(
+      String user, String visitor) async* {
     List<dynamic> members = [user, visitor];
     members.sort();
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
         await privateChatRef.where("members", isEqualTo: members).get();
 
-    if (querySnapshot.docs.firstOrNull == null) {
-      return null;
-    } else {
-      // If a private chat exists, return its message collection
-      return querySnapshot.docs.first.reference
-          .collection('messages')
-          .orderBy('time')
-          .snapshots();
+    if (querySnapshot.docs.isEmpty) {
+      yield <Message>[];
+      return;
+    }
+
+    final privateChatId = querySnapshot.docs.first.id;
+    debugPrint('Private chat ID: $privateChatId');
+    final chats = await privateChatRef
+        .doc(privateChatId)
+        .collection('messages')
+        .orderBy('time')
+        .get();
+
+    debugPrint('Chats: ${chats.docs.length}');
+
+    final chatList = <Message>[];
+
+    for (var chat in chats.docs) {
+      debugPrint('Chat: ${chat.data()}');
+      chatList.add(Message.fromSnapshot(chat, privateChatId, visitor));
+    }
+    debugPrint('Chat list: ${chatList.length}');
+    yield chatList; // yield the initial list of messages
+    final snapshots = privateChatRef
+        .doc(privateChatId)
+        .collection('messages')
+        .orderBy('time')
+        .snapshots(); // listen to changes in the private chat collection
+
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final chat = Message.fromSnapshot(change.doc, privateChatId, visitor);
+        if (change.type == DocumentChangeType.removed) {
+          chatList.removeWhere((c) => c.id == chat.id);
+          yield chatList;
+        } else {
+          final existingChatIndex = chatList.indexWhere((c) => c.id == chat.id);
+          if (existingChatIndex != -1) {
+            chatList[existingChatIndex] = chat;
+          } else {
+            chatList.add(chat);
+          }
+          yield chatList;
+        }
+      }
     }
   }
 
