@@ -6,6 +6,7 @@ import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   final int? index;
@@ -24,6 +25,19 @@ class HomePageState extends State<HomePage> {
     super.initState();
     _currentIndex = widget.index ?? 0;
     _getUserData();
+    DatabaseService.updateActiveStatus(true);
+    //for updating the active status of the user
+    //resume -> online
+    //pause -> offline
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      if (message.toString().contains("pause")) {
+        DatabaseService.updateActiveStatus(false);
+      }
+      if (message.toString().contains("resume")) {
+        DatabaseService.updateActiveStatus(true);
+      }
+      return Future.value(message);
+    });
   }
 
   void _getUserData() async {

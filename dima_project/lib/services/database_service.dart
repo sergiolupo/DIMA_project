@@ -30,6 +30,8 @@ class DatabaseService {
       'selectedCategories': serializedList,
       'groups': [],
       'privateChats': [],
+      'isOnline': false,
+      'lastSeen': Timestamp.now(),
     });
 
     await followersRef.doc(user.username).set({
@@ -610,5 +612,17 @@ class DatabaseService {
         'recentMessageTime': time,
       });
     }
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      String username) {
+    return usersRef.where('username', isEqualTo: username).snapshots();
+  }
+
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    await usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
+      'isOnline': isOnline,
+      'lastSeen': Timestamp.now(),
+    });
   }
 }

@@ -8,6 +8,8 @@ class UserData {
   final String username;
   final List<String> categories;
   final String? imagePath;
+  final bool? online;
+  final Timestamp? lastSeen;
   UserData({
     required this.categories,
     this.imagePath,
@@ -16,6 +18,8 @@ class UserData {
     required this.name,
     required this.surname,
     required this.username,
+    this.online,
+    this.lastSeen,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -30,6 +34,8 @@ class UserData {
           .map((categoryMap) => categoryMap['value'].toString())
           .toList()
           .cast<String>(),
+      online: documentSnapshot['isOnline'],
+      lastSeen: documentSnapshot['lastSeen'],
     );
   }
 }

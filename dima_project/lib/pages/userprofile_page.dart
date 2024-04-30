@@ -387,6 +387,7 @@ class UserProfileState extends State<UserProfile> {
   }
 
   void _signOut(BuildContext context) {
+    DatabaseService.updateActiveStatus(false);
     AuthService.signOut();
     context.go('/login');
   }

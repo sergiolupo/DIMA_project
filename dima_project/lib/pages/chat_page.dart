@@ -4,6 +4,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -49,9 +50,33 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: privateChat == null
-            ? Text(widget.group!.name, style: const TextStyle(fontSize: 20))
-            : Text(privateChat!.user, style: const TextStyle(fontSize: 20)),
+        middle: Column(children: [
+          privateChat == null
+              ? Text(widget.group!.name, style: const TextStyle(fontSize: 10))
+              : Text(privateChat!.user, style: const TextStyle(fontSize: 10)),
+          privateChat != null
+              ? StreamBuilder(
+                  stream: DatabaseService.getUserInfo(widget.privateChat!.user),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final data = snapshot.data?.docs;
+                      final list =
+                          data?.map((e) => UserData.fromSnapshot(e)).toList();
+                      final user = list![0];
+                      return user.online == true
+                          ? const Text("Online", style: TextStyle(fontSize: 10))
+                          : Text(
+                              DateUtil.getLastSeenTime(
+                                  context: context,
+                                  time: user.lastSeen!.microsecondsSinceEpoch
+                                      .toString()),
+                              style: const TextStyle(fontSize: 10));
+                    } else {
+                      return Container();
+                    }
+                  })
+              : Container(),
+        ]),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
