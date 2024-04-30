@@ -584,4 +584,31 @@ class DatabaseService {
           .delete();
     }
   }
+
+  static void updateMessageContent(Message message, String updatedMessage) {
+    Timestamp time = Timestamp.now();
+    if (message.isGroupMessage) {
+      groupsRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .update({'content': updatedMessage, 'time': time, 'readBy': []});
+      groupsRef.doc(message.chatID).update({
+        'recentMessage': updatedMessage,
+        'recentMessageSender': message.sender,
+        'recentMessageTime': time,
+      });
+    } else {
+      privateChatRef
+          .doc(message.chatID)
+          .collection('messages')
+          .doc(message.id)
+          .update({'content': updatedMessage, 'time': time, 'readBy': []});
+      privateChatRef.doc(message.chatID).update({
+        'recentMessage': updatedMessage,
+        'recentMessageSender': message.sender,
+        'recentMessageTime': time,
+      });
+    }
+  }
 }

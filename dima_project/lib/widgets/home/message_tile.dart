@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
@@ -185,7 +186,10 @@ class MessageTileState extends State<MessageTile> {
                     size: 26,
                   ),
                   text: 'Edit Message',
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showMessageUpdateDialog(context);
+                  }),
             if (widget.message.sentByMe!)
               OptionItem(
                   icon: const Icon(
@@ -340,5 +344,49 @@ class MessageTileState extends State<MessageTile> {
             ],
           );
         });
+  }
+
+  void showMessageUpdateDialog(BuildContext context) {
+    String updatedMessage = widget.message.content;
+    showCupertinoDialog(
+      context: context,
+      builder: (_) {
+        return CupertinoAlertDialog(
+          title: const Row(
+            children: [
+              Icon(CupertinoIcons.pencil,
+                  color: CupertinoColors.activeBlue, size: 28),
+              SizedBox(
+                width: 10,
+              ),
+              Text("Edit Message"),
+            ],
+          ),
+          content: CupertinoTextField(
+            controller: TextEditingController(text: updatedMessage),
+            onChanged: (value) {
+              updatedMessage = value;
+            },
+            decoration: Constants.inputDecoration,
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Update'),
+              onPressed: () {
+                DatabaseService.updateMessageContent(
+                    widget.message, updatedMessage);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
