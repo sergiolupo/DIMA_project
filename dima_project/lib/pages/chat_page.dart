@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
@@ -9,6 +12,7 @@ import 'package:dima_project/widgets/home/message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatPage extends StatefulWidget {
   final Group? group;
@@ -156,6 +160,43 @@ class ChatPageState extends State<ChatPage> {
                   }
                 }
               },
+              suffix: Container(
+                padding: const EdgeInsets.only(right: 10),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        messageEditingController.clear();
+                      },
+                      child: const Icon(CupertinoIcons.clear_circled,
+                          color: CupertinoColors.white),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        final ImagePicker picker = ImagePicker();
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera, imageQuality: 80);
+                        if (image != null) {
+                          String chatId = privateChat == null
+                              ? widget.group!.id
+                              : privateChat!.id!;
+
+                          final bytes = await image.readAsBytes();
+                          await DatabaseService.sendChatImage(
+                              widget.user,
+                              chatId,
+                              File(image.path),
+                              privateChat == null ? true : false,
+                              Uint8List.fromList(bytes));
+                        }
+                      },
+                      child: const Icon(CupertinoIcons.camera_fill,
+                          color: CupertinoColors.white),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -196,15 +237,17 @@ class ChatPageState extends State<ChatPage> {
   void sendMessage() async {
     if (messageEditingController.text.isNotEmpty) {
       Message message = Message(
-          content: messageEditingController.text,
-          sender:
-              privateChat == null ? widget.user.username : privateChat!.visitor,
-          receiver: privateChat == null ? "" : privateChat!.user,
-          isGroupMessage: privateChat == null ? true : false,
-          time: Timestamp.now(),
-          senderImage: await DatabaseService.getUserImage(
-              FirebaseAuth.instance.currentUser!.uid),
-          readBy: []);
+        content: messageEditingController.text,
+        sender:
+            privateChat == null ? widget.user.username : privateChat!.visitor,
+        receiver: privateChat == null ? "" : privateChat!.user,
+        isGroupMessage: privateChat == null ? true : false,
+        time: Timestamp.now(),
+        senderImage: await DatabaseService.getUserImage(
+            FirebaseAuth.instance.currentUser!.uid),
+        readBy: [],
+        type: Type.text,
+      );
 
       if (privateChat == null) {
         DatabaseService.sendMessage(widget.group!.id, message);

@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum Type {
+  text,
+  image,
+}
+
 class ReadBy {
   final String username;
   final Timestamp readAt;
@@ -28,6 +33,7 @@ class Message {
   final Timestamp time;
   final List<ReadBy>? readBy;
   final String? chatID;
+  final Type type;
   Message({
     required this.content,
     required this.sender,
@@ -39,6 +45,7 @@ class Message {
     this.id,
     this.chatID,
     this.readBy,
+    required this.type,
   });
 
   toMap() {
@@ -49,6 +56,7 @@ class Message {
       'isGroupMessage': isGroupMessage,
       'time': time,
       'readBy': readBy!.map((readBy) => readBy.toMap()).toList(),
+      'type': type.toString(),
     };
   }
 
@@ -70,6 +78,7 @@ class Message {
               ))
           .toList()
           .cast<ReadBy>(),
+      type: snapshot['type'] == 'Type.text' ? Type.text : Type.image,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
@@ -247,14 +249,14 @@ class DatabaseService {
     if (message.isGroupMessage) {
       groupsRef.doc(id).collection('messages').add(messageMap);
       groupsRef.doc(id).update({
-        'recentMessage': message.content,
+        'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
       });
     } else {
       privateChatRef.doc(id).collection('messages').add(messageMap);
       privateChatRef.doc(id).update({
-        'recentMessage': message.content,
+        'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
       });
@@ -493,22 +495,17 @@ class DatabaseService {
     }
 
     final privateChatId = querySnapshot.docs.first.id;
-    debugPrint('Private chat ID: $privateChatId');
     final chats = await privateChatRef
         .doc(privateChatId)
         .collection('messages')
         .orderBy('time')
         .get();
 
-    debugPrint('Chats: ${chats.docs.length}');
-
     final chatList = <Message>[];
 
     for (var chat in chats.docs) {
-      debugPrint('Chat: ${chat.data()}');
       chatList.add(Message.fromSnapshot(chat, privateChatId, visitor));
     }
-    debugPrint('Chat list: ${chatList.length}');
     yield chatList; // yield the initial list of messages
     final snapshots = privateChatRef
         .doc(privateChatId)
@@ -547,9 +544,6 @@ class DatabaseService {
 
   static Future<void> updateMessageReadStatus(
       String username, Message message) async {
-    debugPrint('Group message ? ${message.isGroupMessage}');
-    debugPrint('Chat ID: ${message.chatID}');
-    debugPrint('Message ID: ${message.id}');
     ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: username);
 
     if (message.isGroupMessage) {
@@ -633,5 +627,25 @@ class DatabaseService {
       'isTyping': bool,
       'typingTo': s,
     });
+  }
+
+  static Future<void> sendChatImage(UserData user, String chatID, File file,
+      bool isGroupMessage, Uint8List imagePath) async {
+    final String imageUrl = await StorageService.uploadImageToStorage(
+        'chat_images/$chatID/${user.username}/${Timestamp.now()}.jpg',
+        imagePath);
+
+    final Message message = Message(
+      content: imageUrl,
+      sender: user.username,
+      receiver: '',
+      isGroupMessage: isGroupMessage,
+      time: Timestamp.now(),
+      senderImage: user.imagePath!,
+      readBy: [],
+      type: Type.image,
+    );
+
+    sendMessage(chatID, message);
   }
 }

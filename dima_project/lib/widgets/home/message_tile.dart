@@ -90,16 +90,21 @@ class MessageTileState extends State<MessageTile> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        widget.message.content,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: widget.message.sentByMe!
-                              ? CupertinoColors.white
-                              : CupertinoColors.black,
-                          fontSize: 16,
-                        ),
-                      ),
+                      widget.message.type == Type.image
+                          ? CreateImageWidget.getImage(
+                              widget.message.content,
+                              small: false,
+                            )
+                          : Text(
+                              widget.message.content,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: widget.message.sentByMe!
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                fontSize: 16,
+                              ),
+                            ),
                       Column(
                         children: [
                           const SizedBox(height: 20),

@@ -38,4 +38,16 @@ class CreateImageWidget {
       ),
     );
   }
+
+  static getImage(String content, {bool small = false}) {
+    return Container(
+      width: small ? 50 : 100,
+      height: small ? 50 : 100,
+      color: CupertinoColors.lightBackgroundGray,
+      child: Image.network(
+        content,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
 }
