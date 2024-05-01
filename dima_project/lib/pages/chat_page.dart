@@ -30,6 +30,7 @@ class ChatPageState extends State<ChatPage> {
 
   TextEditingController messageEditingController = TextEditingController();
   PrivateChat? privateChat;
+  bool isTyping = false;
   @override
   void initState() {
     privateChat = widget.privateChat;
@@ -63,14 +64,22 @@ class ChatPageState extends State<ChatPage> {
                       final list =
                           data?.map((e) => UserData.fromSnapshot(e)).toList();
                       final user = list![0];
-                      return user.online == true
-                          ? const Text("Online", style: TextStyle(fontSize: 10))
-                          : Text(
-                              DateUtil.getLastSeenTime(
-                                  context: context,
-                                  time: user.lastSeen!.microsecondsSinceEpoch
-                                      .toString()),
-                              style: const TextStyle(fontSize: 10));
+
+                      return privateChat!.id != null &&
+                              user.isTyping! &&
+                              user.typingTo == privateChat!.id!
+                          ? const Text("is typing...",
+                              style: TextStyle(fontSize: 10))
+                          : user.online == true
+                              ? const Text("Online",
+                                  style: TextStyle(fontSize: 10))
+                              : Text(
+                                  DateUtil.getLastSeenTime(
+                                      context: context,
+                                      time: user
+                                          .lastSeen!.microsecondsSinceEpoch
+                                          .toString()),
+                                  style: const TextStyle(fontSize: 10));
                     } else {
                       return Container();
                     }
@@ -80,6 +89,10 @@ class ChatPageState extends State<ChatPage> {
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
+            if (privateChat != null && privateChat!.id != null) {
+              isTyping = false;
+              DatabaseService.updateTyping(privateChat!.id!, false);
+            }
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
             } else {
@@ -130,6 +143,19 @@ class ChatPageState extends State<ChatPage> {
                 border: Border.all(color: CupertinoColors.white),
                 borderRadius: BorderRadius.circular(20),
               ),
+              onChanged: (value) {
+                if (value.isNotEmpty && !isTyping) {
+                  isTyping = true;
+                  if (privateChat != null && privateChat!.id != null) {
+                    DatabaseService.updateTyping(privateChat!.id!, true);
+                  }
+                } else if (value.isEmpty && isTyping) {
+                  isTyping = false;
+                  if (privateChat != null && privateChat!.id != null) {
+                    DatabaseService.updateTyping(privateChat!.id!, false);
+                  }
+                }
+              },
             ),
           ),
           const SizedBox(width: 10),
@@ -191,6 +217,8 @@ class ChatPageState extends State<ChatPage> {
         privateChat = await DatabaseService.getPrivateChatsFromMember(
             privateChat!.visitor, privateChat!.user);
         DatabaseService.sendMessage(privateChat!.id!, message);
+        isTyping = false;
+        DatabaseService.updateTyping(privateChat!.id!, false);
       }
       setState(() {
         messageEditingController.clear();

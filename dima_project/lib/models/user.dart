@@ -10,6 +10,8 @@ class UserData {
   final String? imagePath;
   final bool? online;
   final Timestamp? lastSeen;
+  final bool? isTyping;
+  final String? typingTo;
   UserData({
     required this.categories,
     this.imagePath,
@@ -20,6 +22,8 @@ class UserData {
     required this.username,
     this.online,
     this.lastSeen,
+    this.isTyping,
+    this.typingTo,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -36,6 +40,8 @@ class UserData {
           .cast<String>(),
       online: documentSnapshot['isOnline'],
       lastSeen: documentSnapshot['lastSeen'],
+      isTyping: documentSnapshot['isTyping'],
+      typingTo: documentSnapshot['typingTo'],
     );
   }
 }

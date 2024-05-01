@@ -32,6 +32,8 @@ class DatabaseService {
       'privateChats': [],
       'isOnline': false,
       'lastSeen': Timestamp.now(),
+      'isTyping': false,
+      'typingTo': '',
     });
 
     await followersRef.doc(user.username).set({
@@ -623,6 +625,13 @@ class DatabaseService {
     await usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
       'isOnline': isOnline,
       'lastSeen': Timestamp.now(),
+    });
+  }
+
+  static void updateTyping(String s, bool bool) {
+    usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
+      'isTyping': bool,
+      'typingTo': s,
     });
   }
 }
