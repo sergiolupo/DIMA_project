@@ -154,6 +154,7 @@ class DatabaseService {
           if (existingChatIndex != -1) {
             chatList[existingChatIndex] = chat;
           } else {
+            //add to the head of the list
             chatList.add(chat);
           }
           yield chatList;

@@ -35,6 +35,7 @@ class ChatPageState extends State<ChatPage> {
   TextEditingController messageEditingController = TextEditingController();
   PrivateChat? privateChat;
   bool isTyping = false;
+  bool isUploading = false;
   @override
   void initState() {
     privateChat = widget.privateChat;
@@ -125,6 +126,14 @@ class ChatPageState extends State<ChatPage> {
           Expanded(
             child: chatMessages(),
           ),
+          isUploading
+              ? const Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: CupertinoActivityIndicator(),
+                  ))
+              : Container(),
           _buildInputBar(),
         ],
       ),
@@ -175,13 +184,46 @@ class ChatPageState extends State<ChatPage> {
                     GestureDetector(
                       onTap: () async {
                         final ImagePicker picker = ImagePicker();
+                        final List<XFile> images =
+                            await picker.pickMultiImage(imageQuality: 80);
+
+                        if (images.isNotEmpty) {
+                          String chatId = privateChat == null
+                              ? widget.group!.id
+                              : privateChat!.id!;
+                          for (var image in images) {
+                            setState(() {
+                              isUploading = true;
+                            });
+                            final bytes = await image.readAsBytes();
+                            await DatabaseService.sendChatImage(
+                                widget.user,
+                                chatId,
+                                File(image.path),
+                                privateChat == null ? true : false,
+                                Uint8List.fromList(bytes));
+                            setState(() {
+                              isUploading = false;
+                            });
+                          }
+                        }
+                      },
+                      child: const Icon(CupertinoIcons.photo_fill,
+                          color: CupertinoColors.white),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        final ImagePicker picker = ImagePicker();
                         final XFile? image = await picker.pickImage(
                             source: ImageSource.camera, imageQuality: 80);
                         if (image != null) {
                           String chatId = privateChat == null
                               ? widget.group!.id
                               : privateChat!.id!;
-
+                          setState(() {
+                            isUploading = true;
+                          });
                           final bytes = await image.readAsBytes();
                           await DatabaseService.sendChatImage(
                               widget.user,
@@ -189,6 +231,9 @@ class ChatPageState extends State<ChatPage> {
                               File(image.path),
                               privateChat == null ? true : false,
                               Uint8List.fromList(bytes));
+                          setState(() {
+                            isUploading = false;
+                          });
                         }
                       },
                       child: const Icon(CupertinoIcons.camera_fill,
