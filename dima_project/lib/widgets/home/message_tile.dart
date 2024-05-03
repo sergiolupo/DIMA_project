@@ -5,8 +5,12 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'dart:html' as html;
+
+import 'package:uuid/uuid.dart';
 
 class MessageTile extends StatefulWidget {
   final Message message;
@@ -168,22 +172,36 @@ class MessageTileState extends State<MessageTile> {
       builder: (_) {
         return CupertinoActionSheet(
           actions: [
-            OptionItem(
-                icon: const Icon(
-                  CupertinoIcons.doc_on_clipboard,
-                  color: CupertinoColors.systemBlue,
-                  size: 26,
-                ),
-                text: 'Copy Text',
-                onPressed: () async {
-                  await Clipboard.setData(
-                    ClipboardData(text: widget.message.content),
-                  );
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  _showCustomSnackbar('Copied to clipboard');
-                }),
-            if (widget.message.sentByMe!)
+            if (widget.message.type == Type.text)
+              OptionItem(
+                  icon: const Icon(
+                    CupertinoIcons.doc_on_clipboard,
+                    color: CupertinoColors.systemBlue,
+                    size: 26,
+                  ),
+                  text: 'Copy Text',
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: widget.message.content),
+                    );
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    _showCustomSnackbar('Copied to clipboard');
+                  }),
+            if (widget.message.type == Type.image)
+              OptionItem(
+                  icon: const Icon(
+                    CupertinoIcons.download_circle,
+                    color: CupertinoColors.systemBlue,
+                    size: 26,
+                  ),
+                  text: 'Save Image',
+                  onPressed: () async {
+                    _downloadImage();
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  }),
+            if (widget.message.sentByMe! && widget.message.type == Type.text)
               OptionItem(
                   icon: const Icon(
                     CupertinoIcons.pencil,
@@ -393,5 +411,28 @@ class MessageTileState extends State<MessageTile> {
         );
       },
     );
+  }
+
+  Future<void> _downloadImage() async {
+    // Download the image from the network
+    final response = await Dio().get(
+      widget.message.content,
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    final Uint8List imageData = Uint8List.fromList(response.data);
+
+    const uuid = Uuid();
+    final imageName = '${uuid.v4()}.jpg';
+
+    final blob = html.Blob([imageData]);
+
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.AnchorElement(href: url)
+      ..setAttribute("download", imageName)
+      ..click();
+
+    html.Url.revokeObjectUrl(url);
   }
 }
