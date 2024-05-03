@@ -700,4 +700,15 @@ class DatabaseService {
 
     sendMessage(chatID, message);
   }
+
+  static Future<bool> isEmailTaken(String email) async {
+    final QuerySnapshot result =
+        await usersRef.where('email', isEqualTo: email).get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if (documents.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

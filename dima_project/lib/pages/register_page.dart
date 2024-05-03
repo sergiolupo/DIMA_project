@@ -171,6 +171,30 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> managePage() async {
+    if (_currentPage == 1) {
+      bool isEmailTaken =
+          await DatabaseService.isEmailTaken(_emailController.text);
+
+      if (isEmailTaken) {
+        debugPrint('Email is already taken');
+        if (!mounted) return;
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Invalid choice'),
+            content: const Text('Email is already taken.'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+    }
+
     if (_currentPage == 2) {
       bool isUsernameTaken =
           await DatabaseService.isUsernameTaken(_usernameController.text);
