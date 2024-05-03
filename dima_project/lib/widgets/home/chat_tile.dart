@@ -26,11 +26,17 @@ class ChatTile extends StatefulWidget {
 
 class ChatTileState extends State<ChatTile> {
   UserData? _user;
+  Stream<int>? unreadMessagesStream;
   @override
   void initState() {
     super.initState();
     if (widget.privateChat != null) {
       getUserData();
+      unreadMessagesStream = DatabaseService.getUnreadMessages(
+          false, widget.privateChat!.id!, widget.user.username);
+    } else {
+      unreadMessagesStream = DatabaseService.getUnreadMessages(
+          true, widget.group!.id, widget.user.username);
     }
   }
 
@@ -82,13 +88,39 @@ class ChatTileState extends State<ChatTile> {
                 )
               : Text("Join the conversation as ${widget.user.username}"),
           trailing: (widget.lastMessage != null)
-              ? Text(
-                  DateUtil.getFormattedTime(
-                      context: context,
-                      time: widget.lastMessage!.recentMessageTimestamp
-                          .microsecondsSinceEpoch
-                          .toString()),
-                  style: const TextStyle(fontSize: 12),
+              ? Column(
+                  children: [
+                    Text(
+                      DateUtil.getFormattedTime(
+                          context: context,
+                          time: widget.lastMessage!.recentMessageTimestamp
+                              .microsecondsSinceEpoch
+                              .toString()),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    StreamBuilder(
+                        stream: unreadMessagesStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != 0) {
+                            return Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text(
+                                snapshot.data.toString(),
+                                style: const TextStyle(
+                                  color: CupertinoColors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        }),
+                  ],
                 )
               : const SizedBox(),
         ),

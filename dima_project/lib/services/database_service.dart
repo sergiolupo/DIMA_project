@@ -533,6 +533,57 @@ class DatabaseService {
     }
   }
 
+  static Stream<int> getUnreadMessages(
+      bool isGroup, String id, String username) {
+    if (!isGroup) {
+      return privateChatRef
+          .doc(id)
+          .collection('messages')
+          .snapshots()
+          .map((snapshot) {
+        int unreadCount = 0;
+        for (var doc in snapshot.docs) {
+          var readBy = doc.data()['readBy'] ?? {};
+          // Check if the message hasn't been read by the user
+          var read = false;
+          for (var value in readBy) {
+            if ((username == value['username'])) {
+              read = true;
+              break;
+            }
+          }
+          if (!read) {
+            unreadCount++;
+          }
+        }
+        return unreadCount;
+      });
+    } else {
+      return groupsRef
+          .doc(id)
+          .collection('messages')
+          .snapshots()
+          .map((snapshot) {
+        int unreadCount = 0;
+        for (var doc in snapshot.docs) {
+          var readBy = doc.data()['readBy'] ?? {};
+          // Check if the message hasn't been read by the user
+          var read = false;
+          for (var value in readBy) {
+            if ((username == value['username'])) {
+              read = true;
+              break;
+            }
+          }
+          if (!read) {
+            unreadCount++;
+          }
+        }
+        return unreadCount;
+      });
+    }
+  }
+
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       getGroupsStreamUser(String username) {
     // Fetch all documents from Firestore collection
