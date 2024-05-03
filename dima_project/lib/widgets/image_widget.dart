@@ -4,8 +4,8 @@ class CreateImageWidget {
   static Widget getUserImage(String imagePath, {bool small = false}) {
     return ClipOval(
       child: Container(
-        width: small ? 20 : 100,
-        height: small ? 20 : 100,
+        width: small ? 30 : 100,
+        height: small ? 30 : 100,
         color: CupertinoColors.lightBackgroundGray,
         child: imagePath != ''
             ? Image.network(
@@ -23,8 +23,8 @@ class CreateImageWidget {
   static Widget getGroupImage(String imagePath, {bool small = false}) {
     return ClipOval(
       child: Container(
-        width: small ? 50 : 100,
-        height: small ? 50 : 100,
+        width: small ? 30 : 100,
+        height: small ? 30 : 100,
         color: CupertinoColors.lightBackgroundGray,
         child: imagePath != ''
             ? Image.network(
@@ -41,8 +41,8 @@ class CreateImageWidget {
 
   static getImage(String content, {bool small = false}) {
     return Container(
-      width: small ? 50 : 100,
-      height: small ? 50 : 100,
+      width: small ? 30 : 100,
+      height: small ? 30 : 100,
       color: CupertinoColors.lightBackgroundGray,
       child: Image.network(
         content,

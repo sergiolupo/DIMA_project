@@ -66,63 +66,104 @@ class ChatTileState extends State<ChatTile> {
           horizontal: 24, // Adjust padding based on screen width
           vertical: 16,
         ),
-        child: CupertinoListTile(
-          leading: widget.group != null
-              ? CreateImageWidget.getGroupImage(widget.group!.imagePath!)
-              : (_user != null)
-                  ? CreateImageWidget.getUserImage(_user!.imagePath!)
-                  : const SizedBox(),
-          title: Text(
-            widget.group == null
-                ? widget.privateChat!.user
-                : widget.group!.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: (widget.lastMessage != null)
-              ? Text(
-                  widget.lastMessage!.recentMessageSender ==
-                          widget.user.username
-                      ? "You: ${widget.lastMessage!.recentMessage}"
-                      : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
-                  overflow: TextOverflow.ellipsis,
-                )
-              : Text("Join the conversation as ${widget.user.username}"),
-          trailing: (widget.lastMessage != null)
-              ? Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                widget.group != null
+                    ? CreateImageWidget.getGroupImage(widget.group!.imagePath!,
+                        small: true)
+                    : (_user != null)
+                        ? CreateImageWidget.getUserImage(_user!.imagePath!,
+                            small: true)
+                        : const SizedBox(),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      DateUtil.getFormattedTime(
-                          context: context,
-                          time: widget.lastMessage!.recentMessageTimestamp
-                              .microsecondsSinceEpoch
-                              .toString()),
-                      style: const TextStyle(fontSize: 12),
+                      widget.group == null
+                          ? widget.privateChat!.user
+                          : widget.group!.name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
-                    StreamBuilder(
-                        stream: unreadMessagesStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData && snapshot.data != 0) {
-                            return Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: CupertinoTheme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text(
-                                snapshot.data.toString(),
-                                style: const TextStyle(
-                                  color: CupertinoColors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        }),
+                    const SizedBox(height: 2),
+                    (widget.lastMessage != null)
+                        ? Text(
+                            widget.lastMessage!.recentMessageSender ==
+                                    widget.user.username
+                                ? "You: ${widget.lastMessage!.recentMessage}"
+                                : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: CupertinoColors.inactiveGray,
+                            ),
+                          )
+                        : Text(
+                            "Join the conversation as ${widget.user.username}",
+                            style: const TextStyle(
+                                fontSize: 14,
+                                color: CupertinoColors.inactiveGray),
+                          ),
                   ],
-                )
-              : const SizedBox(),
+                ),
+              ],
+            ),
+            (widget.lastMessage != null)
+                ? StreamBuilder(
+                    stream: unreadMessagesStream,
+                    builder: (context, snapshot) => StreamBuilder(
+                      stream: unreadMessagesStream,
+                      builder: (context, snapshot) {
+                        final bool hasUnreadMessages =
+                            snapshot.hasData && snapshot.data != 0;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateUtil.getFormattedTime(
+                                context: context,
+                                time: widget.lastMessage!.recentMessageTimestamp
+                                    .microsecondsSinceEpoch
+                                    .toString(),
+                              ),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: hasUnreadMessages
+                                    ? CupertinoTheme.of(context).primaryColor
+                                    : CupertinoColors.inactiveGray,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            hasUnreadMessages
+                                ? Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Text(
+                                      snapshot.data.toString(),
+                                      style: const TextStyle(
+                                        color: CupertinoColors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        );
+                      },
+                    ),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );
