@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
@@ -67,6 +68,7 @@ class ListChatPageState extends State<ListChatPage> {
                       onChanged: (value) {
                         setState(() {
                           idx = value;
+                          //print({"INDICE: $idx"});
                           _subscribe();
                         });
                       },
@@ -76,11 +78,16 @@ class ListChatPageState extends State<ListChatPage> {
                         groupList(),
                         privateChatList(),
                         Positioned(
-                          bottom: 20,
+                          bottom: 50,
                           right: 20,
                           child: CupertinoButton(
                             onPressed: () {
-                              context.go("/createGroup", extra: widget.user);
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) =>
+                                          CreateGroupPage(user: widget.user)));
+                              //context.go("/createGroup", extra: widget.user);
                             },
                             child: const Icon(CupertinoIcons.add, size: 30),
                           ),
@@ -197,7 +204,9 @@ class ListChatPageState extends State<ListChatPage> {
                 child: CupertinoActivityIndicator(),
               );
             } else {
-              return Container(); // Return an empty container or handle other cases as needed
+              print("PASSA QUI! perchè?");
+              return noChatWidget();
+              //return Container(); // Return an empty container or handle other cases as needed
             }
           },
         ),

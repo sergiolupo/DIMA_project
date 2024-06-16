@@ -8,7 +8,7 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'dart:html' as html;
+//import 'dart:html' as html;
 
 import 'package:uuid/uuid.dart';
 
@@ -425,7 +425,7 @@ class MessageTileState extends State<MessageTile> {
     const uuid = Uuid();
     final imageName = '${uuid.v4()}.jpg';
 
-    final blob = html.Blob([imageData]);
+    /*final blob = html.Blob([imageData]);
 
     final url = html.Url.createObjectUrlFromBlob(blob);
 
@@ -433,6 +433,6 @@ class MessageTileState extends State<MessageTile> {
       ..setAttribute("download", imageName)
       ..click();
 
-    html.Url.revokeObjectUrl(url);
+    html.Url.revokeObjectUrl(url);*/
   }
 }

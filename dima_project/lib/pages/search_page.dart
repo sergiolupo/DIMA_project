@@ -80,7 +80,7 @@ class SearchPageState extends State<SearchPage> {
                     controller: _searchController,
                     onChanged: (_) => _initiateSearchMethod(),
                     placeholder:
-                        "Search${searchIdx == 0 ? " users" : " groups"}...",
+                        "Search${searchIdx == 0 ? " users" : searchIdx == 1 ? " groups" : " events"}...",
                     placeholderStyle:
                         const TextStyle(color: CupertinoColors.white),
                     style: const TextStyle(color: CupertinoColors.white),
@@ -132,8 +132,8 @@ class SearchPageState extends State<SearchPage> {
                 final docs = snapshot.data ?? [];
                 if (docs.isEmpty) {
                   return Center(
-                    child:
-                        Text("No ${searchIdx == 0 ? "users" : "groups"} found"),
+                    child: Text(
+                        "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
                   );
                 }
 

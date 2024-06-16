@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
@@ -31,18 +32,17 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        backgroundColor: CupertinoColors.systemPink,
         leading: CupertinoButton(
           onPressed: () {
-            context.go(
-              '/groups',
-              extra: widget.user,
-            );
+            Navigator.of(context).pop();
+            //context.go('/groups',extra: widget.user,);
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
-        middle: Text(
+        middle: const Text(
           'Create Group',
-          style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+          style: TextStyle(color: CupertinoColors.white),
         ),
       ),
       child: SafeArea(
