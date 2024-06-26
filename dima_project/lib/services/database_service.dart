@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -60,9 +61,20 @@ class DatabaseService {
     return user;
   }
 
-  Future<String> findUUID(String email) async {
+  static Future<String> findUUID(String email) async {
     final QuerySnapshot result =
         await usersRef.where('email', isEqualTo: email).get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if (documents.isNotEmpty) {
+      return documents[0].id;
+    } else {
+      return '';
+    }
+  }
+
+  static Future<String> getUUIDFromUsername(String username) async {
+    final QuerySnapshot result =
+        await usersRef.where('username', isEqualTo: username).get();
     final List<DocumentSnapshot> documents = result.docs;
     if (documents.isNotEmpty) {
       return documents[0].id;
@@ -125,7 +137,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<Message>> getChats(String groupId, String user) async* {
+  static Stream<List<Message>> getChats(String groupId) async* {
     final chats = await groupsRef
         .doc(groupId)
         .collection('messages')
@@ -134,7 +146,8 @@ class DatabaseService {
 
     final chatList = <Message>[];
     for (var chat in chats.docs) {
-      chatList.add(Message.fromSnapshot(chat, groupId, user));
+      chatList.add(Message.fromSnapshot(
+          chat, groupId, FirebaseAuth.instance.currentUser!.uid));
     }
     yield chatList; // yield the initial list of messages
     final snapshots = groupsRef
@@ -145,7 +158,8 @@ class DatabaseService {
 
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final chat = Message.fromSnapshot(change.doc, groupId, user);
+        final chat = Message.fromSnapshot(
+            change.doc, groupId, FirebaseAuth.instance.currentUser!.uid);
         if (change.type == DocumentChangeType.removed) {
           chatList.removeWhere((c) => c.id == chat.id);
           yield chatList;
@@ -265,13 +279,11 @@ class DatabaseService {
   }
 
   static Future<PrivateChat> getPrivateChatsFromMember(
-      String current, String other) async {
-    List<dynamic> members = [current, other];
-    members.sort();
+      List<String> members) async {
     QuerySnapshot<Object?> value =
         await privateChatRef.where("members", isEqualTo: members).get();
     return PrivateChat.fromSnapshot(
-        await privateChatRef.doc(value.docs.first.id).get(), current);
+        await privateChatRef.doc(value.docs.first.id).get());
   }
 
   static Future sendFirstPrivateMessage(Message message, String id) async {
@@ -280,7 +292,7 @@ class DatabaseService {
   }
 
   static Future<void> createPrivateChat(PrivateChat privateChat) async {
-    List<dynamic> members = [privateChat.user, privateChat.visitor];
+    List<String> members = privateChat.members;
     members.sort();
     debugPrint("Creating private chat with members: $members");
     await privateChatRef.add({
@@ -291,22 +303,11 @@ class DatabaseService {
     }).then((value) async {
       final id = value.id;
       privateChat.id = id;
-      await usersRef
-          .where('username', isEqualTo: privateChat.user)
-          .get()
-          .then((value) async {
-        await usersRef.doc(value.docs.first.id).update({
-          'privateChats': FieldValue.arrayUnion([id])
-        });
+      await usersRef.doc(members[0]).update({
+        'privateChats': FieldValue.arrayUnion([id])
       });
-      await usersRef
-          .where('username', isEqualTo: privateChat.visitor)
-          .get()
-          .then((value) async {
-        debugPrint("I am adding the private chat to the visitor");
-        return await usersRef.doc(value.docs.first.id).update({
-          'privateChats': FieldValue.arrayUnion([id])
-        });
+      await usersRef.doc(members[1]).update({
+        'privateChats': FieldValue.arrayUnion([id])
       });
     });
   }
@@ -340,7 +341,7 @@ class DatabaseService {
           groupsList.removeWhere((g) => g.id == groupId);
           yield groupsList;
         } else {
-          if (members!.contains(username)) {
+          if (members!.contains(username) && group.id != '') {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
                 groupsList.indexWhere((g) => g.id == groupId);
@@ -367,11 +368,12 @@ class DatabaseService {
         .then((value) {
       return value['privateChats'];
     });
+
     final chatsList = <PrivateChat>[];
     for (var id in privateChats) {
       final snapshot = await privateChatRef.doc(id).get();
       if (snapshot.exists) {
-        chatsList.add(PrivateChat.fromSnapshot(snapshot, username));
+        chatsList.add(PrivateChat.fromSnapshot(snapshot));
       }
     }
     yield chatsList; // yield the initial list of private chats
@@ -382,13 +384,13 @@ class DatabaseService {
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
         final id = change.doc.id;
-        final privateChat = PrivateChat.fromSnapshot(change.doc, username);
-        final members = [privateChat.user, privateChat.visitor];
+        final privateChat = PrivateChat.fromSnapshot(change.doc);
         if (change.type == DocumentChangeType.removed) {
           chatsList.removeWhere((g) => g.id == id);
           yield chatsList;
         } else {
-          if (members.contains(username)) {
+          if (privateChat.members
+              .contains(FirebaseAuth.instance.currentUser!.uid)) {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
             if (existingGroupIndex != -1) {
@@ -483,10 +485,7 @@ class DatabaseService {
 
 // Assuming privateChatRef is your reference to the private chat collection
 
-  static Stream<List<Message>> getPrivateChats(
-      String user, String visitor) async* {
-    List<dynamic> members = [user, visitor];
-    members.sort();
+  static Stream<List<Message>> getPrivateChats(List<String> members) async* {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
         await privateChatRef.where("members", isEqualTo: members).get();
 
@@ -503,9 +502,9 @@ class DatabaseService {
         .get();
 
     final chatList = <Message>[];
-
     for (var chat in chats.docs) {
-      chatList.add(Message.fromSnapshot(chat, privateChatId, visitor));
+      chatList.add(Message.fromSnapshot(
+          chat, privateChatId, FirebaseAuth.instance.currentUser!.uid));
     }
     yield chatList; // yield the initial list of messages
     final snapshots = privateChatRef
@@ -516,7 +515,8 @@ class DatabaseService {
 
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final chat = Message.fromSnapshot(change.doc, privateChatId, visitor);
+        final chat = Message.fromSnapshot(
+            change.doc, privateChatId, FirebaseAuth.instance.currentUser!.uid);
         if (change.type == DocumentChangeType.removed) {
           chatList.removeWhere((c) => c.id == chat.id);
           yield chatList;

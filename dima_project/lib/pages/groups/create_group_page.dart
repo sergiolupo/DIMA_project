@@ -177,10 +177,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
       await DatabaseService.createGroup(
           group, FirebaseAuth.instance.currentUser!.uid, imagePath);
       if (mounted) {
-        context.go(
-          '/home',
-          extra: 1,
-        );
+        Navigator.of(context).pop();
       }
     }
   }

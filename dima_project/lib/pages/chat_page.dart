@@ -36,6 +36,7 @@ class ChatPageState extends State<ChatPage> {
   PrivateChat? privateChat;
   bool isTyping = false;
   bool isUploading = false;
+  String _other = "";
   @override
   void initState() {
     privateChat = widget.privateChat;
@@ -45,99 +46,118 @@ class ChatPageState extends State<ChatPage> {
 
   getChats() async {
     if (privateChat == null) {
-      chats = DatabaseService.getChats(widget.group!.id, widget.user.username);
+      chats = DatabaseService.getChats(widget.group!.id);
     } else {
-      chats = DatabaseService.getPrivateChats(
-          privateChat!.user, privateChat!.visitor);
+      String user = (await DatabaseService.getUserData(privateChat!.members[0]))
+                  .username ==
+              widget.user.username
+          ? (await DatabaseService.getUserData(privateChat!.members[1]))
+              .username
+          : (await DatabaseService.getUserData(privateChat!.members[0]))
+              .username;
+      setState(() {
+        _other = user;
+      });
+      chats = DatabaseService.getPrivateChats(privateChat!.members);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Column(children: [
-          privateChat == null
-              ? Text(widget.group!.name, style: const TextStyle(fontSize: 10))
-              : Text(privateChat!.user, style: const TextStyle(fontSize: 10)),
-          privateChat != null
-              ? StreamBuilder(
-                  stream: DatabaseService.getUserInfo(widget.privateChat!.user),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final data = snapshot.data?.docs;
-                      final list =
-                          data?.map((e) => UserData.fromSnapshot(e)).toList();
-                      final user = list![0];
+    return (_other == "" && privateChat != null) || chats == null
+        ? const CupertinoPageScaffold(
+            child: Center(
+              child: CupertinoActivityIndicator(),
+            ),
+          )
+        : CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: Column(children: [
+                privateChat == null
+                    ? Text(widget.group!.name,
+                        style: const TextStyle(fontSize: 10))
+                    : Text(_other, style: const TextStyle(fontSize: 10)),
+                privateChat != null
+                    ? StreamBuilder(
+                        stream: DatabaseService.getUserInfo(_other),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final data = snapshot.data?.docs;
+                            final list = data
+                                ?.map((e) => UserData.fromSnapshot(e))
+                                .toList();
+                            final user = list![0];
 
-                      return privateChat!.id != null &&
-                              user.isTyping! &&
-                              user.typingTo == privateChat!.id!
-                          ? const Text("is typing...",
-                              style: TextStyle(fontSize: 10))
-                          : user.online == true
-                              ? const Text("Online",
-                                  style: TextStyle(fontSize: 10))
-                              : Text(
-                                  DateUtil.getLastSeenTime(
-                                      context: context,
-                                      time: user
-                                          .lastSeen!.microsecondsSinceEpoch
-                                          .toString()),
-                                  style: const TextStyle(fontSize: 10));
-                    } else {
-                      return Container();
-                    }
-                  })
-              : Container(),
-        ]),
-        backgroundColor: CupertinoTheme.of(context).primaryColor,
-        leading: CupertinoButton(
-          onPressed: () {
-            if (privateChat != null && privateChat!.id != null) {
-              isTyping = false;
-              DatabaseService.updateTyping(privateChat!.id!, false);
-            }
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go("/home", extra: 1);
-            }
-          },
-          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
-        ),
-        trailing: privateChat == null
-            ? CupertinoButton(
+                            return privateChat!.id != null &&
+                                    user.isTyping! &&
+                                    user.typingTo == privateChat!.id!
+                                ? const Text("is typing...",
+                                    style: TextStyle(fontSize: 10))
+                                : user.online == true
+                                    ? const Text("Online",
+                                        style: TextStyle(fontSize: 10))
+                                    : Text(
+                                        DateUtil.getLastSeenTime(
+                                            context: context,
+                                            time: user.lastSeen!
+                                                .microsecondsSinceEpoch
+                                                .toString()),
+                                        style: const TextStyle(fontSize: 10));
+                          } else {
+                            return Container();
+                          }
+                        })
+                    : Container(),
+              ]),
+              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              leading: CupertinoButton(
                 onPressed: () {
-                  context.go(
-                    "/groupinfo",
-                    extra: {"group": widget.group, "user": widget.user},
-                  );
+                  if (privateChat != null && privateChat!.id != null) {
+                    isTyping = false;
+                    DatabaseService.updateTyping(privateChat!.id!, false);
+                  }
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    context.go("/home", extra: 1);
+                  }
                 },
-                child: const Icon(
-                  CupertinoIcons.info,
-                  color: CupertinoColors.white,
+                child: const Icon(CupertinoIcons.back,
+                    color: CupertinoColors.white),
+              ),
+              trailing: privateChat == null
+                  ? CupertinoButton(
+                      onPressed: () {
+                        context.go(
+                          "/groupinfo",
+                          extra: {"group": widget.group, "user": widget.user},
+                        );
+                      },
+                      child: const Icon(
+                        CupertinoIcons.info,
+                        color: CupertinoColors.white,
+                      ),
+                    )
+                  : null,
+            ),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: chatMessages(),
                 ),
-              )
-            : null,
-      ),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: chatMessages(),
-          ),
-          isUploading
-              ? const Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: CupertinoActivityIndicator(),
-                  ))
-              : Container(),
-          _buildInputBar(),
-        ],
-      ),
-    );
+                isUploading
+                    ? const Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: CupertinoActivityIndicator(),
+                        ))
+                    : Container(),
+                _buildInputBar(),
+              ],
+            ),
+          );
   }
 
   Widget _buildInputBar() {
@@ -283,9 +303,8 @@ class ChatPageState extends State<ChatPage> {
     if (messageEditingController.text.isNotEmpty) {
       Message message = Message(
         content: messageEditingController.text,
-        sender:
-            privateChat == null ? widget.user.username : privateChat!.visitor,
-        receiver: privateChat == null ? "" : privateChat!.user,
+        sender: FirebaseAuth.instance.currentUser!.uid,
+        receiver: privateChat == null ? "" : _other,
         isGroupMessage: privateChat == null ? true : false,
         time: Timestamp.now(),
         senderImage: await DatabaseService.getUserImage(
@@ -299,11 +318,10 @@ class ChatPageState extends State<ChatPage> {
       } else {
         if (privateChat!.id == null) {
           await DatabaseService.createPrivateChat(privateChat!);
-          chats = DatabaseService.getPrivateChats(
-              privateChat!.user, privateChat!.visitor);
+          chats = DatabaseService.getPrivateChats(privateChat!.members);
         }
         privateChat = await DatabaseService.getPrivateChatsFromMember(
-            privateChat!.visitor, privateChat!.user);
+            privateChat!.members);
         DatabaseService.sendMessage(privateChat!.id!, message);
         isTyping = false;
         DatabaseService.updateTyping(privateChat!.id!, false);

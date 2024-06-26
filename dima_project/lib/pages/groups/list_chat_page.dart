@@ -8,7 +8,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 class ListChatPage extends StatefulWidget {
   final UserData user;
@@ -204,9 +203,7 @@ class ListChatPageState extends State<ListChatPage> {
                 child: CupertinoActivityIndicator(),
               );
             } else {
-              print("PASSA QUI! perchè?");
-              return noChatWidget();
-              //return Container(); // Return an empty container or handle other cases as needed
+              return Container(); // Return an empty container or handle other cases as needed
             }
           },
         ),

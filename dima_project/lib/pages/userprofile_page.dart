@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/pages/options/options_page.dart';
-import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -194,10 +194,17 @@ class UserProfileState extends State<UserProfile> {
                             CupertinoButton.filled(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 8),
-                              onPressed: () {
+                              onPressed: () async {
+                                final visitorUid =
+                                    await DatabaseService.getUUIDFromUsername(
+                                        widget.visitor!.username);
+                                final userUid =
+                                    await DatabaseService.getUUIDFromUsername(
+                                        widget.user.username);
+                                var members = [visitorUid, userUid];
+                                members.sort();
                                 final chat = PrivateChat(
-                                  visitor: widget.visitor!.username,
-                                  user: widget.user.username,
+                                  members: members,
                                 );
                                 Navigator.of(context, rootNavigator: true).push(
                                   CupertinoPageRoute(
