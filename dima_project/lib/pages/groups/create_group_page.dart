@@ -72,7 +72,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          flex: 3,
+                          flex: 4,
                           child: CupertinoTextFormFieldRow(
                             controller: _groupNameController,
                             placeholder: 'Group Name',
@@ -84,7 +84,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                                 width: 2.0,
                               ),
                             ),
-                            padding: const EdgeInsets.all(12.0),
+                            padding: const EdgeInsets.all(3.0),
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter a group name';
@@ -97,9 +97,9 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   SizedBox(
-                    width: (MediaQuery.of(context).size.width / 3) * 2,
+                    width: MediaQuery.of(context).size.width,
                     child: CupertinoTextFormFieldRow(
                       controller: _groupDescriptionController,
                       placeholder: 'Group Description',

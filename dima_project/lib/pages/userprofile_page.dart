@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/pages/chat_page.dart';
+import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/search_page.dart';
-import 'package:dima_project/pages/settings_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -85,24 +85,24 @@ class UserProfileState extends State<UserProfile> {
                   Navigator.of(context).pop();
                 },
               )
-            : isMyProfile
-                ? GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                SettingsPage(user: widget.user))),
-                    child: const Icon(CupertinoIcons.settings,
-                        color: CupertinoColors.black),
-                  )
-                : null,
+            : null,
         trailing: isMyProfile
+            ? GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) => OptionsPage(user: widget.user))),
+                child: const Icon(CupertinoIcons.bars,
+                    color: CupertinoColors.black),
+              )
+            : null,
+        /*trailing: isMyProfile
             ? GestureDetector(
                 onTap: () => _signOut(context),
                 child: const Icon(CupertinoIcons.power,
                     color: CupertinoColors.black),
               )
-            : const SizedBox(),
+            : const SizedBox(),*/
       ),
       child: Column(
         children: [
