@@ -1,16 +1,15 @@
 import 'package:dima_project/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/widgets/image_widget.dart';
-import 'package:dima_project/pages/userprofile_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final UserData user;
   const SettingsPage({super.key, required this.user});
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class SettingsPageState extends State<SettingsPage> {
   bool isObscure = true;
   @override
   Widget build(BuildContext context) {

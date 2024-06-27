@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:dima_project/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 

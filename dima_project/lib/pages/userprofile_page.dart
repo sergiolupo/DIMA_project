@@ -5,13 +5,10 @@ import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -206,14 +203,17 @@ class UserProfileState extends State<UserProfile> {
                                 final chat = PrivateChat(
                                   members: members,
                                 );
-                                Navigator.of(context, rootNavigator: true).push(
-                                  CupertinoPageRoute(
-                                    builder: (context) => ChatPage(
-                                      user: widget.visitor!,
-                                      privateChat: chat,
+                                if (context.mounted) {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(
+                                    CupertinoPageRoute(
+                                      builder: (context) => ChatPage(
+                                        user: widget.visitor!,
+                                        privateChat: chat,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               },
                               child: const Icon(
                                 FontAwesomeIcons.envelope,
@@ -403,12 +403,6 @@ class UserProfileState extends State<UserProfile> {
     _followersStreamSubscription?.cancel();
     _groupsStreamSubscription?.cancel();
     super.dispose();
-  }
-
-  void _signOut(BuildContext context) {
-    DatabaseService.updateActiveStatus(false);
-    AuthService.signOut();
-    context.go('/login');
   }
 
   _checkFollow() async {

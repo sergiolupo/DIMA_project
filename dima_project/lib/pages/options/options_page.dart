@@ -2,7 +2,6 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,21 +9,21 @@ class OptionsPage extends StatefulWidget {
   final UserData user;
   const OptionsPage({super.key, required this.user});
   @override
-  _OptionsPageState createState() => _OptionsPageState();
+  OptionsPageState createState() => OptionsPageState();
 }
 
-class _OptionsPageState extends State<OptionsPage> {
+class OptionsPageState extends State<OptionsPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoColors.systemPink,
-          middle: Text('Options'),
+          middle: const Text('Options'),
           leading: CupertinoButton(
             onPressed: () => Navigator.of(context).pop(),
-            padding: EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 10),
             color: CupertinoColors.systemPink,
-            child: Icon(CupertinoIcons.back),
+            child: const Icon(CupertinoIcons.back),
           )),
       child: SafeArea(
         child: ListView(
@@ -49,21 +48,21 @@ class _OptionsPageState extends State<OptionsPage> {
             CupertinoListSection(
               children: [
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.heart),
-                  title: Text('Favorites'),
-                  onTap: () => null,
+                  leading: const Icon(CupertinoIcons.heart),
+                  title: const Text('Favorites'),
+                  onTap: () => {},
                 ),
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.person),
-                  title: Text('Friends'),
-                  onTap: () => null,
+                  leading: const Icon(CupertinoIcons.person),
+                  title: const Text('Friends'),
+                  onTap: () => {},
                 ),
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.share),
-                  title: Text('Share'),
-                  onTap: () => null,
+                  leading: const Icon(CupertinoIcons.share),
+                  title: const Text('Share'),
+                  onTap: () => {},
                 ),
-                CupertinoListTile(
+                const CupertinoListTile(
                   leading: Icon(CupertinoIcons.bell),
                   title: Text('Request'),
                 ),
@@ -72,8 +71,8 @@ class _OptionsPageState extends State<OptionsPage> {
             CupertinoListSection(
               children: [
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.settings),
-                  title: Text('Settings'),
+                  leading: const Icon(CupertinoIcons.settings),
+                  title: const Text('Settings'),
                   onTap: () => Navigator.push(
                       context,
                       CupertinoPageRoute(
@@ -81,17 +80,17 @@ class _OptionsPageState extends State<OptionsPage> {
                               SettingsPage(user: widget.user))),
                 ),
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.doc),
-                  title: Text('Policies'),
-                  onTap: () => null,
+                  leading: const Icon(CupertinoIcons.doc),
+                  title: const Text('Policies'),
+                  onTap: () => {},
                 ),
               ],
             ),
             CupertinoListSection(
               children: [
                 CupertinoListTile(
-                  leading: Icon(CupertinoIcons.arrow_right_to_line),
-                  title: Text('Exit'),
+                  leading: const Icon(CupertinoIcons.arrow_right_to_line),
+                  title: const Text('Exit'),
                   onTap: () => _signOut(context),
                 ),
               ],
@@ -108,20 +107,21 @@ class CupertinoListTile extends StatelessWidget {
   final Widget title;
   final VoidCallback? onTap;
 
-  CupertinoListTile({required this.leading, required this.title, this.onTap});
+  const CupertinoListTile(
+      {super.key, required this.leading, required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             leading,
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(child: title),
-            Icon(CupertinoIcons.forward),
+            const Icon(CupertinoIcons.forward),
           ],
         ),
       ),
@@ -132,7 +132,7 @@ class CupertinoListTile extends StatelessWidget {
 class CupertinoListSection extends StatelessWidget {
   final List<Widget> children;
 
-  CupertinoListSection({required this.children});
+  const CupertinoListSection({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {

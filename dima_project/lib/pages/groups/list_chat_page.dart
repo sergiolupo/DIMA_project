@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
@@ -121,10 +122,40 @@ class ListChatPageState extends State<ListChatPage> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final group = data[index];
-                    return ChatTile(
-                      user: widget.user,
-                      group: group,
-                      lastMessage: group.lastMessage,
+
+                    if (group.lastMessage == null) {
+                      return ChatTile(
+                        user: widget.user,
+                        group: group,
+                        lastMessage: null,
+                      );
+                    }
+                    return FutureBuilder<UserData>(
+                      future: DatabaseService.getUserData(
+                          group.lastMessage!.recentMessageSender),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CupertinoActivityIndicator(),
+                          );
+                        }
+                        if (snapshot.hasData) {
+                          final user = snapshot.data!;
+                          return ChatTile(
+                            user: widget.user,
+                            group: group,
+                            lastMessage: LastMessage(
+                              recentMessage: group.lastMessage!.recentMessage,
+                              recentMessageSender: user.username,
+                              recentMessageTimestamp:
+                                  group.lastMessage!.recentMessageTimestamp,
+                            ),
+                          );
+                        } else {
+                          return Container(); // Return an empty container or handle other cases as needed
+                        }
+                      },
                     );
                   },
                 );
@@ -183,15 +214,39 @@ class ListChatPageState extends State<ListChatPage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data!;
+
               if (data.isNotEmpty) {
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final privateChat = data[index];
-                    return ChatTile(
-                      user: widget.user,
-                      privateChat: privateChat,
-                      lastMessage: privateChat.lastMessage,
+                    return FutureBuilder<UserData>(
+                      future: DatabaseService.getUserData(
+                          privateChat.lastMessage!.recentMessageSender),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CupertinoActivityIndicator(),
+                          );
+                        }
+                        if (snapshot.hasData) {
+                          final user = snapshot.data!;
+                          return ChatTile(
+                            user: widget.user,
+                            privateChat: privateChat,
+                            lastMessage: LastMessage(
+                              recentMessage:
+                                  privateChat.lastMessage!.recentMessage,
+                              recentMessageSender: user.username,
+                              recentMessageTimestamp: privateChat
+                                  .lastMessage!.recentMessageTimestamp,
+                            ),
+                          );
+                        } else {
+                          return Container(); // Return an empty container or handle other cases as needed
+                        }
+                      },
                     );
                   },
                 );

@@ -27,11 +27,9 @@ class ChatTile extends StatefulWidget {
 class ChatTileState extends State<ChatTile> {
   UserData? _other;
   Stream<int>? unreadMessagesStream;
-  LastMessage? lastMessage;
   @override
   void initState() {
     super.initState();
-    getLastMessageUser();
 
     if (widget.privateChat != null) {
       getUserData();
@@ -41,20 +39,6 @@ class ChatTileState extends State<ChatTile> {
       unreadMessagesStream = DatabaseService.getUnreadMessages(
           true, widget.group!.id, widget.user.username);
     }
-  }
-
-  getLastMessageUser() async {
-    if (widget.lastMessage == null) return;
-    final user = (await DatabaseService.getUserData(
-            widget.lastMessage!.recentMessageSender))
-        .username;
-    setState(() {
-      lastMessage = LastMessage(
-        recentMessage: widget.lastMessage!.recentMessage,
-        recentMessageSender: user,
-        recentMessageTimestamp: widget.lastMessage!.recentMessageTimestamp,
-      );
-    });
   }
 
   getUserData() async {
@@ -69,8 +53,7 @@ class ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    return ((_other == null && widget.privateChat != null) ||
-            (lastMessage == null && widget.lastMessage != null))
+    return (_other == null && widget.privateChat != null)
         ? const SizedBox()
         : GestureDetector(
             onTap: () {
@@ -118,10 +101,10 @@ class ChatTileState extends State<ChatTile> {
                           const SizedBox(height: 2),
                           (widget.lastMessage != null)
                               ? Text(
-                                  lastMessage!.recentMessageSender ==
+                                  widget.lastMessage!.recentMessageSender ==
                                           widget.user.username
-                                      ? "You: ${lastMessage!.recentMessage}"
-                                      : "${lastMessage!.recentMessageSender}: ${lastMessage!.recentMessage}",
+                                      ? "You: ${widget.lastMessage!.recentMessage}"
+                                      : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 14,
