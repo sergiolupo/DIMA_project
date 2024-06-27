@@ -37,7 +37,7 @@ class ShowFollowersState extends State<ShowFollowers> {
 
   init() {
     _followersStreamSubscription =
-        DatabaseService.getFollowersStreamUser(widget.user.username)
+        DatabaseService.getFollowersStreamUser(widget.user.uuid!)
             .listen((snapshot) {
       _followersStreamController.add(snapshot);
     });
@@ -89,10 +89,10 @@ class ShowFollowersState extends State<ShowFollowers> {
               final followers = snapshot.data!.data()!["followers"];
               final following = snapshot.data!.data()!["following"];
 
-              final List<dynamic> usernames =
+              final List<dynamic> uuids =
                   widget.followers ? followers : following;
 
-              if (usernames.isEmpty) {
+              if (uuids.isEmpty) {
                 return Center(
                   child: widget.followers
                       ? const Text('No followers')
@@ -100,11 +100,10 @@ class ShowFollowersState extends State<ShowFollowers> {
                 );
               }
 
-              final String username = usernames[index].toString();
+              final String uid = uuids[index].toString();
 
               return FutureBuilder<UserData>(
-                future: DatabaseService.getUserDataFromUsername(
-                    username.toString()),
+                future: DatabaseService.getUserData(uid.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CupertinoActivityIndicator(); // Or any loading indicator

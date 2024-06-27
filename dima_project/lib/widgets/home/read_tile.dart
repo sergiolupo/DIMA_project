@@ -22,8 +22,8 @@ class ReadTileState extends State<ReadTile> {
   }
 
   void getUserData() async {
-    final userData =
-        await DatabaseService.getUserDataFromUsername(widget.user.username);
+    final userData = await DatabaseService.getUserData(widget.user.username);
+
     setState(() {
       _userData = userData;
     });

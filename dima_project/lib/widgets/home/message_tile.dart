@@ -14,11 +14,11 @@ import 'package:uuid/uuid.dart';
 
 class MessageTile extends StatefulWidget {
   final Message message;
-  final String username;
+  final String uuid;
 
   const MessageTile({
     required this.message,
-    required this.username,
+    required this.uuid,
     super.key,
   });
 
@@ -164,15 +164,15 @@ class MessageTileState extends State<MessageTile> {
 
   Widget readBy() {
     bool hasRead = widget.message.readBy!
-        .any((element) => element.username == widget.username);
+        .any((element) => element.username == widget.uuid);
     if (!hasRead) {
-      DatabaseService.updateMessageReadStatus(widget.username, widget.message);
+      DatabaseService.updateMessageReadStatus(widget.uuid, widget.message);
     }
 
     return widget.message.sentByMe == true
         ? widget.message.readBy!.isNotEmpty &&
                 !widget.message.readBy!
-                    .every((element) => element.username == widget.username)
+                    .every((element) => element.username == widget.uuid)
             ? const Icon(CupertinoIcons.check_mark_circled,
                 color: CupertinoColors.systemBlue, size: 18)
             : const Icon(CupertinoIcons.check_mark_circled,
@@ -339,7 +339,7 @@ class MessageTileState extends State<MessageTile> {
                         itemBuilder: (BuildContext context, int index) {
                           final reader = widget.message.readBy![index];
                           if (widget.message.sentByMe! &&
-                              reader.username == widget.username) {
+                              reader.username == widget.uuid) {
                             return const SizedBox.shrink();
                           }
                           return ReadTile(user: reader);

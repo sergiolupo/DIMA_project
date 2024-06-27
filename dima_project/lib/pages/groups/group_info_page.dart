@@ -34,8 +34,11 @@ class GroupInfoState extends State<GroupInfo> {
 
   void getMembers() async {
     final members = await DatabaseService.getGroupMembers(widget.group.id);
+    final admin =
+        (await DatabaseService.getUserData(widget.group.admin!)).username;
     setState(() {
       _membersStream = members;
+      widget.group.admin = admin;
     });
   }
 
@@ -219,7 +222,7 @@ class GroupInfoState extends State<GroupInfo> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.user.username,
+                  widget.user.uuid!,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();

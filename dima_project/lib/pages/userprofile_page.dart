@@ -55,7 +55,7 @@ class UserProfileState extends State<UserProfile> {
 
   _subscribeToStream() {
     _groupsStreamSubscription =
-        DatabaseService.getGroupsStreamUser(widget.user.username)
+        DatabaseService.getGroupsStreamUser(widget.user.uuid!)
             .listen((snapshot) {
       final dataList =
           snapshot.cast<QueryDocumentSnapshot<Map<String, dynamic>>>();
@@ -63,7 +63,7 @@ class UserProfileState extends State<UserProfile> {
     });
 
     _followersStreamSubscription =
-        DatabaseService.getFollowersStreamUser(widget.user.username)
+        DatabaseService.getFollowersStreamUser(widget.user.uuid!)
             .listen((snapshot) {
       _followersStreamController.add(snapshot);
       _followingStreamController.add(snapshot);
@@ -177,8 +177,7 @@ class UserProfileState extends State<UserProfile> {
                                   horizontal: 40, vertical: 8),
                               onPressed: () async {
                                 DatabaseService.toggleFollowUnfollow(
-                                    widget.user.username,
-                                    widget.visitor!.username);
+                                    widget.user.uuid!, widget.visitor!.uuid!);
                                 setState(() {
                                   _isFollowing = !_isFollowing;
                                 });
@@ -409,8 +408,8 @@ class UserProfileState extends State<UserProfile> {
     if (widget.visitor != null) {
       // Listen for updates on the isFollowing stream
       final isFollowingStream = DatabaseService.isFollowing(
-        widget.user.username,
-        widget.visitor!.username,
+        widget.user.uuid!,
+        widget.visitor!.uuid!,
       );
 
       // Listen for updates and update _isFollowing accordingly

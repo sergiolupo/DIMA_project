@@ -147,11 +147,26 @@ class SearchPageState extends State<SearchPage> {
                     } else if (searchIdx != 0 &&
                         (docs[index].data()).containsKey('groupId')) {
                       final group = Group.fromSnapshot(docs[index]);
-                      return GroupTile(
-                        user: widget.user,
-                        group: group,
-                        isJoined: group.members!.contains(widget.user.username),
-                      );
+
+                      return FutureBuilder(
+                          future: DatabaseService.getUserData(group.admin!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CupertinoActivityIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final admin = snapshot.data!.username;
+                              group.admin = admin;
+                              return GroupTile(
+                                user: widget.user,
+                                group: group,
+                                isJoined:
+                                    group.members!.contains(widget.user.uuid!),
+                              );
+                            }
+                          });
                     } else {
                       return Container();
                     }

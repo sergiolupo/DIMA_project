@@ -27,7 +27,7 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
   }
 
   init() {
-    groupsStream = DatabaseService.getGroupsStream(widget.user.username);
+    groupsStream = DatabaseService.getGroupsStream(widget.user.uuid!);
   }
 
   @override
@@ -63,14 +63,26 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final group = docs[index];
-              return GroupTile(
-                user: widget.user,
-                group: docs[index],
-                visitor: widget.visitor,
-                isJoined: widget.visitor != null
-                    ? group.members!.contains(widget.visitor!.username)
-                    : group.members!.contains(widget.user.username),
-              );
+              return FutureBuilder(
+                  future: DatabaseService.getUserData(group.admin!),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CupertinoActivityIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final admin = snapshot.data!.username;
+                      group.admin = admin;
+                      return GroupTile(
+                        user: widget.user,
+                        group: group,
+                        visitor: widget.visitor,
+                        isJoined: widget.visitor != null
+                            ? group.members!.contains(widget.visitor!.uuid!)
+                            : group.members!.contains(widget.user.uuid!),
+                      );
+                    }
+                  });
             },
           );
         },

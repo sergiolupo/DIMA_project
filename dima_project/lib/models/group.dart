@@ -4,7 +4,7 @@ import 'package:dima_project/models/last_message.dart';
 class Group {
   final String name;
   final String id;
-  final String? admin;
+  String? admin;
   final String? imagePath;
   final String? description;
   final List<String>? categories;

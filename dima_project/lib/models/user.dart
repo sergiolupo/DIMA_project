@@ -12,6 +12,7 @@ class UserData {
   final Timestamp? lastSeen;
   final bool? isTyping;
   final String? typingTo;
+  final String? uuid;
   UserData({
     required this.categories,
     this.imagePath,
@@ -24,6 +25,7 @@ class UserData {
     this.lastSeen,
     this.isTyping,
     this.typingTo,
+    this.uuid,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -42,6 +44,7 @@ class UserData {
       lastSeen: documentSnapshot['lastSeen'],
       isTyping: documentSnapshot['isTyping'],
       typingTo: documentSnapshot['typingTo'],
+      uuid: documentSnapshot.id,
     );
   }
 }

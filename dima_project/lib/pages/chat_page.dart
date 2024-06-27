@@ -289,7 +289,7 @@ class ChatPageState extends State<ChatPage> {
                 itemBuilder: (context, index) {
                   final message = snapshot.data![index];
                   return MessageTile(
-                    username: widget.user.username,
+                    uuid: widget.user.uuid!,
                     message: message,
                   );
                 },

@@ -61,13 +61,13 @@ class GroupTileState extends State<GroupTile> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.visitor!.username,
+                  widget.visitor!.uuid!,
                 );
               } else {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.user.username,
+                  widget.user.uuid!,
                 );
               }
             } catch (error) {

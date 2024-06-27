@@ -39,7 +39,7 @@ class DatabaseService {
       'typingTo': '',
     });
 
-    await followersRef.doc(user.username).set({
+    await followersRef.doc(uuid).set({
       'followers': [],
       'following': [],
     });
@@ -224,17 +224,17 @@ class DatabaseService {
   }
 
   static Future<void> toggleGroupJoin(
-      String groupId, String uid, String username) async {
+      String groupId, String uuidVisitor, String uuidUser) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
         await groupsRef.doc(groupId).get();
-    bool isJoined = groupDoc['members'].contains(username);
+    bool isJoined = groupDoc['members'].contains(uuidUser);
 
     if (isJoined) {
       await Future.wait([
         groupsRef.doc(groupId).update({
-          'members': FieldValue.arrayRemove([username])
+          'members': FieldValue.arrayRemove([uuidUser])
         }),
-        usersRef.doc(uid).update({
+        usersRef.doc(uuidVisitor).update({
           'groups': FieldValue.arrayRemove([groupId])
         }),
       ]);
@@ -243,15 +243,15 @@ class DatabaseService {
           await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
         await groupsRef.doc(groupId).delete();
-      } else if (groupDoc['admin'] == username) {
+      } else if (groupDoc['admin'] == uuidUser) {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
       }
     } else {
       await Future.wait([
         groupsRef.doc(groupId).update({
-          'members': FieldValue.arrayUnion([username])
+          'members': FieldValue.arrayUnion([uuidUser])
         }),
-        usersRef.doc(uid).update({
+        usersRef.doc(uuidVisitor).update({
           'groups': FieldValue.arrayUnion([groupId])
         }),
       ]);
@@ -315,11 +315,8 @@ class DatabaseService {
     });
   }
 
-  static Stream<List<Group>> getGroupsStream(String username) async* {
-    final groupIds = await usersRef
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) {
+  static Stream<List<Group>> getGroupsStream(String uuid) async* {
+    final groupIds = await usersRef.doc(uuid).get().then((value) {
       return value['groups'];
     });
 
@@ -344,7 +341,7 @@ class DatabaseService {
           groupsList.removeWhere((g) => g.id == groupId);
           yield groupsList;
         } else {
-          if (members!.contains(username) && group.id != '') {
+          if (members!.contains(uuid) && group.id != '') {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
                 groupsList.indexWhere((g) => g.id == groupId);
@@ -363,8 +360,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<PrivateChat>> getPrivateChatsStream(
-      String username) async* {
+  static Stream<List<PrivateChat>> getPrivateChatsStream() async* {
     final privateChats = await usersRef
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
@@ -410,8 +406,8 @@ class DatabaseService {
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getFollowersStreamUser(
-      String username) {
-    final stream = followersRef.doc(username).snapshots();
+      String uuid) {
+    final stream = followersRef.doc(uuid).snapshots();
 
     return stream.map((snapshot) {
       return snapshot;
@@ -473,19 +469,6 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<DocumentSnapshot<Map<String, dynamic>>>>
-      getFollowersStream(String username) {
-    return followersRef.doc(username).snapshots().map((snapshot) {
-      if (snapshot.exists) {
-        final List<DocumentSnapshot<Map<String, dynamic>>> snapshots = [];
-        snapshots.add(snapshot);
-        return snapshots;
-      } else {
-        return [];
-      }
-    });
-  }
-
 // Assuming privateChatRef is your reference to the private chat collection
 
   static Stream<List<Message>> getPrivateChats(List<String> members) async* {
@@ -536,8 +519,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<int> getUnreadMessages(
-      bool isGroup, String id, String username) {
+  static Stream<int> getUnreadMessages(bool isGroup, String id, String uuid) {
     if (!isGroup) {
       return privateChatRef
           .doc(id)
@@ -550,7 +532,7 @@ class DatabaseService {
           // Check if the message hasn't been read by the user
           var read = false;
           for (var value in readBy) {
-            if ((username == value['username'])) {
+            if ((uuid == value['username'])) {
               read = true;
               break;
             }
@@ -573,7 +555,7 @@ class DatabaseService {
           // Check if the message hasn't been read by the user
           var read = false;
           for (var value in readBy) {
-            if ((username == value['username'])) {
+            if ((uuid == value['username'])) {
               read = true;
               break;
             }
@@ -588,18 +570,17 @@ class DatabaseService {
   }
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getGroupsStreamUser(String username) {
+      getGroupsStreamUser(String uuid) {
     // Fetch all documents from Firestore collection
-    final query =
-        groupsRef.where('members', arrayContains: username).snapshots();
+    final query = groupsRef.where('members', arrayContains: uuid).snapshots();
     return query.map((snapshot) {
       return snapshot.docs;
     });
   }
 
   static Future<void> updateMessageReadStatus(
-      String username, Message message) async {
-    ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: username);
+      String uuid, Message message) async {
+    ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: uuid);
 
     if (message.isGroupMessage) {
       await groupsRef

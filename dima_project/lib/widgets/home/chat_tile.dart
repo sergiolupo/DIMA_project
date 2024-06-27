@@ -34,10 +34,10 @@ class ChatTileState extends State<ChatTile> {
     if (widget.privateChat != null) {
       getUserData();
       unreadMessagesStream = DatabaseService.getUnreadMessages(
-          false, widget.privateChat!.id!, widget.user.username);
+          false, widget.privateChat!.id!, widget.user.uuid!);
     } else {
       unreadMessagesStream = DatabaseService.getUnreadMessages(
-          true, widget.group!.id, widget.user.username);
+          true, widget.group!.id, widget.user.uuid!);
     }
   }
 

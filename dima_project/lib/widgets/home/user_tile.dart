@@ -29,8 +29,8 @@ class UserTileState extends State<UserTile> {
 
   Stream<bool> _initFollowingStream() async* {
     yield await DatabaseService.isFollowing(
-      widget.user.username,
-      widget.visitor.username,
+      widget.user.uuid!,
+      widget.visitor.uuid!,
     ).first;
 
     final snapshots = DatabaseService.isFollowing(
@@ -91,8 +91,8 @@ class UserTileState extends State<UserTile> {
                     onTap: () async {
                       try {
                         await DatabaseService.toggleFollowUnfollow(
-                          widget.user.username,
-                          widget.visitor.username,
+                          widget.user.uuid!,
+                          widget.visitor.uuid!,
                         );
                         if (mounted) {
                           setState(() {

@@ -31,9 +31,8 @@ class ListChatPageState extends State<ListChatPage> {
   }
 
   void _subscribe() {
-    _privateChatsStream =
-        DatabaseService.getPrivateChatsStream(widget.user.username);
-    _groupsStream = DatabaseService.getGroupsStream(widget.user.username);
+    _privateChatsStream = DatabaseService.getPrivateChatsStream();
+    _groupsStream = DatabaseService.getGroupsStream(widget.user.uuid!);
   }
 
   @override

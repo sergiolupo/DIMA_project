@@ -152,7 +152,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                           Group(
                               name: _groupNameController.text,
                               id: '',
-                              admin: widget.user.username,
+                              admin: widget.user.uuid!,
                               description: _groupDescriptionController.text,
                               categories: selectedCategories),
                           selectedImagePath,
