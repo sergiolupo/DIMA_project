@@ -220,6 +220,9 @@ class ListChatPageState extends State<ListChatPage> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final privateChat = data[index];
+                    if (privateChat.lastMessage == null) {
+                      return const SizedBox();
+                    }
                     return FutureBuilder<UserData>(
                       future: DatabaseService.getUserData(
                           privateChat.lastMessage!.recentMessageSender),

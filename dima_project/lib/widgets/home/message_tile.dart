@@ -368,8 +368,8 @@ class MessageTileState extends State<MessageTile> {
               CupertinoDialogAction(
                 child: const Text('Yes'),
                 onPressed: () {
-                  DatabaseService.deleteMessage(widget.message);
                   Navigator.pop(context);
+                  DatabaseService.deleteMessage(widget.message);
                 },
               ),
               CupertinoDialogAction(

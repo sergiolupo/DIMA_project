@@ -282,6 +282,9 @@ class DatabaseService {
       List<String> members) async {
     QuerySnapshot<Object?> value =
         await privateChatRef.where("members", isEqualTo: members).get();
+    if (value.docs.isEmpty) {
+      return PrivateChat(members: members);
+    }
     return PrivateChat.fromSnapshot(
         await privateChatRef.doc(value.docs.first.id).get());
   }
@@ -619,19 +622,74 @@ class DatabaseService {
     }
   }
 
-  static void deleteMessage(Message message) {
+  static void deleteMessage(Message message) async {
     if (message.isGroupMessage) {
-      groupsRef
+      await groupsRef
           .doc(message.chatID)
           .collection('messages')
           .doc(message.id)
           .delete();
+
+      final recentMessage = (await groupsRef.doc(message.chatID).get());
+      if (recentMessage['recentMessage'] == message.content &&
+          recentMessage['recentMessageSender'] == message.sender &&
+          recentMessage['recentMessageTime'] == message.time) {
+        var messagesSnapshot = await groupsRef
+            .doc(message.chatID)
+            .collection('messages')
+            .orderBy('time', descending: false)
+            .get();
+        if (messagesSnapshot.docs.isNotEmpty) {
+          await groupsRef.doc(message.chatID).update({
+            'recentMessage': messagesSnapshot.docs.last['content'],
+            'recentMessageSender': messagesSnapshot.docs.last['sender'],
+            'recentMessageTime': messagesSnapshot.docs.last['time'],
+          });
+        } else {
+          await groupsRef.doc(message.chatID).update({
+            'recentMessage': '',
+            'recentMessageSender': '',
+            'recentMessageTime': '',
+          });
+        }
+      }
     } else {
-      privateChatRef
+      await privateChatRef
           .doc(message.chatID)
           .collection('messages')
           .doc(message.id)
           .delete();
+      final recentMessage = (await privateChatRef.doc(message.chatID).get());
+      if (recentMessage['recentMessage'] == message.content &&
+          recentMessage['recentMessageSender'] == message.sender &&
+          recentMessage['recentMessageTime'] == message.time) {
+        var messagesSnapshot = await privateChatRef
+            .doc(message.chatID)
+            .collection('messages')
+            .orderBy('time', descending: false)
+            .get();
+        if (messagesSnapshot.docs.isNotEmpty) {
+          await privateChatRef.doc(message.chatID).update({
+            'recentMessage': messagesSnapshot.docs.last['content'],
+            'recentMessageSender': messagesSnapshot.docs.last['sender'],
+            'recentMessageTime': messagesSnapshot.docs.last['time'],
+          });
+        } else {
+          /*await privateChatRef.doc(message.chatID).delete();
+          await usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
+            'privateChats': FieldValue.arrayRemove([message.chatID])
+          });
+          await usersRef.doc(message.receiver).update({
+            'privateChats': FieldValue.arrayRemove([message.chatID])
+          });
+          return true;*/
+          await privateChatRef.doc(message.chatID).update({
+            'recentMessage': '',
+            'recentMessageSender': '',
+            'recentMessageTime': '',
+          });
+        }
+      }
     }
   }
 
