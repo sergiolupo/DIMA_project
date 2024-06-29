@@ -281,20 +281,34 @@ class ChatPageState extends State<ChatPage> {
     return StreamBuilder<List<Message>>(
       stream: chats,
       builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final message = snapshot.data![index];
-                  return MessageTile(
-                    uuid: widget.user.uuid!,
-                    message: message,
-                  );
-                },
-              )
-            : Container();
+        if (snapshot.hasData) {
+          return ListView.builder(
+            shrinkWrap: true,
+            reverse: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final message = snapshot.data![index];
+
+              return FutureBuilder(
+                  future: DatabaseService.getUserData(message.sender),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final user = snapshot.data as UserData;
+                      return MessageTile(
+                        uuid: widget.user.uuid!,
+                        message: message,
+                        senderUsername: user.username,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  });
+            },
+          );
+        } else {
+          return Container();
+        }
       },
     );
   }

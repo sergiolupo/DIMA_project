@@ -141,7 +141,7 @@ class DatabaseService {
     final chats = await groupsRef
         .doc(groupId)
         .collection('messages')
-        .orderBy('time')
+        .orderBy('time', descending: true)
         .get();
 
     final chatList = <Message>[];
@@ -153,7 +153,7 @@ class DatabaseService {
     final snapshots = groupsRef
         .doc(groupId)
         .collection('messages')
-        .orderBy('time')
+        .orderBy('time', descending: true)
         .snapshots(); // listen to changes in the groups collection
 
     await for (var snapshot in snapshots) {
@@ -168,8 +168,8 @@ class DatabaseService {
           if (existingChatIndex != -1) {
             chatList[existingChatIndex] = chat;
           } else {
-            //add to the head of the list
-            chatList.add(chat);
+            //add to the list if it doesn't exist
+            chatList.insert(0, chat);
           }
           yield chatList;
         }

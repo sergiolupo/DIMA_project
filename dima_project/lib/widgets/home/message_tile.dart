@@ -14,10 +14,11 @@ import 'package:uuid/uuid.dart';
 
 class MessageTile extends StatefulWidget {
   final Message message;
+  final String senderUsername;
   final String uuid;
-
   const MessageTile({
     required this.message,
+    required this.senderUsername,
     required this.uuid,
     super.key,
   });
@@ -29,23 +30,14 @@ class MessageTile extends StatefulWidget {
 class MessageTileState extends State<MessageTile> {
   bool _showSnackbar = false;
   late String _snackbarMessage;
-  String? username;
+
   @override
   void initState() {
     super.initState();
-    getSenderUsername();
-  }
-
-  getSenderUsername() async {
-    final user = await DatabaseService.getUserData(widget.message.sender);
-    setState(() {
-      username = user.username;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (username == null) return const SizedBox.shrink();
     return GestureDetector(
       onLongPress: () => _showBottomSheet(context),
       child: Stack(
@@ -93,7 +85,7 @@ class MessageTileState extends State<MessageTile> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        username!,
+                        widget.senderUsername,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
