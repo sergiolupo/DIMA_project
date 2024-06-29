@@ -26,7 +26,6 @@ class Message {
   final String? id;
   final String content;
   final String sender;
-  final String? receiver;
   final bool? sentByMe;
   final String senderImage;
   final bool isGroupMessage;
@@ -41,7 +40,6 @@ class Message {
     required this.senderImage,
     required this.isGroupMessage,
     required this.time,
-    required this.receiver,
     this.id,
     this.chatID,
     this.readBy,
@@ -57,7 +55,6 @@ class Message {
       'time': time,
       'readBy': readBy!.map((readBy) => readBy.toMap()).toList(),
       'type': type.toString(),
-      'receiver': receiver ?? '',
     };
   }
 
@@ -80,7 +77,6 @@ class Message {
           .toList()
           .cast<ReadBy>(),
       type: snapshot['type'] == 'Type.text' ? Type.text : Type.image,
-      receiver: snapshot['receiver'],
     );
   }
 }

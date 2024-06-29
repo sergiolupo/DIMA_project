@@ -2,7 +2,8 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/chat_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
+import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -57,15 +58,25 @@ class ChatTileState extends State<ChatTile> {
         ? const SizedBox()
         : GestureDetector(
             onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute(
-                  builder: (context) => ChatPage(
-                    user: widget.user,
-                    group: widget.group,
-                    privateChat: widget.privateChat,
+              if (widget.privateChat != null) {
+                Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute(
+                    builder: (context) => PrivateChatPage(
+                      user: widget.user,
+                      privateChat: widget.privateChat!,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute(
+                    builder: (context) => GroupChatPage(
+                      user: widget.user,
+                      group: widget.group,
+                    ),
+                  ),
+                );
+              }
             },
             child: Container(
               padding: const EdgeInsets.symmetric(

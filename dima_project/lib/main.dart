@@ -1,8 +1,7 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/chat_page.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
@@ -60,8 +59,10 @@ final GoRouter _router = GoRouter(
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group? group = data['group'] as Group?;
         UserData user = data['user'] as UserData;
-        PrivateChat? privateChat = data['privateChat'] as PrivateChat?;
-        return ChatPage(group: group, user: user, privateChat: privateChat);
+        return GroupChatPage(
+          group: group,
+          user: user,
+        );
       },
     ),
     GoRoute(

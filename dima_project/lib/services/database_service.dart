@@ -297,7 +297,6 @@ class DatabaseService {
   static Future<void> createPrivateChat(PrivateChat privateChat) async {
     List<String> members = privateChat.members;
     members.sort();
-    debugPrint("Creating private chat with members: $members");
     await privateChatRef.add({
       'members': members,
       'recentMessage': "",
@@ -484,7 +483,7 @@ class DatabaseService {
     final chats = await privateChatRef
         .doc(privateChatId)
         .collection('messages')
-        .orderBy('time')
+        .orderBy('time', descending: true)
         .get();
 
     final chatList = <Message>[];
@@ -496,7 +495,7 @@ class DatabaseService {
     final snapshots = privateChatRef
         .doc(privateChatId)
         .collection('messages')
-        .orderBy('time')
+        .orderBy('time', descending: true)
         .snapshots(); // listen to changes in the private chat collection
 
     await for (var snapshot in snapshots) {
@@ -511,7 +510,8 @@ class DatabaseService {
           if (existingChatIndex != -1) {
             chatList[existingChatIndex] = chat;
           } else {
-            chatList.add(chat);
+            //add to the list if it doesn't exist
+            chatList.insert(0, chat);
           }
           yield chatList;
         }
@@ -701,9 +701,9 @@ class DatabaseService {
     }
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
-      String username) {
-    return usersRef.where('username', isEqualTo: username).snapshots();
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getUserInfo(
+      String uuid) {
+    return usersRef.doc(uuid).snapshots();
   }
 
   static Future<void> updateActiveStatus(bool isOnline) async {
@@ -723,17 +723,22 @@ class DatabaseService {
   static Future<void> sendChatImage(UserData user, String chatID, File file,
       bool isGroupMessage, Uint8List imagePath) async {
     final String imageUrl = await StorageService.uploadImageToStorage(
-        'chat_images/$chatID/${user.username}/${Timestamp.now()}.jpg',
-        imagePath);
+        'chat_images/$chatID/${user.uuid}/${Timestamp.now()}.jpg', imagePath);
+
+    ReadBy readBy = ReadBy(
+      readAt: Timestamp.now(),
+      username: user.uuid!,
+    );
 
     final Message message = Message(
       content: imageUrl,
-      sender: user.username,
-      receiver: '',
+      sender: user.uuid!,
       isGroupMessage: isGroupMessage,
       time: Timestamp.now(),
       senderImage: user.imagePath!,
-      readBy: [],
+      readBy: [
+        readBy,
+      ],
       type: Type.image,
     );
 

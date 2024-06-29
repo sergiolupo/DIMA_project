@@ -86,7 +86,6 @@ class ListChatPageState extends State<ListChatPage> {
                                   CupertinoPageRoute(
                                       builder: (context) =>
                                           CreateGroupPage(user: widget.user)));
-                              //context.go("/createGroup", extra: widget.user);
                             },
                             child: const Icon(CupertinoIcons.add, size: 30),
                           ),
@@ -222,6 +221,7 @@ class ListChatPageState extends State<ListChatPage> {
                     if (privateChat.lastMessage == null) {
                       return const SizedBox();
                     }
+
                     return FutureBuilder<UserData>(
                       future: DatabaseService.getUserData(
                           privateChat.lastMessage!.recentMessageSender),

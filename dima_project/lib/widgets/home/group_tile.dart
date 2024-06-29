@@ -1,6 +1,6 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/chat_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,7 +35,7 @@ class GroupTileState extends State<GroupTile> {
                 // Updated this condition
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
-                    builder: (context) => ChatPage(
+                    builder: (context) => GroupChatPage(
                       user: widget.user,
                       group: widget.group,
                     ),
