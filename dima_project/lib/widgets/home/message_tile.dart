@@ -76,27 +76,29 @@ class MessageTileState extends State<MessageTile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CreateImageWidget.getUserImage(
-                        widget.message.senderImage,
-                        small: true,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.senderUsername,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: widget.message.sentByMe!
-                              ? CupertinoColors.white
-                              : CupertinoColors.black,
-                          letterSpacing: -0.5,
+                  if (!widget.message.sentByMe! &&
+                      (widget.message.isGroupMessage))
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CreateImageWidget.getUserImage(
+                          widget.message.senderImage,
+                          small: true,
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.senderUsername,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: widget.message.sentByMe!
+                                ? CupertinoColors.white
+                                : CupertinoColors.black,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

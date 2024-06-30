@@ -8,6 +8,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -57,10 +58,22 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                 if (snapshot.hasData) {
                   final user =
                       UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
-                  return Column(
+                  return Row(
                     children: [
-                      Text(user.username, style: const TextStyle(fontSize: 16)),
-                      _userStatus(user),
+                      CreateImageWidget.getUserImage(
+                        user.imagePath!,
+                        small: true,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.username,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            _userStatus(user),
+                          ]),
                     ],
                   );
                 } else {
@@ -106,10 +119,16 @@ class PrivateChatPageState extends State<PrivateChatPage> {
     if (user.isTyping != null &&
         user.isTyping! &&
         user.typingTo == widget.privateChat.id) {
-      return const Text("is typing...", style: TextStyle(fontSize: 12));
+      return const Text(
+        "is typing...",
+        style: TextStyle(fontSize: 12),
+      );
     } else {
       if (user.online != null && user.online!) {
-        return const Text("Online", style: TextStyle(fontSize: 12));
+        return const Text(
+          "Online",
+          style: TextStyle(fontSize: 12),
+        );
       } else {
         if (user.lastSeen != null && !user.online!) {
           return Text(

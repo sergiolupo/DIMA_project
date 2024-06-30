@@ -7,6 +7,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/message_tile.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +30,6 @@ class GroupChatPage extends StatefulWidget {
 class GroupChatPageState extends State<GroupChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
-  bool isTyping = false;
   bool isUploading = false;
 
   @override
@@ -46,7 +46,14 @@ class GroupChatPageState extends State<GroupChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.group!.name, style: const TextStyle(fontSize: 16)),
+        middle: Row(
+          children: [
+            CreateImageWidget.getGroupImage(widget.group!.imagePath!,
+                small: true),
+            const SizedBox(width: 10),
+            Text(widget.group!.name, style: const TextStyle(fontSize: 16)),
+          ],
+        ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
@@ -107,13 +114,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                 border: Border.all(color: CupertinoColors.white),
                 borderRadius: BorderRadius.circular(20),
               ),
-              onChanged: (value) {
-                if (value.isNotEmpty && !isTyping) {
-                  isTyping = true;
-                } else if (value.isEmpty && isTyping) {
-                  isTyping = false;
-                }
-              },
               suffix: Container(
                 padding: const EdgeInsets.only(right: 10),
                 child: Row(
