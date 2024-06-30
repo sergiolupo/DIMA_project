@@ -7,6 +7,7 @@ import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CreateGroupPage extends StatefulWidget {
   final UserData user;
@@ -18,6 +19,7 @@ class CreateGroupPage extends StatefulWidget {
 }
 
 class CreateGroupPageState extends State<CreateGroupPage> {
+  int _currentPage = 1;
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupDescriptionController =
       TextEditingController();
@@ -28,13 +30,24 @@ class CreateGroupPageState extends State<CreateGroupPage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget page;
+    switch (_currentPage) {
+      case 1:
+        page = pageOneCreateGroup();
+        break;
+      case 2:
+        page = pageTwoCreateGroup();
+        break;
+      default:
+        page = pageOneCreateGroup();
+    }
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.systemPink,
         leading: CupertinoButton(
           onPressed: () {
             Navigator.of(context).pop();
-            //context.go('/groups',extra: widget.user,);
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
@@ -43,126 +56,27 @@ class CreateGroupPageState extends State<CreateGroupPage> {
           style: TextStyle(color: CupertinoColors.white),
         ),
       ),
-      child: SafeArea(
+      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    //height: MediaQuery.of(context).size.height - 200,
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: ImageInsertForm(
-                            imageForGroup: true,
-                            imagePath: selectedImagePath,
-                            imageInsertPageKey: (Uint8List selectedImagePath) {
-                              this.selectedImagePath = selectedImagePath;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          flex: 4,
-                          child: CupertinoTextFormFieldRow(
-                            controller: _groupNameController,
-                            placeholder: 'Group Name',
-                            decoration: BoxDecoration(
-                              color: CupertinoColors.white,
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                color: CupertinoColors.systemGrey4,
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(3.0),
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a group name';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const Expanded(flex: 5, child: SizedBox()),
-                      ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                page,
+                const SizedBox(height: 10.0),
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: CupertinoButton.filled(
+                      onPressed: () =>
+                          {if (_formKey.currentState!.validate()) managePage()},
+                      child: Text(_currentPage == 1 ? 'Next' : 'Create Group'),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: CupertinoTextFormFieldRow(
-                      controller: _groupDescriptionController,
-                      placeholder: 'Group Description',
-                      maxLines: 5,
-                      maxLength: 200,
-                      decoration: BoxDecoration(
-                        color: CupertinoColors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: CupertinoColors.systemGrey4,
-                          width: 2.0,
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(12.0),
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a group description';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  CategorySelectionForm(
-                    selectedCategories: selectedCategories,
-                  ),
-                  const SizedBox(height: 20),
-                  CupertinoButton.filled(
-                    onPressed: () {
-                      if (selectedCategories.isEmpty) {
-                        showCupertinoDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CupertinoAlertDialog(
-                              title: const Text('Invalid choice'),
-                              content: const Text(
-                                  'Please select at least one category'),
-                              actions: <CupertinoDialogAction>[
-                                CupertinoDialogAction(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                        return;
-                      } else {
-                        createGroup(
-                          Group(
-                              name: _groupNameController.text,
-                              id: '',
-                              admin: widget.user.uuid!,
-                              description: _groupDescriptionController.text,
-                              categories: selectedCategories),
-                          selectedImagePath,
-                        );
-                      }
-                    },
-                    child: const Text('Create Group'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -176,6 +90,126 @@ class CreateGroupPageState extends State<CreateGroupPage> {
           group, FirebaseAuth.instance.currentUser!.uid, imagePath);
       if (mounted) {
         Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Widget pageOneCreateGroup() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 2,
+                child: ImageInsertForm(
+                  imageForGroup: true,
+                  imagePath: selectedImagePath,
+                  imageInsertPageKey: (Uint8List selectedImagePath) {
+                    this.selectedImagePath = selectedImagePath;
+                  },
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                flex: 4,
+                child: CupertinoTextFormFieldRow(
+                  controller: _groupNameController,
+                  placeholder: 'Group Name',
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                      color: CupertinoColors.systemGrey4,
+                      width: 2.0,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(3.0),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a group name';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: CupertinoTextFormFieldRow(
+            controller: _groupDescriptionController,
+            placeholder: 'Group Description',
+            maxLines: 5,
+            maxLength: 200,
+            decoration: BoxDecoration(
+              color: CupertinoColors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: CupertinoColors.systemGrey4,
+                width: 2.0,
+              ),
+            ),
+            padding: const EdgeInsets.all(12.0),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a group description';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget pageTwoCreateGroup() {
+    return SafeArea(
+        child: CategorySelectionForm(
+      selectedCategories: selectedCategories,
+    ));
+  }
+
+  void managePage() {
+    if (_currentPage == 1) {
+      setState(() {
+        _currentPage = 2;
+      });
+    } else {
+      if (selectedCategories.isEmpty) {
+        showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('Invalid choice'),
+              content: const Text('Please select at least one category'),
+              actions: <CupertinoDialogAction>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      } else {
+        createGroup(
+          Group(
+              name: _groupNameController.text,
+              id: '',
+              admin: widget.user.uuid!,
+              description: _groupDescriptionController.text,
+              categories: selectedCategories),
+          selectedImagePath,
+        );
       }
     }
   }

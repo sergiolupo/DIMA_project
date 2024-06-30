@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageInsertForm extends StatefulWidget {
@@ -77,8 +76,8 @@ class ImageInsertFormState extends State<ImageInsertForm> {
                 bottom: 0,
                 right: 0,
                 child: Container(
-                  height: 50,
-                  width: 50,
+                  height: 40,
+                  width: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -87,9 +86,9 @@ class ImageInsertFormState extends State<ImageInsertForm> {
                     ),
                     color: CupertinoColors.systemPink,
                   ),
-                  child: IconButton(
-                    onPressed: _pickImage,
-                    icon: const Icon(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: const Icon(
                       CupertinoIcons.pencil,
                       color: CupertinoColors.white,
                     ),
