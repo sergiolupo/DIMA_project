@@ -1,17 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageInsertForm extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
-  final bool? imageForGroup;
+  final bool imageForGroup;
   const ImageInsertForm({
     super.key,
     this.imagePath,
     required this.imageInsertPageKey,
-    this.imageForGroup,
+    required this.imageForGroup,
   });
 
   @override
@@ -53,38 +54,47 @@ class ImageInsertFormState extends State<ImageInsertForm> {
           children: [
             ClipOval(
               child: Container(
-                width: 70,
-                height: 70,
+                width: 100,
+                height: 100,
                 color: CupertinoColors.lightBackgroundGray,
                 child: _selectedImagePath.isNotEmpty
                     ? Image.memory(
                         _selectedImagePath,
                         fit: BoxFit.cover,
                       )
-                    : /*const Icon(
-                        CupertinoIcons.photo_camera_solid,
-                        size: 50,
-                        color: CupertinoColors.systemGrey,
-                      ),*/
-                    CupertinoButton(
-                        onPressed: _pickImage,
-                        child: Icon(CupertinoIcons.photo_camera_solid,
-                            color: CupertinoTheme.of(context).primaryColor,
-                            size: 30),
-                      ),
+                    : widget.imageForGroup
+                        ? Image.asset(
+                            'assets/default_group_image.png',
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            'assets/default_user_image.png',
+                            fit: BoxFit.cover,
+                          ),
               ),
             ),
-            /*Positioned(
-              bottom: 0,
-              right: 0,
-              child: CupertinoButton(
-                onPressed: _pickImage,
-                child: Icon(
-                  CupertinoIcons.photo_camera,
-                  color: CupertinoTheme.of(context).primaryColor,
-                ),
-              ),
-            ),*/
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      width: 4,
+                      color: CupertinoColors.white,
+                    ),
+                    color: CupertinoColors.systemPink,
+                  ),
+                  child: IconButton(
+                    onPressed: _pickImage,
+                    icon: const Icon(
+                      CupertinoIcons.pencil,
+                      color: CupertinoColors.white,
+                    ),
+                  ),
+                ))
           ],
         ),
       ],
