@@ -58,6 +58,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                 if (snapshot.hasData) {
                   final user =
                       UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
+
                   return Row(
                     children: [
                       CreateImageWidget.getUserImage(
@@ -86,6 +87,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
           onPressed: () {
+            if (isTyping && widget.privateChat.id != null) {
+              DatabaseService.updateTyping(widget.privateChat.id!, false);
+            }
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
             } else {
@@ -197,8 +201,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                             });
                             final bytes = await image.readAsBytes();
                             if (widget.privateChat.id == null) {
-                              await DatabaseService.createPrivateChat(
-                                  widget.privateChat);
+                              widget.privateChat.id =
+                                  await DatabaseService.createPrivateChat(
+                                      widget.privateChat);
+
                               chats = DatabaseService.getPrivateChats(
                                   widget.privateChat.members);
                             }
@@ -232,8 +238,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                           final bytes = await image.readAsBytes();
 
                           if (widget.privateChat.id == null) {
-                            await DatabaseService.createPrivateChat(
-                                widget.privateChat);
+                            widget.privateChat.id =
+                                await DatabaseService.createPrivateChat(
+                                    widget.privateChat);
                             chats = DatabaseService.getPrivateChats(
                                 widget.privateChat.members);
                           }
@@ -328,10 +335,12 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       );
 
       if (widget.privateChat.id == null) {
-        await DatabaseService.createPrivateChat(widget.privateChat);
+        widget.privateChat.id =
+            await DatabaseService.createPrivateChat(widget.privateChat);
         chats = DatabaseService.getPrivateChats(widget.privateChat.members);
       }
-
+      isTyping = false;
+      DatabaseService.updateTyping(widget.privateChat.id!, false);
       DatabaseService.sendMessage(widget.privateChat.id!, message);
 
       setState(() {

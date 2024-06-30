@@ -294,23 +294,23 @@ class DatabaseService {
     return await privateChatRef.doc(id).collection('messages').add(messageMap);
   }
 
-  static Future<void> createPrivateChat(PrivateChat privateChat) async {
+  static Future<String> createPrivateChat(PrivateChat privateChat) async {
     List<String> members = privateChat.members;
     members.sort();
-    await privateChatRef.add({
+    return await privateChatRef.add({
       'members': members,
       'recentMessage': "",
       'recentMessageSender': "",
       'recentMessageTime': "",
     }).then((value) async {
       final id = value.id;
-      privateChat.id = id;
       await usersRef.doc(members[0]).update({
         'privateChats': FieldValue.arrayUnion([id])
       });
       await usersRef.doc(members[1]).update({
         'privateChats': FieldValue.arrayUnion([id])
       });
+      return id;
     });
   }
 
