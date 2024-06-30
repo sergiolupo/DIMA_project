@@ -26,6 +26,7 @@ class SettingsPageState extends State<SettingsPage> {
   late final TextEditingController _usernameController;
   late final String _oldEmail;
   late final String _oldUsername;
+  late final Uint8List _oldImage;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class SettingsPageState extends State<SettingsPage> {
     _emailController = TextEditingController(text: widget.user.email);
     _passwordController = TextEditingController();
     _usernameController = TextEditingController(text: widget.user.username);
-
+    selectedCategories = widget.user.categories;
     getImageProfile();
     super.initState();
   }
@@ -46,6 +47,7 @@ class SettingsPageState extends State<SettingsPage> {
         .then((image) {
       setState(() {
         selectedImagePath = image;
+        _oldImage = image;
       });
     });
   }
@@ -70,7 +72,9 @@ class SettingsPageState extends State<SettingsPage> {
         page = firstPage();
     }
     return selectedImagePath == null
-        ? const Center(child: CupertinoActivityIndicator())
+        ? const Center(
+            child: CupertinoActivityIndicator(),
+          )
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               backgroundColor: CupertinoColors.systemPink,
@@ -259,7 +263,22 @@ class SettingsPageState extends State<SettingsPage> {
                                   },
                                 );
                                 return;
-                              } else {}
+                              } else {
+                                await DatabaseService.updateUserInformation(
+                                  UserData(
+                                    categories: selectedCategories,
+                                    password: _passwordController.text,
+                                    email: _emailController.text,
+                                    name: _nameController.text,
+                                    surname: _surnameController.text,
+                                    username: _usernameController.text,
+                                    uuid: widget.user.uuid,
+                                  ),
+                                  selectedImagePath!,
+                                  _oldImage == selectedImagePath ? false : true,
+                                );
+                              }
+                              if (!context.mounted) return;
                               Navigator.of(context).pop();
                             }
                           },

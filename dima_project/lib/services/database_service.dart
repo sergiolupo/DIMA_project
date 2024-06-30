@@ -45,6 +45,36 @@ class DatabaseService {
     });
   }
 
+  static Future<void> updateUserInformation(
+      UserData user, Uint8List imagePath, bool hasChanged) async {
+    if (hasChanged) {
+      String imageUrl = imagePath.toString() == '[]' || imagePath.isEmpty
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'profile_images/${user.uuid!}.jpg', imagePath);
+      List<Map<String, dynamic>> serializedList =
+          user.categories.map((item) => {'value': item}).toList();
+      await usersRef.doc(user.uuid).update({
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+        'imageUrl': imageUrl,
+        'selectedCategories': serializedList,
+      });
+    } else {
+      List<Map<String, dynamic>> serializedList =
+          user.categories.map((item) => {'value': item}).toList();
+      await usersRef.doc(user.uuid).update({
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+        'selectedCategories': serializedList,
+      });
+    }
+  }
+
   static Future<UserData> getUserData(String uid) async {
     DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
     UserData user = UserData.fromSnapshot(documentSnapshot);
