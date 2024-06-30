@@ -200,14 +200,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                               isUploading = true;
                             });
                             final bytes = await image.readAsBytes();
-                            if (widget.privateChat.id == null) {
-                              widget.privateChat.id =
-                                  await DatabaseService.createPrivateChat(
-                                      widget.privateChat);
-
-                              chats = DatabaseService.getPrivateChats(
-                                  widget.privateChat.members);
-                            }
+                            widget.privateChat.id ??=
+                                await DatabaseService.createPrivateChat(
+                                    widget.privateChat);
 
                             await DatabaseService.sendChatImage(
                               widget.user,
@@ -237,13 +232,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                           });
                           final bytes = await image.readAsBytes();
 
-                          if (widget.privateChat.id == null) {
-                            widget.privateChat.id =
-                                await DatabaseService.createPrivateChat(
-                                    widget.privateChat);
-                            chats = DatabaseService.getPrivateChats(
-                                widget.privateChat.members);
-                          }
+                          widget.privateChat.id ??=
+                              await DatabaseService.createPrivateChat(
+                                  widget.privateChat);
 
                           await DatabaseService.sendChatImage(
                             widget.user,
@@ -294,6 +285,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                 future: DatabaseService.getUserData(message.sender),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    widget.privateChat.id ??= message.chatID!;
+
                     final user = snapshot.data as UserData;
                     return MessageTile(
                       uuid: widget.user.uuid!,
@@ -334,11 +327,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         type: Type.text,
       );
 
-      if (widget.privateChat.id == null) {
-        widget.privateChat.id =
-            await DatabaseService.createPrivateChat(widget.privateChat);
-        chats = DatabaseService.getPrivateChats(widget.privateChat.members);
-      }
+      widget.privateChat.id ??=
+          await DatabaseService.createPrivateChat(widget.privateChat);
       isTyping = false;
       DatabaseService.updateTyping(widget.privateChat.id!, false);
       DatabaseService.sendMessage(widget.privateChat.id!, message);
