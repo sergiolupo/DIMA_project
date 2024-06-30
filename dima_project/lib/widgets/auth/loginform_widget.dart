@@ -30,13 +30,17 @@ class LoginForm extends StatelessWidget {
                     _passwordController.text);
               }
             },
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             color: CupertinoColors.systemPink,
+            borderRadius: BorderRadius.circular(20),
             child: const Text('Login'),
           ),
           const SizedBox(height: 20),
           CupertinoButton(
               onPressed: () => _signInWithGoogle(context),
               color: CupertinoColors.systemBlue,
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              borderRadius: BorderRadius.circular(20),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

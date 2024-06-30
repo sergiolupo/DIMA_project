@@ -73,8 +73,7 @@ class OptionsPageState extends State<OptionsPage> {
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.settings),
                   title: const Text('Settings'),
-                  onTap: () => Navigator.push(
-                      context,
+                  onTap: () => Navigator.of(context, rootNavigator: true).push(
                       CupertinoPageRoute(
                           builder: (context) =>
                               SettingsPage(user: widget.user))),

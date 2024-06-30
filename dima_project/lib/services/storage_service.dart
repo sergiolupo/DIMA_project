@@ -13,4 +13,16 @@ class StorageService {
     final String url = await taskSnapshot.ref.getDownloadURL();
     return url;
   }
+
+  static Future<Uint8List> downloadImageFromStorage(String url) async {
+    if (url == '') {
+      return Uint8List(0);
+    }
+    final Reference ref = _storage.refFromURL(url);
+    final Uint8List? data = await ref.getData();
+    if (data == null) {
+      throw Exception('Failed to download image');
+    }
+    return data;
+  }
 }

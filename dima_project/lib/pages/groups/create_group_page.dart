@@ -7,7 +7,6 @@ import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class CreateGroupPage extends StatefulWidget {
   final UserData user;
@@ -47,7 +46,13 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         backgroundColor: CupertinoColors.systemPink,
         leading: CupertinoButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            if (_currentPage == 1) {
+              Navigator.of(context).pop();
+            } else {
+              setState(() {
+                _currentPage = 1;
+              });
+            }
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
@@ -67,14 +72,20 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 page,
                 const SizedBox(height: 10.0),
                 SafeArea(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: CupertinoButton.filled(
-                      onPressed: () =>
-                          {if (_formKey.currentState!.validate()) managePage()},
-                      child: Text(_currentPage == 1 ? 'Next' : 'Create Group'),
-                    ),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CupertinoButton(
+                          padding: const EdgeInsets.symmetric(horizontal: 50),
+                          color: CupertinoColors.systemPink,
+                          borderRadius: BorderRadius.circular(20),
+                          onPressed: () => {
+                            if (_formKey.currentState!.validate()) managePage()
+                          },
+                          child:
+                              Text(_currentPage == 1 ? 'Next' : 'Create Group'),
+                        ),
+                      ]),
                 ),
               ],
             ),

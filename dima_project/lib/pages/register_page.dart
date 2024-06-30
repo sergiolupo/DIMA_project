@@ -117,7 +117,9 @@ class RegisterPageState extends State<RegisterPage> {
                     CupertinoButton(
                       onPressed: () =>
                           {if (_formKey.currentState!.validate()) managePage()},
+                      padding: const EdgeInsets.symmetric(horizontal: 50),
                       color: CupertinoColors.systemPink,
+                      borderRadius: BorderRadius.circular(20),
                       child: _currentPage < 4
                           ? const Text('Next')
                           : _isEnteredWithGoogle

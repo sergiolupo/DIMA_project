@@ -30,7 +30,9 @@ class ForgotPasswordForm extends StatelessWidget {
                 resetPassword(context, _usernameController.text);
               }
             },
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             color: CupertinoColors.systemPink,
+            borderRadius: BorderRadius.circular(20),
             child: const Text(
               'Reset Password',
               style: TextStyle(
