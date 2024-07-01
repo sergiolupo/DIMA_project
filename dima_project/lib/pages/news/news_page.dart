@@ -24,6 +24,7 @@ class _NewsPageState extends State<NewsPage> {
   List<CategoryModel>? categories;
   List<ArticleModel>? sliders;
   List<ArticleModel>? articles;
+  News news = News();
 
   static const int numberOfNews =
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
@@ -31,25 +32,23 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void initState() {
-    categories = getCategories(widget.user.categories);
+    categories = News.getCategories(widget.user.categories);
     getSliders();
     getNews();
     super.initState();
   }
 
   getNews() async {
-    News newsclass = News();
-    await newsclass.getNews();
+    await news.getNews();
     setState(() {
-      articles = newsclass.news;
+      articles = news.news;
     });
   }
 
   getSliders() async {
-    Sliders slider = Sliders();
-    await slider.getSliders();
+    await news.getSliders();
     setState(() {
-      sliders = slider.sliders;
+      sliders = news.sliders;
     });
   }
 
@@ -121,9 +120,10 @@ class _NewsPageState extends State<NewsPage> {
                               Navigator.push(
                                   context,
                                   CupertinoPageRoute(
-                                      builder: (context) => const AllNews(
+                                      builder: (context) => AllNews(
                                             news: "Breaking",
-                                            numberOfNews: numberOfNews,
+                                            articles: sliders!
+                                                .sublist(0, numberOfNews),
                                           )));
                             },
                             child: const Text(
@@ -180,9 +180,8 @@ class _NewsPageState extends State<NewsPage> {
                                 context,
                                 CupertinoPageRoute(
                                     builder: (context) => AllNews(
-                                          news: "Trending",
-                                          numberOfNews: articles!.length,
-                                        ))),
+                                        news: "Trending",
+                                        articles: articles!))),
                             child: const Text(
                               "View All",
                               style: TextStyle(

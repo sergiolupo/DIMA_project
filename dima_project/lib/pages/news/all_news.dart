@@ -1,81 +1,44 @@
 import 'package:dima_project/models/news/article_model.dart';
-import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/widgets/news/show_all.dart';
 import 'package:flutter/cupertino.dart';
 
 class AllNews extends StatefulWidget {
   final String news;
-  final int numberOfNews;
-  const AllNews({super.key, required this.news, required this.numberOfNews});
+  final List<ArticleModel> articles;
+  const AllNews({super.key, required this.news, required this.articles});
 
   @override
   State<AllNews> createState() => _AllNewsState();
 }
 
 class _AllNewsState extends State<AllNews> {
-  late final List<ArticleModel> sliders;
-  late final List<ArticleModel> articles;
-  bool _loadingNews = true, _loadingSliders = true;
-
   @override
   void initState() {
-    getSliders();
-    getNews();
     super.initState();
-  }
-
-  getNews() async {
-    News newsclass = News();
-    await newsclass.getNews();
-    articles = newsclass.news;
-    setState(() {
-      _loadingNews = false;
-    });
-  }
-
-  getSliders() async {
-    Sliders slider = Sliders();
-    await slider.getSliders();
-    sliders = slider.sliders;
-    setState(() {
-      _loadingSliders = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _loadingSliders || _loadingNews
-        ? const CupertinoActivityIndicator(
-            radius: 20.0,
-          )
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              middle: Text("${widget.news} News",
-                  style: const TextStyle(
-                      color: CupertinoColors.activeBlue,
-                      fontWeight: FontWeight.bold)),
-            ),
-            child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: widget.numberOfNews,
-                    itemBuilder: (context, index) {
-                      return ShowAll(
-                          url: widget.news == "Breaking"
-                              ? sliders[index].url
-                              : articles[index].url,
-                          description: widget.news == "Breaking"
-                              ? sliders[index].description
-                              : articles[index].description,
-                          image: widget.news == "Breaking"
-                              ? sliders[index].urlToImage
-                              : articles[index].urlToImage,
-                          title: widget.news == "Breaking"
-                              ? sliders[index].title
-                              : articles[index].title);
-                    })),
-          );
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("${widget.news} News",
+            style: TextStyle(
+                color: CupertinoTheme.of(context).primaryColor,
+                fontWeight: FontWeight.bold)),
+      ),
+      child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          child: ListView.builder(
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: widget.articles.length,
+              itemBuilder: (context, index) {
+                return ShowAll(
+                    url: widget.articles[index].url,
+                    description: widget.articles[index].description,
+                    image: widget.articles[index].urlToImage,
+                    title: widget.articles[index].title);
+              })),
+    );
   }
 }

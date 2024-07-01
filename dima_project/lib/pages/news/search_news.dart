@@ -16,7 +16,7 @@ class SearchNewsPageState extends State<SearchNewsPage> {
 
   void _startSearch() {
     setState(() {
-      _searchResults = getSearchedNews(_searchController.text);
+      _searchResults = News.getSearchedNews(_searchController.text);
     });
   }
 

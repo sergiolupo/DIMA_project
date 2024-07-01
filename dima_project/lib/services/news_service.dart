@@ -6,51 +6,10 @@ import 'package:dima_project/models/news/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-List<CategoryModel> getCategories(List<String> userCategories) {
-  List<CategoryModel> categories = [];
-
-  for (String category in userCategories) {
-    categories.add(CategoryIconMapper.getCategoryModel(category));
-  }
-
-  return categories;
-}
-
-Stream<List<ArticleModel>> getSearchedNews(String search) async* {
-  List<ArticleModel> news = [];
-
-  String url =
-      "https://newsapi.org/v2/everything?q=$search&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
-  var response = await http.get(Uri.parse(url));
-
-  var jsonData = jsonDecode(response.body);
-
-  if (jsonData['status'] == 'ok') {
-    jsonData["articles"].forEach((element) {
-      if (element["title"] != null &&
-          element['description'] != null &&
-          element['url'] != null &&
-          element['urlToImage'] != null &&
-          element['content'] != null &&
-          element['author'] != null) {
-        ArticleModel articleModel = ArticleModel(
-          title: element["title"],
-          description: element["description"],
-          url: element["url"],
-          urlToImage: element["urlToImage"],
-          content: element["content"],
-          author: element[
-              "author"], // Assuming you have an author field in the ArticleModel
-        );
-        news.add(articleModel);
-      }
-    });
-  }
-  yield news; // Emit the list of articles
-}
-
 class News {
   List<ArticleModel> news = [];
+  List<ArticleModel> categories = [];
+  List<ArticleModel> sliders = [];
 
   Future<void> getNews() async {
     String url =
@@ -79,10 +38,6 @@ class News {
       });
     }
   }
-}
-
-class ShowCategoryNews {
-  List<ArticleModel> categories = [];
 
   Future<void> getCategoriesNews(String category) async {
     String url =
@@ -111,10 +66,6 @@ class ShowCategoryNews {
       });
     }
   }
-}
-
-class Sliders {
-  List<ArticleModel> sliders = [];
 
   Future<void> getSliders() async {
     String url =
@@ -142,5 +93,48 @@ class Sliders {
         }
       });
     }
+  }
+
+  static List<CategoryModel> getCategories(List<String> userCategories) {
+    List<CategoryModel> categories = [];
+
+    for (String category in userCategories) {
+      categories.add(CategoryIconMapper.getCategoryModel(category));
+    }
+
+    return categories;
+  }
+
+  static Stream<List<ArticleModel>> getSearchedNews(String search) async* {
+    List<ArticleModel> news = [];
+
+    String url =
+        "https://newsapi.org/v2/everything?q=$search&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+    var response = await http.get(Uri.parse(url));
+
+    var jsonData = jsonDecode(response.body);
+
+    if (jsonData['status'] == 'ok') {
+      jsonData["articles"].forEach((element) {
+        if (element["title"] != null &&
+            element['description'] != null &&
+            element['url'] != null &&
+            element['urlToImage'] != null &&
+            element['content'] != null &&
+            element['author'] != null) {
+          ArticleModel articleModel = ArticleModel(
+            title: element["title"],
+            description: element["description"],
+            url: element["url"],
+            urlToImage: element["urlToImage"],
+            content: element["content"],
+            author: element[
+                "author"], // Assuming you have an author field in the ArticleModel
+          );
+          news.add(articleModel);
+        }
+      });
+    }
+    yield news; // Emit the list of articles
   }
 }
