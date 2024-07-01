@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dima_project/models/news/category_model.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/models/news/article_model.dart';
@@ -12,6 +14,39 @@ List<CategoryModel> getCategories(List<String> userCategories) {
   }
 
   return categories;
+}
+
+Stream<List<ArticleModel>> getSearchedNews(String search) async* {
+  List<ArticleModel> news = [];
+
+  String url =
+      "https://newsapi.org/v2/everything?q=$search&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+  var response = await http.get(Uri.parse(url));
+
+  var jsonData = jsonDecode(response.body);
+
+  if (jsonData['status'] == 'ok') {
+    jsonData["articles"].forEach((element) {
+      if (element["title"] != null &&
+          element['description'] != null &&
+          element['url'] != null &&
+          element['urlToImage'] != null &&
+          element['content'] != null &&
+          element['author'] != null) {
+        ArticleModel articleModel = ArticleModel(
+          title: element["title"],
+          description: element["description"],
+          url: element["url"],
+          urlToImage: element["urlToImage"],
+          content: element["content"],
+          author: element[
+              "author"], // Assuming you have an author field in the ArticleModel
+        );
+        news.add(articleModel);
+      }
+    });
+  }
+  yield news; // Emit the list of articles
 }
 
 class News {

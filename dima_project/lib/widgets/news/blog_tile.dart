@@ -47,6 +47,7 @@ class BlogTile extends StatelessWidget {
                       child: Text(
                         title,
                         maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             color: CupertinoColors.black,
                             fontWeight: FontWeight.w500,
@@ -61,6 +62,7 @@ class BlogTile extends StatelessWidget {
                       child: Text(
                         description,
                         maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             color: Color.fromRGBO(0, 0, 0, 0.54),
                             fontWeight: FontWeight.w500,

@@ -35,6 +35,7 @@ class ShowAll extends StatelessWidget {
           Text(
             title,
             maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
                 color: CupertinoColors.black,
                 fontSize: 18.0,
@@ -43,6 +44,7 @@ class ShowAll extends StatelessWidget {
           Text(
             description,
             maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 20.0),
         ],

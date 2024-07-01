@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
+import 'package:dima_project/pages/news/search_news.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/news/category_model.dart';
@@ -58,6 +59,18 @@ class _NewsPageState extends State<NewsPage> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              trailing: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => const SearchNewsPage()));
+                },
+                child: const Icon(
+                  CupertinoIcons.search,
+                  color: CupertinoColors.white,
+                ),
+              ),
               middle: const Text(
                 "News",
                 style: TextStyle(
@@ -131,7 +144,7 @@ class _NewsPageState extends State<NewsPage> {
                         itemBuilder: (context, index, realIndex) {
                           String? image = sliders![index].urlToImage;
                           String? title = sliders![index].title;
-                          return buildImage(image, index, title);
+                          return buildNews(image, index, title);
                         },
                         options: CarouselOptions(
                             height: 200,
@@ -201,7 +214,7 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   //carousel slider
-  Widget buildImage(String image, int index, String name) => Container(
+  Widget buildNews(String image, int index, String name) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 5.0),
         child: GestureDetector(
           onTap: () {
@@ -234,6 +247,7 @@ class _NewsPageState extends State<NewsPage> {
               child: Text(
                 name,
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     color: CupertinoColors.white,
                     fontSize: 20.0,
