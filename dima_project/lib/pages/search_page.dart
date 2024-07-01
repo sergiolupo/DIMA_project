@@ -143,13 +143,31 @@ class SearchPageState extends State<SearchPage> {
                     if (searchIdx == 0 &&
                         (docs[index].data()).containsKey('email')) {
                       final userData = UserData.fromSnapshot(docs[index]);
-                      return UserTile(user: userData, visitor: widget.user);
+                      return StreamBuilder(
+                          stream: DatabaseService.isFollowingUser(
+                              userData.uuid!, widget.user.uuid!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CupertinoActivityIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final isFollowing = snapshot.data as bool;
+                              return UserTile(
+                                user: userData,
+                                visitor: widget.user,
+                                isFollowing: isFollowing,
+                              );
+                            }
+                          });
                     } else if (searchIdx != 0 &&
                         (docs[index].data()).containsKey('groupId')) {
                       final group = Group.fromSnapshot(docs[index]);
 
-                      return FutureBuilder(
-                          future: DatabaseService.getUserData(group.admin!),
+                      return StreamBuilder<UserData>(
+                          stream:
+                              DatabaseService.getUserDataFromUUID(group.admin!),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {

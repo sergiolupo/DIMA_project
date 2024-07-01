@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -25,19 +24,22 @@ class GroupInfo extends StatefulWidget {
 }
 
 class GroupInfoState extends State<GroupInfo> {
-  Stream<List<DocumentSnapshot<Map<String, dynamic>>>>? _membersStream;
+  late final Stream<List<dynamic>> _membersStream;
   @override
   void initState() {
     super.initState();
     getMembers();
+    init();
   }
 
-  void getMembers() async {
-    final members = await DatabaseService.getGroupMembers(widget.group.id);
+  void getMembers() {
+    _membersStream = DatabaseService.getGroupMembers(widget.group.id);
+  }
+
+  void init() async {
     final admin =
         (await DatabaseService.getUserData(widget.group.admin!)).username;
     setState(() {
-      _membersStream = members;
       widget.group.admin = admin;
     });
   }
@@ -162,45 +164,65 @@ class GroupInfoState extends State<GroupInfo> {
   }
 
   Widget memberList() {
-    if (_membersStream == null) {
-      return const Center(
-        child: CupertinoActivityIndicator(
-          radius: 16,
-        ),
-      );
-    }
-    return StreamBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-      stream: _membersStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CupertinoActivityIndicator(
-              radius: 16,
-            ),
+    return StreamBuilder<List<dynamic>>(
+        stream: _membersStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(
+                radius: 16,
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+          final data = snapshot.data;
+          if (data == null || data.isEmpty) {
+            return const Center(
+              child: Text("No members in this group"),
+            );
+          }
+          var members = snapshot.data!;
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: members.length,
+            itemBuilder: (context, index) {
+              return StreamBuilder(
+                stream: DatabaseService.getUserDataFromUUID(members[index]),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CupertinoActivityIndicator(); // Or any loading indicator
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final UserData userData = snapshot.data!;
+                    return StreamBuilder(
+                        stream: DatabaseService.isFollowingUser(
+                            userData.uuid!, widget.user.uuid!),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CupertinoActivityIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            final isFollowing = snapshot.data as bool;
+                            return UserTile(
+                              user: userData,
+                              visitor: widget.user,
+                              isFollowing: isFollowing,
+                            );
+                          }
+                        });
+                  }
+                },
+              );
+            },
           );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        }
-        if (snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text("No members in this group"),
-          );
-        }
-        var members = snapshot.data!;
-
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: members.length,
-          itemBuilder: (context, index) {
-            final user = UserData.fromSnapshot(members[index]);
-            return UserTile(user: user, visitor: widget.user);
-          },
-        );
-      },
-    );
+        });
   }
 
   void showLeaveGroupDialog(BuildContext context) {

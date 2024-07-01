@@ -81,6 +81,12 @@ class DatabaseService {
     return user;
   }
 
+  static Stream<UserData> getUserDataFromUUID(String uuid) {
+    return usersRef.doc(uuid).snapshots().map((snapshot) {
+      return UserData.fromSnapshot(snapshot);
+    });
+  }
+
   static Future<UserData> getUserDataFromUsername(String username) async {
     username = username.replaceAll('[', '').replaceAll(']', '');
 
@@ -213,13 +219,9 @@ class DatabaseService {
     return groupDoc['admin'];
   }
 
-  static Future<Stream<List<DocumentSnapshot<Map<String, dynamic>>>>>
-      getGroupMembers(String groupId) {
-    return groupsRef.doc(groupId).get().then((groupDoc) {
-      return usersRef
-          .where('username', whereIn: groupDoc['members'])
-          .snapshots()
-          .map((querySnapshot) => querySnapshot.docs.toList());
+  static Stream<List<dynamic>> getGroupMembers(String groupId) {
+    return groupsRef.doc(groupId).snapshots().map((snapshot) {
+      return snapshot['members'];
     });
   }
 
@@ -458,6 +460,16 @@ class DatabaseService {
     return await usersRef.doc(uid).get().then((documentSnapshot) {
       return documentSnapshot['imageUrl'];
     });
+  }
+
+  static Stream<bool> isFollowingUser(String user, String visitor) async* {
+    DocumentSnapshot userDoc = await followersRef.doc(user).get();
+    yield userDoc['followers'].contains(visitor);
+
+    final snapshots = followersRef.doc(user).snapshots();
+    await for (var snapshot in snapshots) {
+      yield snapshot['followers'].contains(visitor);
+    }
   }
 
   static isFollowing(String user, String visitor) async* {

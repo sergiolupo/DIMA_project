@@ -102,19 +102,33 @@ class ShowFollowersState extends State<ShowFollowers> {
 
               final String uid = uuids[index].toString();
 
-              return FutureBuilder<UserData>(
-                future: DatabaseService.getUserData(uid.toString()),
+              return StreamBuilder<UserData>(
+                stream: DatabaseService.getUserDataFromUUID(uid.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CupertinoActivityIndicator(); // Or any loading indicator
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    final searchedUser = snapshot.data!;
-                    return UserTile(
-                      user: searchedUser,
-                      visitor: widget.visitor ?? widget.user,
-                    );
+                    final UserData userData = snapshot.data!;
+                    return StreamBuilder(
+                        stream: DatabaseService.isFollowingUser(
+                            userData.uuid!, widget.user.uuid!),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CupertinoActivityIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            final isFollowing = snapshot.data as bool;
+                            return UserTile(
+                              user: userData,
+                              visitor: widget.user,
+                              isFollowing: isFollowing,
+                            );
+                          }
+                        });
                   }
                 },
               );
