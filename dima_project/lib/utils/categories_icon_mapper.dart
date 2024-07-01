@@ -19,41 +19,67 @@ class CategoryIconMapper {
     'Volunteering',
   ];
 
-  static getCategoryModel(String category) {
-    switch (category) {
-      case 'Environment':
-        return CategoryModel(
-            'Environment', 'assets/categories/environment.jpg');
-      case 'Cooking':
-        return CategoryModel('Cooking', 'assets/categories/cooking.jpg');
-      case 'Culture':
-        return CategoryModel('Culture', 'assets/categories/culture.jpg');
-      case 'Film & TV Series':
-        return CategoryModel('Film & TV Series', 'assets/categories/films.jpg');
-      case 'Books':
-        return CategoryModel('Books', 'assets/categories/books.jpg');
-      case 'Gossip':
-        return CategoryModel('Gossip', 'assets/categories/gossip.jpg');
-      case 'Music':
-        return CategoryModel('Music', 'assets/categories/music.jpg');
-      case 'Politics':
-        return CategoryModel('Politics', 'assets/categories/politics.jpg');
-      case 'Health & Wellness':
-        return CategoryModel(
-            'Health & Wellness', 'assets/categories/health.jpg');
-      case 'School & Education':
-        return CategoryModel(
-            'School & Education', 'assets/categories/school.jpg');
-      case 'Sports':
-        return CategoryModel('Sports', 'assets/categories/sports.jpg');
-      case 'Technology':
-        return CategoryModel('Technology', 'assets/categories/technology.jpg');
-      case 'Volunteering':
-        return CategoryModel(
-            'Volunteering', 'assets/categories/volunteering.jpg');
-      default:
-        return CategoryModel('Politics', 'assets/categories/politics.jpg');
-    }
+  static final Map<String, CategoryModel> _categoryMap = {
+    'Environment': CategoryModel(
+      categoryName: 'Environment',
+      image: 'assets/categories/environment.jpg',
+    ),
+    'Cooking': CategoryModel(
+      categoryName: 'Cooking',
+      image: 'assets/categories/cooking.jpg',
+    ),
+    'Culture': CategoryModel(
+      categoryName: 'Culture',
+      image: 'assets/categories/culture.jpg',
+    ),
+    'Film & TV Series': CategoryModel(
+      categoryName: 'Film & TV Series',
+      image: 'assets/categories/films.jpg',
+    ),
+    'Books': CategoryModel(
+      categoryName: 'Books',
+      image: 'assets/categories/books.jpg',
+    ),
+    'Gossip': CategoryModel(
+      categoryName: 'Gossip',
+      image: 'assets/categories/gossip.jpg',
+    ),
+    'Music': CategoryModel(
+      categoryName: 'Music',
+      image: 'assets/categories/music.jpg',
+    ),
+    'Politics': CategoryModel(
+      categoryName: 'Politics',
+      image: 'assets/categories/politics.jpg',
+    ),
+    'Health & Wellness': CategoryModel(
+      categoryName: 'Health & Wellness',
+      image: 'assets/categories/health.jpg',
+    ),
+    'School & Education': CategoryModel(
+      categoryName: 'School & Education',
+      image: 'assets/categories/school.jpg',
+    ),
+    'Sports': CategoryModel(
+      categoryName: 'Sports',
+      image: 'assets/categories/sports.jpg',
+    ),
+    'Technology': CategoryModel(
+      categoryName: 'Technology',
+      image: 'assets/categories/technology.jpg',
+    ),
+    'Volunteering': CategoryModel(
+      categoryName: 'Volunteering',
+      image: 'assets/categories/volunteering.jpg',
+    ),
+  };
+
+  static CategoryModel getCategoryModel(String category) {
+    return _categoryMap[category] ??
+        CategoryModel(
+          categoryName: 'Politics',
+          image: 'assets/categories/politics.jpg',
+        );
   }
 
   static iconForCategory(String category) {

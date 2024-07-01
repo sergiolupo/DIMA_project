@@ -1,16 +1,16 @@
 class ArticleModel {
-  String? author;
-  String? title;
-  String? description;
-  String? url;
-  String? urlToImage;
-  String? content;
+  final String? author;
+  final String title;
+  final String description;
+  final String url;
+  final String urlToImage;
+  final String content;
 
   ArticleModel(
       {this.author,
-      this.content,
-      this.description,
-      this.title,
-      this.url,
-      this.urlToImage});
+      required this.content,
+      required this.description,
+      required this.title,
+      required this.url,
+      required this.urlToImage});
 }

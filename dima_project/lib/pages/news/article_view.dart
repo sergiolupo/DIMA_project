@@ -25,8 +25,6 @@ class _ArticleViewState extends State<ArticleView> {
                       fontWeight: FontWeight.bold))
             ],
           ),
-          //centerTitle: true,
-          //elevation: 0.0,
         ),
         child: WebView(
           initialUrl: widget.blogUrl,

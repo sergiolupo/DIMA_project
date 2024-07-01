@@ -1,4 +1,4 @@
-import 'package:dima_project/models/news/show_category.dart';
+import 'package:dima_project/models/news/article_model.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/widgets/news/show_category.dart';
@@ -11,7 +11,7 @@ class CategoryNews extends StatefulWidget {
 }
 
 class _CategoryNewsState extends State<CategoryNews> {
-  List<ShowCategoryModel> categories = [];
+  List<ArticleModel> categories = [];
   bool _loading = true;
 
   @override
@@ -50,10 +50,10 @@ class _CategoryNewsState extends State<CategoryNews> {
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       return ShowCategory(
-                          url: categories[index].url!,
-                          description: categories[index].description!,
-                          image: categories[index].urlToImage!,
-                          title: categories[index].title!);
+                          url: categories[index].url,
+                          description: categories[index].description,
+                          image: categories[index].urlToImage,
+                          title: categories[index].title);
                     })));
   }
 }

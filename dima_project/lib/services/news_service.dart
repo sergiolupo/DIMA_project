@@ -3,8 +3,6 @@ import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/models/news/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:dima_project/models/news/show_category.dart';
-import 'package:dima_project/models/news/slider_model.dart';
 
 List<CategoryModel> getCategories(List<String> userCategories) {
   List<CategoryModel> categories = [];
@@ -21,14 +19,19 @@ class News {
 
   Future<void> getNews() async {
     String url =
-        "https://newsapi.org/v2/everything?q=israele&from=2024-04-02&sortBy=publishedAt&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+        "https://newsapi.org/v2/top-headlines?country=us&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
 
     if (jsonData['status'] == 'ok') {
       jsonData["articles"].forEach((element) {
-        if (element["urlToImage"] != null && element['description'] != null) {
+        if (element["title"] != null &&
+            element['description'] != null &&
+            element['url'] != null &&
+            element['urlToImage'] != null &&
+            element['content'] != null &&
+            element['author'] != null) {
           ArticleModel articleModel = ArticleModel(
               title: element["title"],
               description: element["description"],
@@ -44,7 +47,7 @@ class News {
 }
 
 class ShowCategoryNews {
-  List<ShowCategoryModel> categories = [];
+  List<ArticleModel> categories = [];
 
   Future<void> getCategoriesNews(String category) async {
     String url =
@@ -55,8 +58,13 @@ class ShowCategoryNews {
 
     if (jsonData['status'] == 'ok') {
       jsonData["articles"].forEach((element) {
-        if (element["urlToImage"] != null && element['description'] != null) {
-          ShowCategoryModel showCategoryModel = ShowCategoryModel(
+        if (element["title"] != null &&
+            element['description'] != null &&
+            element['url'] != null &&
+            element['urlToImage'] != null &&
+            element['content'] != null &&
+            element['author'] != null) {
+          ArticleModel showCategoryModel = ArticleModel(
               title: element["title"],
               description: element["description"],
               url: element["url"],
@@ -71,7 +79,7 @@ class ShowCategoryNews {
 }
 
 class Sliders {
-  List<SliderModel> sliders = [];
+  List<ArticleModel> sliders = [];
 
   Future<void> getSliders() async {
     String url =
@@ -82,8 +90,13 @@ class Sliders {
 
     if (jsonData['status'] == 'ok') {
       jsonData["articles"].forEach((element) {
-        if (element["urlToImage"] != null && element['description'] != null) {
-          SliderModel sliderModel = SliderModel(
+        if (element["title"] != null &&
+            element['description'] != null &&
+            element['url'] != null &&
+            element['urlToImage'] != null &&
+            element['content'] != null &&
+            element['author'] != null) {
+          ArticleModel sliderModel = ArticleModel(
               title: element["title"],
               description: element["description"],
               url: element["url"],

@@ -37,14 +37,13 @@ class BlogTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                         imageUrl: imageUrl,
-                        height: 50,
-                        width: 150,
+                        width: MediaQuery.of(context).size.width / 3,
                         fit: BoxFit.cover)),
                 const SizedBox(width: 8.0),
                 Column(
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
+                      width: MediaQuery.of(context).size.width / 2,
                       child: Text(
                         title,
                         maxLines: 2,
@@ -58,7 +57,7 @@ class BlogTile extends StatelessWidget {
                       height: 7.0,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
+                      width: MediaQuery.of(context).size.width / 2,
                       child: Text(
                         description,
                         maxLines: 3,

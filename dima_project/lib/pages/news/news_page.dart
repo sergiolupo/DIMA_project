@@ -5,7 +5,6 @@ import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/news/category_model.dart';
-import 'package:dima_project/models/news/slider_model.dart';
 import 'package:dima_project/models/news/article_model.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
@@ -21,11 +20,12 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  List<CategoryModel> categories = [];
-  List<SliderModel> sliders = [];
-  List<ArticleModel> articles = [];
+  List<CategoryModel>? categories;
+  List<ArticleModel>? sliders;
+  List<ArticleModel>? articles;
 
-  bool _loading = true;
+  static const int numberOfNews =
+      6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
   int activeIndex = 0;
 
   @override
@@ -41,7 +41,6 @@ class _NewsPageState extends State<NewsPage> {
     await newsclass.getNews();
     setState(() {
       articles = newsclass.news;
-      _loading = false;
     });
   }
 
@@ -55,37 +54,37 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("AGOR"),
-            Text("APP",
+    return categories == null || sliders == null || articles == null
+        ? const CupertinoActivityIndicator()
+        : CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: const Text(
+                "News",
                 style: TextStyle(
-                    color: CupertinoColors.activeBlue,
-                    fontWeight: FontWeight.bold))
-          ],
-        ),
-      ),
-      child: _loading
-          ? const Center(child: CupertinoActivityIndicator())
-          : SafeArea(
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
+                  color: CupertinoColors.white,
+                ),
+              ),
+              backgroundColor: CupertinoTheme.of(context).primaryColor,
+            ),
+            child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 20.0),
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
                       height: 70,
                       child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          itemCount: categories.length,
+                          itemCount: categories!.length,
                           itemBuilder: (context, index) {
                             return CategoryTile(
-                              image: categories[index].image,
-                              categoryName: categories[index].categoryName,
+                              image: categories![index].image,
+                              categoryName: categories![index].categoryName,
                             );
                           }),
                     ),
@@ -93,7 +92,7 @@ class _NewsPageState extends State<NewsPage> {
                       height: 30.0,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -111,29 +110,28 @@ class _NewsPageState extends State<NewsPage> {
                                   CupertinoPageRoute(
                                       builder: (context) => const AllNews(
                                             news: "Breaking",
+                                            numberOfNews: numberOfNews,
                                           )));
                             },
                             child: const Text(
                               "View All",
                               style: TextStyle(
-                                  color: CupertinoColors.activeBlue,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16.0),
+                                color: CupertinoColors.activeBlue,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16.0,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
+                    const SizedBox(height: 20.0),
                     CarouselSlider.builder(
-                        itemCount:
-                            5, //it's arbitrary, we can put sliders.length (that is 10 for this api)
+                        itemCount: numberOfNews,
                         itemBuilder: (context, index, realIndex) {
-                          String? res = sliders[index].urlToImage;
-                          String? res1 = sliders[index].title;
-                          return buildImage(res!, index, res1!);
+                          String? image = sliders![index].urlToImage;
+                          String? title = sliders![index].title;
+                          return buildImage(image, index, title);
                         },
                         options: CarouselOptions(
                             height: 200,
@@ -145,9 +143,7 @@ class _NewsPageState extends State<NewsPage> {
                                 activeIndex = index;
                               });
                             })),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
+                    const SizedBox(height: 30.0),
                     Center(
                       child: buildIndicator(),
                     ),
@@ -155,7 +151,7 @@ class _NewsPageState extends State<NewsPage> {
                       height: 30.0,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -170,8 +166,9 @@ class _NewsPageState extends State<NewsPage> {
                             onTap: () => Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) => const AllNews(
+                                    builder: (context) => AllNews(
                                           news: "Trending",
+                                          numberOfNews: articles!.length,
                                         ))),
                             child: const Text(
                               "View All",
@@ -188,19 +185,19 @@ class _NewsPageState extends State<NewsPage> {
                     ListView.builder(
                         shrinkWrap: true,
                         physics: const ClampingScrollPhysics(),
-                        itemCount: articles.length,
+                        itemCount: articles!.length,
                         itemBuilder: (context, index) {
                           return BlogTile(
-                              url: articles[index].url!,
-                              description: articles[index].description!,
-                              imageUrl: articles[index].urlToImage!,
-                              title: articles[index].title!);
+                              url: articles![index].url,
+                              description: articles![index].description,
+                              imageUrl: articles![index].urlToImage,
+                              title: articles![index].title);
                         })
                   ],
                 ),
               ),
             ),
-    );
+          );
   }
 
   //carousel slider
@@ -212,7 +209,7 @@ class _NewsPageState extends State<NewsPage> {
                 context,
                 CupertinoPageRoute(
                     builder: (context) =>
-                        ArticleView(blogUrl: sliders[index].url!)));
+                        ArticleView(blogUrl: sliders![index].url)));
           },
           child: Stack(children: [
             ClipRRect(
@@ -248,11 +245,11 @@ class _NewsPageState extends State<NewsPage> {
       );
 
   Widget buildIndicator() => AnimatedSmoothIndicator(
-        activeIndex: activeIndex,
-        count: 5, //we can put sliders.length
-        effect: const SlideEffect(
-            dotWidth: 15,
-            dotHeight: 15,
-            activeDotColor: CupertinoColors.activeBlue),
-      );
+      activeIndex: activeIndex,
+      count: numberOfNews,
+      effect: SlideEffect(
+        dotWidth: 15,
+        dotHeight: 15,
+        activeDotColor: CupertinoTheme.of(context).primaryColor,
+      ));
 }
