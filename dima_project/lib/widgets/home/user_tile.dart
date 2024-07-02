@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 
 class UserTile extends StatefulWidget {
   final UserData user;
-  final UserData visitor;
+  final String uuid;
   final bool isFollowing;
   const UserTile({
     super.key,
     required this.user,
-    required this.visitor,
+    required this.uuid,
     required this.isFollowing,
   });
 
@@ -29,8 +29,8 @@ class UserTileState extends State<UserTile> {
             onTap: () {
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return UserProfile(
-                  user: widget.user,
-                  visitor: widget.visitor,
+                  user: widget.user.uuid!,
+                  uuid: widget.uuid,
                 );
               }));
             },
@@ -51,13 +51,13 @@ class UserTileState extends State<UserTile> {
             ),
           ),
         ),
-        widget.user.username != widget.visitor.username
+        widget.user.uuid != widget.uuid
             ? GestureDetector(
                 onTap: () async {
                   try {
                     await DatabaseService.toggleFollowUnfollow(
                       widget.user.uuid!,
-                      widget.visitor.uuid!,
+                      widget.uuid,
                     );
                   } catch (error) {
                     debugPrint("Error occurred: $error");

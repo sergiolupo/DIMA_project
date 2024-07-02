@@ -16,12 +16,12 @@ import 'package:image_picker/image_picker.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
-  final UserData user;
+  final String uuid;
 
   const PrivateChatPage({
     super.key,
     required this.privateChat,
-    required this.user,
+    required this.uuid,
   });
 
   @override
@@ -51,7 +51,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         middle: SafeArea(
           child: SingleChildScrollView(
             child: StreamBuilder(
-              stream: widget.privateChat.members[0] != widget.user.uuid
+              stream: widget.privateChat.members[0] != widget.uuid
                   ? DatabaseService.getUserInfo(widget.privateChat.members[0])
                   : DatabaseService.getUserInfo(widget.privateChat.members[1]),
               builder: (context, snapshot) {
@@ -205,7 +205,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                                     widget.privateChat);
 
                             await DatabaseService.sendChatImage(
-                              widget.user,
+                              widget.uuid,
                               widget.privateChat.id!,
                               File(image.path),
                               false,
@@ -237,7 +237,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                                   widget.privateChat);
 
                           await DatabaseService.sendChatImage(
-                            widget.user,
+                            widget.uuid,
                             widget.privateChat.id!,
                             File(image.path),
                             false,
@@ -281,15 +281,15 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
-              return FutureBuilder(
-                future: DatabaseService.getUserData(message.sender),
+              return StreamBuilder(
+                stream: DatabaseService.getUserDataFromUUID(message.sender),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     widget.privateChat.id ??= message.chatID!;
 
                     final user = snapshot.data as UserData;
                     return MessageTile(
-                      uuid: widget.user.uuid!,
+                      uuid: widget.uuid,
                       message: message,
                       senderUsername: user.username,
                     );
@@ -319,8 +319,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         sender: FirebaseAuth.instance.currentUser!.uid,
         isGroupMessage: false,
         time: Timestamp.now(),
-        senderImage: await DatabaseService.getUserImage(
-            FirebaseAuth.instance.currentUser!.uid),
         readBy: [
           readBy,
         ],

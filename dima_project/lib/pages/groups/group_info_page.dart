@@ -11,12 +11,12 @@ import 'package:go_router/go_router.dart';
 
 class GroupInfo extends StatefulWidget {
   final Group group;
-  final UserData user;
+  final String uuid;
 
   const GroupInfo({
     super.key,
     required this.group,
-    required this.user,
+    required this.uuid,
   });
 
   @override
@@ -51,7 +51,7 @@ class GroupInfoState extends State<GroupInfo> {
         leading: CupertinoButton(
           onPressed: () {
             context.go('/chat', extra: {
-              "user": widget.user,
+              "uuid": widget.uuid,
               "group": widget.group,
             });
           },
@@ -201,7 +201,7 @@ class GroupInfoState extends State<GroupInfo> {
                     final UserData userData = snapshot.data!;
                     return StreamBuilder(
                         stream: DatabaseService.isFollowingUser(
-                            userData.uuid!, widget.user.uuid!),
+                            userData.uuid!, widget.uuid),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -212,7 +212,7 @@ class GroupInfoState extends State<GroupInfo> {
                             final isFollowing = snapshot.data as bool;
                             return UserTile(
                               user: userData,
-                              visitor: widget.user,
+                              uuid: widget.uuid,
                               isFollowing: isFollowing,
                             );
                           }
@@ -244,7 +244,7 @@ class GroupInfoState extends State<GroupInfo> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.user.uuid!,
+                  widget.uuid,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();

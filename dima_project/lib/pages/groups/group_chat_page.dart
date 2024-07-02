@@ -15,12 +15,12 @@ import 'package:image_picker/image_picker.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group? group;
-  final UserData user;
+  final String uuid;
 
   const GroupChatPage({
     super.key,
     required this.group,
-    required this.user,
+    required this.uuid,
   });
 
   @override
@@ -69,7 +69,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           onPressed: () {
             context.go(
               "/groupinfo",
-              extra: {"group": widget.group, "user": widget.user},
+              extra: {"group": widget.group, "uuid": widget.uuid},
             );
           },
           child: const Icon(
@@ -139,7 +139,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                             });
                             final bytes = await image.readAsBytes();
                             await DatabaseService.sendChatImage(
-                              widget.user,
+                              widget.uuid,
                               widget.group!.id,
                               File(image.path),
                               true,
@@ -166,7 +166,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                           });
                           final bytes = await image.readAsBytes();
                           await DatabaseService.sendChatImage(
-                            widget.user,
+                            widget.uuid,
                             widget.group!.id,
                             File(image.path),
                             true,
@@ -215,8 +215,9 @@ class GroupChatPageState extends State<GroupChatPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final user = snapshot.data as UserData;
+                    message.senderImage = user.imagePath;
                     return MessageTile(
-                      uuid: widget.user.uuid!,
+                      uuid: widget.uuid,
                       message: message,
                       senderUsername: user.username,
                     );
@@ -245,8 +246,6 @@ class GroupChatPageState extends State<GroupChatPage> {
         sender: FirebaseAuth.instance.currentUser!.uid,
         isGroupMessage: true,
         time: Timestamp.now(),
-        senderImage: await DatabaseService.getUserImage(
-            FirebaseAuth.instance.currentUser!.uid),
         readBy: [
           readBy,
         ],

@@ -7,13 +7,13 @@ import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowFollowers extends StatefulWidget {
-  final UserData user;
-  final UserData? visitor;
+  final String user;
+  final String uuid;
   final bool followers;
   const ShowFollowers({
     super.key,
     required this.user,
-    this.visitor,
+    required this.uuid,
     required this.followers,
   });
 
@@ -31,14 +31,11 @@ class ShowFollowersState extends State<ShowFollowers> {
   void initState() {
     super.initState();
     init();
-    debugPrint('visitor: ${widget.visitor?.username}');
-    debugPrint('user: ${widget.user.username}');
   }
 
   init() {
     _followersStreamSubscription =
-        DatabaseService.getFollowersStreamUser(widget.user.uuid!)
-            .listen((snapshot) {
+        DatabaseService.getFollowersStreamUser(widget.user).listen((snapshot) {
       _followersStreamController.add(snapshot);
     });
   }
@@ -113,7 +110,7 @@ class ShowFollowersState extends State<ShowFollowers> {
                     final UserData userData = snapshot.data!;
                     return StreamBuilder(
                         stream: DatabaseService.isFollowingUser(
-                            userData.uuid!, widget.user.uuid!),
+                            userData.uuid!, widget.uuid),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -124,7 +121,7 @@ class ShowFollowersState extends State<ShowFollowers> {
                             final isFollowing = snapshot.data as bool;
                             return UserTile(
                               user: userData,
-                              visitor: widget.user,
+                              uuid: widget.uuid,
                               isFollowing: isFollowing,
                             );
                           }

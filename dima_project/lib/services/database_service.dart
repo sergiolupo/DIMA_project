@@ -787,22 +787,21 @@ class DatabaseService {
     });
   }
 
-  static Future<void> sendChatImage(UserData user, String chatID, File file,
+  static Future<void> sendChatImage(String uuid, String chatID, File file,
       bool isGroupMessage, Uint8List imagePath) async {
     final String imageUrl = await StorageService.uploadImageToStorage(
-        'chat_images/$chatID/${user.uuid}/${Timestamp.now()}.jpg', imagePath);
+        'chat_images/$chatID/$uuid/${Timestamp.now()}.jpg', imagePath);
 
     ReadBy readBy = ReadBy(
       readAt: Timestamp.now(),
-      username: user.uuid!,
+      username: uuid,
     );
 
     final Message message = Message(
       content: imageUrl,
-      sender: user.uuid!,
+      sender: uuid,
       isGroupMessage: isGroupMessage,
       time: Timestamp.now(),
-      senderImage: user.imagePath!,
       readBy: [
         readBy,
       ],

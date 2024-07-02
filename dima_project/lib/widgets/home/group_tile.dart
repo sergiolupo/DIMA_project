@@ -1,5 +1,4 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -7,15 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupTile extends StatefulWidget {
-  final UserData user;
+  final String uuid;
   final Group group;
-  final UserData? visitor;
   final bool isJoined;
   const GroupTile({
     super.key,
-    required this.user,
+    required this.uuid,
     required this.group,
-    this.visitor,
     required this.isJoined, // Updated this
   });
 
@@ -36,7 +33,7 @@ class GroupTileState extends State<GroupTile> {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
-                      user: widget.user,
+                      uuid: widget.uuid,
                       group: widget.group,
                     ),
                   ),
@@ -56,20 +53,11 @@ class GroupTileState extends State<GroupTile> {
         GestureDetector(
           onTap: () async {
             try {
-              // Updated this condition
-              if (widget.visitor != null) {
-                await DatabaseService.toggleGroupJoin(
-                  widget.group.id,
-                  FirebaseAuth.instance.currentUser!.uid,
-                  widget.visitor!.uuid!,
-                );
-              } else {
-                await DatabaseService.toggleGroupJoin(
-                  widget.group.id,
-                  FirebaseAuth.instance.currentUser!.uid,
-                  widget.user.uuid!,
-                );
-              }
+              await DatabaseService.toggleGroupJoin(
+                widget.group.id,
+                FirebaseAuth.instance.currentUser!.uid,
+                widget.uuid,
+              );
             } catch (error) {
               debugPrint("Error occurred: $error");
             }

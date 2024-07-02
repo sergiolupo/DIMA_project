@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/news/category_model.dart';
@@ -13,8 +13,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class NewsPage extends StatefulWidget {
-  final UserData user;
-  const NewsPage({super.key, required this.user});
+  final String uuid;
+  const NewsPage({super.key, required this.uuid});
 
   @override
   State<NewsPage> createState() => _NewsPageState();
@@ -32,10 +32,18 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void initState() {
-    categories = News.getCategories(widget.user.categories);
+    getCategories();
     getSliders();
     getNews();
     super.initState();
+  }
+
+  getCategories() async {
+    final user = await DatabaseService.getUserData(widget.uuid);
+    debugPrint("uuid : ${widget.uuid}");
+    setState(() {
+      categories = News.getCategories(user.categories);
+    });
   }
 
   getNews() async {

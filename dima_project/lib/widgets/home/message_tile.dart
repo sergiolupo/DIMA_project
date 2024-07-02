@@ -82,7 +82,7 @@ class MessageTileState extends State<MessageTile> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CreateImageWidget.getUserImage(
-                          widget.message.senderImage,
+                          widget.message.senderImage!,
                           small: true,
                         ),
                         const SizedBox(width: 8),

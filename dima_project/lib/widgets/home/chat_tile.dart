@@ -10,13 +10,13 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatTile extends StatefulWidget {
-  final UserData user;
+  final String uuid;
   final Group? group;
   final PrivateChat? privateChat;
   final LastMessage? lastMessage;
   const ChatTile(
       {super.key,
-      required this.user,
+      required this.uuid,
       this.group,
       this.privateChat,
       required this.lastMessage});
@@ -35,18 +35,18 @@ class ChatTileState extends State<ChatTile> {
     if (widget.privateChat != null) {
       getUserData();
       unreadMessagesStream = DatabaseService.getUnreadMessages(
-          false, widget.privateChat!.id!, widget.user.uuid!);
+          false, widget.privateChat!.id!, widget.uuid);
     } else {
       unreadMessagesStream = DatabaseService.getUnreadMessages(
-          true, widget.group!.id, widget.user.uuid!);
+          true, widget.group!.id, widget.uuid);
     }
   }
 
   getUserData() async {
-    await DatabaseService.getUserData(widget.privateChat!.members[0] ==
-                await DatabaseService.getUUIDFromUsername(widget.user.username)
-            ? widget.privateChat!.members[1]
-            : widget.privateChat!.members[0])
+    await DatabaseService.getUserData(
+            widget.privateChat!.members[0] == widget.uuid
+                ? widget.privateChat!.members[1]
+                : widget.privateChat!.members[0])
         .then((value) => setState(() {
               _other = value;
             }));
@@ -62,7 +62,7 @@ class ChatTileState extends State<ChatTile> {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => PrivateChatPage(
-                      user: widget.user,
+                      uuid: widget.uuid,
                       privateChat: widget.privateChat!,
                     ),
                   ),
@@ -71,7 +71,7 @@ class ChatTileState extends State<ChatTile> {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
-                      user: widget.user,
+                      uuid: widget.uuid,
                       group: widget.group,
                     ),
                   ),
@@ -113,7 +113,7 @@ class ChatTileState extends State<ChatTile> {
                           (widget.lastMessage != null)
                               ? Text(
                                   widget.lastMessage!.recentMessageSender ==
-                                          widget.user.username
+                                          widget.uuid
                                       ? "You: ${widget.lastMessage!.recentMessage}"
                                       : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
                                   overflow: TextOverflow.ellipsis,
@@ -122,9 +122,9 @@ class ChatTileState extends State<ChatTile> {
                                     color: CupertinoColors.inactiveGray,
                                   ),
                                 )
-                              : Text(
-                                  "Join the conversation as ${widget.user.username}",
-                                  style: const TextStyle(
+                              : const Text(
+                                  "Join the conversation!",
+                                  style: TextStyle(
                                       fontSize: 14,
                                       color: CupertinoColors.inactiveGray),
                                 ),

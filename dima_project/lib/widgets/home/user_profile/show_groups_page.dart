@@ -2,18 +2,17 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowGroupsPage extends StatefulWidget {
-  final UserData user;
-  final UserData? visitor;
+  final String user;
+  final String uuid;
   const ShowGroupsPage({
     super.key,
     required this.user,
-    this.visitor,
+    required this.uuid,
   });
 
   @override
@@ -34,8 +33,7 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
 
   init() {
     _groupsStreamSubscription =
-        DatabaseService.getGroupsStreamUser(widget.user.uuid!)
-            .listen((snapshot) {
+        DatabaseService.getGroupsStreamUser(widget.user).listen((snapshot) {
       _groupsStreamController.add(snapshot);
     });
   }
@@ -87,13 +85,9 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
                       final admin = snapshot.data!.username;
                       group.admin = admin;
                       return GroupTile(
-                        user: widget.user,
-                        group: group,
-                        visitor: widget.visitor,
-                        isJoined: widget.visitor != null
-                            ? group.members!.contains(widget.visitor!.uuid!)
-                            : group.members!.contains(widget.user.uuid!),
-                      );
+                          uuid: widget.uuid,
+                          group: group,
+                          isJoined: group.members!.contains(widget.uuid));
                     }
                   });
             },

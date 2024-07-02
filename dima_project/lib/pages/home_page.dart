@@ -1,4 +1,3 @@
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
@@ -18,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late int? _currentIndex;
-  UserData? _userData;
+  String? uuid;
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
   @override
   void initState() {
@@ -41,21 +40,16 @@ class HomePageState extends State<HomePage> {
   }
 
   void _getUserData() async {
-    final uid = await HelperFunctions.getUid();
-    final userData = await DatabaseService.getUserData(uid!);
+    final userUuid = await HelperFunctions.getUid();
     setState(() {
-      _userData = userData;
+      uuid = userUuid;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _userData == null
-        ? const CupertinoPageScaffold(
-            child: Center(
-              child: CupertinoActivityIndicator(),
-            ),
-          )
+    return uuid == null
+        ? const CupertinoActivityIndicator()
         : CupertinoTabScaffold(
             tabBar: CupertinoTabBar(
               currentIndex: _currentIndex!,
@@ -100,12 +94,12 @@ class HomePageState extends State<HomePage> {
               switch (index) {
                 case 0:
                   page = NewsPage(
-                    user: _userData!,
+                    uuid: uuid!,
                   );
                   break;
                 case 1:
                   page = ListChatPage(
-                    user: _userData!,
+                    uuid: uuid!,
                   );
                   break;
                 case 2:
@@ -113,12 +107,13 @@ class HomePageState extends State<HomePage> {
                   break;
                 case 3:
                   page = SearchPage(
-                    user: _userData!,
+                    uuid: uuid!,
                   );
                   break;
                 case 4:
                   page = UserProfile(
-                    user: _userData!,
+                    uuid: uuid!,
+                    user: uuid!,
                   );
                   break;
                 default:

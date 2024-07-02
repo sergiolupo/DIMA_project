@@ -10,8 +10,8 @@ import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class SearchPage extends StatefulWidget {
-  final UserData user;
-  const SearchPage({super.key, required this.user});
+  final String uuid;
+  const SearchPage({super.key, required this.uuid});
 
   @override
   SearchPageState createState() => SearchPageState();
@@ -145,7 +145,7 @@ class SearchPageState extends State<SearchPage> {
                       final userData = UserData.fromSnapshot(docs[index]);
                       return StreamBuilder(
                           stream: DatabaseService.isFollowingUser(
-                              userData.uuid!, widget.user.uuid!),
+                              userData.uuid!, widget.uuid),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -156,7 +156,7 @@ class SearchPageState extends State<SearchPage> {
                               final isFollowing = snapshot.data as bool;
                               return UserTile(
                                 user: userData,
-                                visitor: widget.user,
+                                uuid: widget.uuid,
                                 isFollowing: isFollowing,
                               );
                             }
@@ -178,10 +178,9 @@ class SearchPageState extends State<SearchPage> {
                               final admin = snapshot.data!.username;
                               group.admin = admin;
                               return GroupTile(
-                                user: widget.user,
+                                uuid: widget.uuid,
                                 group: group,
-                                isJoined:
-                                    group.members!.contains(widget.user.uuid!),
+                                isJoined: group.members!.contains(widget.uuid),
                               );
                             }
                           });

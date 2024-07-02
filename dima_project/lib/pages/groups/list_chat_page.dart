@@ -11,8 +11,8 @@ import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class ListChatPage extends StatefulWidget {
-  final UserData user;
-  const ListChatPage({super.key, required this.user});
+  final String uuid;
+  const ListChatPage({super.key, required this.uuid});
 
   @override
   ListChatPageState createState() => ListChatPageState();
@@ -32,7 +32,7 @@ class ListChatPageState extends State<ListChatPage> {
 
   void _subscribe() {
     _privateChatsStream = DatabaseService.getPrivateChatsStream();
-    _groupsStream = DatabaseService.getGroupsStream(widget.user.uuid!);
+    _groupsStream = DatabaseService.getGroupsStream(widget.uuid);
   }
 
   @override
@@ -85,7 +85,7 @@ class ListChatPageState extends State<ListChatPage> {
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) =>
-                                          CreateGroupPage(user: widget.user)));
+                                          CreateGroupPage(uuid: widget.uuid)));
                             },
                             child: const Icon(CupertinoIcons.add, size: 30),
                           ),
@@ -123,7 +123,7 @@ class ListChatPageState extends State<ListChatPage> {
 
                     if (group.lastMessage == null) {
                       return ChatTile(
-                        user: widget.user,
+                        uuid: widget.uuid,
                         group: group,
                         lastMessage: null,
                       );
@@ -141,7 +141,7 @@ class ListChatPageState extends State<ListChatPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           return ChatTile(
-                            user: widget.user,
+                            uuid: widget.uuid,
                             group: group,
                             lastMessage: LastMessage(
                               recentMessage: group.lastMessage!.recentMessage,
@@ -222,8 +222,8 @@ class ListChatPageState extends State<ListChatPage> {
                       return const SizedBox();
                     }
 
-                    return FutureBuilder<UserData>(
-                      future: DatabaseService.getUserData(
+                    return StreamBuilder<UserData>(
+                      stream: DatabaseService.getUserDataFromUUID(
                           privateChat.lastMessage!.recentMessageSender),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -235,7 +235,7 @@ class ListChatPageState extends State<ListChatPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           return ChatTile(
-                            user: widget.user,
+                            uuid: widget.uuid,
                             privateChat: privateChat,
                             lastMessage: LastMessage(
                               recentMessage:

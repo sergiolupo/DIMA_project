@@ -8,17 +8,16 @@ import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 
 class UserProfile extends StatefulWidget {
-  final UserData user;
-  final UserData? visitor;
+  final String uuid;
+  final String user;
 
-  const UserProfile({super.key, this.visitor, required this.user});
+  const UserProfile({super.key, required this.user, required this.uuid});
 
   @override
   State<UserProfile> createState() => UserProfileState();
@@ -47,24 +46,21 @@ class UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    isMyProfile = widget.visitor == null ||
-        widget.visitor!.username == widget.user.username;
+    isMyProfile = widget.uuid == widget.user;
     _subscribeToStream();
     if (!isMyProfile) _checkFollow();
   }
 
   _subscribeToStream() {
     _groupsStreamSubscription =
-        DatabaseService.getGroupsStreamUser(widget.user.uuid!)
-            .listen((snapshot) {
+        DatabaseService.getGroupsStreamUser(widget.user).listen((snapshot) {
       final dataList =
           snapshot.cast<QueryDocumentSnapshot<Map<String, dynamic>>>();
       _groupsStreamController.add(dataList);
     });
 
     _followersStreamSubscription =
-        DatabaseService.getFollowersStreamUser(widget.user.uuid!)
-            .listen((snapshot) {
+        DatabaseService.getFollowersStreamUser(widget.user).listen((snapshot) {
       _followersStreamController.add(snapshot);
       _followingStreamController.add(snapshot);
     });
@@ -72,183 +68,183 @@ class UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
-        leading: Navigator.canPop(context)
-            ? CupertinoNavigationBarBackButton(
-                color: CupertinoColors.white,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            : null,
-        trailing: isMyProfile
-            ? GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) => OptionsPage(user: widget.user))),
-                child: const Icon(CupertinoIcons.bars,
-                    color: CupertinoColors.black),
-              )
-            : null,
-        /*trailing: isMyProfile
-            ? GestureDetector(
-                onTap: () => _signOut(context),
-                child: const Icon(CupertinoIcons.power,
-                    color: CupertinoColors.black),
-              )
-            : const SizedBox(),*/
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 8),
-          Container(
-            color: CupertinoColors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 55),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CreateImageWidget.getUserImage(widget.user.imagePath!),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      widget.user.username,
-                      style: CupertinoTheme.of(context).textTheme.textStyle,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      '${widget.user.name} ${widget.user.surname}',
-                      style: CupertinoTheme.of(context).textTheme.textStyle,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.user.categories
-                        .map((category) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(
+    return StreamBuilder(
+        stream: DatabaseService.getUserDataFromUUID(widget.user),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CupertinoActivityIndicator();
+          }
+          final user = snapshot.data!;
+          return CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              backgroundColor: CupertinoColors.systemPink,
+              leading: Navigator.canPop(context)
+                  ? CupertinoNavigationBarBackButton(
+                      color: CupertinoColors.white,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  : null,
+              trailing: isMyProfile
+                  ? GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => OptionsPage(user: user))),
+                      child: const Icon(CupertinoIcons.bars,
+                          color: CupertinoColors.black),
+                    )
+                  : null,
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
+                Container(
+                  color: CupertinoColors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 55),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CreateImageWidget.getUserImage(user.imagePath!),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(
+                            user.username,
+                            style:
+                                CupertinoTheme.of(context).textTheme.textStyle,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(
+                            '${user.name} ${user.surname}',
+                            style:
+                                CupertinoTheme.of(context).textTheme.textStyle,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: user.categories
+                              .map((category) => Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          CategoryIconMapper.iconForCategory(
+                                              category),
+                                          size: 24,
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          category,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            getGroup(),
+                            const SizedBox(width: 20),
+                            getFollowers(),
+                            const SizedBox(width: 20),
+                            getFollowings(),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        !isMyProfile
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    CategoryIconMapper.iconForCategory(
-                                        category),
-                                    size: 24,
-                                    color:
-                                        CupertinoTheme.of(context).primaryColor,
+                                  CupertinoButton.filled(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40, vertical: 8),
+                                    onPressed: () async {
+                                      DatabaseService.toggleFollowUnfollow(
+                                          widget.user, widget.uuid);
+                                      setState(() {
+                                        _isFollowing = !_isFollowing;
+                                      });
+                                    },
+                                    child: Text(
+                                      _isFollowing ? 'Unfollow' : 'Follow',
+                                    ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    category,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
+                                  const SizedBox(width: 10),
+                                  CupertinoButton.filled(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 8),
+                                    onPressed: () async {
+                                      var members = [widget.uuid, widget.user];
+                                      members.sort();
+                                      final chat = PrivateChat(
+                                        members: members,
+                                      );
+                                      if (context.mounted) {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .push(
+                                          CupertinoPageRoute(
+                                            builder: (context) =>
+                                                PrivateChatPage(
+                                              uuid: widget.uuid,
+                                              privateChat: chat,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: const Icon(
+                                      FontAwesomeIcons.envelope,
+                                      color: CupertinoColors.white,
                                     ),
                                   ),
                                 ],
-                              ),
-                            ))
-                        .toList(),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      getGroup(),
-                      const SizedBox(width: 20),
-                      getFollowers(),
-                      const SizedBox(width: 20),
-                      getFollowings(),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  !isMyProfile
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CupertinoButton.filled(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 8),
-                              onPressed: () async {
-                                DatabaseService.toggleFollowUnfollow(
-                                    widget.user.uuid!, widget.visitor!.uuid!);
-                                setState(() {
-                                  _isFollowing = !_isFollowing;
-                                });
-                              },
-                              child: Text(
-                                _isFollowing ? 'Unfollow' : 'Follow',
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            CupertinoButton.filled(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 8),
-                              onPressed: () async {
-                                final visitorUid =
-                                    await DatabaseService.getUUIDFromUsername(
-                                        widget.visitor!.username);
-                                final userUid =
-                                    await DatabaseService.getUUIDFromUsername(
-                                        widget.user.username);
-                                var members = [visitorUid, userUid];
-                                members.sort();
-                                final chat = PrivateChat(
-                                  members: members,
-                                );
-                                if (context.mounted) {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .push(
-                                    CupertinoPageRoute(
-                                      builder: (context) => PrivateChatPage(
-                                        user: widget.visitor!,
-                                        privateChat: chat,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: const Icon(
-                                FontAwesomeIcons.envelope,
-                                color: CupertinoColors.white,
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox(),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            color: CupertinoColors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                CustomSelectOption(
-                  textLeft: 'Events created',
-                  textRight: 'Events joined',
-                  onChanged: (value) {},
                 ),
-                /*GridView.count(
+                Container(
+                  color: CupertinoColors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      CustomSelectOption(
+                        textLeft: 'Events created',
+                        textRight: 'Events joined',
+                        onChanged: (value) {},
+                      ),
+                      /*GridView.count(
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     shrinkWrap: true,
                     childAspectRatio: 1 / 1.5,
                     children: List.generate(5, (index) => const Placeholder()),
                   ),*/
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Widget getGroup() {
@@ -259,7 +255,7 @@ class UserProfileState extends State<UserProfile> {
             context,
             CupertinoPageRoute(
               builder: (context) =>
-                  ShowGroupsPage(user: widget.user, visitor: widget.visitor),
+                  ShowGroupsPage(user: widget.user, uuid: widget.uuid),
             ),
           ),
           child: SizedBox(
@@ -304,7 +300,7 @@ class UserProfileState extends State<UserProfile> {
             context,
             CupertinoPageRoute(
               builder: (context) => ShowFollowers(
-                  user: widget.user, visitor: widget.visitor, followers: true),
+                  user: widget.user, uuid: widget.uuid, followers: true),
             ),
           ),
           child: SizedBox(
@@ -353,7 +349,7 @@ class UserProfileState extends State<UserProfile> {
             context,
             CupertinoPageRoute(
               builder: (context) => ShowFollowers(
-                  user: widget.user, visitor: widget.visitor, followers: false),
+                  user: widget.user, uuid: widget.uuid, followers: false),
             ),
           ),
           child: SizedBox(
@@ -405,11 +401,11 @@ class UserProfileState extends State<UserProfile> {
   }
 
   _checkFollow() async {
-    if (widget.visitor != null) {
+    if (!isMyProfile) {
       // Listen for updates on the isFollowing stream
       final isFollowingStream = DatabaseService.isFollowing(
-        widget.user.uuid!,
-        widget.visitor!.uuid!,
+        widget.user,
+        widget.uuid,
       );
 
       // Listen for updates and update _isFollowing accordingly
