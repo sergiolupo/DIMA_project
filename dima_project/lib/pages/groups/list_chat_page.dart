@@ -6,8 +6,9 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/chat_tile.dart';
+import 'package:dima_project/widgets/group_chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:dima_project/widgets/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ListChatPage extends StatefulWidget {
@@ -122,7 +123,7 @@ class ListChatPageState extends State<ListChatPage> {
                     final group = data[index];
 
                     if (group.lastMessage == null) {
-                      return ChatTile(
+                      return GroupChatTile(
                         uuid: widget.uuid,
                         group: group,
                         lastMessage: null,
@@ -140,7 +141,7 @@ class ListChatPageState extends State<ListChatPage> {
                         }
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
-                          return ChatTile(
+                          return GroupChatTile(
                             uuid: widget.uuid,
                             group: group,
                             lastMessage: LastMessage(
@@ -234,7 +235,7 @@ class ListChatPageState extends State<ListChatPage> {
                         }
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
-                          return ChatTile(
+                          return PrivateChatTile(
                             uuid: widget.uuid,
                             privateChat: privateChat,
                             lastMessage: LastMessage(

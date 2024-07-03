@@ -210,8 +210,8 @@ class GroupChatPageState extends State<GroupChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
-              return FutureBuilder(
-                future: DatabaseService.getUserData(message.sender),
+              return StreamBuilder(
+                stream: DatabaseService.getUserDataFromUUID(message.sender),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final user = snapshot.data as UserData;
