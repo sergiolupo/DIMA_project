@@ -29,6 +29,7 @@ class ShowAll extends StatelessWidget {
               height: 200,
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
             ),
           ),
           const SizedBox(height: 5.0),

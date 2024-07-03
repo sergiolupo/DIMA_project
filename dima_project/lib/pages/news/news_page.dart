@@ -239,6 +239,7 @@ class _NewsPageState extends State<NewsPage> {
                 height: 250.0,
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
+                alignment: Alignment.topCenter,
               ),
             ),
             Container(
