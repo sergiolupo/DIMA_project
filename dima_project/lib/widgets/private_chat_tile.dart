@@ -1,4 +1,3 @@
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
@@ -10,13 +9,11 @@ import 'package:flutter/cupertino.dart';
 class PrivateChatTile extends StatefulWidget {
   final String uuid;
   final PrivateChat privateChat;
-  final LastMessage? lastMessage;
 
   const PrivateChatTile({
     super.key,
     required this.uuid,
     required this.privateChat,
-    required this.lastMessage,
   });
 
   @override
@@ -82,12 +79,13 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               const SizedBox(height: 2),
-                              (widget.lastMessage != null)
+                              (widget.privateChat.lastMessage != null)
                                   ? Text(
-                                      widget.lastMessage!.recentMessageSender ==
-                                              widget.uuid
-                                          ? "You: ${widget.lastMessage!.recentMessage}"
-                                          : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
+                                      widget.privateChat.lastMessage!
+                                                  .sentByMe ==
+                                              true
+                                          ? "You: ${widget.privateChat.lastMessage!.recentMessage}"
+                                          : "${widget.privateChat.lastMessage!.recentMessageSender}: ${widget.privateChat.lastMessage!.recentMessage}",
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                           fontSize: 14,
@@ -103,7 +101,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                           ),
                         ],
                       ),
-                      (widget.lastMessage != null)
+                      (widget.privateChat.lastMessage != null)
                           ? StreamBuilder(
                               stream: unreadMessagesStream,
                               builder: (context, snapshot) {
@@ -117,6 +115,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                       DateUtil.getFormattedTime(
                                         context: context,
                                         time: widget
+                                            .privateChat
                                             .lastMessage!
                                             .recentMessageTimestamp
                                             .microsecondsSinceEpoch

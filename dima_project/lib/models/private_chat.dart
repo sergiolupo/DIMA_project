@@ -3,7 +3,7 @@ import 'package:dima_project/models/last_message.dart';
 
 class PrivateChat {
   final List<String> members;
-  final LastMessage? lastMessage;
+  LastMessage? lastMessage;
   String? id;
   PrivateChat({
     required this.members,

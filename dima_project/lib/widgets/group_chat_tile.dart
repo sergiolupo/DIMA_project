@@ -1,5 +1,4 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -9,13 +8,11 @@ import 'package:flutter/cupertino.dart';
 class GroupChatTile extends StatefulWidget {
   final String uuid;
   final Group group;
-  final LastMessage? lastMessage;
 
   const GroupChatTile({
     super.key,
     required this.uuid,
     required this.group,
-    required this.lastMessage,
   });
 
   @override
@@ -65,12 +62,11 @@ class GroupChatTileState extends State<GroupChatTile> {
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 2),
-                    (widget.lastMessage != null)
+                    (widget.group.lastMessage != null)
                         ? Text(
-                            widget.lastMessage!.recentMessageSender ==
-                                    widget.uuid
-                                ? "You: ${widget.lastMessage!.recentMessage}"
-                                : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
+                            widget.group.lastMessage!.sentByMe == true
+                                ? "You: ${widget.group.lastMessage!.recentMessage}"
+                                : "${widget.group.lastMessage!.recentMessageSender}: ${widget.group.lastMessage!.recentMessage}",
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 fontSize: 14,
@@ -86,7 +82,7 @@ class GroupChatTileState extends State<GroupChatTile> {
                 ),
               ],
             ),
-            (widget.lastMessage != null)
+            (widget.group.lastMessage != null)
                 ? StreamBuilder(
                     stream: unreadMessagesStream,
                     builder: (context, snapshot) {
@@ -99,8 +95,8 @@ class GroupChatTileState extends State<GroupChatTile> {
                           Text(
                             DateUtil.getFormattedTime(
                               context: context,
-                              time: widget.lastMessage!.recentMessageTimestamp
-                                  .microsecondsSinceEpoch
+                              time: widget.group.lastMessage!
+                                  .recentMessageTimestamp.microsecondsSinceEpoch
                                   .toString(),
                             ),
                             style: TextStyle(

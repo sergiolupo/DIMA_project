@@ -8,7 +8,7 @@ class Group {
   final String? imagePath;
   final String? description;
   final List<String>? categories;
-  final LastMessage? lastMessage;
+  LastMessage? lastMessage;
   final List<String>? members;
   Group({
     required this.name,
