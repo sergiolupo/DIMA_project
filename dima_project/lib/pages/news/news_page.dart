@@ -5,7 +5,6 @@ import 'package:dima_project/pages/news/search_news.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dima_project/models/news/category_model.dart';
 import 'package:dima_project/models/news/article_model.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
@@ -21,7 +20,7 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  List<CategoryModel>? categories;
+  Stream<List<String>>? categories;
   List<ArticleModel>? sliders;
   List<ArticleModel>? articles;
   News news = News();
@@ -39,11 +38,7 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   getCategories() async {
-    final user = await DatabaseService.getUserData(widget.uuid);
-    debugPrint("uuid : ${widget.uuid}");
-    setState(() {
-      categories = News.getCategories(user.categories);
-    });
+    categories = DatabaseService.getCategories(widget.uuid);
   }
 
   getNews() async {
@@ -97,16 +92,29 @@ class _NewsPageState extends State<NewsPage> {
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
                       height: 70,
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: categories!.length,
-                          itemBuilder: (context, index) {
-                            return CategoryTile(
-                              image: categories![index].image,
-                              categoryName: categories![index].categoryName,
-                            );
-                          }),
+                      child: StreamBuilder<List<String>>(
+                        stream: categories,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final List<String> categories = snapshot.data!;
+                            final newsCategories =
+                                News.getCategories(categories);
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return CategoryTile(
+                                    image: newsCategories[index].image,
+                                    categoryName:
+                                        newsCategories[index].categoryName,
+                                  );
+                                });
+                          } else {
+                            return const CupertinoActivityIndicator();
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(
                       height: 30.0,

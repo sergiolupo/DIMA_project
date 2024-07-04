@@ -75,6 +75,12 @@ class DatabaseService {
     }
   }
 
+  static Stream<List<String>> getCategories(String uuid) {
+    return usersRef.doc(uuid).snapshots().map((snapshot) {
+      return UserData.fromSnapshot(snapshot).categories;
+    });
+  }
+
   static Future<UserData> getUserData(String uid) async {
     DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
     UserData user = UserData.fromSnapshot(documentSnapshot);
