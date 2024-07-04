@@ -7,8 +7,8 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/home/message_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/private_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -281,22 +281,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
-              return StreamBuilder(
-                stream: DatabaseService.getUserDataFromUUID(message.sender),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    widget.privateChat.id ??= message.chatID!;
 
-                    final user = snapshot.data as UserData;
-                    return MessageTile(
-                      uuid: widget.uuid,
-                      message: message,
-                      senderUsername: user.username,
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
+              return PrivateMessageTile(
+                uuid: widget.uuid,
+                message: message,
               );
             },
           );

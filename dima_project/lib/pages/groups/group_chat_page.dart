@@ -6,7 +6,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/message_tile.dart';
+import 'package:dima_project/widgets/group_message_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -216,7 +216,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                   if (snapshot.hasData) {
                     final user = snapshot.data as UserData;
                     message.senderImage = user.imagePath;
-                    return MessageTile(
+                    return GroupMessageTile(
                       uuid: widget.uuid,
                       message: message,
                       senderUsername: user.username,

@@ -8,15 +8,14 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-//import 'dart:html' as html;
-
 import 'package:uuid/uuid.dart';
 
-class MessageTile extends StatefulWidget {
+class GroupMessageTile extends StatefulWidget {
   final Message message;
   final String senderUsername;
   final String uuid;
-  const MessageTile({
+
+  const GroupMessageTile({
     required this.message,
     required this.senderUsername,
     required this.uuid,
@@ -24,10 +23,10 @@ class MessageTile extends StatefulWidget {
   });
 
   @override
-  MessageTileState createState() => MessageTileState();
+  GroupMessageTileState createState() => GroupMessageTileState();
 }
 
-class MessageTileState extends State<MessageTile> {
+class GroupMessageTileState extends State<GroupMessageTile> {
   bool _showSnackbar = false;
   late String _snackbarMessage;
 
@@ -77,7 +76,7 @@ class MessageTileState extends State<MessageTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   if (!widget.message.sentByMe! &&
-                      (widget.message.isGroupMessage))
+                      widget.message.isGroupMessage)
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -139,7 +138,7 @@ class MessageTileState extends State<MessageTile> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              readBy(),
+                              _buildReadByIcon(),
                             ],
                           ),
                         ],
@@ -156,7 +155,7 @@ class MessageTileState extends State<MessageTile> {
     );
   }
 
-  Widget readBy() {
+  Widget _buildReadByIcon() {
     bool hasRead = widget.message.readBy!
         .any((element) => element.username == widget.uuid);
     if (!hasRead) {
@@ -175,76 +174,49 @@ class MessageTileState extends State<MessageTile> {
   }
 
   void _showBottomSheet(BuildContext context) {
+    List<Widget> actions = [
+      if (widget.message.type == Type.text)
+        _buildOptionItem(
+          icon: CupertinoIcons.doc_on_clipboard,
+          color: CupertinoColors.systemBlue,
+          text: 'Copy Text',
+          onPressed: () => _copyText(),
+        ),
+      if (widget.message.type == Type.image)
+        _buildOptionItem(
+          icon: CupertinoIcons.download_circle,
+          color: CupertinoColors.systemBlue,
+          text: 'Save Image',
+          onPressed: () => _saveImage(),
+        ),
+      if (widget.message.sentByMe! && widget.message.type == Type.text)
+        _buildOptionItem(
+          icon: CupertinoIcons.pencil,
+          color: CupertinoColors.systemBlue,
+          text: 'Edit Message',
+          onPressed: () => _editMessage(),
+        ),
+      if (widget.message.sentByMe!)
+        _buildOptionItem(
+          icon: CupertinoIcons.delete,
+          color: CupertinoColors.systemRed,
+          text: 'Delete Message',
+          onPressed: () => _deleteMessage(),
+        ),
+      if (widget.message.sentByMe!)
+        _buildOptionItem(
+          icon: CupertinoIcons.eye,
+          color: CupertinoColors.systemBlue,
+          text: 'Read By',
+          onPressed: () => _showReaders(),
+        ),
+    ];
+
     showCupertinoModalPopup(
       context: context,
       builder: (_) {
         return CupertinoActionSheet(
-          actions: [
-            if (widget.message.type == Type.text)
-              OptionItem(
-                  icon: const Icon(
-                    CupertinoIcons.doc_on_clipboard,
-                    color: CupertinoColors.systemBlue,
-                    size: 26,
-                  ),
-                  text: 'Copy Text',
-                  onPressed: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: widget.message.content),
-                    );
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                    _showCustomSnackbar('Copied to clipboard');
-                  }),
-            if (widget.message.type == Type.image)
-              OptionItem(
-                  icon: const Icon(
-                    CupertinoIcons.download_circle,
-                    color: CupertinoColors.systemBlue,
-                    size: 26,
-                  ),
-                  text: 'Save Image',
-                  onPressed: () async {
-                    _downloadImage();
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                  }),
-            if (widget.message.sentByMe! && widget.message.type == Type.text)
-              OptionItem(
-                  icon: const Icon(
-                    CupertinoIcons.pencil,
-                    color: CupertinoColors.systemBlue,
-                    size: 26,
-                  ),
-                  text: 'Edit Message',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    showMessageUpdateDialog(context);
-                  }),
-            if (widget.message.sentByMe!)
-              OptionItem(
-                  icon: const Icon(
-                    CupertinoIcons.delete,
-                    color: CupertinoColors.systemRed,
-                    size: 26,
-                  ),
-                  text: 'Delete Message',
-                  onPressed: () {
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                    deleteMessage();
-                  }),
-            if (widget.message.sentByMe!)
-              OptionItem(
-                icon: const Icon(
-                  CupertinoIcons.eye,
-                  color: CupertinoColors.systemBlue,
-                  size: 26,
-                ),
-                text: 'Read By',
-                onPressed: showReaders,
-              )
-          ],
+          actions: actions,
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
@@ -254,36 +226,118 @@ class MessageTileState extends State<MessageTile> {
     );
   }
 
-  void _showCustomSnackbar(String message) {
-    if (mounted) {
-      setState(() {
-        _snackbarMessage = message;
-        _showSnackbar = true;
-      });
-
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _showSnackbar = false;
-        });
-      });
-    }
-  }
-
-  Widget _buildSnackbar() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: _showSnackbar ? MediaQuery.of(context).size.height * 0.1 : 0,
-      color: CupertinoColors.white.withOpacity(0.7),
-      child: Center(
-        child: Text(
-          _snackbarMessage,
-          style: const TextStyle(color: CupertinoColors.systemPink),
-        ),
-      ),
+  Widget _buildOptionItem(
+      {required IconData icon,
+      required Color color,
+      required String text,
+      required VoidCallback onPressed}) {
+    return OptionItem(
+      icon: Icon(icon, color: color, size: 26),
+      text: text,
+      onPressed: () {
+        Navigator.pop(context);
+        onPressed();
+      },
     );
   }
 
-  void showReaders() {
+  Future<void> _copyText() async {
+    await Clipboard.setData(ClipboardData(text: widget.message.content));
+    _showCustomSnackbar('Copied to clipboard');
+  }
+
+  Future<void> _saveImage() async {
+    final response = await Dio().get(
+      widget.message.content,
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    final Uint8List imageData = Uint8List.fromList(response.data);
+
+    const uuid = Uuid();
+    final imageName = '${uuid.v4()}.jpg';
+
+    /*final blob = html.Blob([imageData]);
+
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.AnchorElement(href: url)
+      ..setAttribute("download", imageName)
+      ..click();
+
+    html.Url.revokeObjectUrl(url);*/
+  }
+
+  void _editMessage() {
+    String updatedMessage = widget.message.content;
+    showCupertinoDialog(
+      context: context,
+      builder: (_) {
+        return CupertinoAlertDialog(
+          title: const Row(
+            children: [
+              Icon(CupertinoIcons.pencil,
+                  color: CupertinoColors.activeBlue, size: 28),
+              SizedBox(width: 10),
+              Text("Edit Message"),
+            ],
+          ),
+          content: CupertinoTextField(
+            controller: TextEditingController(text: updatedMessage),
+            onChanged: (value) {
+              updatedMessage = value;
+            },
+            decoration: Constants.inputDecoration,
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Update'),
+              onPressed: () {
+                DatabaseService.updateMessageContent(
+                    widget.message, updatedMessage);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteMessage() {
+    showCupertinoDialog(
+      context: context,
+      builder: (_) {
+        return CupertinoAlertDialog(
+          title: const Text('Delete Message'),
+          content: const Text('Are you sure you want to delete this message?'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Yes'),
+              onPressed: () {
+                Navigator.pop(context);
+                DatabaseService.deleteMessage(widget.message);
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showReaders() {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -350,97 +404,34 @@ class MessageTileState extends State<MessageTile> {
     );
   }
 
-  void deleteMessage() {
-    showCupertinoDialog(
-        context: context,
-        builder: (_) {
-          return CupertinoAlertDialog(
-            title: const Text('Delete Message'),
-            content:
-                const Text('Are you sure you want to delete this message?'),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text('Yes'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  DatabaseService.deleteMessage(widget.message);
-                },
-              ),
-              CupertinoDialogAction(
-                child: const Text('No'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
+  void _showCustomSnackbar(String message) {
+    if (mounted) {
+      setState(() {
+        _snackbarMessage = message;
+        _showSnackbar = true;
+      });
+
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _showSnackbar = false;
+          });
+        }
+      });
+    }
   }
 
-  void showMessageUpdateDialog(BuildContext context) {
-    String updatedMessage = widget.message.content;
-    showCupertinoDialog(
-      context: context,
-      builder: (_) {
-        return CupertinoAlertDialog(
-          title: const Row(
-            children: [
-              Icon(CupertinoIcons.pencil,
-                  color: CupertinoColors.activeBlue, size: 28),
-              SizedBox(
-                width: 10,
-              ),
-              Text("Edit Message"),
-            ],
-          ),
-          content: CupertinoTextField(
-            controller: TextEditingController(text: updatedMessage),
-            onChanged: (value) {
-              updatedMessage = value;
-            },
-            decoration: Constants.inputDecoration,
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Update'),
-              onPressed: () {
-                DatabaseService.updateMessageContent(
-                    widget.message, updatedMessage);
-                Navigator.pop(context);
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
+  Widget _buildSnackbar() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: _showSnackbar ? MediaQuery.of(context).size.height * 0.1 : 0,
+      color: CupertinoColors.white.withOpacity(0.7),
+      child: Center(
+        child: Text(
+          _snackbarMessage,
+          style: const TextStyle(color: CupertinoColors.systemPink),
+        ),
+      ),
     );
-  }
-
-  Future<void> _downloadImage() async {
-    // Download the image from the network
-    final response = await Dio().get(
-      widget.message.content,
-      options: Options(responseType: ResponseType.bytes),
-    );
-
-    final Uint8List imageData = Uint8List.fromList(response.data);
-
-    const uuid = Uuid();
-    final imageName = '${uuid.v4()}.jpg';
-
-    /*final blob = html.Blob([imageData]);
-
-    final url = html.Url.createObjectUrlFromBlob(blob);
-
-    html.AnchorElement(href: url)
-      ..setAttribute("download", imageName)
-      ..click();
-
-    html.Url.revokeObjectUrl(url);*/
   }
 }
