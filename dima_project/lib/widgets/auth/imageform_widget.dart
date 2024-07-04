@@ -74,6 +74,33 @@ class ImageInsertFormState extends State<ImageInsertForm> {
             ),
             Positioned(
                 bottom: 0,
+                left: 0,
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      width: 4,
+                      color: CupertinoColors.white,
+                    ),
+                    color: CupertinoColors.systemPink,
+                  ),
+                  child: GestureDetector(
+                    onTap: () => {
+                      setState(() {
+                        _selectedImagePath = Uint8List(0);
+                        widget.imageInsertPageKey(_selectedImagePath);
+                      })
+                    },
+                    child: const Icon(
+                      CupertinoIcons.delete,
+                      color: CupertinoColors.white,
+                    ),
+                  ),
+                )),
+            Positioned(
+                bottom: 0,
                 right: 0,
                 child: Container(
                   height: 40,
