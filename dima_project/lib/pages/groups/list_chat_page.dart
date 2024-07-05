@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
@@ -125,6 +126,7 @@ class ListChatPageState extends State<ListChatPage> {
                       return GroupChatTile(
                         uuid: widget.uuid,
                         group: group,
+                        lastMessage: null,
                       );
                     }
                     return StreamBuilder<UserData>(
@@ -140,12 +142,16 @@ class ListChatPageState extends State<ListChatPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           bool sentByMe = user.uuid == widget.uuid;
-                          group.lastMessage!.recentMessageSender =
-                              user.username;
-                          group.lastMessage!.sentByMe = sentByMe;
                           return GroupChatTile(
                             uuid: widget.uuid,
                             group: group,
+                            lastMessage: LastMessage(
+                              recentMessage: group.lastMessage!.recentMessage,
+                              recentMessageSender: user.username,
+                              recentMessageTimestamp:
+                                  group.lastMessage!.recentMessageTimestamp,
+                              sentByMe: sentByMe,
+                            ),
                           );
                         } else {
                           return Container(); // Return an empty container or handle other cases as needed
@@ -232,12 +238,17 @@ class ListChatPageState extends State<ListChatPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           bool sentByMe = user.uuid == widget.uuid;
-                          privateChat.lastMessage!.recentMessageSender =
-                              user.username;
-                          privateChat.lastMessage!.sentByMe = sentByMe;
                           return PrivateChatTile(
                             uuid: widget.uuid,
                             privateChat: privateChat,
+                            lastMessage: LastMessage(
+                              recentMessage:
+                                  privateChat.lastMessage!.recentMessage,
+                              recentMessageSender: user.username,
+                              recentMessageTimestamp: privateChat
+                                  .lastMessage!.recentMessageTimestamp,
+                              sentByMe: sentByMe,
+                            ),
                           );
                         } else {
                           return Container(); // Return an empty container or handle other cases as needed
