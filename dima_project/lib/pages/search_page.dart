@@ -180,7 +180,11 @@ class SearchPageState extends State<SearchPage> {
                               return GroupTile(
                                 uuid: widget.uuid,
                                 group: group,
-                                isJoined: group.members!.contains(widget.uuid),
+                                isJoined: group.members!.contains(widget.uuid)
+                                    ? 1
+                                    : group.requests!.contains(widget.uuid)
+                                        ? 2
+                                        : 0,
                               );
                             }
                           });

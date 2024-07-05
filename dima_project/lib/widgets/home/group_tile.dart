@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 class GroupTile extends StatefulWidget {
   final String uuid;
   final Group group;
-  final bool isJoined;
+  final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
   const GroupTile({
     super.key,
     required this.uuid,
@@ -28,8 +28,7 @@ class GroupTileState extends State<GroupTile> {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              if (widget.isJoined) {
-                // Updated this condition
+              if (widget.isJoined == 1) {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
@@ -72,7 +71,11 @@ class GroupTileState extends State<GroupTile> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(
-                widget.isJoined ? "Joined" : "Join Now", // Updated this text
+                widget.isJoined == 1
+                    ? "Joined"
+                    : widget.isJoined == 2
+                        ? "Requested"
+                        : "Join",
                 style: const TextStyle(color: CupertinoColors.white),
               ),
             ),

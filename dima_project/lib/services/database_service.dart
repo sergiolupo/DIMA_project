@@ -158,6 +158,8 @@ class DatabaseService {
         'recentMessageTime': "",
         'members': FieldValue.arrayUnion([group.admin]),
         'categories': serializedList,
+        'isPublic': group.isPublic,
+        'requests': [],
       });
 
       String imageUrl = imagePath.toString() == '[]'
@@ -285,14 +287,22 @@ class DatabaseService {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
       }
     } else {
-      await Future.wait([
-        groupsRef.doc(groupId).update({
-          'members': FieldValue.arrayUnion([uuidUser])
-        }),
-        usersRef.doc(uuidVisitor).update({
-          'groups': FieldValue.arrayUnion([groupId])
-        }),
-      ]);
+      if (groupDoc['isPublic']) {
+        await Future.wait([
+          groupsRef.doc(groupId).update({
+            'members': FieldValue.arrayUnion([uuidUser])
+          }),
+          usersRef.doc(uuidVisitor).update({
+            'groups': FieldValue.arrayUnion([groupId])
+          }),
+        ]);
+      } else {
+        if (!groupDoc['requests'].contains(uuidUser)) {
+          await groupsRef.doc(groupId).update({
+            'requests': FieldValue.arrayUnion([uuidUser])
+          });
+        }
+      }
     }
   }
 

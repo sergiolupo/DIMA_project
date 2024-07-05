@@ -25,7 +25,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   final imageInsertPageKey = GlobalKey<ImageInsertFormState>();
   List<String> selectedCategories = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  bool isPublic = true;
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -174,6 +174,23 @@ class CreateGroupPageState extends State<CreateGroupPage> {
             },
           ),
         ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            const Text('Public group', style: TextStyle(fontSize: 16)),
+            const SizedBox(width: 10),
+            CupertinoSwitch(
+              value: isPublic,
+              onChanged: (bool value) {
+                setState(() {
+                  setState(() {
+                    isPublic = value;
+                  });
+                });
+              },
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -217,7 +234,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               id: '',
               admin: widget.uuid,
               description: _groupDescriptionController.text,
-              categories: selectedCategories),
+              categories: selectedCategories,
+              isPublic: isPublic),
           selectedImagePath,
         );
       }

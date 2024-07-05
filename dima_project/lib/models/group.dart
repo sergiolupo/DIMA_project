@@ -10,6 +10,8 @@ class Group {
   final List<String>? categories;
   LastMessage? lastMessage;
   final List<String>? members;
+  final bool isPublic;
+  final List<String>? requests;
   Group({
     required this.name,
     required this.id,
@@ -19,6 +21,8 @@ class Group {
     this.categories,
     this.lastMessage,
     this.members,
+    required this.isPublic,
+    this.requests,
   });
 
   static Group fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -41,6 +45,11 @@ class Group {
             ),
       members: (documentSnapshot['members'] as List<dynamic>)
           .map((member) => member.toString())
+          .toList()
+          .cast<String>(),
+      isPublic: documentSnapshot['isPublic'],
+      requests: (documentSnapshot['requests'] as List<dynamic>)
+          .map((request) => request.toString())
           .toList()
           .cast<String>(),
     );
