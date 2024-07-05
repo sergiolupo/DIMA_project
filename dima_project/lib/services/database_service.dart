@@ -848,6 +848,12 @@ class DatabaseService {
     });
   }
 
+  static Stream getNumberOfGroupRequests(String id) {
+    return groupsRef.doc(id).snapshots().map((snapshot) {
+      return snapshot['requests'].length;
+    }).asBroadcastStream(); // Add asBroadcastStream()
+  }
+
   static Future<void> denyGroupRequest(String groupId, String uuid) async {
     return await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])

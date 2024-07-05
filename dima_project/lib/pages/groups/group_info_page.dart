@@ -27,6 +27,7 @@ class GroupInfoPage extends StatefulWidget {
 class GroupInfoPageState extends State<GroupInfoPage> {
   Stream<List<dynamic>>? _membersStream;
   Stream<int>? _numberOfRequestsStream;
+  String? _admin;
   @override
   void initState() {
     super.initState();
@@ -46,13 +47,15 @@ class GroupInfoPageState extends State<GroupInfoPage> {
     final admin =
         (await DatabaseService.getUserData(widget.group.admin!)).username;
     setState(() {
-      widget.group.admin = admin;
+      _admin = admin;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _membersStream == null
+    return _membersStream == null ||
+            _numberOfRequestsStream == null ||
+            _admin == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -84,9 +87,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         decoration: const BoxDecoration(
                           color: CupertinoColors.white,
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: CupertinoColors.systemGrey)),
                         ),
                         child: Column(
                           children: [
@@ -108,7 +108,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                       ),
                                     ),
                                     Text(
-                                      "Admin: ${widget.group.admin}",
+                                      "Admin: ${_admin!}",
                                       style: const TextStyle(
                                         fontSize: 16,
                                         color: CupertinoColors.systemGrey,
@@ -118,81 +118,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text(
-                                  "Description: ",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  widget.group.description!,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            if (!widget.group.isPublic)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    CupertinoPageRoute(
-                                      builder: (context) => GroupRequestsPage(
-                                        groupId: widget.group.id,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Requests: ",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    StreamBuilder<int>(
-                                      stream: _numberOfRequestsStream,
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const CupertinoActivityIndicator();
-                                        }
-                                        if (snapshot.hasError) {
-                                          return Text(
-                                              'Error: ${snapshot.error}');
-                                        }
-                                        final requests = snapshot.data;
-                                        return ClipOval(
-                                          child: Container(
-                                            color: CupertinoTheme.of(context)
-                                                .primaryColor,
-                                            child: Text(
-                                              requests.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.normal,
-                                                color: CupertinoColors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
                             const SizedBox(height: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,9 +146,111 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                       ))
                                   .toList(),
                             ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Text(
+                                  "Description: ",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  widget.group.description!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            if (!widget.group.isPublic &&
+                                widget.group.admin == widget.uuid)
+                              StreamBuilder<int>(
+                                stream: _numberOfRequestsStream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CupertinoActivityIndicator();
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+                                  final requests = snapshot.data;
+                                  return CupertinoListTile(
+                                    padding: const EdgeInsets.all(0),
+                                    title: const Row(
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.bell,
+                                          color: CupertinoColors.black,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text("Requests"),
+                                      ],
+                                    ),
+                                    trailing: Row(
+                                      children: [
+                                        int.parse(requests.toString()) > 0
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Container(
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .primaryColor,
+                                                  child: Text(
+                                                    requests.toString(),
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color:
+                                                          CupertinoColors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Icon(
+                                          CupertinoIcons.right_chevron,
+                                          color: CupertinoColors.black,
+                                          size: 18,
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              GroupRequestsPage(
+                                            groupId: widget.group.id,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            const SizedBox(height: 10),
                           ],
                         ),
                       ),
+                      const Text(
+                        "Members",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 15),
                       Container(
                         constraints: const BoxConstraints(
                             maxHeight: 300), // Limit height of ListView

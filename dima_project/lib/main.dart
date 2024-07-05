@@ -53,7 +53,7 @@ final GoRouter _router = GoRouter(
       path: '/chat',
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
-        Group? group = data['group'] as Group?;
+        Group? group = data['group'] as Group;
         String uuid = data['uuid'] as String;
         return GroupChatPage(
           group: group,

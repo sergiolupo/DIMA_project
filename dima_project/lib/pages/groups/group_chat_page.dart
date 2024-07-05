@@ -16,7 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupChatPage extends StatefulWidget {
-  final Group? group;
+  final Group group;
   final String uuid;
 
   const GroupChatPage({
@@ -41,7 +41,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void getChats() {
-    chats = DatabaseService.getChats(widget.group!.id);
+    chats = DatabaseService.getChats(widget.group.id);
   }
 
   @override
@@ -50,10 +50,10 @@ class GroupChatPageState extends State<GroupChatPage> {
       navigationBar: CupertinoNavigationBar(
         middle: Row(
           children: [
-            CreateImageWidget.getGroupImage(widget.group!.imagePath!,
+            CreateImageWidget.getGroupImage(widget.group.imagePath!,
                 small: true),
             const SizedBox(width: 10),
-            Text(widget.group!.name, style: const TextStyle(fontSize: 16)),
+            Text(widget.group.name, style: const TextStyle(fontSize: 16)),
           ],
         ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
@@ -73,7 +73,7 @@ class GroupChatPageState extends State<GroupChatPage> {
               CupertinoPageRoute(
                 builder: (context) => GroupInfoPage(
                   uuid: widget.uuid,
-                  group: widget.group!,
+                  group: widget.group,
                 ),
               ),
             );
@@ -146,7 +146,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                             final bytes = await image.readAsBytes();
                             await DatabaseService.sendChatImage(
                               widget.uuid,
-                              widget.group!.id,
+                              widget.group.id,
                               File(image.path),
                               true,
                               Uint8List.fromList(bytes),
@@ -173,7 +173,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                           final bytes = await image.readAsBytes();
                           await DatabaseService.sendChatImage(
                             widget.uuid,
-                            widget.group!.id,
+                            widget.group.id,
                             File(image.path),
                             true,
                             Uint8List.fromList(bytes),
@@ -302,7 +302,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         type: Type.text,
       );
 
-      DatabaseService.sendMessage(widget.group!.id, message);
+      DatabaseService.sendMessage(widget.group.id, message);
 
       setState(() {
         messageEditingController.clear();
