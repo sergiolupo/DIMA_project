@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/group_message_tile.dart';
@@ -68,9 +69,13 @@ class GroupChatPageState extends State<GroupChatPage> {
         ),
         trailing: CupertinoButton(
           onPressed: () {
-            context.go(
-              "/groupinfo",
-              extra: {"group": widget.group, "uuid": widget.uuid},
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => GroupInfoPage(
+                  uuid: widget.uuid,
+                  group: widget.group!,
+                ),
+              ),
             );
           },
           child: const Icon(

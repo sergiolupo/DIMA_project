@@ -67,7 +67,7 @@ final GoRouter _router = GoRouter(
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group group = data['group'] as Group;
         String uuid = data['uuid'] as String;
-        return GroupInfo(group: group, uuid: uuid);
+        return GroupInfoPage(group: group, uuid: uuid);
       },
     ),
     GoRoute(

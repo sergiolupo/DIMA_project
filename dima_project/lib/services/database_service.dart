@@ -301,6 +301,10 @@ class DatabaseService {
           await groupsRef.doc(groupId).update({
             'requests': FieldValue.arrayUnion([uuidUser])
           });
+        } else {
+          await groupsRef.doc(groupId).update({
+            'requests': FieldValue.arrayRemove([uuidUser])
+          });
         }
       }
     }
@@ -836,5 +840,29 @@ class DatabaseService {
     } else {
       return false;
     }
+  }
+
+  static Stream<List<dynamic>> getGroupRequests(String id) {
+    return groupsRef.doc(id).snapshots().map((snapshot) {
+      return snapshot['requests'];
+    });
+  }
+
+  static Future<void> denyGroupRequest(String groupId, String uuid) async {
+    return await groupsRef.doc(groupId).update({
+      'requests': FieldValue.arrayRemove([uuid])
+    });
+  }
+
+  static Future<void> acceptGroupRequest(String groupId, String uuid) async {
+    await Future.wait([
+      groupsRef.doc(groupId).update({
+        'members': FieldValue.arrayUnion([uuid]),
+        'requests': FieldValue.arrayRemove([uuid])
+      }),
+      usersRef.doc(uuid).update({
+        'groups': FieldValue.arrayUnion([groupId])
+      }),
+    ]);
   }
 }
