@@ -281,10 +281,53 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
+              bool isSameDate = false;
+              String? newDate = '';
 
-              return PrivateMessageTile(
-                uuid: widget.uuid,
-                message: message,
+              // Convert timestamp to DateTime
+              final DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(
+                  message.time.seconds * 1000);
+
+              // Format the date
+              final String date = DateUtil.formatDateBasedOnToday(messageDate);
+              if (index == snapshot.data!.length - 1) {
+                newDate = date;
+              } else {
+                final String prevDate = DateUtil.formatDateBasedOnToday(
+                    DateTime.fromMillisecondsSinceEpoch(
+                        snapshot.data![index + 1].time.seconds * 1000));
+                isSameDate = date == prevDate;
+                newDate = isSameDate ? '' : date;
+              }
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    newDate.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipOval(
+                              child: Container(
+                                color: CupertinoColors.systemGrey3,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  newDate,
+                                  style: const TextStyle(
+                                    color: CupertinoColors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    PrivateMessageTile(
+                      uuid: widget.uuid,
+                      message: message,
+                    ),
+                  ],
+                ),
               );
             },
           );

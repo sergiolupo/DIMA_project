@@ -6,6 +6,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/group_message_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -210,21 +211,65 @@ class GroupChatPageState extends State<GroupChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
-              return StreamBuilder(
-                stream: DatabaseService.getUserDataFromUUID(message.sender),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final user = snapshot.data as UserData;
-                    message.senderImage = user.imagePath;
-                    return GroupMessageTile(
-                      uuid: widget.uuid,
-                      message: message,
-                      senderUsername: user.username,
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
+              bool isSameDate = false;
+              String? newDate = '';
+
+              // Convert timestamp to DateTime
+              final DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(
+                  message.time.seconds * 1000);
+
+              // Format the date
+              final String date = DateUtil.formatDateBasedOnToday(messageDate);
+              if (index == snapshot.data!.length - 1) {
+                newDate = date;
+              } else {
+                final String prevDate = DateUtil.formatDateBasedOnToday(
+                    DateTime.fromMillisecondsSinceEpoch(
+                        snapshot.data![index + 1].time.seconds * 1000));
+                isSameDate = date == prevDate;
+                newDate = isSameDate ? '' : date;
+              }
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    newDate.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipOval(
+                              child: Container(
+                                color: CupertinoColors.systemGrey3,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  newDate,
+                                  style: const TextStyle(
+                                    color: CupertinoColors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    StreamBuilder(
+                      stream:
+                          DatabaseService.getUserDataFromUUID(message.sender),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final user = snapshot.data as UserData;
+                          message.senderImage = user.imagePath;
+                          return GroupMessageTile(
+                            uuid: widget.uuid,
+                            message: message,
+                            senderUsername: user.username,
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    )
+                  ],
+                ),
               );
             },
           );

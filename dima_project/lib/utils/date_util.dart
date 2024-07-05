@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class DateUtil {
   static String getFormattedTime(
@@ -72,5 +73,23 @@ class DateUtil {
 
   static String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  static String formatDateBasedOnToday(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
+      return 'Today';
+    } else if (date.year == yesterday.year &&
+        date.month == yesterday.month &&
+        date.day == yesterday.day) {
+      return 'Yesterday';
+    } else {
+      return DateFormat.yMMMd().format(date);
+    }
   }
 }
