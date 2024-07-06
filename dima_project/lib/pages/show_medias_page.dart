@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/pages/media_view_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,18 +97,29 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                               itemCount: mediasForDate.length,
                               itemBuilder: (context, index) {
                                 final message = mediasForDate[index];
-                                return Container(
-                                  width: 100,
-                                  height: 100,
-                                  color: CupertinoColors.lightBackgroundGray,
-                                  child: CachedNetworkImage(
-                                    imageUrl: message.content,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) =>
-                                        const CupertinoActivityIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(CupertinoIcons.photo_fill),
+                                return GestureDetector(
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    color: CupertinoColors.lightBackgroundGray,
+                                    child: CachedNetworkImage(
+                                      imageUrl: message.content,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const CupertinoActivityIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(CupertinoIcons.photo_fill),
+                                    ),
                                   ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => MediaViewPage(
+                                          media: message,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             ),
