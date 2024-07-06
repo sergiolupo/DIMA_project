@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_requests_page.dart';
+import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
@@ -27,6 +28,7 @@ class GroupInfoPage extends StatefulWidget {
 class GroupInfoPageState extends State<GroupInfoPage> {
   Stream<List<dynamic>>? _membersStream;
   Stream<int>? _numberOfRequestsStream;
+  Stream<int>? _numberOfMediaStream;
   String? _admin;
   @override
   void initState() {
@@ -41,6 +43,11 @@ class GroupInfoPageState extends State<GroupInfoPage> {
         DatabaseService.getGroupRequests(widget.group.id).map((event) {
       return event.length;
     });
+    _numberOfMediaStream = DatabaseService.getGroupMedia(widget.group.id).map(
+      (event) {
+        return event.length;
+      },
+    );
   }
 
   void init() async {
@@ -238,6 +245,73 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   );
                                 },
                               ),
+                            StreamBuilder<int>(
+                              stream: _numberOfMediaStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CupertinoActivityIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final media = snapshot.data;
+                                return CupertinoListTile(
+                                  padding: const EdgeInsets.all(0),
+                                  title: const Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.photo_on_rectangle,
+                                        color: CupertinoColors.black,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text("Media"),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    children: [
+                                      int.parse(media.toString()) > 0
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Container(
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .primaryColor,
+                                                child: Text(
+                                                  media.toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color:
+                                                        CupertinoColors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                      const SizedBox(width: 10),
+                                      const Icon(
+                                        CupertinoIcons.right_chevron,
+                                        color: CupertinoColors.black,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () => {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowMediasPage(
+                                          id: widget.group.id,
+                                          isGroup: true,
+                                        ),
+                                      ),
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
                             const SizedBox(height: 10),
                           ],
                         ),

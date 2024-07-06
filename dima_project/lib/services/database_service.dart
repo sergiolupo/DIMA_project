@@ -848,12 +848,6 @@ class DatabaseService {
     });
   }
 
-  static Stream getNumberOfGroupRequests(String id) {
-    return groupsRef.doc(id).snapshots().map((snapshot) {
-      return snapshot['requests'].length;
-    }).asBroadcastStream(); // Add asBroadcastStream()
-  }
-
   static Future<void> denyGroupRequest(String groupId, String uuid) async {
     return await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])
@@ -870,5 +864,17 @@ class DatabaseService {
         'groups': FieldValue.arrayUnion([groupId])
       }),
     ]);
+  }
+
+  static Stream<List<dynamic>> getGroupMedia(String id) {
+    return groupsRef
+        .doc(id)
+        .collection('messages')
+        .where("type", isEqualTo: 'Type.image')
+        .orderBy('time', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs;
+    });
   }
 }

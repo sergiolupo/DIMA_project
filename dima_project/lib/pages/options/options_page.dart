@@ -28,23 +28,6 @@ class OptionsPageState extends State<OptionsPage> {
       child: SafeArea(
         child: ListView(
           children: [
-            /*Container(
-              color: CupertinoColors.systemBlue,
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  ClipOval(
-                      child: CreateImageWidget.getUserImage(
-                          widget.user.imagePath!)),
-                  SizedBox(height: 10),
-                  Text(widget.user.name,
-                      style: TextStyle(color: CupertinoColors.white)),
-                  Text(widget.user.email,
-                      style: TextStyle(color: CupertinoColors.white)),
-                  SizedBox(height: 20),
-                ],
-              ),
-            ),*/
             CupertinoListSection(
               children: [
                 CupertinoListTile(
@@ -66,10 +49,6 @@ class OptionsPageState extends State<OptionsPage> {
                   leading: Icon(CupertinoIcons.bell),
                   title: Text('Request'),
                 ),
-              ],
-            ),
-            CupertinoListSection(
-              children: [
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.settings),
                   title: const Text('Settings'),
@@ -83,10 +62,6 @@ class OptionsPageState extends State<OptionsPage> {
                   title: const Text('Policies'),
                   onTap: () => {},
                 ),
-              ],
-            ),
-            CupertinoListSection(
-              children: [
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
                   title: const Text('Exit'),
