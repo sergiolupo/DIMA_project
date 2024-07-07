@@ -51,5 +51,10 @@
 	<string>Camera usage</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone usage</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to provide better service.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>We need your location to provide better service.</string>
+
 </dict>
 </plist>

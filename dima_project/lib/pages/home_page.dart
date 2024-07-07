@@ -1,3 +1,4 @@
+import 'package:dima_project/pages/create_event_page.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
@@ -103,7 +104,7 @@ class HomePageState extends State<HomePage> {
                   );
                   break;
                 case 2:
-                  page = _buildCreatePage(context);
+                  page = CreateEventPage(uuid: uuid!);
                   break;
                 case 3:
                   page = SearchPage(
@@ -147,31 +148,6 @@ class HomePageState extends State<HomePage> {
       child: Center(
         child: Text(
           'News Page',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCreatePage(BuildContext context) {
-    return const CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Create',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'Create Page',
           style: TextStyle(
             fontSize: 24, // Adjust font size as needed
             fontWeight: FontWeight.bold, // Adjust font weight as needed
