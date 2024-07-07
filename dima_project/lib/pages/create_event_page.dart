@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:dima_project/widgets/events/date_picker.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
@@ -135,6 +136,11 @@ class CreateEventPageState extends State<CreateEventPage> {
                                   debugPrint('Selected date: $dateString');
                                 })),
                         placeholder: dateString == '' ? 'Date' : dateString,
+                        placeholderStyle: const TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       CupertinoTextFormFieldRow(
                         readOnly: true,
@@ -146,6 +152,11 @@ class CreateEventPageState extends State<CreateEventPage> {
                                   debugPrint('Selected time: $time');
                                 })),
                         placeholder: timeString == '' ? 'Time' : timeString,
+                        placeholderStyle: const TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       CupertinoTextFormFieldRow(
                         readOnly: true,
@@ -160,7 +171,12 @@ class CreateEventPageState extends State<CreateEventPage> {
                           onPressed: () => _selectLocation(context),
                         ),
                         placeholder: location == '' ? 'Location' : location,
-                      )
+                        placeholderStyle: const TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ]),
                 const SizedBox(height: 100),
                 Row(
@@ -200,13 +216,19 @@ class CreateEventPageState extends State<CreateEventPage> {
   Future<void> _selectLocation(BuildContext context) async {
     final result = await Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (context) => const LocationPage(),
+        builder: (context) => LocationPage(
+          initialLocation: _selectedLocation,
+        ),
       ),
     );
 
     if (result != null && result is LatLng) {
+      var loc = await EventService.getAddressFromLatLng(result);
+
       setState(() {
         _selectedLocation = result;
+        location = loc!;
+        debugPrint('Selected location: $location');
         debugPrint('Selected location: $_selectedLocation');
       });
     }

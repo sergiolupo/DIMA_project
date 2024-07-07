@@ -1,20 +1,18 @@
 import 'package:dima_project/services/event_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 class LocationPage extends StatefulWidget {
-  const LocationPage({super.key});
+  final LatLng? initialLocation;
+  const LocationPage({super.key, required this.initialLocation});
 
   @override
   LocationPageState createState() => LocationPageState();
 }
 
 class LocationPageState extends State<LocationPage> {
-  Position? initialPosition;
   LatLng? selectedLocation;
-
   @override
   void initState() {
     initPosition();
@@ -22,15 +20,22 @@ class LocationPageState extends State<LocationPage> {
   }
 
   initPosition() async {
-    Position pos = await EventService.getCurrentLocation();
-    setState(() {
-      initialPosition = pos;
-    });
+    debugPrint('Initial position: ${widget.initialLocation}');
+    if (widget.initialLocation != null) {
+      setState(() {
+        selectedLocation = widget.initialLocation;
+      });
+    } else {
+      LatLng pos = await EventService.getCurrentLocation();
+      setState(() {
+        selectedLocation = pos;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return initialPosition == null
+    return selectedLocation == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -45,8 +50,7 @@ class LocationPageState extends State<LocationPage> {
               children: [
                 FlutterMap(
                     options: MapOptions(
-                      initialCenter: LatLng(initialPosition!.latitude,
-                          initialPosition!.longitude),
+                      initialCenter: selectedLocation!,
                       initialZoom: 11,
                       interactionOptions:
                           const InteractionOptions(flags: InteractiveFlag.all),
