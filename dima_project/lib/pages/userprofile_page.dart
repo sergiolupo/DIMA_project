@@ -96,7 +96,7 @@ class UserProfileState extends State<UserProfile> {
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>
-                                      OptionsPage(user: user))),
+                                      OptionsPage(uuid: widget.uuid))),
                           child: const Icon(CupertinoIcons.bars,
                               color: CupertinoColors.black),
                         )

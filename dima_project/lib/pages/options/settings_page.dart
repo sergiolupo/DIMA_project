@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/storage_service.dart';
@@ -8,8 +7,9 @@ import 'package:dima_project/widgets/auth/imageform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class SettingsPage extends StatefulWidget {
-  final UserData user;
-  const SettingsPage({super.key, required this.user});
+  final String uuid;
+  const SettingsPage({super.key, required this.uuid});
+
   @override
   SettingsPageState createState() => SettingsPageState();
 }
@@ -19,42 +19,51 @@ class SettingsPageState extends State<SettingsPage> {
   Uint8List? selectedImagePath;
   int _currentPage = 1;
   List<String> selectedCategories = [];
-  late final TextEditingController _nameController;
-  late final TextEditingController _surnameController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-  late final TextEditingController _usernameController;
-  late final String _oldEmail;
-  late final String _oldUsername;
-  late final Uint8List _oldImage;
+  late TextEditingController _nameController;
+  late TextEditingController _surnameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _usernameController;
+  late String _oldEmail;
+  late String _oldUsername;
+  late Uint8List _oldImage;
   bool isPublic = true;
+  UserData? user;
 
   @override
   void initState() {
-    _oldEmail = widget.user.email;
-    _oldUsername = widget.user.username;
-    _nameController = TextEditingController(text: widget.user.name);
-    _surnameController = TextEditingController(text: widget.user.surname);
-    _emailController = TextEditingController(text: widget.user.email);
-    _passwordController = TextEditingController();
-    _usernameController = TextEditingController(text: widget.user.username);
-    isPublic = widget.user.isPublic!;
-    selectedCategories = widget.user.categories;
-    getImageProfile();
     super.initState();
+    _initializeUserData();
   }
 
-  getImageProfile() async {
-    await StorageService.downloadImageFromStorage(widget.user.imagePath!)
-        .then((image) {
+  Future<void> _initializeUserData() async {
+    user = await DatabaseService.getUserData(widget.uuid);
+    if (user != null) {
       setState(() {
-        selectedImagePath = image;
-        _oldImage = image;
+        _oldEmail = user!.email;
+        _oldUsername = user!.username;
+        _nameController = TextEditingController(text: user!.name);
+        _surnameController = TextEditingController(text: user!.surname);
+        _emailController = TextEditingController(text: user!.email);
+        _passwordController = TextEditingController();
+        _usernameController = TextEditingController(text: user!.username);
+        isPublic = user!.isPublic ?? true;
+        selectedCategories = user!.categories;
       });
+      await _fetchProfileImage();
+    }
+  }
+
+  Future<void> _fetchProfileImage() async {
+    final image =
+        await StorageService.downloadImageFromStorage(user!.imagePath!);
+    setState(() {
+      selectedImagePath = image;
+      _oldImage = image;
     });
   }
 
-  void toggleObscure() {
+  void _toggleObscure() {
     setState(() {
       isObscure = !isObscure;
     });
@@ -62,260 +71,70 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget page;
-    switch (_currentPage) {
-      case 1:
-        page = firstPage();
-        break;
-      case 2:
-        page = secondPage();
-        break;
-      default:
-        page = firstPage();
-    }
-    return selectedImagePath == null
-        ? const Center(
-            child: CupertinoActivityIndicator(),
-          )
+    return selectedImagePath == null || user == null
+        ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               backgroundColor: CupertinoColors.systemPink,
               middle: const Text('Settings'),
               leading: CupertinoButton(
-                onPressed: () => {
-                  if (_currentPage == 1)
-                    {
-                      Navigator.of(context).pop(),
-                    }
-                  else
-                    {
-                      setState(() {
-                        _currentPage = 1;
-                      })
-                    }
-                },
+                onPressed: () => _currentPage == 1
+                    ? Navigator.of(context).pop()
+                    : setState(() => _currentPage = 1),
                 padding: const EdgeInsets.only(left: 10),
                 color: CupertinoColors.systemPink,
                 child: const Icon(CupertinoIcons.back),
               ),
             ),
-            child: Container(
-              padding: const EdgeInsets.only(left: 15, top: 20, right: 15),
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                child: ListView(
-                  children: [
-                    page,
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CupertinoButton(
-                          onPressed: () async {
-                            if (_currentPage == 1) {
-                              if (_nameController.text.isEmpty ||
-                                  _surnameController.text.isEmpty ||
-                                  _emailController.text.isEmpty ||
-                                  _passwordController.text.isEmpty ||
-                                  _usernameController.text.isEmpty) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return CupertinoAlertDialog(
-                                      title: const Text('Invalid choice'),
-                                      content: const Text(
-                                          'Please fill all the fields'),
-                                      actions: <CupertinoDialogAction>[
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                                return;
-                              }
-                              if (_oldEmail != _emailController.text) {
-                                //check if the mail is valid
-                                bool isEmailTaken =
-                                    await DatabaseService.isEmailTaken(
-                                        _emailController.text);
-
-                                if (isEmailTaken) {
-                                  debugPrint('Email is already taken');
-                                  if (!context.mounted) return;
-                                  showCupertinoDialog(
-                                    context: context,
-                                    builder: (context) => CupertinoAlertDialog(
-                                      title: const Text('Invalid choice'),
-                                      content:
-                                          const Text('Email is already taken.'),
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                final RegExp emailRegex = RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                  caseSensitive: false,
-                                  multiLine: false,
-                                );
-                                if (!emailRegex
-                                    .hasMatch(_emailController.text)) {
-                                  debugPrint('Invalid email');
-                                  if (!context.mounted) return;
-                                  showCupertinoDialog(
-                                    context: context,
-                                    builder: (context) => CupertinoAlertDialog(
-                                      title: const Text('Invalid choice'),
-                                      content: const Text('Invalid email.'),
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  return;
-                                }
-                              }
-                              if (_oldUsername != _usernameController.text) {
-                                //check if the username is valid
-                                bool isUsernameTaken =
-                                    await DatabaseService.isUsernameTaken(
-                                        _usernameController.text);
-                                if (isUsernameTaken) {
-                                  debugPrint('Username is already taken');
-                                  if (!context.mounted) return;
-                                  showCupertinoDialog(
-                                    context: context,
-                                    builder: (context) => CupertinoAlertDialog(
-                                      title: const Text('Invalid choice'),
-                                      content: const Text(
-                                          'Username is already taken.'),
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  return;
-                                }
-                              }
-                              if (_passwordController.text.length < 6) {
-                                debugPrint('Password is too short');
-                                if (!context.mounted) return;
-                                showCupertinoDialog(
-                                  context: context,
-                                  builder: (context) => CupertinoAlertDialog(
-                                    title: const Text('Invalid choice'),
-                                    content: const Text(
-                                        'Password must be at least 6 characters long.'),
-                                    actions: [
-                                      CupertinoDialogAction(
-                                        child: const Text('OK'),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                                return;
-                              }
-                              setState(() {
-                                _currentPage = 2;
-                              });
-                            } else {
-                              // Save the user data
-                              if (selectedCategories.isEmpty) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return CupertinoAlertDialog(
-                                      title: const Text('Invalid choice'),
-                                      content: const Text(
-                                          'Please select at least one category'),
-                                      actions: <CupertinoDialogAction>[
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                                return;
-                              } else {
-                                await DatabaseService.updateUserInformation(
-                                  UserData(
-                                    categories: selectedCategories,
-                                    password: _passwordController.text,
-                                    email: _emailController.text,
-                                    name: _nameController.text,
-                                    surname: _surnameController.text,
-                                    username: _usernameController.text,
-                                    uuid: widget.user.uuid,
-                                    isPublic: isPublic,
-                                  ),
-                                  selectedImagePath!,
-                                  _oldImage == selectedImagePath ? false : true,
-                                  widget.user.isPublic! != isPublic,
-                                );
-                              }
-                              if (!context.mounted) return;
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          color: CupertinoColors.systemPink,
-                          borderRadius: BorderRadius.circular(20),
-                          child: Text(
-                            _currentPage == 1 ? 'NEXT' : 'SAVE',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              letterSpacing: 2,
-                              color: CupertinoColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                children: [
+                  _currentPage == 1 ? _buildFirstPage() : _buildSecondPage(),
+                  const SizedBox(height: 20),
+                  _buildActionButton(),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           );
   }
 
+  Widget _buildFirstPage() {
+    return Column(
+      children: [
+        ImageInsertForm(
+          imageForGroup: false,
+          imagePath: selectedImagePath,
+          imageInsertPageKey: (Uint8List selectedImagePath) {
+            setState(() {
+              this.selectedImagePath = selectedImagePath;
+            });
+          },
+        ),
+        const SizedBox(height: 30),
+        _buildTextField('Name', user!.name, false, _nameController),
+        _buildTextField('Surname', user!.surname, false, _surnameController),
+        _buildTextField('Username', user!.username, false, _usernameController),
+        _buildPublicProfileSwitch(),
+        const SizedBox(height: 20),
+        _buildTextField('Email', user!.email, false, _emailController),
+        _buildTextField(
+            'Password', user!.password, isObscure, _passwordController),
+      ],
+    );
+  }
+
+  Widget _buildSecondPage() {
+    return CategorySelectionForm(
+      selectedCategories: selectedCategories,
+    );
+  }
+
   Widget _buildTextField(String labelText, String? placeholder, bool isObscure,
       TextEditingController controller) {
-    // Determine whether to show the eye icon based on the labelText
-    bool showEyeIcon = labelText == 'Password';
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 30),
       child: Column(
@@ -324,10 +143,9 @@ class SettingsPageState extends State<SettingsPage> {
           Text(
             labelText,
             style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: CupertinoColors.systemGrey,
-            ),
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: CupertinoColors.systemGrey),
           ),
           const SizedBox(height: 5),
           CupertinoTextField(
@@ -335,24 +153,15 @@ class SettingsPageState extends State<SettingsPage> {
             controller: controller,
             padding: const EdgeInsets.all(15),
             obscureText: isObscure,
-            suffix: showEyeIcon
-                ? isObscure
-                    ? CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: toggleObscure,
-                        child: const Icon(
-                          CupertinoIcons.eye_slash,
-                          color: CupertinoColors.systemGrey,
-                        ),
-                      )
-                    : CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: toggleObscure,
-                        child: const Icon(
-                          CupertinoIcons.eye,
-                          color: CupertinoColors.systemGrey,
-                        ),
-                      )
+            suffix: labelText == 'Password'
+                ? CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: _toggleObscure,
+                    child: Icon(
+                      isObscure ? CupertinoIcons.eye_slash : CupertinoIcons.eye,
+                      color: CupertinoColors.systemGrey,
+                    ),
+                  )
                 : null,
             decoration: BoxDecoration(
               border: Border.all(color: CupertinoColors.systemGrey),
@@ -364,73 +173,153 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget firstPage() {
-    return Column(
+  Widget _buildPublicProfileSwitch() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        widget.user.imagePath != null
-            ? ImageInsertForm(
-                imageForGroup: false,
-                imagePath: selectedImagePath,
-                imageInsertPageKey: (Uint8List selectedImagePath) {
-                  this.selectedImagePath = selectedImagePath;
-                },
-              )
-            : ImageInsertForm(
-                imageForGroup: false,
-                imagePath: selectedImagePath,
-                imageInsertPageKey: (Uint8List selectedImagePath) {
-                  this.selectedImagePath = selectedImagePath;
-                },
-              ),
-        const SizedBox(
-          height: 30,
+        const Text(
+          'Public Profile',
+          style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: CupertinoColors.systemGrey),
         ),
-        _buildTextField('Name', widget.user.name, false, _nameController),
-        _buildTextField(
-            'Surname', widget.user.surname, false, _surnameController),
-        _buildTextField(
-            'Username', widget.user.username, false, _usernameController),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Public Profile',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: CupertinoColors.systemGrey,
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Transform.scale(
-              scale:
-                  0.75, // Adjust this value to make the switch smaller or larger
-              child: CupertinoSwitch(
-                value: isPublic,
-                onChanged: (bool value) {
-                  setState(() {
-                    isPublic = value;
-                  });
-                },
-              ),
-            )
-          ],
+        const SizedBox(width: 10),
+        Transform.scale(
+          scale: 0.75,
+          child: CupertinoSwitch(
+            value: isPublic,
+            onChanged: (bool value) {
+              setState(() {
+                isPublic = value;
+              });
+            },
+          ),
         ),
-        const SizedBox(
-          height: 20,
-        ),
-        _buildTextField('Email', widget.user.email, false, _emailController),
-        _buildTextField(
-            'Password', widget.user.password, isObscure, _passwordController),
       ],
     );
   }
 
-  Widget secondPage() {
-    return CategorySelectionForm(
-      selectedCategories: selectedCategories,
+  Widget _buildActionButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CupertinoButton(
+          onPressed: _handleActionButtonPress,
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+          color: CupertinoColors.systemPink,
+          borderRadius: BorderRadius.circular(20),
+          child: Text(
+            _currentPage == 1 ? 'NEXT' : 'SAVE',
+            style: const TextStyle(
+                fontSize: 15,
+                letterSpacing: 2,
+                color: CupertinoColors.white,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handleActionButtonPress() async {
+    if (_currentPage == 1) {
+      if (await _validateFirstPage()) {
+        setState(() {
+          _currentPage = 2;
+        });
+      }
+    } else {
+      if (selectedCategories.isEmpty) {
+        _showDialog('Invalid choice', 'Please select at least one category');
+      } else {
+        await _saveUserData();
+        if (mounted) Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<bool> _validateFirstPage() async {
+    if (_nameController.text.isEmpty ||
+        _surnameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _usernameController.text.isEmpty) {
+      _showDialog('Invalid choice', 'Please fill all the fields');
+      return false;
+    }
+    if (_oldEmail != _emailController.text &&
+        !_validateEmail(_emailController.text)) {
+      _showDialog('Invalid choice', 'Invalid email.');
+      return false;
+    }
+    if (_oldUsername != _usernameController.text &&
+        !await _validateUsername(_usernameController.text)) {
+      _showDialog('Invalid choice', 'Username is already taken.');
+      return false;
+    }
+    if (_passwordController.text.length < 6) {
+      _showDialog(
+          'Invalid choice', 'Password must be at least 6 characters long.');
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateEmail(String email) {
+    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+        caseSensitive: false, multiLine: false);
+    if (!emailRegex.hasMatch(email)) {
+      debugPrint('Invalid email');
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> _validateUsername(String username) async {
+    final isUsernameTaken = await DatabaseService.isUsernameTaken(username);
+    if (isUsernameTaken) {
+      debugPrint('Username is already taken');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _saveUserData() async {
+    await DatabaseService.updateUserInformation(
+      UserData(
+        categories: selectedCategories,
+        password: _passwordController.text,
+        email: _emailController.text,
+        name: _nameController.text,
+        surname: _surnameController.text,
+        username: _usernameController.text,
+        uuid: user!.uuid,
+        isPublic: isPublic,
+      ),
+      selectedImagePath!,
+      _oldImage != selectedImagePath,
+      user!.isPublic != isPublic,
+    );
+  }
+
+  void _showDialog(String title, String content) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <CupertinoDialogAction>[
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

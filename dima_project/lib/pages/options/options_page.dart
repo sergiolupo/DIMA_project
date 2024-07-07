@@ -1,4 +1,3 @@
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/pages/requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -7,8 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class OptionsPage extends StatefulWidget {
-  final UserData user;
-  const OptionsPage({super.key, required this.user});
+  final String uuid;
+  const OptionsPage({super.key, required this.uuid});
   @override
   OptionsPageState createState() => OptionsPageState();
 }
@@ -22,8 +21,7 @@ class OptionsPageState extends State<OptionsPage> {
   }
 
   init() {
-    _numFollowRequests =
-        DatabaseService.getFollowRequests(widget.user.uuid!).map(
+    _numFollowRequests = DatabaseService.getFollowRequests(widget.uuid).map(
       (event) {
         return event.length;
       },
@@ -70,7 +68,7 @@ class OptionsPageState extends State<OptionsPage> {
                           Navigator.of(context, rootNavigator: true).push(
                               CupertinoPageRoute(
                                   builder: (context) =>
-                                      RequestsPage(uuid: widget.user.uuid!)))
+                                      RequestsPage(uuid: widget.uuid)))
                         },
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,7 +108,7 @@ class OptionsPageState extends State<OptionsPage> {
                         onTap: () => Navigator.of(context, rootNavigator: true)
                             .push(CupertinoPageRoute(
                                 builder: (context) =>
-                                    SettingsPage(user: widget.user))),
+                                    SettingsPage(uuid: widget.uuid))),
                       ),
                       CupertinoListTile(
                         leading: const Icon(CupertinoIcons.doc),
