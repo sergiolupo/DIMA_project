@@ -27,6 +27,7 @@ class SettingsPageState extends State<SettingsPage> {
   late final String _oldEmail;
   late final String _oldUsername;
   late final Uint8List _oldImage;
+  bool isPublic = true;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class SettingsPageState extends State<SettingsPage> {
     _emailController = TextEditingController(text: widget.user.email);
     _passwordController = TextEditingController();
     _usernameController = TextEditingController(text: widget.user.username);
+    isPublic = widget.user.isPublic!;
     selectedCategories = widget.user.categories;
     getImageProfile();
     super.initState();
@@ -273,9 +275,11 @@ class SettingsPageState extends State<SettingsPage> {
                                     surname: _surnameController.text,
                                     username: _usernameController.text,
                                     uuid: widget.user.uuid,
+                                    isPublic: isPublic,
                                   ),
                                   selectedImagePath!,
                                   _oldImage == selectedImagePath ? false : true,
+                                  widget.user.isPublic! != isPublic,
                                 );
                               }
                               if (!context.mounted) return;
@@ -386,6 +390,37 @@ class SettingsPageState extends State<SettingsPage> {
             'Surname', widget.user.surname, false, _surnameController),
         _buildTextField(
             'Username', widget.user.username, false, _usernameController),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'Public Profile',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: CupertinoColors.systemGrey,
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Transform.scale(
+              scale:
+                  0.75, // Adjust this value to make the switch smaller or larger
+              child: CupertinoSwitch(
+                value: isPublic,
+                onChanged: (bool value) {
+                  setState(() {
+                    isPublic = value;
+                  });
+                },
+              ),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
         _buildTextField('Email', widget.user.email, false, _emailController),
         _buildTextField(
             'Password', widget.user.password, isObscure, _passwordController),

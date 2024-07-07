@@ -13,6 +13,7 @@ class UserData {
   final bool? isTyping;
   final String? typingTo;
   final String? uuid;
+  bool? isPublic;
   UserData({
     required this.categories,
     this.imagePath,
@@ -26,6 +27,7 @@ class UserData {
     this.isTyping,
     this.typingTo,
     this.uuid,
+    this.isPublic,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -45,6 +47,7 @@ class UserData {
       isTyping: documentSnapshot['isTyping'],
       typingTo: documentSnapshot['typingTo'],
       uuid: documentSnapshot.id,
+      isPublic: documentSnapshot['isPublic'],
     );
   }
 }

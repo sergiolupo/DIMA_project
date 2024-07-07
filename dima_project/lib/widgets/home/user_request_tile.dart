@@ -3,20 +3,20 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
-class RequestTile extends StatefulWidget {
+class UserRequestTile extends StatefulWidget {
   final UserData user;
-  final String groupId;
-  const RequestTile({
+  final String uuid;
+  const UserRequestTile({
     super.key,
     required this.user,
-    required this.groupId,
+    required this.uuid,
   });
 
   @override
-  RequestTileState createState() => RequestTileState();
+  UserRequestTileState createState() => UserRequestTileState();
 }
 
-class RequestTileState extends State<RequestTile> {
+class UserRequestTileState extends State<UserRequestTile> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -41,8 +41,8 @@ class RequestTileState extends State<RequestTile> {
         GestureDetector(
           onTap: () async {
             try {
-              await DatabaseService.acceptGroupRequest(
-                  widget.groupId, widget.user.uuid!);
+              await DatabaseService.acceptUserRequest(
+                  widget.user.uuid!, widget.uuid);
             } catch (error) {
               debugPrint("Error occurred: $error");
             }
@@ -66,8 +66,8 @@ class RequestTileState extends State<RequestTile> {
         GestureDetector(
           onTap: () async {
             try {
-              await DatabaseService.denyGroupRequest(
-                  widget.groupId, widget.user.uuid!);
+              await DatabaseService.denyUserRequest(
+                  widget.user.uuid!, widget.uuid);
             } catch (error) {
               debugPrint("Error occurred: $error");
             }

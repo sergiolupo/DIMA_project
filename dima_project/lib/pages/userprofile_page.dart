@@ -42,7 +42,7 @@ class UserProfileState extends State<UserProfile> {
   late StreamSubscription<List<QueryDocumentSnapshot<Map<String, dynamic>>>>?
       _groupsStreamSubscription;
 
-  bool _isFollowing = false;
+  int _isFollowing = 0; // 0 is not following, 1 is following, 2 is requested
 
   @override
   void initState() {
@@ -185,12 +185,13 @@ class UserProfileState extends State<UserProfile> {
                                         onPressed: () async {
                                           DatabaseService.toggleFollowUnfollow(
                                               widget.user, widget.uuid);
-                                          setState(() {
-                                            _isFollowing = !_isFollowing;
-                                          });
                                         },
                                         child: Text(
-                                          _isFollowing ? 'Unfollow' : 'Follow',
+                                          _isFollowing == 0
+                                              ? "Follow"
+                                              : _isFollowing == 1
+                                                  ? "Unfollow"
+                                                  : "Requested",
                                         ),
                                       ),
                                       const SizedBox(width: 10),

@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 class UserTile extends StatefulWidget {
   final UserData user;
   final String uuid;
-  final bool isFollowing;
+  final int isFollowing; // 0 is not following, 1 is following, 2 is requested
   const UserTile({
     super.key,
     required this.user,
@@ -74,7 +74,11 @@ class UserTileState extends State<UserTile> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     child: Text(
-                      widget.isFollowing ? "Following" : "Follow",
+                      widget.isFollowing == 0
+                          ? "Follow"
+                          : widget.isFollowing == 1
+                              ? "Unfollow"
+                              : "Requested",
                       style: const TextStyle(color: CupertinoColors.white),
                     ),
                   ),

@@ -37,23 +37,26 @@ class DatabaseService {
       'lastSeen': Timestamp.now(),
       'isTyping': false,
       'typingTo': '',
+      'isPublic': true,
     });
 
     await followersRef.doc(uuid).set({
       'followers': [],
       'following': [],
+      'requests': [],
     });
   }
 
-  static Future<void> updateUserInformation(
-      UserData user, Uint8List imagePath, bool hasChanged) async {
-    if (hasChanged) {
+  static Future<void> updateUserInformation(UserData user, Uint8List imagePath,
+      bool imageHasChanged, bool visibilityHasChange) async {
+    if (imageHasChanged) {
       String imageUrl = imagePath.toString() == '[]' || imagePath.isEmpty
           ? ''
           : await StorageService.uploadImageToStorage(
               'profile_images/${user.uuid!}.jpg', imagePath);
       List<Map<String, dynamic>> serializedList =
           user.categories.map((item) => {'value': item}).toList();
+
       await usersRef.doc(user.uuid).update({
         'name': user.name,
         'surname': user.surname,
@@ -61,6 +64,7 @@ class DatabaseService {
         'email': user.email,
         'imageUrl': imageUrl,
         'selectedCategories': serializedList,
+        'isPublic': user.isPublic,
       });
     } else {
       List<Map<String, dynamic>> serializedList =
@@ -71,6 +75,18 @@ class DatabaseService {
         'username': user.username,
         'email': user.email,
         'selectedCategories': serializedList,
+        'isPublic': user.isPublic,
+      });
+    }
+    if (visibilityHasChange && user.isPublic!) {
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await followersRef.doc(user.uuid).get();
+      List<dynamic> followers = userDoc['followers'];
+      List<dynamic> requests = userDoc['requests'];
+      followers.addAll(requests);
+      await followersRef.doc(user.uuid).update({
+        'followers': followers,
+        'requests': [],
       });
     }
   }
@@ -492,12 +508,37 @@ class DatabaseService {
     }
   }
 
-  static isFollowing(String user, String visitor) async* {
-    DocumentSnapshot userDoc = await followersRef.doc(user).get();
-    yield userDoc['followers'].contains(visitor);
-    final snapshot = followersRef.doc(user).snapshots();
-    await for (var snapshot in snapshot) {
-      yield snapshot['followers'].contains(visitor);
+  static Stream<int> isFollowing(String user, String visitor) async* {
+    // 0 is not following, 1 is following, 2 is requested
+
+    // Initial check
+    DocumentSnapshot followDoc = await followersRef.doc(user).get();
+    DocumentSnapshot userDoc = await usersRef.doc(user).get();
+
+    debugPrint('Follow document exists: ${followDoc.exists}');
+    debugPrint('User document exists: ${userDoc.exists}');
+
+    yield _getFollowStatus(followDoc, userDoc, visitor);
+
+    // Listen for real-time updates
+    await for (var snapshot in followersRef.doc(user).snapshots()) {
+      followDoc = snapshot;
+      userDoc = await usersRef.doc(user).get();
+
+      yield _getFollowStatus(followDoc, userDoc, visitor);
+    }
+  }
+
+// Helper method to determine follow status
+  static int _getFollowStatus(
+      DocumentSnapshot followDoc, DocumentSnapshot userDoc, String visitor) {
+    if (followDoc['followers'].contains(visitor)) {
+      return 1;
+    } else if (userDoc['isPublic'] == false &&
+        followDoc['requests'].contains(visitor)) {
+      return 2;
+    } else {
+      return 0;
     }
   }
 
@@ -509,10 +550,12 @@ class DatabaseService {
     DocumentSnapshot userDoc = await followersRef.doc(user).get();
     DocumentSnapshot visitorDoc = await followersRef.doc(visitor).get();
 
-    debugPrint('User document exists');
+    DocumentSnapshot doc = await usersRef.doc(user).get();
+
     // Check if the visitor is already following the user
     List<dynamic> followers = userDoc['followers'];
     List<dynamic> following = visitorDoc['following'];
+
     if (followers.contains(visitor)) {
       // Visitor is following the user, unfollow
       debugPrint('Visitor is following the user, unfollowing');
@@ -521,6 +564,20 @@ class DatabaseService {
       await followersRef.doc(user).update({'followers': followers});
       await followersRef.doc(visitor).update({'following': following});
     } else {
+      debugPrint(doc['isPublic'].toString());
+      if (doc['isPublic'] == false) {
+        if (userDoc['requests'].contains(visitor)) {
+          followersRef.doc(user).update({
+            'requests': FieldValue.arrayRemove([visitor])
+          });
+        } else {
+          followersRef.doc(user).update({
+            'requests': FieldValue.arrayUnion([visitor])
+          });
+        }
+        return;
+      }
+
       // Visitor is not following the user, follow
       debugPrint('Visitor is not following the user, following');
       followers.add(visitor);
@@ -848,6 +905,12 @@ class DatabaseService {
     });
   }
 
+  static Stream<List<dynamic>> getFollowRequests(String id) {
+    return followersRef.doc(id).snapshots().map((snapshot) {
+      return snapshot['requests'];
+    });
+  }
+
   static Future<void> denyGroupRequest(String groupId, String uuid) async {
     return await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])
@@ -875,6 +938,24 @@ class DatabaseService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs;
+    });
+  }
+
+  static Future<void> acceptUserRequest(String user, String uuid) async {
+    await Future.wait([
+      followersRef.doc(uuid).update({
+        'followers': FieldValue.arrayUnion([user]),
+        'requests': FieldValue.arrayRemove([user])
+      }),
+      followersRef.doc(user).update({
+        'following': FieldValue.arrayUnion([uuid])
+      }),
+    ]);
+  }
+
+  static Future<void> denyUserRequest(String user, String uuid) async {
+    await followersRef.doc(uuid).update({
+      'requests': FieldValue.arrayRemove([user])
     });
   }
 }

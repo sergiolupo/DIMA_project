@@ -144,7 +144,7 @@ class SearchPageState extends State<SearchPage> {
                         (docs[index].data()).containsKey('email')) {
                       final userData = UserData.fromSnapshot(docs[index]);
                       return StreamBuilder(
-                          stream: DatabaseService.isFollowingUser(
+                          stream: DatabaseService.isFollowing(
                               userData.uuid!, widget.uuid),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
@@ -153,7 +153,7 @@ class SearchPageState extends State<SearchPage> {
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
-                              final isFollowing = snapshot.data as bool;
+                              final isFollowing = snapshot.data as int;
                               return UserTile(
                                 user: userData,
                                 uuid: widget.uuid,

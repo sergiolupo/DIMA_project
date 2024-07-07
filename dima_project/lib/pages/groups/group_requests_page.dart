@@ -1,5 +1,5 @@
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/request_tile.dart';
+import 'package:dima_project/widgets/home/group_request_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupRequestsPage extends StatefulWidget {
@@ -70,7 +70,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       final userData = snapshot.data!;
-                      return RequestTile(
+                      return GroupRequestTile(
                         user: userData,
                         groupId: widget.groupId,
                       );

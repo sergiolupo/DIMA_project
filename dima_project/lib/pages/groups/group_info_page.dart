@@ -375,7 +375,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                   } else {
                     final UserData userData = snapshot.data!;
                     return StreamBuilder(
-                        stream: DatabaseService.isFollowingUser(
+                        stream: DatabaseService.isFollowing(
                             userData.uuid!, widget.uuid),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -384,7 +384,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else {
-                            final isFollowing = snapshot.data as bool;
+                            final isFollowing = snapshot.data!;
                             return UserTile(
                               user: userData,
                               uuid: widget.uuid,
