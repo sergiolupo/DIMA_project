@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/widgets/home/show_event_members.dart';
+import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -40,7 +41,11 @@ class EventPageState extends State<EventPage> {
           )
         : CupertinoPageScaffold(
             navigationBar: const CupertinoNavigationBar(
-              middle: Text('Event'),
+              backgroundColor: CupertinoColors.systemPink,
+              middle: Text(
+                'Event',
+                style: TextStyle(color: CupertinoColors.white),
+              ),
             ),
             child: StreamBuilder<Event>(
               stream: _eventStream,
@@ -89,12 +94,9 @@ class EventPageState extends State<EventPage> {
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              'Date: ${event.date}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
+                            const SizedBox(height: 10),
+                            ShowDate(date: event.date),
+                            const SizedBox(height: 10),
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(
@@ -108,22 +110,24 @@ class EventPageState extends State<EventPage> {
                               },
                               child: Column(
                                 children: [
-                                  const Text(
-                                    'Members',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
                                   Text(
                                     event.members.length.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                    ),
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle,
+                                  ),
+                                  Text(
+                                    "Members",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: CupertinoColors.systemGrey),
                                   ),
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 10),
                             CupertinoButton.filled(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 40, vertical: 8),
@@ -139,6 +143,7 @@ class EventPageState extends State<EventPage> {
                                         : "Requested",
                               ),
                             ),
+                            const SizedBox(height: 10),
                             SizedBox(
                               height: 300,
                               child: FlutterMap(
