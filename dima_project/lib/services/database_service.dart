@@ -484,6 +484,15 @@ class DatabaseService {
     });
   }
 
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
+      String eventId) {
+    final stream = eventsRef.doc(eventId).snapshots();
+
+    return stream.map((snapshot) {
+      return snapshot;
+    });
+  }
+
   static Future<bool> isUsernameTaken(String username) async {
     final QuerySnapshot result =
         await usersRef.where('username', isEqualTo: username).get();

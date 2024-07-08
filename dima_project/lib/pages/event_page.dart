@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/widgets/home/show_event_members.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -66,15 +67,11 @@ class EventPageState extends State<EventPage> {
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
                                   final admin = snapshot.data!;
-                                  return Column(
-                                    children: [
-                                      Text(
-                                        'Admin: ${admin.username}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
+                                  return Text(
+                                    'Admin: ${admin.username}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
                                   );
                                 } else {
                                   return const Center(
@@ -83,6 +80,7 @@ class EventPageState extends State<EventPage> {
                                 }
                               },
                             ),
+                            const SizedBox(height: 10),
                             Text(
                               'Description: ${event.description}',
                               style: const TextStyle(
@@ -97,11 +95,33 @@ class EventPageState extends State<EventPage> {
                                 fontSize: 16,
                               ),
                             ),
-                            Text(
-                              'Members ${event.members.length}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => ShowEventMembersPage(
+                                      uuid: widget.uuid,
+                                      eventId: event.id!,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Members',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    event.members.length.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             CupertinoButton.filled(
