@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/widgets/home/show_event_members.dart';
 import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,9 +41,17 @@ class EventPageState extends State<EventPage> {
             child: CupertinoActivityIndicator(),
           )
         : CupertinoPageScaffold(
-            navigationBar: const CupertinoNavigationBar(
+            navigationBar: CupertinoNavigationBar(
               backgroundColor: CupertinoColors.systemPink,
-              middle: Text(
+              leading: Navigator.canPop(context)
+                  ? CupertinoNavigationBarBackButton(
+                      color: CupertinoColors.white,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  : null,
+              middle: const Text(
                 'Event',
                 style: TextStyle(color: CupertinoColors.white),
               ),
@@ -144,8 +153,27 @@ class EventPageState extends State<EventPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            FutureBuilder(
+                                future: EventService.getAddressFromLatLng(
+                                    event.location),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data != null) {
+                                    final address = snapshot.data as String;
+                                    return Text(
+                                      'Location: $address',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    );
+                                  } else {
+                                    return const Center(
+                                      child: CupertinoActivityIndicator(),
+                                    );
+                                  }
+                                }),
                             SizedBox(
-                              height: 300,
+                              height: 200,
                               child: FlutterMap(
                                   options: MapOptions(
                                     initialCenter: event.location,

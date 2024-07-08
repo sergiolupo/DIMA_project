@@ -42,12 +42,13 @@ class EventService {
       final data = json.decode(response.body);
       final address = data['address'];
       if (address != null) {
+        final houseNumber = address['house_number'] ?? '';
         final road = address['road'] ?? '';
         final city =
             address['city'] ?? address['town'] ?? address['village'] ?? '';
         final country = address['country'] ?? '';
 
-        return [road, city, country]
+        return [road, houseNumber, city, country]
             .where((part) => part.isNotEmpty)
             .join(', ');
       }

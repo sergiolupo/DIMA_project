@@ -18,7 +18,7 @@ class EditGroupPageState extends State<EditGroupPage> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   Uint8List? selectedImagePath;
-
+  bool isPublic = true;
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -29,6 +29,7 @@ class EditGroupPageState extends State<EditGroupPage> {
   @override
   void initState() {
     super.initState();
+    isPublic = widget.group.isPublic;
     _fetchProfileImage();
   }
 
@@ -124,6 +125,19 @@ class EditGroupPageState extends State<EditGroupPage> {
                           color: CupertinoColors.extraLightBackgroundGray,
                           borderRadius: BorderRadius.circular(10),
                         ),
+                      ),
+                      Row(
+                        children: [
+                          const Text('Public Group'),
+                          CupertinoSwitch(
+                            value: isPublic,
+                            onChanged: (bool value) {
+                              setState(() {
+                                isPublic = value;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
