@@ -532,13 +532,47 @@ class DatabaseService {
     }
   }
 
-// Helper method to determine follow status
+  // Helper method to determine follow status
   static int _getFollowStatus(
       DocumentSnapshot followDoc, DocumentSnapshot userDoc, String visitor) {
     if (followDoc['followers'].contains(visitor)) {
       return 1;
     } else if (userDoc['isPublic'] == false &&
         followDoc['requests'].contains(visitor)) {
+      return 2;
+    } else {
+      return 0;
+    }
+  }
+
+  static Stream<int> isJoining(String uuid, String eventId) async* {
+    // 0 is not joining, 1 is joining, 2 is requested
+
+    // Initial check
+    DocumentSnapshot eventDoc = await eventsRef.doc(eventId).get();
+    DocumentSnapshot userDoc = await usersRef.doc(uuid).get();
+
+    yield _getEventStatus(eventDoc, userDoc, uuid);
+
+    // Listen for real-time updates
+    await for (var snapshot in eventsRef.doc(eventId).snapshots()) {
+      eventDoc = snapshot;
+      userDoc = await usersRef.doc(uuid).get();
+
+      yield _getEventStatus(eventDoc, userDoc, uuid);
+    }
+  }
+
+  // Helper method to determine follow status
+  static int _getEventStatus(
+    DocumentSnapshot eventDoc,
+    DocumentSnapshot userDoc,
+    String uuid,
+  ) {
+    if (eventDoc['members'].contains(uuid)) {
+      return 1;
+    } else if (userDoc['isPublic'] == false &&
+        eventDoc['requests'].contains(uuid)) {
       return 2;
     } else {
       return 0;
@@ -1017,7 +1051,7 @@ class DatabaseService {
         }),
       ]);
       if (eventDoc['members'].isEmpty) {
-        await eventsRef.doc(eventId).delete();
+        //await eventsRef.doc(eventId).delete();
       } else if (eventDoc['admin'] == uuid) {
         await eventsRef.doc(eventId).update({'admin': eventDoc['members'][0]});
       }

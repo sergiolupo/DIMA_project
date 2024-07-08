@@ -19,10 +19,11 @@ class EventPage extends StatefulWidget {
 
 class EventPageState extends State<EventPage> {
   Stream<Event>? _eventStream;
-
+  int _isJoining = 0;
   @override
   void initState() {
     init();
+    _checkJoin();
     super.initState();
   }
 
@@ -47,11 +48,6 @@ class EventPageState extends State<EventPage> {
                   final event = snapshot.data!;
                   return ListView(
                     children: [
-                      Text('Members ${event.members.length}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          )),
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
@@ -101,6 +97,28 @@ class EventPageState extends State<EventPage> {
                                 fontSize: 16,
                               ),
                             ),
+                            Text(
+                              'Members ${event.members.length}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            CupertinoButton.filled(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 8),
+                              onPressed: () async {
+                                DatabaseService.toggleEventJoin(
+                                    widget.eventId, widget.uuid);
+                              },
+                              child: Text(
+                                _isJoining == 0
+                                    ? "Subscribe"
+                                    : _isJoining == 1
+                                        ? "Unsubscribe"
+                                        : "Requested",
+                              ),
+                            ),
                             SizedBox(
                               height: 300,
                               child: FlutterMap(
@@ -148,4 +166,20 @@ class EventPageState extends State<EventPage> {
         urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         userAgentPackageName: 'polimi.dima_project.agorapp',
       );
+  _checkJoin() async {
+    // Listen for updates on the isFollowing stream
+    final isJoiningStream = DatabaseService.isJoining(
+      widget.uuid,
+      widget.eventId,
+    );
+
+    // Listen for updates and update _isFollowing accordingly
+    await for (final isJoining in isJoiningStream) {
+      if (mounted) {
+        setState(() {
+          _isJoining = isJoining;
+        });
+      }
+    }
+  }
 }
