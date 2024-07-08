@@ -21,7 +21,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  late final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+  final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       _searchStreamController =
       StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>();
 
@@ -29,7 +29,6 @@ class SearchPageState extends State<SearchPage> {
       _searchStreamSubscription;
 
   int searchIdx = 0;
-
   @override
   void initState() {
     super.initState();
@@ -202,6 +201,11 @@ class SearchPageState extends State<SearchPage> {
                       return EventTile(
                         uuid: widget.uuid,
                         event: event,
+                        isJoined: event.members.contains(widget.uuid)
+                            ? 1
+                            : event.requests!.contains(widget.uuid)
+                                ? 2
+                                : 0,
                       );
                     } else {
                       return Container();

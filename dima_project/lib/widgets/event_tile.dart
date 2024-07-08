@@ -1,14 +1,19 @@
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/event_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class EventTile extends StatefulWidget {
   final String uuid;
   final Event event;
+  final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
   const EventTile({
     super.key,
     required this.uuid,
     required this.event,
+    required this.isJoined,
   });
 
   @override
@@ -22,7 +27,16 @@ class EventTileState extends State<EventTile> {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => EventPage(
+                    eventId: widget.event.id!,
+                    uuid: widget.uuid,
+                  ),
+                ),
+              );
+            },
             child: CupertinoListTile(
               leading: CreateImageWidget.getEventImage(widget.event.imagePath!),
               title: Text(
@@ -35,7 +49,16 @@ class EventTileState extends State<EventTile> {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () async {
+            try {
+              await DatabaseService.toggleEventJoin(
+                widget.event.id!,
+                FirebaseAuth.instance.currentUser!.uid,
+              );
+            } catch (error) {
+              debugPrint("Error occurred: $error");
+            }
+          },
           child: Container(
             padding: const EdgeInsets.only(right: 20),
             child: Container(
@@ -45,9 +68,13 @@ class EventTileState extends State<EventTile> {
                 border: Border.all(color: CupertinoColors.white),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: const Text(
-                "Join",
-                style: TextStyle(color: CupertinoColors.white),
+              child: Text(
+                widget.isJoined == 1
+                    ? "Joined"
+                    : widget.isJoined == 2
+                        ? "Requested"
+                        : "Join",
+                style: const TextStyle(color: CupertinoColors.white),
               ),
             ),
           ),

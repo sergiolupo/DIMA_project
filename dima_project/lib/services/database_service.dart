@@ -1000,4 +1000,54 @@ class DatabaseService {
       }).toList();
     });
   }
+
+  static Future<void> toggleEventJoin(String eventId, String uuid) async {
+    DocumentSnapshot<Map<String, dynamic>> eventDoc =
+        await eventsRef.doc(eventId).get();
+
+    bool isJoined = eventDoc['members'].contains(uuid);
+
+    if (isJoined) {
+      await Future.wait([
+        eventsRef.doc(eventId).update({
+          'members': FieldValue.arrayRemove([uuid])
+        }),
+        usersRef.doc(uuid).update({
+          'events': FieldValue.arrayRemove([eventId])
+        }),
+      ]);
+      if (eventDoc['members'].isEmpty) {
+        await eventsRef.doc(eventId).delete();
+      } else if (eventDoc['admin'] == uuid) {
+        await eventsRef.doc(eventId).update({'admin': eventDoc['members'][0]});
+      }
+    } else {
+      if (eventDoc['isPublic']) {
+        await Future.wait([
+          eventsRef.doc(eventId).update({
+            'members': FieldValue.arrayUnion([uuid])
+          }),
+          usersRef.doc(uuid).update({
+            'events': FieldValue.arrayUnion([eventId])
+          }),
+        ]);
+      } else {
+        if (!eventDoc['requests'].contains(uuid)) {
+          await eventsRef.doc(eventId).update({
+            'requests': FieldValue.arrayUnion([uuid])
+          });
+        } else {
+          await eventsRef.doc(eventId).update({
+            'requests': FieldValue.arrayRemove([uuid])
+          });
+        }
+      }
+    }
+  }
+
+  static Stream<Event> getEventStream(String eventId) {
+    return eventsRef.doc(eventId).snapshots().map((snapshot) {
+      return Event.fromSnapshot(snapshot);
+    });
+  }
 }
