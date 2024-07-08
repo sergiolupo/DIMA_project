@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 
 class CreateImageWidget {
@@ -52,6 +54,63 @@ class CreateImageWidget {
               )
             : Image.asset(
                 'assets/default_event_image.png',
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+
+  static Widget getEventImageMemory(Uint8List image) {
+    return ClipOval(
+      child: Container(
+        width: 100,
+        height: 100,
+        color: CupertinoColors.lightBackgroundGray,
+        child: image.isNotEmpty
+            ? Image.memory(
+                image,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                'assets/default_event_image.png',
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+
+  static Widget getUserImageMemory(Uint8List image) {
+    return ClipOval(
+      child: Container(
+        width: 100,
+        height: 100,
+        color: CupertinoColors.lightBackgroundGray,
+        child: image.isNotEmpty
+            ? Image.memory(
+                image,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                'assets/default_user_image.png',
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+
+  static Widget getGroupImageMemory(Uint8List image) {
+    return ClipOval(
+      child: Container(
+        width: 100,
+        height: 100,
+        color: CupertinoColors.lightBackgroundGray,
+        child: image.isNotEmpty
+            ? Image.memory(
+                image,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                'assets/default_group_image.png',
                 fit: BoxFit.cover,
               ),
       ),

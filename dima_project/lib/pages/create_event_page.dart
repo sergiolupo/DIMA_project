@@ -3,10 +3,11 @@ import 'dart:typed_data';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
-import 'package:dima_project/widgets/auth/imageform_widget.dart';
+import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/events/date_picker.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
 import 'package:dima_project/widgets/events/time_picker.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -25,7 +26,7 @@ class CreateEventPageState extends State<CreateEventPage> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
-  final imageInsertPageKey = GlobalKey<ImageInsertFormState>();
+  final imageInsertPageKey = GlobalKey<ImageCropPageState>();
   DateTime date = DateTime.now();
   late DateTime time = DateTime.now();
   late var dateString = '';
@@ -111,7 +112,7 @@ class CreateEventPageState extends State<CreateEventPage> {
         date: DateTime(date.year, date.month, date.day, time.hour, time.minute),
         members: [widget.uuid],
         isPublic: isPublic,
-        imagePath: selectedImagePath.isNotEmpty ? 'imagePath' : null,
+        imagePath: selectedImagePath.isNotEmpty ? '' : null,
         location: _selectedLocation!,
       );
 
@@ -151,12 +152,23 @@ class CreateEventPageState extends State<CreateEventPage> {
                   placeholder: 'Event Name',
                   minLines: 1,
                   maxLines: 3,
-                  prefix: ImageInsertForm(
-                    imageType: 2,
-                    imagePath: selectedImagePath,
-                    imageInsertPageKey: (Uint8List selectedImagePath) {
-                      this.selectedImagePath = selectedImagePath;
+                  prefix: GestureDetector(
+                    onTap: () => {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => ImageCropPage(
+                            imageType: 2,
+                            imagePath: selectedImagePath,
+                            imageInsertPageKey: (Uint8List selectedImagePath) {
+                              this.selectedImagePath = selectedImagePath;
+                            },
+                          ),
+                        ),
+                      )
                     },
+                    child: CreateImageWidget.getEventImageMemory(
+                      selectedImagePath,
+                    ),
                   ),
                   decoration: BoxDecoration(
                     color: CupertinoColors.extraLightBackgroundGray,

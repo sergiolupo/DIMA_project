@@ -5,8 +5,9 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
-import 'package:dima_project/widgets/auth/imageform_widget.dart';
+import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -54,12 +55,23 @@ class RegisterPageState extends State<RegisterPage> {
         pageName = 'Personal Information';
         break;
       case 3:
-        page = ImageInsertForm(
-          imageType: 0,
-          imagePath: selectedImagePath,
-          imageInsertPageKey: (Uint8List selectedImagePath) {
-            this.selectedImagePath = selectedImagePath;
+        page = GestureDetector(
+          onTap: () => {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ImageCropPage(
+                  imageType: 0,
+                  imagePath: selectedImagePath,
+                  imageInsertPageKey: (Uint8List selectedImagePath) {
+                    this.selectedImagePath = selectedImagePath;
+                  },
+                ),
+              ),
+            )
           },
+          child: CreateImageWidget.getEventImageMemory(
+            selectedImagePath,
+          ),
         );
         pageName = 'Image Selection';
         break;

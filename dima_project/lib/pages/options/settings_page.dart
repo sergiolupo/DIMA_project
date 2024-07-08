@@ -3,7 +3,8 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
-import 'package:dima_project/widgets/auth/imageform_widget.dart';
+import 'package:dima_project/widgets/auth/image_crop_page.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -105,14 +106,23 @@ class SettingsPageState extends State<SettingsPage> {
   Widget _buildFirstPage() {
     return Column(
       children: [
-        ImageInsertForm(
-          imageType: 3,
-          imagePath: selectedImagePath,
-          imageInsertPageKey: (Uint8List selectedImagePath) {
-            setState(() {
-              this.selectedImagePath = selectedImagePath;
-            });
+        GestureDetector(
+          onTap: () => {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ImageCropPage(
+                  imageType: 0,
+                  imagePath: selectedImagePath,
+                  imageInsertPageKey: (Uint8List selectedImagePath) {
+                    this.selectedImagePath = selectedImagePath;
+                  },
+                ),
+              ),
+            )
           },
+          child: CreateImageWidget.getEventImageMemory(
+            selectedImagePath!,
+          ),
         ),
         const SizedBox(height: 30),
         _buildTextField('Name', user!.name, false, _nameController),
