@@ -153,6 +153,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: CupertinoTextFormFieldRow(
+            minLines: 1,
             controller: _groupDescriptionController,
             placeholder: 'Group Description',
             maxLines: 5,

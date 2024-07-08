@@ -112,34 +112,47 @@ class UserProfileState extends State<UserProfile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            CreateImageWidget.getUserImage(user.imagePath!),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                user.username,
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                '${user.name} ${user.surname}',
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                CreateImageWidget.getUserImage(user.imagePath!),
+                                const SizedBox(width: 20),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: Text(
+                                        user.username,
+                                        style: CupertinoTheme.of(context)
+                                            .textTheme
+                                            .textStyle,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: Text(
+                                        '${user.name} ${user.surname}',
+                                        style: CupertinoTheme.of(context)
+                                            .textTheme
+                                            .textStyle,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 10),
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: user.categories
                                   .map((category) => Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 4),
+                                            vertical: 4, horizontal: 10),
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
                                             Icon(
                                               CategoryIconMapper
