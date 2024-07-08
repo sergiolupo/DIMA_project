@@ -1,5 +1,6 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/edit_group_page.dart';
 import 'package:dima_project/pages/groups/group_requests_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -8,6 +9,7 @@ import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -76,11 +78,20 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               middle: const Text("Group Info"),
               backgroundColor: CupertinoTheme.of(context).primaryColor,
               trailing: CupertinoButton(
-                onPressed: () {
-                  showLeaveGroupDialog(context);
-                },
-                child: const Icon(FontAwesomeIcons.signOutAlt,
-                    color: CupertinoColors.white),
+                padding: const EdgeInsets.all(0),
+                onPressed: () => Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) => EditGroupPage(
+                              group: widget.group,
+                            ))),
+                child: const Text(
+                  'Edit',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoColors.white,
+                  ),
+                ),
               ),
             ),
             child: CupertinoScrollbar(
@@ -329,6 +340,18 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         constraints: const BoxConstraints(
                             maxHeight: 300), // Limit height of ListView
                         child: memberList(),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showLeaveGroupDialog(context);
+                        },
+                        child: const Text('Exit Group',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: CupertinoColors.systemRed,
+                            ),
+                            textAlign: TextAlign.center),
                       ),
                     ],
                   ),
