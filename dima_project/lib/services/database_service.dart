@@ -282,18 +282,17 @@ class DatabaseService {
     });
   }
 
-  static Future<void> toggleGroupJoin(
-      String groupId, String uuidVisitor, String uuidUser) async {
+  static Future<void> toggleGroupJoin(String groupId, String uuid) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
         await groupsRef.doc(groupId).get();
-    bool isJoined = groupDoc['members'].contains(uuidUser);
+    bool isJoined = groupDoc['members'].contains(uuid);
 
     if (isJoined) {
       await Future.wait([
         groupsRef.doc(groupId).update({
-          'members': FieldValue.arrayRemove([uuidUser])
+          'members': FieldValue.arrayRemove([uuid])
         }),
-        usersRef.doc(uuidVisitor).update({
+        usersRef.doc(uuid).update({
           'groups': FieldValue.arrayRemove([groupId])
         }),
       ]);
@@ -302,27 +301,27 @@ class DatabaseService {
           await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
         await groupsRef.doc(groupId).delete();
-      } else if (groupDoc['admin'] == uuidUser) {
+      } else if (groupDoc['admin'] == uuid) {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
       }
     } else {
       if (groupDoc['isPublic']) {
         await Future.wait([
           groupsRef.doc(groupId).update({
-            'members': FieldValue.arrayUnion([uuidUser])
+            'members': FieldValue.arrayUnion([uuid])
           }),
-          usersRef.doc(uuidVisitor).update({
+          usersRef.doc(uuid).update({
             'groups': FieldValue.arrayUnion([groupId])
           }),
         ]);
       } else {
-        if (!groupDoc['requests'].contains(uuidUser)) {
+        if (!groupDoc['requests'].contains(uuid)) {
           await groupsRef.doc(groupId).update({
-            'requests': FieldValue.arrayUnion([uuidUser])
+            'requests': FieldValue.arrayUnion([uuid])
           });
         } else {
           await groupsRef.doc(groupId).update({
-            'requests': FieldValue.arrayRemove([uuidUser])
+            'requests': FieldValue.arrayRemove([uuid])
           });
         }
       }

@@ -55,7 +55,6 @@ class GroupTileState extends State<GroupTile> {
               await DatabaseService.toggleGroupJoin(
                 widget.group.id,
                 FirebaseAuth.instance.currentUser!.uid,
-                widget.uuid,
               );
             } catch (error) {
               debugPrint("Error occurred: $error");

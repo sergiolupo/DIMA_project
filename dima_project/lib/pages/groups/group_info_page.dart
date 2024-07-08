@@ -419,7 +419,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
                   FirebaseAuth.instance.currentUser!.uid,
-                  widget.uuid,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
