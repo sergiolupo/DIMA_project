@@ -28,6 +28,7 @@ class Event {
 
   static Map<String, dynamic> toMap(Event event) {
     return {
+      'eventId': event.id ?? '',
       'name': event.name,
       'admin': event.admin,
       'imagePath': event.imagePath,
@@ -35,7 +36,7 @@ class Event {
       'date': event.date,
       'members': event.members,
       'isPublic': event.isPublic,
-      'requests': event.requests,
+      'requests': event.requests ?? [],
       'location': GeoPoint(event.location.latitude, event.location.longitude),
     };
   }

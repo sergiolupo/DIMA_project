@@ -974,6 +974,7 @@ class DatabaseService {
 
       await eventsRef.doc(docRef.id).update({
         'imagePath': imageUrl,
+        'eventId': docRef.id,
       });
       return await usersRef.doc(uuid).update({
         'events': FieldValue.arrayUnion([
@@ -983,5 +984,20 @@ class DatabaseService {
     } catch (e) {
       debugPrint("Error while creating the event: $e");
     }
+  }
+
+  static searchByEventNameStream(String searchText) {
+    return eventsRef.snapshots().map((snapshot) {
+      // Filter documents on the client side using regex and group ID check
+      return snapshot.docs.where((doc) {
+        // Match the 'groupName' field using a regex pattern
+        bool nameMatches =
+            RegExp(searchText, caseSensitive: false).hasMatch(doc['name']);
+        // Check if the 'groupId' field is not empty
+        bool validGroupId = doc['eventId'] != '';
+        // Return true if both conditions are met
+        return nameMatches && validGroupId;
+      }).toList();
+    });
   }
 }

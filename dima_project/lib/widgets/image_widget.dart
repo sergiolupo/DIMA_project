@@ -39,6 +39,25 @@ class CreateImageWidget {
     );
   }
 
+  static Widget getEventImage(String imagePath, {bool small = false}) {
+    return ClipOval(
+      child: Container(
+        width: small ? 30 : 100,
+        height: small ? 30 : 100,
+        color: CupertinoColors.lightBackgroundGray,
+        child: imagePath != ''
+            ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                'assets/default_event_image.png',
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+
   static getImage(String content, {bool small = false}) {
     return Container(
       width: small ? 30 : 100,

@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/widgets/event_tile.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
@@ -44,9 +46,15 @@ class SearchPageState extends State<SearchPage> {
                 .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
-      } else {
+      } else if (searchIdx == 1) {
         _searchStreamSubscription =
             DatabaseService.searchByGroupNameStream(searchText)
+                .listen((snapshot) {
+          _searchStreamController.add(snapshot);
+        });
+      } else {
+        _searchStreamSubscription =
+            DatabaseService.searchByEventNameStream(searchText)
                 .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
@@ -161,7 +169,7 @@ class SearchPageState extends State<SearchPage> {
                               );
                             }
                           });
-                    } else if (searchIdx != 0 &&
+                    } else if (searchIdx == 1 &&
                         (docs[index].data()).containsKey('groupId')) {
                       final group = Group.fromSnapshot(docs[index]);
 
@@ -188,6 +196,13 @@ class SearchPageState extends State<SearchPage> {
                               );
                             }
                           });
+                    } else if (searchIdx == 2 &&
+                        (docs[index].data()).containsKey('eventId')) {
+                      final event = Event.fromSnapshot(docs[index]);
+                      return EventTile(
+                        uuid: widget.uuid,
+                        event: event,
+                      );
                     } else {
                       return Container();
                     }
