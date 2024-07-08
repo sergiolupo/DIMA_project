@@ -283,9 +283,9 @@ class UserProfileState extends State<UserProfile> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 4.0,
-                    mainAxisSpacing: 4.0,
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
                   ),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
