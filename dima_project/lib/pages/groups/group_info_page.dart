@@ -29,12 +29,10 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   Stream<List<dynamic>>? _membersStream;
   Stream<int>? _numberOfRequestsStream;
   Stream<int>? _numberOfMediaStream;
-  String? _admin;
   @override
   void initState() {
     super.initState();
     getMembers();
-    init();
   }
 
   void getMembers() {
@@ -50,19 +48,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
     );
   }
 
-  void init() async {
-    final admin =
-        (await DatabaseService.getUserData(widget.group.admin!)).username;
-    setState(() {
-      _admin = admin;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _membersStream == null ||
-            _numberOfRequestsStream == null ||
-            _admin == null
+    return _membersStream == null || _numberOfRequestsStream == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -118,13 +106,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "Admin: ${_admin!}",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: CupertinoColors.systemGrey,
                                   ),
                                 ),
                               ],
@@ -343,6 +324,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             maxHeight: 300), // Limit height of ListView
                         child: memberList(),
                       ),
+                      const SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
                           showLeaveGroupDialog(context);
@@ -410,6 +392,26 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             return Text('Error: ${snapshot.error}');
                           } else {
                             final isFollowing = snapshot.data!;
+                            if (userData.uuid == widget.group.admin) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: UserTile(
+                                      user: userData,
+                                      uuid: widget.uuid,
+                                      isFollowing: isFollowing,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Admin",
+                                    style: TextStyle(
+                                      color: CupertinoColors.systemGrey4,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
                             return UserTile(
                               user: userData,
                               uuid: widget.uuid,

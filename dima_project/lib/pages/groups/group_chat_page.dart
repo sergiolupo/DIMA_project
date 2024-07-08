@@ -82,22 +82,6 @@ class GroupChatPageState extends State<GroupChatPage> {
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
-        trailing: CupertinoButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => GroupInfoPage(
-                  uuid: widget.uuid,
-                  group: widget.group,
-                ),
-              ),
-            );
-          },
-          child: const Icon(
-            CupertinoIcons.info,
-            color: CupertinoColors.white,
-          ),
-        ),
       ),
       child: Column(
         children: <Widget>[
