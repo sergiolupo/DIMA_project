@@ -987,6 +987,18 @@ class DatabaseService {
     });
   }
 
+  static Stream<List<dynamic>> getPrivateChatMedia(String id) {
+    return privateChatRef
+        .doc(id)
+        .collection('messages')
+        .where("type", isEqualTo: 'Type.image')
+        .orderBy('time', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs;
+    });
+  }
+
   static Future<void> acceptUserRequest(String user, String uuid) async {
     await Future.wait([
       followersRef.doc(uuid).update({

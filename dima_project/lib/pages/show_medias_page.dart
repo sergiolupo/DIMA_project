@@ -29,7 +29,7 @@ class ShowMediasPageState extends State<ShowMediasPage> {
     if (widget.isGroup) {
       _mediaStream = DatabaseService.getGroupMedia(widget.id);
     } else {
-      // _mediaStream = DatabaseService.getUserMedias(widget.id);
+      _mediaStream = DatabaseService.getPrivateChatMedia(widget.id);
     }
   }
 

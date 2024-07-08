@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -98,6 +99,22 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
+        trailing: widget.privateChat.id != null
+            ? CupertinoButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => PrivateInfoPage(
+                        uuid: widget.uuid,
+                        privateChat: widget.privateChat,
+                      ),
+                    ),
+                  );
+                },
+                child: const Icon(CupertinoIcons.info,
+                    color: CupertinoColors.white),
+              )
+            : null,
       ),
       child: Column(
         children: <Widget>[
