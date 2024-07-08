@@ -48,13 +48,28 @@ class GroupChatPageState extends State<GroupChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Row(
-          children: [
-            CreateImageWidget.getGroupImage(widget.group.imagePath!,
-                small: true),
-            const SizedBox(width: 10),
-            Text(widget.group.name, style: const TextStyle(fontSize: 16)),
-          ],
+        middle: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => GroupInfoPage(
+                  uuid: widget.uuid,
+                  group: widget.group,
+                ),
+              ),
+            );
+          },
+          child: Row(
+            children: [
+              CreateImageWidget.getGroupImage(widget.group.imagePath!,
+                  small: true),
+              const SizedBox(width: 10),
+              Text(widget.group.name,
+                  style: const TextStyle(
+                      fontSize: 16, color: CupertinoColors.white)),
+            ],
+          ),
         ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(

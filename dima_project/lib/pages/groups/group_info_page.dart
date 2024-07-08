@@ -9,8 +9,6 @@ import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class GroupInfoPage extends StatefulWidget {
@@ -108,31 +106,26 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         ),
                         child: Column(
                           children: [
-                            Row(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 CreateImageWidget.getGroupImage(
-                                    widget.group.imagePath!,
-                                    small: true),
+                                  widget.group.imagePath!,
+                                ),
                                 const SizedBox(width: 20),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.group.name,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Admin: ${_admin!}",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: CupertinoColors.systemGrey,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  widget.group.name,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "Admin: ${_admin!}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: CupertinoColors.systemGrey,
+                                  ),
                                 ),
                               ],
                             ),
@@ -144,6 +137,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 4),
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               CategoryIconMapper
@@ -165,26 +160,33 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   .toList(),
                             ),
                             const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text(
-                                  "Description: ",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: CupertinoColors.lightBackgroundGray,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Description: ",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  widget.group.description!,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    widget.group.description!,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 10),
                             if (!widget.group.isPublic &&
