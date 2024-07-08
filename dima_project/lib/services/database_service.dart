@@ -1104,4 +1104,49 @@ class DatabaseService {
       return Event.fromSnapshot(snapshot);
     });
   }
+
+  static Stream<List<Event>> getPastEventStream(String uuid) async* {
+    final eventIds = await usersRef.doc(uuid).get().then((value) {
+      return value['events'];
+    });
+
+    final eventsList = <Event>[];
+    for (var eventId in eventIds) {
+      final snapshot = await eventsRef.doc(eventId).get();
+      if (snapshot.exists) {
+        eventsList.add(Event.fromSnapshot(snapshot));
+      }
+    }
+    yield eventsList; // yield the initial list of events
+    final snapshots =
+        eventsRef.snapshots(); // listen to changes in the events collection
+
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final eventId = change.doc.id;
+        final event = Event.fromSnapshot(change.doc);
+        final members = event.members;
+
+        if (change.type == DocumentChangeType.removed) {
+          eventsList.removeWhere((e) => e.id == eventId);
+          yield eventsList;
+        } else {
+          if (members.contains(uuid) && event.id != '') {
+            // DocumentChangeType.added or DocumentChangeType.modified
+            final existingEventIndex =
+                eventsList.indexWhere((e) => e.id == eventId);
+            if (existingEventIndex != -1) {
+              eventsList[existingEventIndex] = event;
+            } else {
+              eventsList.add(event);
+            }
+            yield eventsList;
+          } else {
+            eventsList.removeWhere((e) => e.id == eventId);
+            yield eventsList;
+          }
+        }
+      }
+    }
+  }
 }

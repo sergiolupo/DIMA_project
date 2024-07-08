@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
+import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,6 +46,7 @@ class UserProfileState extends State<UserProfile> {
 
   int _isFollowing = 0; // 0 is not following, 1 is following, 2 is requested
 
+  int index = 0;
   @override
   void initState() {
     super.initState();
@@ -254,15 +257,13 @@ class UserProfileState extends State<UserProfile> {
                           CustomSelectOption(
                             textLeft: 'Events created',
                             textRight: 'Events joined',
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              setState(() {
+                                index = value;
+                              });
+                            },
                           ),
-                          /*GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    childAspectRatio: 1 / 1.5,
-                    children: List.generate(5, (index) => const Placeholder()),
-                  ),*/
+                          getPastEvents(),
                         ],
                       ),
                     ),
@@ -270,6 +271,36 @@ class UserProfileState extends State<UserProfile> {
                 ),
               );
             });
+  }
+
+  Widget getPastEvents() {
+    return StreamBuilder<List<Event>>(
+      stream: DatabaseService.getPastEventStream(widget.user),
+      builder: (context, snapshot) => snapshot.hasData
+          ? Column(
+              children: [
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 4.0,
+                    mainAxisSpacing: 4.0,
+                  ),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final event = snapshot.data![index];
+                    return EventGrid(
+                      uuid: widget.uuid,
+                      event: event,
+                      isJoined: 1,
+                    );
+                  },
+                ),
+              ],
+            )
+          : const CupertinoActivityIndicator(),
+    );
   }
 
   Widget getGroup() {
