@@ -41,6 +41,7 @@ class DatabaseService {
       'isTyping': false,
       'typingTo': '',
       'isPublic': true,
+      'events': [],
     });
 
     await followersRef.doc(uuid).set({
@@ -179,6 +180,7 @@ class DatabaseService {
         'categories': serializedList,
         'isPublic': group.isPublic,
         'requests': [],
+        'notify': group.notify,
       });
 
       String imageUrl = imagePath.toString() == '[]'

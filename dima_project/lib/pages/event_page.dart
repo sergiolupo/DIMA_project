@@ -104,7 +104,15 @@ class EventPageState extends State<EventPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 10),
-                            ShowDate(date: event.date),
+                            DateTime(
+                                        event.startDate.year,
+                                        event.startDate.month,
+                                        event.startDate.day,
+                                        event.startDate.hour,
+                                        event.startDate.minute)
+                                    .isBefore(DateTime.now())
+                                ? ShowDate(date: event.startDate)
+                                : ShowDate(date: event.endDate),
                             const SizedBox(height: 10),
                             GestureDetector(
                               onTap: () {

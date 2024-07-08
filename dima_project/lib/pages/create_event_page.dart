@@ -27,13 +27,21 @@ class CreateEventPageState extends State<CreateEventPage> {
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
-  DateTime date = DateTime.now();
-  late DateTime time = DateTime.now();
-  late var dateString = '';
-  late var timeString = '';
+  DateTime startDate = DateTime.now();
+  late DateTime endDate = DateTime(startDate.year, startDate.month,
+      startDate.day, startDate.hour + 1, startDate.minute);
+  late DateTime startTime = DateTime.now();
+  late DateTime endTime = DateTime(startTime.day, startTime.month,
+      startTime.year, startTime.hour + 1, startTime.minute);
+  late var startDateString = '';
+  late var endDateString = '';
+  late var startTimeString = '';
+  late var endTimeString = '';
   String location = '';
   LatLng? _selectedLocation;
   bool isPublic = true;
+  bool notify = true;
+
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -44,7 +52,8 @@ class CreateEventPageState extends State<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    time = getTime();
+    startTime = getTime();
+    endTime = getEndTime();
   }
 
   bool _validateForm() {
@@ -56,12 +65,20 @@ class CreateEventPageState extends State<CreateEventPage> {
       _showErrorDialog('Event description is required');
       return false;
     }
-    if (dateString.isEmpty) {
-      _showErrorDialog('Event date is required');
+    if (startDateString.isEmpty) {
+      _showErrorDialog('Event start date is required');
       return false;
     }
-    if (timeString.isEmpty) {
-      _showErrorDialog('Event time is required');
+    if (endDateString.isEmpty) {
+      _showErrorDialog('Event end date is required');
+      return false;
+    }
+    if (startTimeString.isEmpty) {
+      _showErrorDialog('Event start time is required');
+      return false;
+    }
+    if (endTimeString.isEmpty) {
+      _showErrorDialog('Event end time is required');
       return false;
     }
     if (location.isEmpty) {
@@ -72,13 +89,25 @@ class CreateEventPageState extends State<CreateEventPage> {
       _showErrorDialog('Event cannot be scheduled in the past');
       return false;
     }
+    if (!_isStartDateBeforeEndDate()) {
+      _showErrorDialog('Event start date must be before end date');
+      return false;
+    }
     return true;
+  }
+
+  bool _isStartDateBeforeEndDate() {
+    final startDateTime = DateTime(startDate.year, startDate.month,
+        startDate.day, startTime.hour, startTime.minute);
+    final endDateTime = DateTime(
+        endDate.year, endDate.month, endDate.day, endTime.hour, endTime.minute);
+    return startDateTime.isBefore(endDateTime);
   }
 
   bool _isEventInThePast() {
     final now = DateTime.now();
-    final eventDateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    final eventDateTime = DateTime(startDate.year, startDate.month,
+        startDate.day, startTime.hour, startTime.minute);
     return eventDateTime.isBefore(now);
   }
 
@@ -109,9 +138,13 @@ class CreateEventPageState extends State<CreateEventPage> {
         name: _eventNameController.text,
         admin: widget.uuid,
         description: _eventDescriptionController.text,
-        date: DateTime(date.year, date.month, date.day, time.hour, time.minute),
+        startDate: DateTime(startDate.year, startDate.month, startDate.day,
+            startTime.hour, startTime.minute),
+        endDate: DateTime(endDate.year, endDate.month, endDate.day,
+            endTime.hour, endTime.minute),
         members: [widget.uuid],
         isPublic: isPublic,
+        notify: notify,
         imagePath: selectedImagePath.isNotEmpty ? '' : null,
         location: _selectedLocation!,
       );
@@ -172,7 +205,10 @@ class CreateEventPageState extends State<CreateEventPage> {
                   ),
                   decoration: BoxDecoration(
                     color: CupertinoColors.extraLightBackgroundGray,
-                    border: Border.all(color: CupertinoColors.systemGrey4),
+                    border: Border.all(
+                      color: CupertinoColors.systemGrey4,
+                      width: 2.0,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -194,91 +230,264 @@ class CreateEventPageState extends State<CreateEventPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                CupertinoFormSection.insetGrouped(
-                  margin: const EdgeInsets.all(12),
-                  header: const Text('Date and Time'),
-                  children: [
-                    CupertinoTextFormFieldRow(
-                      readOnly: true,
-                      prefix: DatePicker(
-                        initialDateTime: date,
-                        onDateTimeChanged: (selectedDate) => setState(() {
-                          date = selectedDate;
-                          dateString = DateFormat('dd/MM/yyyy').format(date);
-                          debugPrint('Selected date: $dateString');
-                        }),
-                      ),
-                      placeholder: dateString == '' ? 'Date' : dateString,
-                      placeholderStyle: const TextStyle(
-                        color: CupertinoColors.systemGrey,
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    CupertinoTextFormFieldRow(
-                      readOnly: true,
-                      prefix: TimePicker(
-                        initialTime: time,
-                        onTimeChanged: (selectedTime) => setState(() {
-                          time = selectedTime;
-                          timeString = DateFormat('HH:mm').format(time);
-                          debugPrint('Selected time: $timeString');
-                        }),
-                      ),
-                      placeholder: timeString == '' ? 'Time' : timeString,
-                      placeholderStyle: const TextStyle(
-                        color: CupertinoColors.systemGrey,
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    CupertinoTextFormFieldRow(
-                      readOnly: true,
-                      prefix: CupertinoButton(
-                        padding: const EdgeInsets.all(12),
-                        color: CupertinoColors.extraLightBackgroundGray,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Icon(
-                          CupertinoIcons.map_pin_ellipse,
-                          color: CupertinoTheme.of(context).primaryColor,
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: CupertinoColors.extraLightBackgroundGray,
+                  ),
+                  child: Column(
+                    children: [
+                      CupertinoListTile(
+                        title: Container(
+                          decoration: const BoxDecoration(
+                            color: CupertinoColors.extraLightBackgroundGray,
+                          ),
+                          child: Row(
+                            children: [
+                              DatePicker(
+                                initialDateTime: startDate,
+                                onDateTimeChanged: (selectedDate) =>
+                                    setState(() {
+                                  startDate = selectedDate;
+                                  startDateString = DateFormat('dd/MM/yyyy')
+                                      .format(startDate);
+                                }),
+                              ),
+                              Text(
+                                startDateString == ''
+                                    ? 'Start Date'
+                                    : startDateString,
+                                style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                        onPressed: () => _selectLocation(context),
                       ),
-                      placeholder: location == '' ? 'Location' : location,
-                      placeholderStyle: const TextStyle(
-                        color: CupertinoColors.systemGrey,
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
                       ),
-                    ),
-                  ],
+                      CupertinoListTile(
+                        title: Container(
+                          decoration: const BoxDecoration(
+                            color: CupertinoColors.extraLightBackgroundGray,
+                          ),
+                          child: Row(
+                            children: [
+                              DatePicker(
+                                initialDateTime: endDate,
+                                onDateTimeChanged: (selectedDate) =>
+                                    setState(() {
+                                  endDate = selectedDate;
+                                  endDateString =
+                                      DateFormat('dd/MM/yyyy').format(endDate);
+                                }),
+                              ),
+                              Text(
+                                endDateString == ''
+                                    ? 'End Date'
+                                    : endDateString,
+                                style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                          title: Container(
+                        decoration: const BoxDecoration(
+                          color: CupertinoColors.extraLightBackgroundGray,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TimePicker(
+                              initialTime: startTime,
+                              onTimeChanged: (selectedTime) => setState(
+                                () {
+                                  startTime = selectedTime;
+                                  startTimeString =
+                                      DateFormat('HH:mm').format(startTime);
+                                },
+                              ),
+                            ),
+                            Text(
+                              startTimeString == ''
+                                  ? 'Start Time'
+                                  : startTimeString,
+                              style: const TextStyle(
+                                color: CupertinoColors.systemGrey,
+                                fontSize: 14,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                        title: Container(
+                          decoration: const BoxDecoration(
+                            //borderRadius: BorderRadius.circular(10),
+                            color: CupertinoColors.extraLightBackgroundGray,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              TimePicker(
+                                initialTime: endTime,
+                                onTimeChanged: (selectedTime) => setState(() {
+                                  endTime = selectedTime;
+                                  endTimeString =
+                                      DateFormat('HH:mm').format(endTime);
+                                }),
+                              ),
+                              Text(
+                                endTimeString == ''
+                                    ? 'End Time'
+                                    : endTimeString,
+                                style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                        title: Container(
+                          decoration: const BoxDecoration(
+                            //borderRadius: BorderRadius.circular(10),
+                            color: CupertinoColors.extraLightBackgroundGray,
+                          ),
+                          child: Row(
+                            children: [
+                              CupertinoButton(
+                                padding: const EdgeInsets.all(12),
+                                color: CupertinoColors.extraLightBackgroundGray,
+                                borderRadius: BorderRadius.circular(30),
+                                child: Icon(
+                                  CupertinoIcons.map_pin_ellipse,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                ),
+                                onPressed: () => _selectLocation(context),
+                              ),
+                              Text(
+                                location == '' ? 'Location' : location,
+                                style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Public Event',
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoColors.systemGrey),
-                    ),
-                    const SizedBox(width: 10),
-                    Transform.scale(
-                      scale: 0.75,
-                      child: CupertinoSwitch(
-                        value: isPublic,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isPublic = value;
-                          });
-                        },
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: CupertinoColors.extraLightBackgroundGray,
+                  ),
+                  child: Column(
+                    children: [
+                      CupertinoListTile(
+                        title: const Row(
+                          children: [
+                            Icon(CupertinoIcons.person_3_fill),
+                            SizedBox(width: 10),
+                            Text('Partecipants'),
+                          ],
+                        ),
+                        trailing: const Icon(CupertinoIcons.forward),
+                        onTap: () {},
                       ),
-                    ),
-                  ],
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                        title: Row(
+                          children: [
+                            notify
+                                ? const Icon(
+                                    CupertinoIcons.bell_fill,
+                                  )
+                                : const Icon(
+                                    CupertinoIcons.bell_slash_fill,
+                                  ),
+                            const SizedBox(width: 10),
+                            const Text('Notifications'),
+                          ],
+                        ),
+                        trailing: Transform.scale(
+                          scale: 0.75,
+                          child: CupertinoSwitch(
+                            value: notify,
+                            onChanged: (bool value) {
+                              setState(() {
+                                notify = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                        title: Row(
+                          children: [
+                            isPublic
+                                ? const Icon(CupertinoIcons.lock_open_fill)
+                                : const Icon(CupertinoIcons.lock_fill),
+                            const SizedBox(width: 10),
+                            const Text('Public Event'),
+                          ],
+                        ),
+                        trailing: Transform.scale(
+                          scale: 0.75,
+                          child: CupertinoSwitch(
+                            value: isPublic,
+                            onChanged: (bool value) {
+                              setState(() {
+                                isPublic = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 100),
+                const SizedBox(height: 60),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -309,7 +518,12 @@ class CreateEventPageState extends State<CreateEventPage> {
 
   DateTime getTime() {
     final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day, now.hour, 15);
+    return DateTime(now.year, now.month, now.day, now.hour, 0);
+  }
+
+  DateTime getEndTime() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, now.hour + 1, 0);
   }
 
   Future<void> _selectLocation(BuildContext context) async {

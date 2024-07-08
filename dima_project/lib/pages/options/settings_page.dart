@@ -120,7 +120,7 @@ class SettingsPageState extends State<SettingsPage> {
               ),
             )
           },
-          child: CreateImageWidget.getEventImageMemory(
+          child: CreateImageWidget.getUserImageMemory(
             selectedImagePath!,
           ),
         ),

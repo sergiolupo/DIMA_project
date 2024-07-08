@@ -11,19 +11,23 @@ class Event {
   final List<String> members;
   final bool isPublic;
   final List<String>? requests;
-  final DateTime date;
+  final DateTime startDate;
+  final DateTime endDate;
   final LatLng location;
+  final bool notify;
   Event({
     required this.name,
     this.id,
     required this.admin,
     this.imagePath,
     required this.description,
-    required this.date,
+    required this.startDate,
+    required this.endDate,
     required this.members,
     required this.isPublic,
     this.requests,
     required this.location,
+    required this.notify,
   });
 
   static Map<String, dynamic> toMap(Event event) {
@@ -33,11 +37,13 @@ class Event {
       'admin': event.admin,
       'imagePath': event.imagePath,
       'description': event.description,
-      'date': event.date,
+      'startDate': event.startDate,
+      'endDate': event.endDate,
       'members': event.members,
       'isPublic': event.isPublic,
       'requests': event.requests ?? [],
       'location': GeoPoint(event.location.latitude, event.location.longitude),
+      'notify': event.notify,
     };
   }
 
@@ -48,7 +54,8 @@ class Event {
       admin: documentSnapshot['admin'],
       imagePath: documentSnapshot['imagePath'],
       description: documentSnapshot['description'],
-      date: (documentSnapshot['date'] as Timestamp).toDate(),
+      startDate: (documentSnapshot['startDate'] as Timestamp).toDate(),
+      endDate: (documentSnapshot['endDate'] as Timestamp).toDate(),
       members: List<String>.from(documentSnapshot['members']),
       isPublic: documentSnapshot['isPublic'],
       requests: List<String>.from(documentSnapshot['requests']),
@@ -56,6 +63,7 @@ class Event {
         documentSnapshot['location'].latitude,
         documentSnapshot['location'].longitude,
       ),
+      notify: documentSnapshot['notify'],
     );
   }
 }

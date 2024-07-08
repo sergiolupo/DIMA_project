@@ -12,6 +12,7 @@ class Group {
   final List<String>? members;
   final bool isPublic;
   final List<String>? requests;
+  final bool notify;
   Group({
     required this.name,
     required this.id,
@@ -23,6 +24,7 @@ class Group {
     this.members,
     required this.isPublic,
     this.requests,
+    required this.notify,
   });
 
   static Group fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -52,6 +54,7 @@ class Group {
           .map((request) => request.toString())
           .toList()
           .cast<String>(),
+      notify: documentSnapshot['notify'],
     );
   }
 }

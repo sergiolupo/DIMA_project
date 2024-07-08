@@ -47,68 +47,70 @@ class ImageCropPageState extends State<ImageCropPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 20),
-        ClipOval(
-          child: Container(
-            width: 300,
-            height: 300,
-            color: CupertinoColors.lightBackgroundGray,
-            child: _selectedImagePath.isNotEmpty
-                ? Image.memory(
-                    _selectedImagePath,
-                    fit: BoxFit.cover,
-                  )
-                : _getDefaultImage(),
+    return CupertinoPageScaffold(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(height: 20),
+          ClipOval(
+            child: Container(
+              width: 300,
+              height: 300,
+              color: CupertinoColors.lightBackgroundGray,
+              child: _selectedImagePath.isNotEmpty
+                  ? Image.memory(
+                      _selectedImagePath,
+                      fit: BoxFit.cover,
+                    )
+                  : _getDefaultImage(),
+            ),
           ),
-        ),
-        CupertinoButton(
-          onPressed: _pickImage,
-          child: const Row(
-            children: [
-              Icon(
-                CupertinoIcons.pencil,
-                color: CupertinoColors.white,
-              ),
-              Text('Pick Image'),
-            ],
+          CupertinoButton(
+            onPressed: _pickImage,
+            child: const Row(
+              children: [
+                Icon(
+                  CupertinoIcons.pencil,
+                  color: CupertinoColors.white,
+                ),
+                Text('Pick Image'),
+              ],
+            ),
           ),
-        ),
-        CupertinoButton(
-          onPressed: () {
-            setState(() {
-              _selectedImagePath = Uint8List(0);
-              widget.imageInsertPageKey(_selectedImagePath);
-            });
-          },
-          child: const Row(
-            children: [
-              Icon(
-                CupertinoIcons.delete,
-                color: CupertinoColors.white,
-              ),
-              Text('Delete Image'),
-            ],
+          CupertinoButton(
+            onPressed: () {
+              setState(() {
+                _selectedImagePath = Uint8List(0);
+                widget.imageInsertPageKey(_selectedImagePath);
+              });
+            },
+            child: const Row(
+              children: [
+                Icon(
+                  CupertinoIcons.delete,
+                  color: CupertinoColors.white,
+                ),
+                Text('Delete Image'),
+              ],
+            ),
           ),
-        ),
-        CupertinoButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Row(
-            children: [
-              Icon(
-                CupertinoIcons.check_mark,
-                color: CupertinoColors.white,
-              ),
-              Text('Save Image'),
-            ],
+          CupertinoButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Row(
+              children: [
+                Icon(
+                  CupertinoIcons.check_mark,
+                  color: CupertinoColors.white,
+                ),
+                Text('Save Image'),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

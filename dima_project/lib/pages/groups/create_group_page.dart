@@ -27,6 +27,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   List<String> selectedCategories = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isPublic = true;
+  bool notify = true;
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -109,14 +110,29 @@ class CreateGroupPageState extends State<CreateGroupPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        Container(
+          alignment: Alignment.center,
+          child: Column(
             children: [
-              Expanded(
-                flex: 2,
-                child: GestureDetector(
+              CupertinoTextFormFieldRow(
+                controller: _groupNameController,
+                placeholder: 'Group Name',
+                decoration: BoxDecoration(
+                  color: CupertinoColors.extraLightBackgroundGray,
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(
+                    color: CupertinoColors.systemGrey4,
+                    width: 2.0,
+                  ),
+                ),
+                padding: const EdgeInsets.all(3.0),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a group name';
+                  }
+                  return null;
+                },
+                prefix: GestureDetector(
                   onTap: () => {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
@@ -136,28 +152,6 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 ),
               ),
               const SizedBox(width: 20),
-              Expanded(
-                flex: 4,
-                child: CupertinoTextFormFieldRow(
-                  controller: _groupNameController,
-                  placeholder: 'Group Name',
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(
-                      color: CupertinoColors.systemGrey4,
-                      width: 2.0,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(3.0),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a group name';
-                    }
-                    return null;
-                  },
-                ),
-              ),
             ],
           ),
         ),
@@ -171,8 +165,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
             maxLines: 5,
             maxLength: 200,
             decoration: BoxDecoration(
-              color: CupertinoColors.white,
-              borderRadius: BorderRadius.circular(8.0),
+              color: CupertinoColors.extraLightBackgroundGray,
+              borderRadius: BorderRadius.circular(10.0),
               border: Border.all(
                 color: CupertinoColors.systemGrey4,
                 width: 2.0,
@@ -188,21 +182,59 @@ class CreateGroupPageState extends State<CreateGroupPage> {
           ),
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            const Text('Public group', style: TextStyle(fontSize: 16)),
-            const SizedBox(width: 10),
-            CupertinoSwitch(
-              value: isPublic,
-              onChanged: (bool value) {
-                setState(() {
-                  setState(() {
-                    isPublic = value;
-                  });
-                });
-              },
-            ),
-          ],
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: CupertinoColors.extraLightBackgroundGray,
+          ),
+          child: Column(
+            children: [
+              CupertinoListTile(
+                title: const Text('Members'),
+                leading: const Icon(CupertinoIcons.person_3_fill),
+                trailing: const Icon(CupertinoIcons.forward),
+                onTap: () {},
+              ),
+              Container(
+                height: 1,
+                color: CupertinoColors.opaqueSeparator,
+              ),
+              CupertinoListTile(
+                title: const Text('Notifications'),
+                leading: const Icon(CupertinoIcons.bell_fill),
+                trailing: Transform.scale(
+                  scale: 0.75,
+                  child: CupertinoSwitch(
+                    value: notify,
+                    onChanged: (bool value) {
+                      setState(() {
+                        notify = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              Container(
+                height: 1,
+                color: CupertinoColors.opaqueSeparator,
+              ),
+              CupertinoListTile(
+                leading: const Icon(CupertinoIcons.lock_open_fill),
+                title: const Text('Public Group'),
+                trailing: Transform.scale(
+                  scale: 0.75,
+                  child: CupertinoSwitch(
+                    value: isPublic,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isPublic = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -248,7 +280,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               admin: widget.uuid,
               description: _groupDescriptionController.text,
               categories: selectedCategories,
-              isPublic: isPublic),
+              isPublic: isPublic,
+              notify: notify),
           selectedImagePath,
         );
       }

@@ -5,7 +5,6 @@ import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
@@ -20,7 +19,8 @@ class EditGroupPageState extends State<EditGroupPage> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   Uint8List? selectedImagePath;
-  bool isPrivate = true;
+  bool isPublic = true;
+  bool notify = true;
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -31,7 +31,8 @@ class EditGroupPageState extends State<EditGroupPage> {
   @override
   void initState() {
     super.initState();
-    isPrivate = widget.group.isPublic;
+    isPublic = widget.group.isPublic;
+    notify = widget.group.notify;
     _fetchProfileImage();
   }
 
@@ -146,23 +147,41 @@ class EditGroupPageState extends State<EditGroupPage> {
                         ),
                         child: Column(
                           children: [
-                            const CupertinoListTile(
-                              title: Text('Notifications'),
-                              leading: Icon(CupertinoIcons.bell),
-                              trailing: Icon(CupertinoIcons.chevron_forward),
+                            CupertinoListTile(
+                              title: const Text('Members'),
+                              leading: const Icon(CupertinoIcons.person_3_fill),
+                              trailing: const Icon(CupertinoIcons.forward),
+                              onTap: () {},
                             ),
-                            const Divider(
+                            Container(
                               height: 1,
-                              thickness: 0.5,
+                              color: CupertinoColors.opaqueSeparator,
                             ),
                             CupertinoListTile(
-                              leading: const Icon(CupertinoIcons.lock),
-                              title: const Text('Private Group'),
+                              title: const Text('Notifications'),
+                              leading: const Icon(CupertinoIcons.bell_fill),
                               trailing: CupertinoSwitch(
-                                value: isPrivate,
+                                value: notify,
                                 onChanged: (bool value) {
                                   setState(() {
-                                    isPrivate = value;
+                                    notify = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              height: 1,
+                              color: CupertinoColors.opaqueSeparator,
+                            ),
+                            CupertinoListTile(
+                              leading:
+                                  const Icon(CupertinoIcons.lock_open_fill),
+                              title: const Text('Public Group'),
+                              trailing: CupertinoSwitch(
+                                value: isPublic,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    isPublic = value;
                                   });
                                 },
                               ),

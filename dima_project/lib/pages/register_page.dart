@@ -69,7 +69,7 @@ class RegisterPageState extends State<RegisterPage> {
               ),
             )
           },
-          child: CreateImageWidget.getEventImageMemory(
+          child: CreateImageWidget.getUserImageMemory(
             selectedImagePath,
           ),
         );
