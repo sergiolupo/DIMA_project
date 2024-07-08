@@ -116,7 +116,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               Expanded(
                 flex: 2,
                 child: ImageInsertForm(
-                  imageForGroup: true,
+                  imageType: 1,
                   imagePath: selectedImagePath,
                   imageInsertPageKey: (Uint8List selectedImagePath) {
                     this.selectedImagePath = selectedImagePath;

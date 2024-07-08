@@ -10,12 +10,15 @@ import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/event.dart';
+
 class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final groupsRef = _firestore.collection('groups');
   static final usersRef = _firestore.collection('users');
   static final followersRef = _firestore.collection('followers');
   static final privateChatRef = _firestore.collection('private_chats');
+  static final eventsRef = _firestore.collection('events');
   static Future<void> registerUserWithUUID(
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
@@ -957,5 +960,28 @@ class DatabaseService {
     await followersRef.doc(uuid).update({
       'requests': FieldValue.arrayRemove([user])
     });
+  }
+
+  static Future<void> createEvent(
+      Event event, String uuid, Uint8List imagePath) async {
+    try {
+      DocumentReference docRef = await eventsRef.add(Event.toMap(event));
+
+      String imageUrl = imagePath.toString() == '[]'
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'event_images/${docRef.id}.jpg', imagePath);
+
+      await eventsRef.doc(docRef.id).update({
+        'imagePath': imageUrl,
+      });
+      return await usersRef.doc(uuid).update({
+        'events': FieldValue.arrayUnion([
+          docRef.id,
+        ])
+      });
+    } catch (e) {
+      debugPrint("Error while creating the event: $e");
+    }
   }
 }

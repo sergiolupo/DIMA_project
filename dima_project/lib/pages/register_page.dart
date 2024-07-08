@@ -55,7 +55,7 @@ class RegisterPageState extends State<RegisterPage> {
         break;
       case 3:
         page = ImageInsertForm(
-          imageForGroup: false,
+          imageType: 0,
           imagePath: selectedImagePath,
           imageInsertPageKey: (Uint8List selectedImagePath) {
             this.selectedImagePath = selectedImagePath;

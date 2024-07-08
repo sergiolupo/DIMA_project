@@ -106,7 +106,7 @@ class SettingsPageState extends State<SettingsPage> {
     return Column(
       children: [
         ImageInsertForm(
-          imageForGroup: false,
+          imageType: 3,
           imagePath: selectedImagePath,
           imageInsertPageKey: (Uint8List selectedImagePath) {
             setState(() {

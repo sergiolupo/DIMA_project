@@ -6,12 +6,12 @@ import 'package:image_picker/image_picker.dart';
 class ImageInsertForm extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
-  final bool imageForGroup;
+  final int imageType; // 0 for user, 1 for group, 2 for event
   const ImageInsertForm({
     super.key,
     this.imagePath,
     required this.imageInsertPageKey,
-    required this.imageForGroup,
+    required this.imageType,
   });
 
   @override
@@ -61,15 +61,20 @@ class ImageInsertFormState extends State<ImageInsertForm> {
                         _selectedImagePath,
                         fit: BoxFit.cover,
                       )
-                    : widget.imageForGroup
+                    : widget.imageType == 1
                         ? Image.asset(
                             'assets/default_group_image.png',
                             fit: BoxFit.cover,
                           )
-                        : Image.asset(
-                            'assets/default_user_image.png',
-                            fit: BoxFit.cover,
-                          ),
+                        : widget.imageType == 2
+                            ? Image.asset(
+                                'assets/default_event_image.png',
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/default_user_image.png',
+                                fit: BoxFit.cover,
+                              ),
               ),
             ),
             Positioned(
