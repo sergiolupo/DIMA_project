@@ -49,40 +49,38 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: SafeArea(
-          child: SingleChildScrollView(
-            child: StreamBuilder(
-              stream: widget.privateChat.members[0] != widget.uuid
-                  ? DatabaseService.getUserInfo(widget.privateChat.members[0])
-                  : DatabaseService.getUserInfo(widget.privateChat.members[1]),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final user =
-                      UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
+        middle: SingleChildScrollView(
+          child: StreamBuilder(
+            stream: widget.privateChat.members[0] != widget.uuid
+                ? DatabaseService.getUserInfo(widget.privateChat.members[0])
+                : DatabaseService.getUserInfo(widget.privateChat.members[1]),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final user =
+                    UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
 
-                  return Row(
-                    children: [
-                      CreateImageWidget.getUserImage(
-                        user.imagePath!,
-                        small: true,
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.username,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            _userStatus(user),
-                          ]),
-                    ],
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+                return Row(
+                  children: [
+                    CreateImageWidget.getUserImage(
+                      user.imagePath!,
+                      small: true,
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.username,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          _userStatus(user),
+                        ]),
+                  ],
+                );
+              } else {
+                return Container();
+              }
+            },
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,

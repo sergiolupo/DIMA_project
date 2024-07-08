@@ -452,6 +452,11 @@ class DatabaseService {
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
         final id = change.doc.id;
+        if (!change.doc
+            .data()!['members']
+            .contains(FirebaseAuth.instance.currentUser!.uid)) {
+          continue;
+        }
         final privateChat = PrivateChat.fromSnapshot(change.doc);
         if (change.type == DocumentChangeType.removed) {
           chatsList.removeWhere((g) => g.id == id);
