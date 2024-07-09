@@ -414,6 +414,21 @@ class DatabaseService {
     });
   }
 
+  static Future<List<Group>> getGroups(String uuid) async {
+    final groupIds = await usersRef.doc(uuid).get().then((value) {
+      return value['groups'];
+    });
+
+    final groupsList = <Group>[];
+    for (var groupId in groupIds) {
+      final snapshot = await groupsRef.doc(groupId).get();
+      if (snapshot.exists) {
+        groupsList.add(Group.fromSnapshot(snapshot));
+      }
+    }
+    return groupsList;
+  }
+
   static Stream<List<Group>> getGroupsStream(String uuid) async* {
     final groupIds = await usersRef.doc(uuid).get().then((value) {
       return value['groups'];
@@ -516,6 +531,11 @@ class DatabaseService {
     return stream.map((snapshot) {
       return snapshot;
     });
+  }
+
+  static Future<DocumentSnapshot<Map<String, dynamic>>> getFollowersUser(
+      String uuid) async {
+    return await followersRef.doc(uuid).get();
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(

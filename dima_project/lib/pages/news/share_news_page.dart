@@ -19,9 +19,28 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   List<String> uuids = [];
   List<String> groupsIds = [];
   int index = 0;
+  List<Group>? groups;
+  List<UserData>? users;
   @override
   void initState() {
     super.initState();
+    fetchGroups();
+    fetchUsers();
+  }
+
+  void fetchGroups() async {
+    groups = await DatabaseService.getGroups(widget.uuid);
+    setState(() {});
+  }
+
+  void fetchUsers() async {
+    final doc = await DatabaseService.getFollowersUser(widget.uuid);
+    if (doc.exists && doc.data() != null && doc.data()!['followers'] != null) {
+      final followers = List<String>.from(doc.data()!['followers']);
+      users = await Future.wait(
+          followers.map((uuid) => DatabaseService.getUserData(uuid)).toList());
+      setState(() {});
+    }
   }
 
   @override
@@ -51,8 +70,8 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                     });
                   },
                 ),
-                getGroups(),
-                getUsers(),
+                if (index == 0) getGroups(),
+                if (index == 1) getUsers(),
               ],
             ),
             Visibility(
@@ -63,7 +82,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                   child: CupertinoButton(
                     child: const Icon(CupertinoIcons.paperplane),
                     onPressed: () {
-                      Map<String, List<String>> map = {
+                      dynamic map = {
                         "users": uuids,
                         "groups": groupsIds,
                       };
@@ -79,88 +98,63 @@ class ShareNewsPageState extends State<ShareNewsPage> {
     );
   }
 
-  getUsers() {
-    return Visibility(
-      visible: index == 1,
-      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: DatabaseService.getFollowersStreamUser(widget.uuid),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CupertinoActivityIndicator());
-          }
-          if (snapshot.data!.data()!["followers"].isEmpty) {
-            return const Center(
-              child: Text("No followers"),
-            );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.data()!["followers"].length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return StreamBuilder(
-                stream: DatabaseService.getUserDataFromUUID(
-                    snapshot.data!.data()!["followers"][index]),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(child: CupertinoActivityIndicator());
-                  }
-                  return ShareUserTile(
-                    user: snapshot.data!,
-                    onSelected: (String uuid) {
-                      setState(() {
-                        if (uuids.contains(uuid)) {
-                          uuids.remove(uuid);
-                        } else {
-                          uuids.add(uuid);
-                        }
-                      });
-                    },
-                    active: uuids.contains(snapshot.data!.uuid!),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+  Widget getUsers() {
+    if (users == null) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
+    if (users!.isEmpty) {
+      return const Center(
+        child: Text("No followers"),
+      );
+    }
+    return ListView.builder(
+      itemCount: users!.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return ShareUserTile(
+          user: users![index],
+          onSelected: (String uuid) {
+            setState(() {
+              if (uuids.contains(uuid)) {
+                uuids.remove(uuid);
+              } else {
+                uuids.add(uuid);
+              }
+            });
+          },
+          active: uuids.contains(users![index].uuid!),
+        );
+      },
     );
   }
 
-  getGroups() {
-    return Visibility(
-      visible: index == 0,
-      child: StreamBuilder<List<Group>>(
-        stream: DatabaseService.getGroupsStream(widget.uuid),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CupertinoActivityIndicator());
-          }
-          if (snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text("No groups"),
-            );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return ShareGroupTile(
-                group: snapshot.data![index],
-                onSelected: (String id) {
-                  setState(() {
-                    if (groupsIds.contains(id)) {
-                      groupsIds.remove(id);
-                    } else {
-                      groupsIds.add(id);
-                    }
-                  });
-                },
-                active: groupsIds.contains(snapshot.data![index].id),
-              );
-            },
-          );
-        },
-      ),
+  Widget getGroups() {
+    if (groups == null) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
+    if (groups!.isEmpty) {
+      return const Center(
+        child: Text("No groups"),
+      );
+    }
+    return ListView.builder(
+      itemCount: groups!.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return ShareGroupTile(
+          group: groups![index],
+          onSelected: (String id) {
+            setState(() {
+              if (groupsIds.contains(id)) {
+                groupsIds.remove(id);
+              } else {
+                groupsIds.add(id);
+              }
+            });
+          },
+          active: groupsIds.contains(groups![index].id),
+        );
+      },
     );
   }
 }

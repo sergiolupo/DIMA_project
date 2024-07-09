@@ -40,9 +40,8 @@ class _ArticleViewState extends State<ArticleView> {
                       builder: (context) => ShareNewsPage(
                             uuid: FirebaseAuth.instance.currentUser!.uid,
                           )));
-              debugPrint(ids);
-              if (ids != null) {
-                for (var id in ids) {
+              if (ids is Map && ids['groups'].isNotEmpty) {
+                for (var id in ids['groups']) {
                   await DatabaseService.shareNews(widget.title,
                       widget.description, widget.imageUrl, widget.blogUrl, id);
                 }
