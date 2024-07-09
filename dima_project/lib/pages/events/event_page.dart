@@ -190,18 +190,7 @@ class EventPageState extends State<EventPage> {
                               ShowDate(date: event.endDate)
                             ],
                           ),
-
-                          /*DateTime(
-                                      event.startDate.year,
-                                      event.startDate.month,
-                                      event.startDate.day,
-                                      event.startDate.hour,
-                                      event.startDate.minute)
-                                  .isBefore(DateTime.now())
-                              ? ShowDate(date: event.startDate)
-                              : ShowDate(date: event.endDate),*/
-                          const SizedBox(height: 10),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
                           FutureBuilder(
                               future: EventService.getAddressFromLatLng(
                                   event.location),
@@ -283,7 +272,7 @@ class EventPageState extends State<EventPage> {
   }
 
   TileLayer get openStreetMapTileLayer => TileLayer(
-        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         userAgentPackageName: 'polimi.dima_project.agorapp',
       );
   _checkJoin() async {

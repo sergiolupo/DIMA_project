@@ -20,7 +20,6 @@ class LocationPageState extends State<LocationPage> {
   }
 
   initPosition() async {
-    debugPrint('Initial position: ${widget.initialLocation}');
     if (widget.initialLocation != null) {
       setState(() {
         selectedLocation = widget.initialLocation;
@@ -97,7 +96,7 @@ class LocationPageState extends State<LocationPage> {
   }
 
   TileLayer get openStreetMapTileLayer => TileLayer(
-        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         userAgentPackageName: 'polimi.dima_project.agorapp',
       );
 }
