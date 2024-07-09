@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
@@ -41,6 +42,7 @@ class CreateEventPageState extends State<CreateEventPage> {
   LatLng? _selectedLocation;
   bool isPublic = true;
   bool notify = true;
+  List<String> uuids = [];
 
   @override
   void dispose() {
@@ -134,6 +136,7 @@ class CreateEventPageState extends State<CreateEventPage> {
 
   Future<void> _createEvent() async {
     if (_validateForm()) {
+      debugPrint('uuids $uuids');
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
@@ -428,7 +431,25 @@ class CreateEventPageState extends State<CreateEventPage> {
                           ],
                         ),
                         trailing: const Icon(CupertinoIcons.forward),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => InvitePage(
+                                uuid: widget.uuid,
+                                invitedUsers: uuids,
+                                invitePageKey: (String uuid) {
+                                  setState(() {
+                                    if (uuids.contains(uuid)) {
+                                      uuids.remove(uuid);
+                                    } else {
+                                      uuids.add(uuid);
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       Container(
                         height: 1,
