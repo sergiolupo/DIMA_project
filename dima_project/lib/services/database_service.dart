@@ -338,6 +338,11 @@ class DatabaseService {
           usersRef.doc(uuid).update({
             'groups': FieldValue.arrayUnion([groupId])
           }),
+          if ((await usersRef.doc(uuid).get())['groupsRequests']
+              .contains(groupId))
+            usersRef.doc(uuid).update({
+              'groupsRequests': FieldValue.arrayRemove([groupId])
+            }),
         ]);
       } else {
         if (!groupDoc['requests'].contains(uuid)) {
@@ -1004,6 +1009,10 @@ class DatabaseService {
       usersRef.doc(uuid).update({
         'groups': FieldValue.arrayUnion([groupId])
       }),
+      if ((await usersRef.doc(uuid).get())['groupsRequests'].contains(groupId))
+        usersRef.doc(uuid).update({
+          'groupsRequests': FieldValue.arrayRemove([groupId])
+        }),
     ]);
   }
 
@@ -1063,6 +1072,10 @@ class DatabaseService {
       usersRef.doc(uuid).update({
         'eventsRequests': FieldValue.arrayRemove([eventId])
       }),
+      if ((await eventsRef.doc(eventId).get())['requests'].contains(uuid))
+        eventsRef.doc(eventId).update({
+          'requests': FieldValue.arrayRemove([uuid])
+        }),
     ]);
   }
 
@@ -1081,6 +1094,10 @@ class DatabaseService {
       usersRef.doc(uuid).update({
         'groupsRequests': FieldValue.arrayRemove([groupId])
       }),
+      if ((await groupsRef.doc(groupId).get())['requests'].contains(uuid))
+        groupsRef.doc(groupId).update({
+          'requests': FieldValue.arrayRemove([groupId])
+        }),
     ]);
   }
 
@@ -1160,6 +1177,11 @@ class DatabaseService {
           usersRef.doc(uuid).update({
             'events': FieldValue.arrayUnion([eventId])
           }),
+          if ((await usersRef.doc(uuid).get())['eventsRequests']
+              .contains(eventId))
+            usersRef.doc(uuid).update({
+              'eventsRequests': FieldValue.arrayRemove([eventId])
+            }),
         ]);
       } else {
         if (!eventDoc['requests'].contains(uuid)) {
