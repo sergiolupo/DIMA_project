@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
@@ -27,6 +28,9 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   List<String> selectedCategories = [];
   bool isPublic = true;
   bool notify = true;
+
+  List<String> uuids = [];
+
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -95,7 +99,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   void createGroup(Group group, Uint8List imagePath) async {
     if (_validateForm()) {
       await DatabaseService.createGroup(
-          group, FirebaseAuth.instance.currentUser!.uid, imagePath);
+          group, FirebaseAuth.instance.currentUser!.uid, imagePath, uuids);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -182,7 +186,23 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 title: const Text('Members'),
                 leading: const Icon(CupertinoIcons.person_3_fill),
                 trailing: const Icon(CupertinoIcons.forward),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                        builder: (context) => InvitePage(
+                            uuid: widget.uuid,
+                            invitePageKey: (String uuid) {
+                              setState(() {
+                                if (uuids.contains(uuid)) {
+                                  uuids.remove(uuid);
+                                } else {
+                                  uuids.add(uuid);
+                                }
+                              });
+                            },
+                            invitedUsers: uuids)),
+                  );
+                },
               ),
               Container(
                 height: 1,

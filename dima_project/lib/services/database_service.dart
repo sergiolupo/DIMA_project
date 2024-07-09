@@ -44,6 +44,7 @@ class DatabaseService {
       'isPublic': true,
       'events': [],
       'eventsRequests': [],
+      'groupsRequests': [],
     });
 
     await followersRef.doc(uuid).set({
@@ -121,6 +122,12 @@ class DatabaseService {
     });
   }
 
+  static Stream<Group> getGroupFromId(String id) {
+    return groupsRef.doc(id).snapshots().map((snapshot) {
+      return Group.fromSnapshot(snapshot);
+    });
+  }
+
   static Future<UserData> getUserDataFromUsername(String username) async {
     username = username.replaceAll('[', '').replaceAll(']', '');
 
@@ -170,6 +177,7 @@ class DatabaseService {
     Group group,
     String uid,
     Uint8List imagePath,
+    List<String> uuids,
   ) async {
     try {
       List<Map<String, dynamic>> serializedList =
@@ -200,11 +208,18 @@ class DatabaseService {
         'groupId': docRef.id,
         'groupImage': imageUrl,
       });
-      return await usersRef.doc(uid).update({
+      await usersRef.doc(uid).update({
         'groups': FieldValue.arrayUnion([
           docRef.id,
         ])
       });
+      for (String uuid in uuids) {
+        await usersRef.doc(uuid).update({
+          'groupsRequests': FieldValue.arrayUnion([
+            docRef.id,
+          ])
+        });
+      }
     } catch (e) {
       debugPrint("Error while creating the group: $e");
     }
@@ -962,6 +977,12 @@ class DatabaseService {
     });
   }
 
+  static Stream<List<dynamic>> getUserGroupRequests(String id) {
+    return usersRef.doc(id).snapshots().map((snapshot) {
+      return snapshot['groupsRequests'];
+    });
+  }
+
   static Stream<List<dynamic>> getFollowRequests(String id) {
     return followersRef.doc(id).snapshots().map((snapshot) {
       return snapshot['requests'];
@@ -1037,10 +1058,28 @@ class DatabaseService {
   static Future<void> acceptEventRequest(String eventId, String uuid) async {
     await Future.wait([
       eventsRef.doc(eventId).update({
-        'members': FieldValue.arrayUnion([eventId]),
+        'members': FieldValue.arrayUnion([uuid]),
       }),
       usersRef.doc(uuid).update({
         'eventsRequests': FieldValue.arrayRemove([eventId])
+      }),
+    ]);
+  }
+
+  static Future<void> denyUserGroupRequest(String groupId, String uuid) async {
+    await usersRef.doc(uuid).update({
+      'groupsRequests': FieldValue.arrayRemove([groupId])
+    });
+  }
+
+  static Future<void> acceptUserGroupRequest(
+      String groupId, String uuid) async {
+    await Future.wait([
+      groupsRef.doc(groupId).update({
+        'members': FieldValue.arrayUnion([uuid]),
+      }),
+      usersRef.doc(uuid).update({
+        'groupsRequests': FieldValue.arrayRemove([groupId])
       }),
     ]);
   }

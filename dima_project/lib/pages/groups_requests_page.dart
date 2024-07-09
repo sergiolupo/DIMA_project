@@ -1,17 +1,17 @@
-import 'package:dima_project/models/event.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/event_request_tile.dart';
+import 'package:dima_project/widgets/home/user_group_request_tile.dart';
 import 'package:flutter/cupertino.dart';
 
-class EventsRequestsPage extends StatefulWidget {
+class GroupsRequestsPage extends StatefulWidget {
   final String uuid;
-  const EventsRequestsPage({super.key, required this.uuid});
+  const GroupsRequestsPage({super.key, required this.uuid});
   @override
-  EventsRequestsPageState createState() => EventsRequestsPageState();
+  GroupsRequestsPageState createState() => GroupsRequestsPageState();
 }
 
-class EventsRequestsPageState extends State<EventsRequestsPage> {
-  Stream<List<dynamic>>? eventRequests;
+class GroupsRequestsPageState extends State<GroupsRequestsPage> {
+  Stream<List<dynamic>>? groupsRequests;
   @override
   void initState() {
     init();
@@ -19,16 +19,16 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
   }
 
   init() {
-    eventRequests = DatabaseService.getEventRequests(widget.uuid);
+    groupsRequests = DatabaseService.getUserGroupRequests(widget.uuid);
   }
 
   @override
   Widget build(BuildContext context) {
-    return eventRequests == null
+    return groupsRequests == null
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              middle: const Text('Event Requests'),
+              middle: const Text('Group Requests'),
               leading: CupertinoButton(
                 onPressed: () => Navigator.of(context).pop(),
                 padding: const EdgeInsets.only(left: 10),
@@ -37,7 +37,7 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
             ),
             child: SafeArea(
               child: StreamBuilder<List<dynamic>>(
-                stream: eventRequests,
+                stream: groupsRequests,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final List requests =
@@ -45,15 +45,16 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
                     return ListView.builder(
                         itemCount: requests.length,
                         itemBuilder: (context, index) {
-                          return StreamBuilder<Event>(
-                            stream: DatabaseService.getEventFromId(
+                          return StreamBuilder<Group>(
+                            stream: DatabaseService.getGroupFromId(
                               requests[index],
                             ),
                             builder: (context, snapshot) {
+                              debugPrint("Snapshot: $snapshot");
                               if (snapshot.hasData) {
-                                final event = snapshot.data!;
-                                return EventRequestTile(
-                                    event: event, uuid: widget.uuid);
+                                final group = snapshot.data!;
+                                return UserGroupRequestTile(
+                                    group: group, uuid: widget.uuid);
                               } else {
                                 return const Center(
                                   child: CupertinoActivityIndicator(),

@@ -1,5 +1,6 @@
 import 'package:dima_project/pages/events_requests_page.dart';
 import 'package:dima_project/pages/follow_requests_page.dart';
+import 'package:dima_project/pages/groups_requests_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -12,7 +13,7 @@ class ShowRequestPage extends StatefulWidget {
 
 class ShowRequestPageState extends State<ShowRequestPage> {
   Stream<int>? _numFollowRequests;
-
+  Stream<int>? _numGroupRequests;
   Stream<int>? _numEventRequests;
   @override
   void initState() {
@@ -22,8 +23,13 @@ class ShowRequestPageState extends State<ShowRequestPage> {
 
   init() {
     _numFollowRequests = DatabaseService.getFollowRequests(widget.uuid).map(
-      (event) {
-        return event.length;
+      (follow) {
+        return follow.length;
+      },
+    );
+    _numGroupRequests = DatabaseService.getUserGroupRequests(widget.uuid).map(
+      (group) {
+        return group.length;
       },
     );
     _numEventRequests = DatabaseService.getEventRequests(widget.uuid).map(
@@ -95,8 +101,43 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                       CupertinoListTile(
                         leading:
                             const Icon(CupertinoIcons.person_2_square_stack),
-                        title: const Text('Groups Requests'),
-                        onTap: () => {},
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Group Requests'),
+                            StreamBuilder<int>(
+                              stream: _numGroupRequests,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return snapshot.data! > 0
+                                      ? Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: CupertinoColors.systemRed,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            snapshot.data.toString(),
+                                            style: const TextStyle(
+                                              color: CupertinoColors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox();
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () => {
+                          Navigator.of(context, rootNavigator: true).push(
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      GroupsRequestsPage(uuid: widget.uuid)))
+                        },
                       ),
                       CupertinoListTile(
                         leading: const Icon(CupertinoIcons.calendar_badge_plus),
