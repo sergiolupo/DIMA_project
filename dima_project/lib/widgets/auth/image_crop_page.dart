@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageCropPage extends StatefulWidget {
@@ -29,9 +30,9 @@ class ImageCropPageState extends State<ImageCropPage> {
     _selectedImagePath = widget.imagePath ?? Uint8List(0);
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(bool isCamera) async {
     final pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: isCamera ? ImageSource.camera : ImageSource.gallery,
       maxHeight: 500,
       maxWidth: 500,
       imageQuality: 80,
@@ -43,73 +44,90 @@ class ImageCropPageState extends State<ImageCropPage> {
         widget.imageInsertPageKey(_selectedImagePath);
       });
     }
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 20),
-          ClipOval(
-            child: Container(
-              width: 300,
-              height: 300,
-              color: CupertinoColors.lightBackgroundGray,
-              child: _selectedImagePath.isNotEmpty
-                  ? Image.memory(
-                      _selectedImagePath,
-                      fit: BoxFit.cover,
-                    )
-                  : _getDefaultImage(),
-            ),
+      navigationBar: CupertinoNavigationBar(
+        trailing: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () => showSheet(),
+          child: const Text(
+            'Edit',
+            style: TextStyle(
+                color: CupertinoColors.black, fontWeight: FontWeight.bold),
           ),
-          CupertinoButton(
-            onPressed: _pickImage,
-            child: const Row(
-              children: [
-                Icon(
-                  CupertinoIcons.pencil,
-                  color: CupertinoColors.white,
+        ),
+        leading: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Row(
+            children: [
+              Icon(
+                CupertinoIcons.back,
+                color: CupertinoColors.black,
+                size: 30.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 2.0),
+                child: Text(
+                  'Back',
+                  style: TextStyle(color: CupertinoColors.black),
                 ),
-                Text('Pick Image'),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: CupertinoColors.white,
+      ),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                height: 500,
+                color: CupertinoColors.lightBackgroundGray,
+                child: _selectedImagePath.isNotEmpty
+                    ? Image.memory(
+                        _selectedImagePath,
+                        fit: BoxFit.cover,
+                      )
+                    : _getDefaultImage(),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CupertinoButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedImagePath = Uint8List(0);
+                      widget.imageInsertPageKey(_selectedImagePath);
+                    });
+                  },
+                  child: const Row(
+                    children: [
+                      Icon(
+                        CupertinoIcons.delete,
+                        color: CupertinoColors.black,
+                        size: 30,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-          CupertinoButton(
-            onPressed: () {
-              setState(() {
-                _selectedImagePath = Uint8List(0);
-                widget.imageInsertPageKey(_selectedImagePath);
-              });
-            },
-            child: const Row(
-              children: [
-                Icon(
-                  CupertinoIcons.delete,
-                  color: CupertinoColors.white,
-                ),
-                Text('Delete Image'),
-              ],
-            ),
-          ),
-          CupertinoButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Row(
-              children: [
-                Icon(
-                  CupertinoIcons.check_mark,
-                  color: CupertinoColors.white,
-                ),
-                Text('Save Image'),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -132,5 +150,97 @@ class ImageCropPageState extends State<ImageCropPage> {
           fit: BoxFit.cover,
         );
     }
+  }
+
+  void showSheet() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.of(context).pop();
+              showCameraOrGallery();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                'Set New Photo',
+                style: TextStyle(color: CupertinoColors.black),
+              ),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Remove Photo',
+                  style: TextStyle(color: CupertinoColors.systemRed),
+                )),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel',
+              style: TextStyle(color: CupertinoColors.black)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
+  }
+
+  void showCameraOrGallery() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              _pickImage(true);
+              Navigator.of(context).pop();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                'Camera',
+                style: TextStyle(color: CupertinoColors.black),
+              ),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              _pickImage(false);
+              Navigator.of(context).pop();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                'Gallery',
+                style: TextStyle(color: CupertinoColors.black),
+              ),
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel',
+              style: TextStyle(color: CupertinoColors.black)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
   }
 }

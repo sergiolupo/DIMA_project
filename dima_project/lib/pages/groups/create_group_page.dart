@@ -25,7 +25,6 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   Uint8List selectedImagePath = Uint8List(0);
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
   List<String> selectedCategories = [];
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isPublic = true;
   bool notify = true;
   @override
@@ -66,7 +65,6 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
-            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -80,9 +78,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 50),
                           color: CupertinoColors.systemPink,
                           borderRadius: BorderRadius.circular(20),
-                          onPressed: () => {
-                            if (_formKey.currentState!.validate()) managePage()
-                          },
+                          onPressed: () => {if (_validateForm()) managePage()},
                           child:
                               Text(_currentPage == 1 ? 'Next' : 'Create Group'),
                         ),
@@ -97,7 +93,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   }
 
   void createGroup(Group group, Uint8List imagePath) async {
-    if (_formKey.currentState!.validate()) {
+    if (_validateForm()) {
       await DatabaseService.createGroup(
           group, FirebaseAuth.instance.currentUser!.uid, imagePath);
       if (mounted) {
@@ -114,8 +110,12 @@ class CreateGroupPageState extends State<CreateGroupPage> {
           alignment: Alignment.center,
           child: Column(
             children: [
-              CupertinoTextFormFieldRow(
+              CupertinoTextField(
                 controller: _groupNameController,
+                minLines: 1,
+                maxLines: 3,
+                textInputAction: TextInputAction.next,
+                padding: const EdgeInsets.all(16),
                 placeholder: 'Group Name',
                 decoration: BoxDecoration(
                   color: CupertinoColors.extraLightBackgroundGray,
@@ -125,13 +125,6 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                     width: 2.0,
                   ),
                 ),
-                padding: const EdgeInsets.all(3.0),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a group name';
-                  }
-                  return null;
-                },
                 prefix: GestureDetector(
                   onTap: () => {
                     Navigator.of(context).push(
@@ -153,34 +146,28 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                   ),
                 ),
               ),
-              const SizedBox(width: 20),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: CupertinoTextFormFieldRow(
-            minLines: 1,
-            controller: _groupDescriptionController,
-            placeholder: 'Group Description',
-            maxLines: 5,
-            maxLength: 200,
-            decoration: BoxDecoration(
-              color: CupertinoColors.extraLightBackgroundGray,
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(
-                color: CupertinoColors.systemGrey4,
-                width: 2.0,
+              const SizedBox(height: 10),
+              CupertinoTextField(
+                minLines: 1,
+                controller: _groupDescriptionController,
+                placeholder: 'Group Description',
+                maxLines: 5,
+                maxLength: 200,
+                decoration: BoxDecoration(
+                  color: CupertinoColors.extraLightBackgroundGray,
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(
+                    color: CupertinoColors.systemGrey4,
+                    width: 2.0,
+                  ),
+                ),
+                padding: const EdgeInsets.all(16.0),
+                suffix: CupertinoButton(
+                  onPressed: () => _groupDescriptionController.clear(),
+                  child: const Icon(CupertinoIcons.clear_circled_solid),
+                ),
               ),
-            ),
-            padding: const EdgeInsets.all(12.0),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a group description';
-              }
-              return null;
-            },
+            ],
           ),
         ),
         const SizedBox(height: 10),
@@ -288,5 +275,38 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         );
       }
     }
+  }
+
+  bool _validateForm() {
+    if (_groupNameController.text.isEmpty) {
+      _showErrorDialog('Event name is required');
+      return false;
+    }
+    if (_groupDescriptionController.text.isEmpty) {
+      _showErrorDialog('Event description is required');
+      return false;
+    }
+    return true;
+  }
+
+  void _showErrorDialog(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text('Validation Error'),
+          content: Text(message),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

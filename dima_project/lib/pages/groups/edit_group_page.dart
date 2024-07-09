@@ -68,6 +68,7 @@ class EditGroupPageState extends State<EditGroupPage> {
               trailing: CupertinoButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
+                    //TODO: update name and desription
                     Navigator.of(context).pop();
                   },
                   child: const Text(
