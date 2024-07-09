@@ -263,7 +263,8 @@ class UserProfileState extends State<UserProfile> {
                               });
                             },
                           ),
-                          getPastEvents(),
+                          getCreatedEvents(),
+                          getJoinedEvents(),
                         ],
                       ),
                     ),
@@ -273,33 +274,70 @@ class UserProfileState extends State<UserProfile> {
             });
   }
 
-  Widget getPastEvents() {
-    return StreamBuilder<List<Event>>(
-      stream: DatabaseService.getPastEventStream(widget.user),
-      builder: (context, snapshot) => snapshot.hasData
-          ? Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
+  Widget getJoinedEvents() {
+    return Visibility(
+      visible: index == 1,
+      child: StreamBuilder<List<Event>>(
+          stream: DatabaseService.getJoinedEventStream(widget.user),
+          builder: (context, snapshot) => snapshot.hasData
+              ? Column(
+                  children: [
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 5.0,
+                        mainAxisSpacing: 5.0,
+                      ),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final event = snapshot.data![index];
+                        return EventGrid(
+                          uuid: widget.uuid,
+                          event: event,
+                          isJoined: 1,
+                        );
+                      },
+                    ),
+                  ],
+                )
+              : const SizedBox()),
+    );
+  }
+
+  Widget getCreatedEvents() {
+    return Visibility(
+      visible: index == 0,
+      child: StreamBuilder<List<Event>>(
+        stream: DatabaseService.getCreatedEventStream(widget.user),
+        builder: (context, snapshot) => snapshot.hasData
+            ? Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final event = snapshot.data![index];
+                      return EventGrid(
+                        uuid: widget.uuid,
+                        event: event,
+                        isJoined: 1,
+                      );
+                    },
                   ),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final event = snapshot.data![index];
-                    return EventGrid(
-                      uuid: widget.uuid,
-                      event: event,
-                      isJoined: 1,
-                    );
-                  },
-                ),
-              ],
-            )
-          : const CupertinoActivityIndicator(),
+                ],
+              )
+            : const CupertinoActivityIndicator(),
+      ),
     );
   }
 

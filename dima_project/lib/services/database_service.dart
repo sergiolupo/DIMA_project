@@ -1145,46 +1145,83 @@ class DatabaseService {
     });
   }
 
-  static Stream<List<Event>> getPastEventStream(String uuid) async* {
-    final eventIds = await usersRef.doc(uuid).get().then((value) {
-      return value['events'];
-    });
+  static Stream<List<Event>> getCreatedEventStream(String uuid) async* {
+    final eventsIds = await eventsRef.where('admin', isEqualTo: uuid).get();
 
     final eventsList = <Event>[];
-    for (var eventId in eventIds) {
-      final snapshot = await eventsRef.doc(eventId).get();
+
+    for (var eventId in eventsIds.docs) {
+      final snapshot = await eventsRef.doc(eventId.id).get();
       if (snapshot.exists) {
         eventsList.add(Event.fromSnapshot(snapshot));
       }
     }
     eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
-    yield eventsList; // yield the initial list of events
-    final snapshots =
-        eventsRef.snapshots(); // listen to changes in the events collection
-
+    yield eventsList;
+    final snapshots = eventsRef.snapshots();
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final eventId = change.doc.id;
         final event = Event.fromSnapshot(change.doc);
-        final members = event.members;
-
         if (change.type == DocumentChangeType.removed) {
-          eventsList.removeWhere((e) => e.id == eventId);
+          eventsList.removeWhere((e) => e.id == event.id);
           yield eventsList;
         } else {
-          if (members.contains(uuid) && event.id != '') {
-            // DocumentChangeType.added or DocumentChangeType.modified
+          if (event.admin == uuid) {
             final existingEventIndex =
-                eventsList.indexWhere((e) => e.id == eventId);
+                eventsList.indexWhere((e) => e.id == event.id);
             if (existingEventIndex != -1) {
               eventsList[existingEventIndex] = event;
             } else {
               eventsList.add(event);
+              eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
             }
-            eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
             yield eventsList;
           } else {
-            eventsList.removeWhere((e) => e.id == eventId);
+            eventsList.removeWhere((e) => e.id == event.id);
+            yield eventsList;
+          }
+        }
+      }
+    }
+  }
+
+  static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
+    final eventsIds = await eventsRef
+        .where('admin', isNotEqualTo: uuid)
+        .where('members', arrayContains: uuid)
+        .get();
+
+    final eventsList = <Event>[];
+
+    for (var eventId in eventsIds.docs) {
+      final snapshot = await eventsRef.doc(eventId.id).get();
+      if (snapshot.exists) {
+        eventsList.add(Event.fromSnapshot(snapshot));
+      }
+    }
+    eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+    yield eventsList;
+
+    final snapshots = eventsRef.snapshots();
+    await for (var snapshot in snapshots) {
+      for (var change in snapshot.docChanges) {
+        final event = Event.fromSnapshot(change.doc);
+        if (change.type == DocumentChangeType.removed) {
+          eventsList.removeWhere((e) => e.id == event.id);
+          yield eventsList;
+        } else {
+          if (event.admin != uuid && event.members.contains(uuid)) {
+            final existingEventIndex =
+                eventsList.indexWhere((e) => e.id == event.id);
+            if (existingEventIndex != -1) {
+              eventsList[existingEventIndex] = event;
+            } else {
+              eventsList.add(event);
+              eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+            }
+            yield eventsList;
+          } else {
+            eventsList.removeWhere((e) => e.id == event.id);
             yield eventsList;
           }
         }
