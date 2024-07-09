@@ -18,7 +18,11 @@ class BlogTile extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => ArticleView(blogUrl: url)));
+                builder: (context) => ArticleView(
+                    blogUrl: url,
+                    description: description,
+                    imageUrl: imageUrl,
+                    title: title)));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),

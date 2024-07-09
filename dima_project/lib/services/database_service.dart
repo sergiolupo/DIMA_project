@@ -1302,4 +1302,6 @@ class DatabaseService {
       });
     }
   }
+
+  static shareNews(title, description, image, url, uuid) {}
 }

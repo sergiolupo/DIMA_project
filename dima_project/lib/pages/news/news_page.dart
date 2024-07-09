@@ -236,8 +236,11 @@ class _NewsPageState extends State<NewsPage> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) =>
-                        ArticleView(blogUrl: sliders![index].url)));
+                    builder: (context) => ArticleView(
+                        blogUrl: sliders![index].url,
+                        description: sliders![index].description,
+                        imageUrl: sliders![index].urlToImage,
+                        title: sliders![index].title)));
           },
           child: Stack(children: [
             ClipRRect(

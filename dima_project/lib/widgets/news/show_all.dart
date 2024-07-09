@@ -18,7 +18,11 @@ class ShowAll extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => ArticleView(blogUrl: url)));
+                builder: (context) => ArticleView(
+                    blogUrl: url,
+                    description: description,
+                    imageUrl: image,
+                    title: title)));
       },
       child: Column(
         children: [
