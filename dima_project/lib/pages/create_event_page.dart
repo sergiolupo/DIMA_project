@@ -193,7 +193,9 @@ class CreateEventPageState extends State<CreateEventPage> {
                             imageType: 2,
                             imagePath: selectedImagePath,
                             imageInsertPageKey: (Uint8List selectedImagePath) {
-                              this.selectedImagePath = selectedImagePath;
+                              setState(() {
+                                this.selectedImagePath = selectedImagePath;
+                              });
                             },
                           ),
                         ),

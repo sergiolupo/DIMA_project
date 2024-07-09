@@ -140,7 +140,9 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                           imageType: 1,
                           imagePath: selectedImagePath,
                           imageInsertPageKey: (Uint8List selectedImagePath) {
-                            this.selectedImagePath = selectedImagePath;
+                            setState(() {
+                              this.selectedImagePath = selectedImagePath;
+                            });
                           },
                         ),
                       ),

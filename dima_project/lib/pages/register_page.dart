@@ -63,7 +63,9 @@ class RegisterPageState extends State<RegisterPage> {
                   imageType: 0,
                   imagePath: selectedImagePath,
                   imageInsertPageKey: (Uint8List selectedImagePath) {
-                    this.selectedImagePath = selectedImagePath;
+                    setState(() {
+                      this.selectedImagePath = selectedImagePath;
+                    });
                   },
                 ),
               ),

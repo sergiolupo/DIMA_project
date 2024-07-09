@@ -97,7 +97,9 @@ class EditGroupPageState extends State<EditGroupPage> {
                                 imagePath: selectedImagePath,
                                 imageInsertPageKey:
                                     (Uint8List selectedImagePath) {
-                                  this.selectedImagePath = selectedImagePath;
+                                  setState(() {
+                                    this.selectedImagePath = selectedImagePath;
+                                  });
                                 },
                               ),
                             ),

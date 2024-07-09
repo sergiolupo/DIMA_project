@@ -114,7 +114,9 @@ class SettingsPageState extends State<SettingsPage> {
                   imageType: 0,
                   imagePath: selectedImagePath,
                   imageInsertPageKey: (Uint8List selectedImagePath) {
-                    this.selectedImagePath = selectedImagePath;
+                    setState(() {
+                      this.selectedImagePath = selectedImagePath;
+                    });
                   },
                 ),
               ),
