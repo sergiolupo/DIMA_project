@@ -1,5 +1,5 @@
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/event_page.dart';
+import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 
