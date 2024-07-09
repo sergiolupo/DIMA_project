@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 class EditGroupPage extends StatefulWidget {
   final Group group;
   final String uuid;
+  @override
   const EditGroupPage({super.key, required this.group, required this.uuid});
   @override
   EditGroupPageState createState() => EditGroupPageState();
@@ -33,8 +34,10 @@ class EditGroupPageState extends State<EditGroupPage> {
   @override
   void initState() {
     super.initState();
-    isPublic = widget.group.isPublic;
-    notify = widget.group.notify;
+    setState(() {
+      isPublic = widget.group.isPublic;
+      notify = widget.group.notify;
+    });
     _fetchProfileImage();
   }
 
@@ -182,7 +185,9 @@ class EditGroupPageState extends State<EditGroupPage> {
                             ),
                             CupertinoListTile(
                               title: const Text('Notifications'),
-                              leading: const Icon(CupertinoIcons.bell_fill),
+                              leading: notify
+                                  ? const Icon(CupertinoIcons.bell_fill)
+                                  : const Icon(CupertinoIcons.bell_slash_fill),
                               trailing: CupertinoSwitch(
                                 value: notify,
                                 onChanged: (bool value) {
@@ -197,8 +202,9 @@ class EditGroupPageState extends State<EditGroupPage> {
                               color: CupertinoColors.opaqueSeparator,
                             ),
                             CupertinoListTile(
-                              leading:
-                                  const Icon(CupertinoIcons.lock_open_fill),
+                              leading: isPublic
+                                  ? const Icon(CupertinoIcons.lock_open_fill)
+                                  : const Icon(CupertinoIcons.lock_fill),
                               title: const Text('Public Group'),
                               trailing: CupertinoSwitch(
                                 value: isPublic,
