@@ -541,9 +541,6 @@ class DatabaseService {
     DocumentSnapshot followDoc = await followersRef.doc(user).get();
     DocumentSnapshot userDoc = await usersRef.doc(user).get();
 
-    debugPrint('Follow document exists: ${followDoc.exists}');
-    debugPrint('User document exists: ${userDoc.exists}');
-
     yield _getFollowStatus(followDoc, userDoc, visitor);
 
     // Listen for real-time updates

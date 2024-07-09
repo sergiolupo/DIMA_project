@@ -348,7 +348,6 @@ class CreateEventPageState extends State<CreateEventPage> {
                       CupertinoListTile(
                         title: Container(
                           decoration: const BoxDecoration(
-                            //borderRadius: BorderRadius.circular(10),
                             color: CupertinoColors.extraLightBackgroundGray,
                           ),
                           child: Row(
@@ -383,10 +382,10 @@ class CreateEventPageState extends State<CreateEventPage> {
                       CupertinoListTile(
                         title: Container(
                           decoration: const BoxDecoration(
-                            //borderRadius: BorderRadius.circular(10),
                             color: CupertinoColors.extraLightBackgroundGray,
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CupertinoButton(
                                 padding: const EdgeInsets.all(12),
