@@ -445,6 +445,8 @@ class CreateEventPageState extends State<CreateEventPage> {
                                     }
                                   });
                                 },
+                                isGroup: false,
+                                id: null,
                               ),
                             ),
                           );

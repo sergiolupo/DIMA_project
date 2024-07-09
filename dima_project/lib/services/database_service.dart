@@ -1270,4 +1270,19 @@ class DatabaseService {
       return snapshot['eventsRequests'];
     });
   }
+
+  static Stream<bool> checkIfJoined(bool isGroup, String? id, String uuid) {
+    if (id == null) return Stream.value(false);
+    if (isGroup) {
+      return groupsRef.doc(id).snapshots().map((snapshot) {
+        return snapshot['members']
+            .contains(uuid); // Check if the user is a member of the group
+      });
+    } else {
+      return eventsRef.doc(id).snapshots().map((snapshot) {
+        return snapshot['members']
+            .contains(uuid); // Check if the user is a member of the event
+      });
+    }
+  }
 }

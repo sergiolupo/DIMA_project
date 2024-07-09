@@ -70,6 +70,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                     CupertinoPageRoute(
                         builder: (context) => EditGroupPage(
                               group: widget.group,
+                              uuid: widget.uuid,
                             ))),
                 child: const Text(
                   'Edit',

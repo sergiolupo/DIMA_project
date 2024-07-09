@@ -200,6 +200,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                                 }
                               });
                             },
+                            id: null,
+                            isGroup: true,
                             invitedUsers: uuids)),
                   );
                 },

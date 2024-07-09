@@ -11,11 +11,15 @@ class InvitePage extends StatefulWidget {
   final String uuid;
   final ValueChanged<String> invitePageKey;
   final List<String> invitedUsers;
+  final bool isGroup;
+  final String? id;
   const InvitePage({
     super.key,
     required this.uuid,
     required this.invitePageKey,
     required this.invitedUsers,
+    required this.isGroup,
+    required this.id,
   });
 
   @override
@@ -132,8 +136,8 @@ class InvitePageState extends State<InvitePage> {
                     if (snapshot.hasData) {
                       final userData = UserData.fromSnapshot(docs[index]);
                       return StreamBuilder(
-                          stream: DatabaseService.isFollowingUser(
-                              widget.uuid, userData.uuid!),
+                          stream: DatabaseService.checkIfJoined(
+                              widget.isGroup, widget.id, userData.uuid!),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
                               return const Text('Error');
@@ -142,17 +146,32 @@ class InvitePageState extends State<InvitePage> {
                                 ConnectionState.waiting) {
                               return const Text('Loading');
                             }
-                            final isFollowing = snapshot.data as bool;
-                            if (!isFollowing) {
-                              return const SizedBox.shrink();
-                            }
-                            return InvitationTile(
-                              user: userData,
-                              uuid: widget.uuid,
-                              invitePageKey: widget.invitePageKey,
-                              invited:
-                                  widget.invitedUsers.contains(userData.uuid),
-                            );
+                            final isJoining = snapshot.data as bool;
+
+                            return StreamBuilder(
+                                stream: DatabaseService.isFollowingUser(
+                                    widget.uuid, userData.uuid!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return const Text('Error');
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Text('Loading');
+                                  }
+                                  final isFollowing = snapshot.data as bool;
+                                  if (!isFollowing) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return InvitationTile(
+                                    user: userData,
+                                    uuid: widget.uuid,
+                                    invitePageKey: widget.invitePageKey,
+                                    invited: widget.invitedUsers
+                                        .contains(userData.uuid),
+                                    isJoining: isJoining,
+                                  );
+                                });
                           });
                     } else {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -190,12 +209,14 @@ class InvitationTile extends StatefulWidget {
   final ValueChanged<String> invitePageKey;
   final String uuid;
   final bool invited;
+  final bool isJoining;
   const InvitationTile({
     super.key,
     required this.user,
     required this.invitePageKey,
     required this.uuid,
     required this.invited,
+    required this.isJoining,
   });
 
   @override
@@ -241,29 +262,32 @@ class InvitationTileState extends State<InvitationTile> {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            widget.invitePageKey(widget.user.uuid!);
-            setState(() {
-              invited = !invited;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.only(right: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: CupertinoTheme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: CupertinoColors.white),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                invited ? 'Invited' : 'Invite',
-                style: const TextStyle(color: CupertinoColors.white),
-              ),
-            ),
-          ),
-        )
+        widget.isJoining
+            ? const SizedBox.shrink()
+            : GestureDetector(
+                onTap: () {
+                  widget.invitePageKey(widget.user.uuid!);
+                  setState(() {
+                    invited = !invited;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: CupertinoColors.white),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Text(
+                      invited ? 'Invited' : 'Invite',
+                      style: const TextStyle(color: CupertinoColors.white),
+                    ),
+                  ),
+                ),
+              )
       ],
     );
   }

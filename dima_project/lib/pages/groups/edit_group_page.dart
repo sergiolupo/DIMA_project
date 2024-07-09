@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -8,8 +9,8 @@ import 'package:flutter/cupertino.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
-
-  const EditGroupPage({super.key, required this.group});
+  final String uuid;
+  const EditGroupPage({super.key, required this.group, required this.uuid});
   @override
   EditGroupPageState createState() => EditGroupPageState();
 }
@@ -21,6 +22,7 @@ class EditGroupPageState extends State<EditGroupPage> {
   Uint8List? selectedImagePath;
   bool isPublic = true;
   bool notify = true;
+  List<String> uuids = [];
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -154,7 +156,25 @@ class EditGroupPageState extends State<EditGroupPage> {
                               title: const Text('Members'),
                               leading: const Icon(CupertinoIcons.person_3_fill),
                               trailing: const Icon(CupertinoIcons.forward),
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                      builder: (context) => InvitePage(
+                                          uuid: widget.uuid,
+                                          invitePageKey: (String uuid) {
+                                            setState(() {
+                                              if (uuids.contains(uuid)) {
+                                                uuids.remove(uuid);
+                                              } else {
+                                                uuids.add(uuid);
+                                              }
+                                            });
+                                          },
+                                          invitedUsers: uuids,
+                                          isGroup: true,
+                                          id: widget.group.id)),
+                                );
+                              },
                             ),
                             Container(
                               height: 1,
