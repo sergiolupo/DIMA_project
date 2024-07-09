@@ -2,14 +2,14 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/user_request_tile.dart';
 import 'package:flutter/cupertino.dart';
 
-class RequestsPage extends StatefulWidget {
+class FollowRequestsPage extends StatefulWidget {
   final String uuid;
-  const RequestsPage({super.key, required this.uuid});
+  const FollowRequestsPage({super.key, required this.uuid});
   @override
-  RequestsPageState createState() => RequestsPageState();
+  FollowRequestsPageState createState() => FollowRequestsPageState();
 }
 
-class RequestsPageState extends State<RequestsPage> {
+class FollowRequestsPageState extends State<FollowRequestsPage> {
   Stream<List<dynamic>>? userRequests;
   @override
   void initState() {

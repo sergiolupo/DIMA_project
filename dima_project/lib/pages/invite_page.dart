@@ -165,6 +165,7 @@ class InvitePageState extends State<InvitePage> {
                               "No followers found with the username ${_searchController.text}"),
                         );
                       }
+                      return const SizedBox.shrink();
                     }
                   },
                 );

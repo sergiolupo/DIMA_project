@@ -19,6 +19,7 @@ class DatabaseService {
   static final followersRef = _firestore.collection('followers');
   static final privateChatRef = _firestore.collection('private_chats');
   static final eventsRef = _firestore.collection('events');
+
   static Future<void> registerUserWithUUID(
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
@@ -42,6 +43,7 @@ class DatabaseService {
       'typingTo': '',
       'isPublic': true,
       'events': [],
+      'eventsRequests': [],
     });
 
     await followersRef.doc(uuid).set({
@@ -1024,7 +1026,7 @@ class DatabaseService {
   }
 
   static Future<void> createEvent(
-      Event event, String uuid, Uint8List imagePath) async {
+      Event event, String uuid, Uint8List imagePath, List<String> uuids) async {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
 
@@ -1038,11 +1040,18 @@ class DatabaseService {
         'eventId': docRef.id,
         'createdAt': Timestamp.now(),
       });
-      return await usersRef.doc(uuid).update({
+      await usersRef.doc(uuid).update({
         'events': FieldValue.arrayUnion([
           docRef.id,
         ])
       });
+      for (var id in uuids) {
+        await usersRef.doc(id).update({
+          'eventsRequests': FieldValue.arrayUnion([
+            docRef.id,
+          ])
+        });
+      }
     } catch (e) {
       debugPrint("Error while creating the event: $e");
     }

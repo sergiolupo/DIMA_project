@@ -136,7 +136,6 @@ class CreateEventPageState extends State<CreateEventPage> {
 
   Future<void> _createEvent() async {
     if (_validateForm()) {
-      debugPrint('uuids $uuids');
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
@@ -152,7 +151,8 @@ class CreateEventPageState extends State<CreateEventPage> {
         location: _selectedLocation!,
       );
 
-      await DatabaseService.createEvent(event, widget.uuid, selectedImagePath);
+      await DatabaseService.createEvent(
+          event, widget.uuid, selectedImagePath, uuids);
     }
   }
 
