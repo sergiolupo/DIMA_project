@@ -1036,6 +1036,7 @@ class DatabaseService {
       await eventsRef.doc(docRef.id).update({
         'imagePath': imageUrl,
         'eventId': docRef.id,
+        'createdAt': Timestamp.now(),
       });
       return await usersRef.doc(uuid).update({
         'events': FieldValue.arrayUnion([
@@ -1124,6 +1125,7 @@ class DatabaseService {
         eventsList.add(Event.fromSnapshot(snapshot));
       }
     }
+    eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
     yield eventsList; // yield the initial list of events
     final snapshots =
         eventsRef.snapshots(); // listen to changes in the events collection
@@ -1147,6 +1149,7 @@ class DatabaseService {
             } else {
               eventsList.add(event);
             }
+            eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
             yield eventsList;
           } else {
             eventsList.removeWhere((e) => e.id == eventId);

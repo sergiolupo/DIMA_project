@@ -15,6 +15,7 @@ class Event {
   final DateTime endDate;
   final LatLng location;
   final bool notify;
+  final Timestamp? createdAt;
   Event({
     required this.name,
     this.id,
@@ -28,6 +29,7 @@ class Event {
     this.requests,
     required this.location,
     required this.notify,
+    this.createdAt,
   });
 
   static Map<String, dynamic> toMap(Event event) {
@@ -64,6 +66,7 @@ class Event {
         documentSnapshot['location'].longitude,
       ),
       notify: documentSnapshot['notify'],
+      createdAt: documentSnapshot['createdAt'],
     );
   }
 }
