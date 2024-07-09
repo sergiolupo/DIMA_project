@@ -590,28 +590,23 @@ class DatabaseService {
 
     // Initial check
     DocumentSnapshot eventDoc = await eventsRef.doc(eventId).get();
-    DocumentSnapshot userDoc = await usersRef.doc(uuid).get();
 
-    yield _getEventStatus(eventDoc, userDoc, uuid);
+    yield _getEventStatus(eventDoc, uuid);
 
     // Listen for real-time updates
     await for (var snapshot in eventsRef.doc(eventId).snapshots()) {
-      eventDoc = snapshot;
-      userDoc = await usersRef.doc(uuid).get();
-
-      yield _getEventStatus(eventDoc, userDoc, uuid);
+      yield _getEventStatus(snapshot, uuid);
     }
   }
 
   // Helper method to determine follow status
   static int _getEventStatus(
     DocumentSnapshot eventDoc,
-    DocumentSnapshot userDoc,
     String uuid,
   ) {
     if (eventDoc['members'].contains(uuid)) {
       return 1;
-    } else if (userDoc['isPublic'] == false &&
+    } else if (eventDoc['isPublic'] == false &&
         eventDoc['requests'].contains(uuid)) {
       return 2;
     } else {

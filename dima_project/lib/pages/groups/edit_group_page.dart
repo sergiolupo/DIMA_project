@@ -17,8 +17,8 @@ class EditGroupPage extends StatefulWidget {
 }
 
 class EditGroupPageState extends State<EditGroupPage> {
-  final TextEditingController _eventNameController = TextEditingController();
-  final TextEditingController _eventDescriptionController =
+  final TextEditingController _groupNameController = TextEditingController();
+  final TextEditingController _groupDescriptionController =
       TextEditingController();
   Uint8List? selectedImagePath;
   bool isPublic = true;
@@ -26,8 +26,8 @@ class EditGroupPageState extends State<EditGroupPage> {
   List<String> uuids = [];
   @override
   void dispose() {
-    _eventNameController.dispose();
-    _eventDescriptionController.dispose();
+    _groupNameController.dispose();
+    _groupDescriptionController.dispose();
     super.dispose();
   }
 
@@ -118,12 +118,12 @@ class EditGroupPageState extends State<EditGroupPage> {
                       const SizedBox(height: 20),
                       CupertinoTextField(
                         placeholder: widget.group.name,
-                        controller: _eventNameController,
+                        controller: _groupNameController,
                         padding: const EdgeInsets.all(16),
                         maxLines: 3,
                         minLines: 1,
                         suffix: CupertinoButton(
-                          onPressed: () => _eventNameController.clear(),
+                          onPressed: () => _groupNameController.clear(),
                           child: const Icon(CupertinoIcons.clear_circled_solid),
                         ),
                         decoration: BoxDecoration(
@@ -134,12 +134,12 @@ class EditGroupPageState extends State<EditGroupPage> {
                       const SizedBox(height: 10),
                       CupertinoTextField(
                         placeholder: widget.group.description,
-                        controller: _eventDescriptionController,
+                        controller: _groupDescriptionController,
                         padding: const EdgeInsets.all(16),
                         maxLines: 3,
                         minLines: 1,
                         suffix: CupertinoButton(
-                          onPressed: () => _eventDescriptionController.clear(),
+                          onPressed: () => _groupDescriptionController.clear(),
                           child: const Icon(CupertinoIcons.clear_circled_solid),
                         ),
                         decoration: BoxDecoration(

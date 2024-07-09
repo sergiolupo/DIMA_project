@@ -41,65 +41,55 @@ class EventPageState extends State<EventPage> {
         ? const Center(
             child: CupertinoActivityIndicator(),
           )
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoColors.systemPink,
-              trailing: CupertinoButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () => Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) => EditEventPage(
-                              eventId: widget.eventId,
-                            ))),
-                child: const Text(
-                  'Edit',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: CupertinoColors.white,
+        : StreamBuilder<Event>(
+            stream: _eventStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final event = snapshot.data!;
+                return CupertinoPageScaffold(
+                  navigationBar: CupertinoNavigationBar(
+                    backgroundColor: CupertinoColors.systemPink,
+                    trailing: CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => EditEventPage(
+                                    event: event,
+                                    uuid: widget.uuid,
+                                  ))),
+                      child: const Text(
+                        'Edit',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.white,
+                        ),
+                      ),
+                    ),
+                    leading: Navigator.canPop(context)
+                        ? CupertinoNavigationBarBackButton(
+                            color: CupertinoColors.white,
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        : null,
+                    middle: const Text(
+                      'Event',
+                      style: TextStyle(color: CupertinoColors.white),
+                    ),
                   ),
-                ),
-              ),
-              leading: Navigator.canPop(context)
-                  ? CupertinoNavigationBarBackButton(
-                      color: CupertinoColors.white,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    )
-                  : null,
-              middle: const Text(
-                'Event',
-                style: TextStyle(color: CupertinoColors.white),
-              ),
-            ),
-            child: StreamBuilder<Event>(
-              stream: _eventStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final event = snapshot.data!;
-                  return SafeArea(
+                  child: SafeArea(
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.7,
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(30),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Column(
-                                children: [
-                                  CreateImageWidget.getEventImage(
-                                      event.imagePath!),
-                                  Text(
-                                    event.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              CreateImageWidget.getEventImage(event.imagePath!),
                               const SizedBox(width: 50),
                               Column(children: [
                                 Text(
@@ -136,7 +126,7 @@ class EventPageState extends State<EventPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 40, vertical: 8),
                                   onPressed: () async {
-                                    DatabaseService.toggleEventJoin(
+                                    await DatabaseService.toggleEventJoin(
                                         widget.eventId, widget.uuid);
                                   },
                                   child: Text(
@@ -149,6 +139,15 @@ class EventPageState extends State<EventPage> {
                                 ),
                               ]),
                             ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            textAlign: TextAlign.start,
+                            event.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           Container(
@@ -260,14 +259,14 @@ class EventPageState extends State<EventPage> {
                                 ),*/
                       ),
                     ),
-                  );
-                } else {
-                  return const Center(
-                    child: CupertinoActivityIndicator(),
-                  );
-                }
-              },
-            ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CupertinoActivityIndicator(),
+                );
+              }
+            },
           );
   }
 

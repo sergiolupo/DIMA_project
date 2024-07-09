@@ -77,20 +77,21 @@ class ListChatPageState extends State<ListChatPage> {
                       children: [
                         groupList(),
                         privateChatList(),
-                        Positioned(
-                          bottom: 50,
-                          right: 20,
-                          child: CupertinoButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) =>
-                                          CreateGroupPage(uuid: widget.uuid)));
-                            },
-                            child: const Icon(CupertinoIcons.add, size: 30),
+                        if (idx == 0)
+                          Positioned(
+                            bottom: 50,
+                            right: 20,
+                            child: CupertinoButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) => CreateGroupPage(
+                                            uuid: widget.uuid)));
+                              },
+                              child: const Icon(CupertinoIcons.add, size: 30),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ],
