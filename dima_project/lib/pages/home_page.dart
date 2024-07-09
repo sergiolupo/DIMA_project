@@ -1,4 +1,4 @@
-import 'package:dima_project/pages/create_event_page.dart';
+import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';

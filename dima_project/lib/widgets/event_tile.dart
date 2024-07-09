@@ -1,5 +1,5 @@
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/event_page.dart';
+import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -1,5 +1,6 @@
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class ShowDate extends StatelessWidget {
   final DateTime date;
@@ -16,26 +17,26 @@ class ShowDate extends StatelessWidget {
         ),
         Positioned(
           top: 20,
-          left: 33,
+          left: 28,
           child: Text(
-            "${date.hour}:${date.minute}",
+            DateFormat('HH:mm').format(date),
             style: const TextStyle(color: CupertinoColors.white),
           ),
         ),
         Positioned(
           top: 40,
-          left: 33,
+          left: 28,
           child: Text(
-            '${date.day} ${DateUtil.convertMonthToString(date.month)}',
-            style: const TextStyle(color: CupertinoColors.white),
+            '${DateUtil.convertMonthToString(date.month)} ${date.day}',
+            style: const TextStyle(color: CupertinoColors.black),
           ),
         ),
         Positioned(
           top: 60,
-          left: 33,
+          left: 28,
           child: Text(
             date.year.toString(),
-            style: const TextStyle(color: CupertinoColors.white),
+            style: const TextStyle(color: CupertinoColors.black),
           ),
         ),
       ],

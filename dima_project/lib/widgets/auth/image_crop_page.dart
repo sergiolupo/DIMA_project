@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageCropPage extends StatefulWidget {
@@ -44,7 +43,9 @@ class ImageCropPageState extends State<ImageCropPage> {
         widget.imageInsertPageKey(_selectedImagePath);
       });
     }
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

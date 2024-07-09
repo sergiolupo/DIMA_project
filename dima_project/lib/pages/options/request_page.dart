@@ -1,4 +1,4 @@
-import 'package:dima_project/pages/events_requests_page.dart';
+import 'package:dima_project/pages/events/events_requests_page.dart';
 import 'package:dima_project/pages/follow_requests_page.dart';
 import 'package:dima_project/pages/groups_requests_page.dart';
 import 'package:dima_project/services/database_service.dart';
