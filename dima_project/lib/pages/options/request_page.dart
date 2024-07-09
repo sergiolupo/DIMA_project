@@ -1,4 +1,5 @@
-import 'package:dima_project/pages/requests_page.dart';
+import 'package:dima_project/pages/events_requests_page.dart';
+import 'package:dima_project/pages/follow_requests_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -12,6 +13,7 @@ class ShowRequestPage extends StatefulWidget {
 class ShowRequestPageState extends State<ShowRequestPage> {
   Stream<int>? _numFollowRequests;
 
+  Stream<int>? _numEventRequests;
   @override
   void initState() {
     init();
@@ -24,11 +26,16 @@ class ShowRequestPageState extends State<ShowRequestPage> {
         return event.length;
       },
     );
+    _numEventRequests = DatabaseService.getEventRequests(widget.uuid).map(
+      (event) {
+        return event.length;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return _numFollowRequests == null
+    return _numFollowRequests == null || _numEventRequests == null
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -93,8 +100,43 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                       ),
                       CupertinoListTile(
                         leading: const Icon(CupertinoIcons.calendar_badge_plus),
-                        title: const Text('Event Requests'),
-                        onTap: () => {},
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Event Requests'),
+                            StreamBuilder<int>(
+                              stream: _numEventRequests,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return snapshot.data! > 0
+                                      ? Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: CupertinoColors.systemRed,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            snapshot.data.toString(),
+                                            style: const TextStyle(
+                                              color: CupertinoColors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox();
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () => {
+                          Navigator.of(context, rootNavigator: true).push(
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      EventsRequestsPage(uuid: widget.uuid)))
+                        },
                       ),
                     ],
                   ),

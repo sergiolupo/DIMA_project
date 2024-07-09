@@ -115,6 +115,12 @@ class DatabaseService {
     });
   }
 
+  static Stream<Event> getEventFromId(String id) {
+    return eventsRef.doc(id).snapshots().map((snapshot) {
+      return Event.fromSnapshot(snapshot);
+    });
+  }
+
   static Future<UserData> getUserDataFromUsername(String username) async {
     username = username.replaceAll('[', '').replaceAll(']', '');
 
@@ -1025,6 +1031,23 @@ class DatabaseService {
     });
   }
 
+  static Future<void> denyEventRequest(String eventId, String uuid) async {
+    await usersRef.doc(uuid).update({
+      'eventsRequests': FieldValue.arrayRemove([eventId])
+    });
+  }
+
+  static Future<void> acceptEventRequest(String eventId, String uuid) async {
+    await Future.wait([
+      eventsRef.doc(eventId).update({
+        'members': FieldValue.arrayUnion([eventId]),
+      }),
+      usersRef.doc(uuid).update({
+        'eventsRequests': FieldValue.arrayRemove([eventId])
+      }),
+    ]);
+  }
+
   static Future<void> createEvent(
       Event event, String uuid, Uint8List imagePath, List<String> uuids) async {
     try {
@@ -1167,5 +1190,11 @@ class DatabaseService {
         }
       }
     }
+  }
+
+  static Stream<List<dynamic>> getEventRequests(String uuid) {
+    return usersRef.doc(uuid).snapshots().map((snapshot) {
+      return snapshot['eventsRequests'];
+    });
   }
 }
