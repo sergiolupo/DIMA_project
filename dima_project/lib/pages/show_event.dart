@@ -1,4 +1,6 @@
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/event_page.dart';
+import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowEvent extends StatefulWidget {
@@ -66,21 +68,35 @@ class ShowEventState extends State<ShowEvent> {
                           vertical: 12, horizontal: 24),
                       borderRadius: BorderRadius.zero,
                       onPressed: () {
-                        // Handle button press
-                      },
-                      child: const Text(
-                        'Join Event',
-                        style: TextStyle(
-                          color: CupertinoColors.white,
-                          fontSize: 18,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: CupertinoColors.black,
-                              offset: Offset(2.0, 2.0),
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => EventPage(
+                              uuid: widget.uuid,
+                              eventId: widget.event.id!,
                             ),
-                          ],
-                        ),
+                          ),
+                        );
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Go to Event',
+                            style: TextStyle(
+                              color: CupertinoColors.white,
+                              fontSize: 18,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: CupertinoColors.black,
+                                  offset: Offset(2.0, 2.0),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(CupertinoIcons.forward)
+                        ],
                       ),
                     ),
                   ),
@@ -107,6 +123,15 @@ class ShowEventState extends State<ShowEvent> {
                 color: CupertinoColors.black,
               ),
             ),
+            DateTime(
+                        widget.event.startDate.year,
+                        widget.event.startDate.month,
+                        widget.event.startDate.day,
+                        widget.event.startDate.hour,
+                        widget.event.startDate.minute)
+                    .isBefore(DateTime.now())
+                ? ShowDate(date: widget.event.startDate)
+                : ShowDate(date: widget.event.endDate),
           ],
         ),
       ),
