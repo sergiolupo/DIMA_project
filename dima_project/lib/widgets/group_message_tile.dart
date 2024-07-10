@@ -18,13 +18,11 @@ class GroupMessageTile extends StatefulWidget {
   final Message message;
   final String senderUsername;
   final String uuid;
-  final String? newsImage;
   const GroupMessageTile({
     required this.message,
     required this.senderUsername,
     required this.uuid,
     super.key,
-    required this.newsImage,
   });
 
   @override
@@ -131,7 +129,7 @@ class GroupMessageTileState extends State<GroupMessageTile> {
                                         builder: (context) => ArticleView(
                                           blogUrl: news[2],
                                           description: news[1],
-                                          imageUrl: widget.newsImage!,
+                                          imageUrl: news[3],
                                           title: news[0],
                                         ),
                                       ),
@@ -142,7 +140,7 @@ class GroupMessageTileState extends State<GroupMessageTile> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       CreateImageWidget.getImage(
-                                        widget.newsImage!,
+                                        widget.message.content.split('\n')[3],
                                         small: true,
                                       ),
                                       SizedBox(

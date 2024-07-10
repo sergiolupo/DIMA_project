@@ -1351,12 +1351,11 @@ class DatabaseService {
   static shareNewsOnGroups(String title, String description, String imageUrl,
       String blogUrl, String id) async {
     Message message = Message(
-      content: '$title\n$description\n$blogUrl',
+      content: '$title\n$description\n$blogUrl\n$imageUrl',
       sender: FirebaseAuth.instance.currentUser!.uid,
       isGroupMessage: true,
       time: Timestamp.now(),
       type: Type.news,
-      senderImage: imageUrl,
       readBy: [],
     );
     return await Future.wait([
@@ -1374,12 +1373,11 @@ class DatabaseService {
   static shareNewsOnFollower(String title, String description, String imageUrl,
       String blogUrl, String uuid) async {
     Message message = Message(
-      content: '$title\n$description\n$blogUrl',
+      content: '$title\n$description\n$blogUrl\n$imageUrl',
       sender: FirebaseAuth.instance.currentUser!.uid,
       isGroupMessage: false,
       time: Timestamp.now(),
       type: Type.news,
-      senderImage: imageUrl,
       readBy: [],
     );
     final PrivateChat privateChat = await getPrivateChatsFromMember(

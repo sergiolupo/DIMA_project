@@ -221,8 +221,6 @@ class GroupChatPageState extends State<GroupChatPage> {
               final message = snapshot.data![index];
               bool isSameDate = false;
               String? newDate = '';
-              debugPrint("Messgae:" + message.senderImage.toString());
-              final String? newsImage = message.senderImage;
 
               // Convert timestamp to DateTime
               final DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(
@@ -269,12 +267,10 @@ class GroupChatPageState extends State<GroupChatPage> {
                           final user = snapshot.data as UserData;
 
                           message.senderImage = user.imagePath;
-                          debugPrint(newsImage.toString());
                           return GroupMessageTile(
                             uuid: widget.uuid,
                             message: message,
                             senderUsername: user.username,
-                            newsImage: newsImage,
                           );
                         } else {
                           return Container();
