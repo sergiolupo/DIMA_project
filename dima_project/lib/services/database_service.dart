@@ -237,12 +237,13 @@ class DatabaseService {
       chatList.add(Message.fromSnapshot(
           chat, groupId, FirebaseAuth.instance.currentUser!.uid));
     }
-    yield chatList; // yield the initial list of messages
+    yield chatList; // Yield the initial list of messages
+
     final snapshots = groupsRef
         .doc(groupId)
         .collection('messages')
         .orderBy('time', descending: true)
-        .snapshots(); // listen to changes in the groups collection
+        .snapshots(); // Listen to changes in the messages collection
 
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
@@ -256,7 +257,6 @@ class DatabaseService {
           if (existingChatIndex != -1) {
             chatList[existingChatIndex] = chat;
           } else {
-            //add to the list if it doesn't exist
             chatList.insert(0, chat);
           }
           yield chatList;
@@ -1359,11 +1359,55 @@ class DatabaseService {
       senderImage: imageUrl,
       readBy: [],
     );
-    return await groupsRef.doc(id).collection('messages').add(
-          message.toMap(),
-        );
+    return await Future.wait([
+      groupsRef.doc(id).collection('messages').add(
+            message.toMap(),
+          ),
+      groupsRef.doc(id).update({
+        'recentMessage': 'News',
+        'recentMessageSender': message.sender,
+        'recentMessageTime': message.time,
+      }),
+    ]);
   }
 
-  static shareNewsOnPrivateChat(String title, String description,
-      String imageUrl, String blogUrl, String id) {}
+  static shareNewsOnFollower(String title, String description, String imageUrl,
+      String blogUrl, String uuid) async {
+    Message message = Message(
+      content: '$title\n$description\n$blogUrl',
+      sender: FirebaseAuth.instance.currentUser!.uid,
+      isGroupMessage: false,
+      time: Timestamp.now(),
+      type: Type.news,
+      senderImage: imageUrl,
+      readBy: [],
+    );
+    final PrivateChat privateChat = await getPrivateChatsFromMember(
+        [uuid, FirebaseAuth.instance.currentUser!.uid]);
+
+    if (privateChat.id == null) {
+      final id = await createPrivateChat(privateChat);
+      return await Future.wait([
+        privateChatRef.doc(id).collection('messages').add(
+              message.toMap(),
+            ),
+        privateChatRef.doc(id).update({
+          'recentMessage': 'News',
+          'recentMessageSender': message.sender,
+          'recentMessageTime': message.time,
+        }),
+      ]);
+    }
+
+    return await Future.wait([
+      privateChatRef.doc(privateChat.id).collection('messages').add(
+            message.toMap(),
+          ),
+      privateChatRef.doc(privateChat.id).update({
+        'recentMessage': 'News',
+        'recentMessageSender': message.sender,
+        'recentMessageTime': message.time,
+      }),
+    ]);
+  }
 }

@@ -48,7 +48,7 @@ class _ArticleViewState extends State<ArticleView> {
               }
               if (ids is Map && ids['users'].isNotEmpty) {
                 for (var id in ids['users']) {
-                  await DatabaseService.shareNewsOnPrivateChat(widget.title,
+                  await DatabaseService.shareNewsOnFollower(widget.title,
                       widget.description, widget.imageUrl, widget.blogUrl, id);
                 }
               }

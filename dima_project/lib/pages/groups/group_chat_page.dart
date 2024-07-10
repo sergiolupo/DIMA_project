@@ -46,61 +46,65 @@ class GroupChatPageState extends State<GroupChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => GroupInfoPage(
-                  uuid: widget.uuid,
-                  group: widget.group,
+    return chats == null
+        ? const Center(child: CupertinoActivityIndicator())
+        : CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => GroupInfoPage(
+                        uuid: widget.uuid,
+                        group: widget.group,
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    CreateImageWidget.getGroupImage(widget.group.imagePath!,
+                        small: true),
+                    const SizedBox(width: 10),
+                    Text(widget.group.name,
+                        style: const TextStyle(
+                            fontSize: 16, color: CupertinoColors.white)),
+                  ],
                 ),
               ),
-            );
-          },
-          child: Row(
-            children: [
-              CreateImageWidget.getGroupImage(widget.group.imagePath!,
-                  small: true),
-              const SizedBox(width: 10),
-              Text(widget.group.name,
-                  style: const TextStyle(
-                      fontSize: 16, color: CupertinoColors.white)),
-            ],
-          ),
-        ),
-        backgroundColor: CupertinoTheme.of(context).primaryColor,
-        leading: CupertinoButton(
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go("/home", extra: 1);
-            }
-          },
-          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
-        ),
-      ),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: chatMessages(),
-          ),
-          isUploading
-              ? const Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: CupertinoActivityIndicator(),
-                  ),
-                )
-              : Container(),
-          _buildInputBar(),
-        ],
-      ),
-    );
+              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              leading: CupertinoButton(
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    context.go("/home", extra: 1);
+                  }
+                },
+                child: const Icon(CupertinoIcons.back,
+                    color: CupertinoColors.white),
+              ),
+            ),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: chatMessages(),
+                ),
+                isUploading
+                    ? const Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: CupertinoActivityIndicator(),
+                        ),
+                      )
+                    : Container(),
+                _buildInputBar(),
+              ],
+            ),
+          );
   }
 
   Widget _buildInputBar() {
@@ -217,6 +221,8 @@ class GroupChatPageState extends State<GroupChatPage> {
               final message = snapshot.data![index];
               bool isSameDate = false;
               String? newDate = '';
+              debugPrint("Messgae:" + message.senderImage.toString());
+              final String? newsImage = message.senderImage;
 
               // Convert timestamp to DateTime
               final DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(
@@ -262,7 +268,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data as UserData;
 
-                          final String? newsImage = message.senderImage;
                           message.senderImage = user.imagePath;
                           debugPrint(newsImage.toString());
                           return GroupMessageTile(
