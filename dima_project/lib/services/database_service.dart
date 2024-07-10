@@ -1348,5 +1348,22 @@ class DatabaseService {
     }
   }
 
-  static shareNews(title, description, image, url, uuid) {}
+  static shareNewsOnGroups(String title, String description, String imageUrl,
+      String blogUrl, String id) async {
+    Message message = Message(
+      content: '$title\n$description\n$blogUrl',
+      sender: FirebaseAuth.instance.currentUser!.uid,
+      isGroupMessage: true,
+      time: Timestamp.now(),
+      type: Type.news,
+      senderImage: imageUrl,
+      readBy: [],
+    );
+    return await groupsRef.doc(id).collection('messages').add(
+          message.toMap(),
+        );
+  }
+
+  static shareNewsOnPrivateChat(String title, String description,
+      String imageUrl, String blogUrl, String id) {}
 }

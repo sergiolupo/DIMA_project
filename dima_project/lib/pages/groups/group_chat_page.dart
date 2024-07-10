@@ -261,11 +261,15 @@ class GroupChatPageState extends State<GroupChatPage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final user = snapshot.data as UserData;
+
+                          final String? newsImage = message.senderImage;
                           message.senderImage = user.imagePath;
+                          debugPrint(newsImage.toString());
                           return GroupMessageTile(
                             uuid: widget.uuid,
                             message: message,
                             senderUsername: user.username,
+                            newsImage: newsImage,
                           );
                         } else {
                           return Container();

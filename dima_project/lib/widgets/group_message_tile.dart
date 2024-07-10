@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -17,12 +18,13 @@ class GroupMessageTile extends StatefulWidget {
   final Message message;
   final String senderUsername;
   final String uuid;
-
+  final String? newsImage;
   const GroupMessageTile({
     required this.message,
     required this.senderUsername,
     required this.uuid,
     super.key,
+    required this.newsImage,
   });
 
   @override
@@ -109,16 +111,76 @@ class GroupMessageTileState extends State<GroupMessageTile> {
                               widget.message.content,
                               small: false,
                             )
-                          : Text(
-                              widget.message.content,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: widget.message.sentByMe!
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                fontSize: 16,
-                              ),
-                            ),
+                          : widget.message.type == Type.text
+                              ? Text(
+                                  widget.message.content,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: widget.message.sentByMe!
+                                        ? CupertinoColors.white
+                                        : CupertinoColors.black,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              : GestureDetector(
+                                  onTap: () {
+                                    final List<String> news =
+                                        widget.message.content.split('\n');
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ArticleView(
+                                          blogUrl: news[2],
+                                          description: news[1],
+                                          imageUrl: widget.newsImage!,
+                                          title: news[0],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      CreateImageWidget.getImage(
+                                        widget.newsImage!,
+                                        small: true,
+                                      ),
+                                      SizedBox(
+                                        width: 150,
+                                        child: Text(
+                                          widget.message.content
+                                              .split('\n')
+                                              .first,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: widget.message.sentByMe!
+                                                ? CupertinoColors.white
+                                                : CupertinoColors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 150,
+                                        child: Text(
+                                          widget.message.content.split('\n')[1],
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: widget.message.sentByMe!
+                                                ? CupertinoColors.white
+                                                : CupertinoColors.black,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                       Column(
                         children: [
                           const SizedBox(height: 20),

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum Type {
   text,
   image,
+  news,
 }
 
 class ReadBy {
@@ -42,7 +43,7 @@ class Message {
     this.id,
     this.chatID,
     this.senderImage,
-    this.readBy,
+    required this.readBy,
     required this.type,
   });
 
@@ -54,6 +55,7 @@ class Message {
       'time': time,
       'readBy': readBy!.map((readBy) => readBy.toMap()).toList(),
       'type': type.toString(),
+      'senderImage': senderImage,
     };
   }
 
@@ -74,7 +76,12 @@ class Message {
               ))
           .toList()
           .cast<ReadBy>(),
-      type: snapshot['type'] == 'Type.text' ? Type.text : Type.image,
+      type: snapshot['type'] == 'Type.text'
+          ? Type.text
+          : snapshot['type'] == 'Type.news'
+              ? Type.news
+              : Type.image,
+      senderImage: snapshot['senderImage'],
     );
   }
 }

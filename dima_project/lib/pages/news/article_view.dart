@@ -42,7 +42,13 @@ class _ArticleViewState extends State<ArticleView> {
                           )));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
-                  await DatabaseService.shareNews(widget.title,
+                  await DatabaseService.shareNewsOnGroups(widget.title,
+                      widget.description, widget.imageUrl, widget.blogUrl, id);
+                }
+              }
+              if (ids is Map && ids['users'].isNotEmpty) {
+                for (var id in ids['users']) {
+                  await DatabaseService.shareNewsOnPrivateChat(widget.title,
                       widget.description, widget.imageUrl, widget.blogUrl, id);
                 }
               }

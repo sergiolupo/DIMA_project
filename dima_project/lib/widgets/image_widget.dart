@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 
 class CreateImageWidget {
@@ -118,12 +119,13 @@ class CreateImageWidget {
   }
 
   static getImage(String content, {bool small = false}) {
+    debugPrint('content: $content');
     return Container(
       width: small ? 30 : 100,
       height: small ? 30 : 100,
       color: CupertinoColors.lightBackgroundGray,
-      child: Image.network(
-        content,
+      child: CachedNetworkImage(
+        imageUrl: content,
         fit: BoxFit.cover,
       ),
     );
