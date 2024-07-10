@@ -334,6 +334,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     PrivateMessageTile(
                       uuid: widget.uuid,
                       message: message,
+                      uuids: widget.privateChat.members,
                     ),
                   ],
                 ),
