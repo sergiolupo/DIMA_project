@@ -49,38 +49,50 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: SingleChildScrollView(
-          child: StreamBuilder(
-            stream: widget.privateChat.members[0] != widget.uuid
-                ? DatabaseService.getUserInfo(widget.privateChat.members[0])
-                : DatabaseService.getUserInfo(widget.privateChat.members[1]),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final user =
-                    UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
+        middle: GestureDetector(
+          onTap: () => {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => PrivateInfoPage(
+                  uuid: widget.uuid,
+                  privateChat: widget.privateChat,
+                ),
+              ),
+            )
+          },
+          child: SingleChildScrollView(
+            child: StreamBuilder(
+              stream: widget.privateChat.members[0] != widget.uuid
+                  ? DatabaseService.getUserInfo(widget.privateChat.members[0])
+                  : DatabaseService.getUserInfo(widget.privateChat.members[1]),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final user =
+                      UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
 
-                return Row(
-                  children: [
-                    CreateImageWidget.getUserImage(
-                      user.imagePath!,
-                      small: true,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.username,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          _userStatus(user),
-                        ]),
-                  ],
-                );
-              } else {
-                return Container();
-              }
-            },
+                  return Row(
+                    children: [
+                      CreateImageWidget.getUserImage(
+                        user.imagePath!,
+                        small: true,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.username,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            _userStatus(user),
+                          ]),
+                    ],
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
@@ -91,28 +103,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             }
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
-            } else {
-              context.go("/home", extra: 1);
             }
           },
           child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
         ),
-        trailing: widget.privateChat.id != null
-            ? CupertinoButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => PrivateInfoPage(
-                        uuid: widget.uuid,
-                        privateChat: widget.privateChat,
-                      ),
-                    ),
-                  );
-                },
-                child: const Icon(CupertinoIcons.info,
-                    color: CupertinoColors.white),
-              )
-            : null,
       ),
       child: Column(
         children: <Widget>[
