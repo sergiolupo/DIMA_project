@@ -13,10 +13,12 @@ import 'package:uuid/uuid.dart';
 class PrivateMessageTile extends StatefulWidget {
   final Message message;
   final String uuid;
-
+  final List<String> uuids;
+  @override
   const PrivateMessageTile({
     required this.message,
     required this.uuid,
+    required this.uuids,
     super.key,
   });
 
@@ -297,7 +299,10 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
               child: const Text('Yes'),
               onPressed: () {
                 Navigator.pop(context);
-                DatabaseService.deleteMessage(widget.message);
+                DatabaseService.deleteMessage(
+                  widget.message,
+                  uuids: widget.uuids,
+                );
               },
             ),
             CupertinoDialogAction(
