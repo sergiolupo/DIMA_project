@@ -45,16 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need your permission to save images to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo Library usage</string>
+	<string>We need your permission to access your photo library.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera usage</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone usage</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-<string>We need your location to provide better service.</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>We need your location to provide better service.</string>
+	<string>We need your location to provide better service.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to provide better service.</string>
 
 </dict>
 </plist>

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -5,10 +7,11 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class PrivateMessageTile extends StatefulWidget {
   final Message message;
@@ -223,26 +226,22 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
     _showCustomSnackbar('Copied to clipboard');
   }
 
-  Future<void> _saveImage() async {
-    final response = await Dio().get(
-      widget.message.content,
-      options: Options(responseType: ResponseType.bytes),
-    );
+  Future<File> _saveImage() async {
+    // Get the directory to save the file.
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/${const Uuid().v4()}.png';
+    // Fetch the image from the URL.
+    final response = await http.get(Uri.parse(widget.message.content));
 
-    final Uint8List imageData = Uint8List.fromList(response.data);
-
-    const uuid = Uuid();
-    final imageName = '${uuid.v4()}.jpg';
-
-    /*final blob = html.Blob([imageData]);
-
-    final url = html.Url.createObjectUrlFromBlob(blob);
-
-    html.AnchorElement(href: url)
-      ..setAttribute("download", imageName)
-      ..click();
-
-    html.Url.revokeObjectUrl(url);*/
+    // Check if the request was successful.
+    if (response.statusCode == 200) {
+      debugPrint('Image downloaded successfully');
+      // Write the image data to the file.
+      final file = File(filePath);
+      return file.writeAsBytes(response.bodyBytes);
+    } else {
+      throw Exception('Failed to download image');
+    }
   }
 
   void _editMessage() {

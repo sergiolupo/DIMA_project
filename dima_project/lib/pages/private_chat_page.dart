@@ -12,7 +12,6 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/private_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PrivateChatPage extends StatefulWidget {
