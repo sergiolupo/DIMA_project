@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -9,27 +7,23 @@ import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 
-class PrivateMessageTile extends StatefulWidget {
+class TextMessageTile extends StatefulWidget {
   final Message message;
+  final String? senderUsername;
   final String uuid;
-  final List<String> uuids;
-  @override
-  const PrivateMessageTile({
+  const TextMessageTile({
     required this.message,
+    this.senderUsername,
     required this.uuid,
-    required this.uuids,
     super.key,
   });
 
   @override
-  PrivateMessageTileState createState() => PrivateMessageTileState();
+  TextMessageTileState createState() => TextMessageTileState();
 }
 
-class PrivateMessageTileState extends State<PrivateMessageTile> {
+class TextMessageTileState extends State<TextMessageTile> {
   bool _showSnackbar = false;
   late String _snackbarMessage;
 
@@ -78,24 +72,42 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  if (!widget.message.sentByMe! &&
+                      widget.message.isGroupMessage)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CreateImageWidget.getUserImage(
+                          widget.message.senderImage!,
+                          small: true,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.senderUsername!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: widget.message.sentByMe!
+                                ? CupertinoColors.white
+                                : CupertinoColors.black,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      widget.message.type == Type.image
-                          ? CreateImageWidget.getImage(
-                              widget.message.content,
-                              small: false,
-                            )
-                          : Text(
-                              widget.message.content,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: widget.message.sentByMe!
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                fontSize: 16,
-                              ),
-                            ),
+                      Text(
+                        widget.message.content,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: widget.message.sentByMe!
+                              ? CupertinoColors.white
+                              : CupertinoColors.black,
+                          fontSize: 16,
+                        ),
+                      ),
                       Column(
                         children: [
                           const SizedBox(height: 20),
@@ -155,21 +167,13 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
 
   void _showBottomSheet(BuildContext context) {
     List<Widget> actions = [
-      if (widget.message.type == Type.text)
-        _buildOptionItem(
-          icon: CupertinoIcons.doc_on_clipboard,
-          color: CupertinoColors.systemBlue,
-          text: 'Copy Text',
-          onPressed: () => _copyText(),
-        ),
-      if (widget.message.type == Type.image)
-        _buildOptionItem(
-          icon: CupertinoIcons.download_circle,
-          color: CupertinoColors.systemBlue,
-          text: 'Save Image',
-          onPressed: () => _saveImage(),
-        ),
-      if (widget.message.sentByMe! && widget.message.type == Type.text)
+      _buildOptionItem(
+        icon: CupertinoIcons.doc_on_clipboard,
+        color: CupertinoColors.systemBlue,
+        text: 'Copy Text',
+        onPressed: () => _copyText(),
+      ),
+      if (widget.message.sentByMe!)
         _buildOptionItem(
           icon: CupertinoIcons.pencil,
           color: CupertinoColors.systemBlue,
@@ -226,24 +230,6 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
     _showCustomSnackbar('Copied to clipboard');
   }
 
-  Future<File> _saveImage() async {
-    // Get the directory to save the file.
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/${const Uuid().v4()}.png';
-    // Fetch the image from the URL.
-    final response = await http.get(Uri.parse(widget.message.content));
-
-    // Check if the request was successful.
-    if (response.statusCode == 200) {
-      debugPrint('Image downloaded successfully');
-      // Write the image data to the file.
-      final file = File(filePath);
-      return file.writeAsBytes(response.bodyBytes);
-    } else {
-      throw Exception('Failed to download image');
-    }
-  }
-
   void _editMessage() {
     String updatedMessage = widget.message.content;
     showCupertinoDialog(
@@ -298,10 +284,7 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
               child: const Text('Yes'),
               onPressed: () {
                 Navigator.pop(context);
-                DatabaseService.deleteMessage(
-                  widget.message,
-                  uuids: widget.uuids,
-                );
+                DatabaseService.deleteMessage(widget.message);
               },
             ),
             CupertinoDialogAction(
@@ -391,9 +374,11 @@ class PrivateMessageTileState extends State<PrivateMessageTile> {
       });
 
       Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _showSnackbar = false;
-        });
+        if (mounted) {
+          setState(() {
+            _showSnackbar = false;
+          });
+        }
       });
     }
   }

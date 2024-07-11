@@ -863,7 +863,7 @@ class DatabaseService {
     }
   }
 
-  static void deleteMessage(Message message, {List<String>? uuids}) async {
+  static void deleteMessage(Message message) async {
     if (message.isGroupMessage) {
       await groupsRef
           .doc(message.chatID)
@@ -901,11 +901,11 @@ class DatabaseService {
             .collection('messages')
             .doc(message.id)
             .delete();
-        final recentMessage = (await privateChatRef.doc(message.chatID).get());
-        if (recentMessage.exists) {
-          if (recentMessage['recentMessage'] == message.content &&
-              recentMessage['recentMessageSender'] == message.sender &&
-              recentMessage['recentMessageTime'] == message.time) {
+        final privateChat = (await privateChatRef.doc(message.chatID).get());
+        if (privateChat.exists) {
+          if (privateChat['recentMessage'] == message.content &&
+              privateChat['recentMessageSender'] == message.sender &&
+              privateChat['recentMessageTime'] == message.time) {
             var messagesSnapshot = await privateChatRef
                 .doc(message.chatID)
                 .collection('messages')
@@ -919,10 +919,10 @@ class DatabaseService {
               });
             } else {
               await privateChatRef.doc(message.chatID).delete();
-              await usersRef.doc(uuids![0]).update({
+              await usersRef.doc(privateChat['members'][0]).update({
                 'privateChats': FieldValue.arrayRemove([message.chatID])
               });
-              await usersRef.doc(uuids[1]).update({
+              await usersRef.doc(privateChat['members'][1]).update({
                 'privateChats': FieldValue.arrayRemove([message.chatID])
               });
             }

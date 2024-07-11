@@ -9,7 +9,9 @@ import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
-import 'package:dima_project/widgets/private_message_tile.dart';
+import 'package:dima_project/widgets/messages/image_message_tile.dart';
+import 'package:dima_project/widgets/messages/news_message_tile.dart';
+import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -330,11 +332,20 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                             ),
                           )
                         : Container(),
-                    PrivateMessageTile(
-                      uuid: widget.uuid,
-                      message: message,
-                      uuids: widget.privateChat.members,
-                    ),
+                    (message.type == Type.text)
+                        ? TextMessageTile(
+                            message: message,
+                            uuid: widget.uuid,
+                          )
+                        : (message.type == Type.image)
+                            ? ImageMessageTile(
+                                message: message,
+                                uuid: widget.uuid,
+                              )
+                            : NewsMessageTile(
+                                message: message,
+                                uuid: widget.uuid,
+                              ),
                   ],
                 ),
               );

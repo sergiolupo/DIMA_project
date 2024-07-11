@@ -8,8 +8,10 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/group_message_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/messages/image_message_tile.dart';
+import 'package:dima_project/widgets/messages/news_message_tile.dart';
+import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -267,9 +269,22 @@ class GroupChatPageState extends State<GroupChatPage> {
                           final user = snapshot.data as UserData;
 
                           message.senderImage = user.imagePath;
-                          return GroupMessageTile(
-                            uuid: widget.uuid,
+                          if (message.type == Type.text) {
+                            return TextMessageTile(
+                                message: message,
+                                uuid: widget.uuid,
+                                senderUsername: user.username);
+                          }
+                          if (message.type == Type.image) {
+                            return ImageMessageTile(
+                              message: message,
+                              uuid: widget.uuid,
+                              senderUsername: user.username,
+                            );
+                          }
+                          return NewsMessageTile(
                             message: message,
+                            uuid: widget.uuid,
                             senderUsername: user.username,
                           );
                         } else {

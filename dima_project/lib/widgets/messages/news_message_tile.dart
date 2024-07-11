@@ -1,38 +1,28 @@
-import 'dart:io';
-
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 
-class GroupMessageTile extends StatefulWidget {
+class NewsMessageTile extends StatefulWidget {
   final Message message;
-  final String senderUsername;
+  final String? senderUsername;
   final String uuid;
-  const GroupMessageTile({
+  const NewsMessageTile({
     required this.message,
-    required this.senderUsername,
+    this.senderUsername,
     required this.uuid,
     super.key,
   });
 
   @override
-  GroupMessageTileState createState() => GroupMessageTileState();
+  NewsMessageTileState createState() => NewsMessageTileState();
 }
 
-class GroupMessageTileState extends State<GroupMessageTile> {
-  bool _showSnackbar = false;
-  late String _snackbarMessage;
-
+class NewsMessageTileState extends State<NewsMessageTile> {
   @override
   void initState() {
     super.initState();
@@ -89,7 +79,7 @@ class GroupMessageTileState extends State<GroupMessageTile> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          widget.senderUsername,
+                          widget.senderUsername!,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
@@ -102,83 +92,63 @@ class GroupMessageTileState extends State<GroupMessageTile> {
                       ],
                     ),
                   Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      widget.message.type == Type.image
-                          ? CreateImageWidget.getImage(
-                              widget.message.content,
-                              small: false,
-                            )
-                          : widget.message.type == Type.text
-                              ? Text(
-                                  widget.message.content,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: widget.message.sentByMe!
-                                        ? CupertinoColors.white
-                                        : CupertinoColors.black,
-                                    fontSize: 16,
-                                  ),
-                                )
-                              : GestureDetector(
-                                  onTap: () {
-                                    final List<String> news =
-                                        widget.message.content.split('\n');
-                                    Navigator.of(context).push(
-                                      CupertinoPageRoute(
-                                        builder: (context) => ArticleView(
-                                          blogUrl: news[2],
-                                          description: news[1],
-                                          imageUrl: news[3],
-                                          title: news[0],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      CreateImageWidget.getImage(
-                                        widget.message.content.split('\n')[3],
-                                        small: true,
-                                      ),
-                                      SizedBox(
-                                        width: 150,
-                                        child: Text(
-                                          widget.message.content
-                                              .split('\n')
-                                              .first,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: widget.message.sentByMe!
-                                                ? CupertinoColors.white
-                                                : CupertinoColors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 150,
-                                        child: Text(
-                                          widget.message.content.split('\n')[1],
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: widget.message.sentByMe!
-                                                ? CupertinoColors.white
-                                                : CupertinoColors.black,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                      GestureDetector(
+                        onTap: () {
+                          final List<String> news =
+                              widget.message.content.split('\n');
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => ArticleView(
+                                blogUrl: news[2],
+                                description: news[1],
+                                imageUrl: news[3],
+                                title: news[0],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CreateImageWidget.getImage(
+                              widget.message.content.split('\n')[3],
+                              small: true,
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: Text(
+                                widget.message.content.split('\n').first,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: widget.message.sentByMe!
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: Text(
+                                widget.message.content.split('\n')[1],
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: widget.message.sentByMe!
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Column(
                         children: [
                           const SizedBox(height: 20),
@@ -212,7 +182,6 @@ class GroupMessageTileState extends State<GroupMessageTile> {
               ),
             ),
           ),
-          if (_showSnackbar) _buildSnackbar(),
         ],
       ),
     );
@@ -238,27 +207,6 @@ class GroupMessageTileState extends State<GroupMessageTile> {
 
   void _showBottomSheet(BuildContext context) {
     List<Widget> actions = [
-      if (widget.message.type == Type.text)
-        _buildOptionItem(
-          icon: CupertinoIcons.doc_on_clipboard,
-          color: CupertinoColors.systemBlue,
-          text: 'Copy Text',
-          onPressed: () => _copyText(),
-        ),
-      if (widget.message.type == Type.image)
-        _buildOptionItem(
-          icon: CupertinoIcons.download_circle,
-          color: CupertinoColors.systemBlue,
-          text: 'Save Image',
-          onPressed: () => _saveImage(),
-        ),
-      if (widget.message.sentByMe! && widget.message.type == Type.text)
-        _buildOptionItem(
-          icon: CupertinoIcons.pencil,
-          color: CupertinoColors.systemBlue,
-          text: 'Edit Message',
-          onPressed: () => _editMessage(),
-        ),
       if (widget.message.sentByMe!)
         _buildOptionItem(
           icon: CupertinoIcons.delete,
@@ -300,71 +248,6 @@ class GroupMessageTileState extends State<GroupMessageTile> {
       onPressed: () {
         Navigator.pop(context);
         onPressed();
-      },
-    );
-  }
-
-  Future<void> _copyText() async {
-    await Clipboard.setData(ClipboardData(text: widget.message.content));
-    _showCustomSnackbar('Copied to clipboard');
-  }
-
-  Future<File> _saveImage() async {
-    // Get the directory to save the file.
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/${const Uuid().v4()}.png';
-    // Fetch the image from the URL.
-    final response = await http.get(Uri.parse(widget.message.content));
-
-    // Check if the request was successful.
-    if (response.statusCode == 200) {
-      debugPrint('Image downloaded successfully');
-      // Write the image data to the file.
-      final file = File(filePath);
-      return file.writeAsBytes(response.bodyBytes);
-    } else {
-      throw Exception('Failed to download image');
-    }
-  }
-
-  void _editMessage() {
-    String updatedMessage = widget.message.content;
-    showCupertinoDialog(
-      context: context,
-      builder: (_) {
-        return CupertinoAlertDialog(
-          title: const Row(
-            children: [
-              Icon(CupertinoIcons.pencil,
-                  color: CupertinoColors.activeBlue, size: 28),
-              SizedBox(width: 10),
-              Text("Edit Message"),
-            ],
-          ),
-          content: CupertinoTextField(
-            controller: TextEditingController(text: updatedMessage),
-            onChanged: (value) {
-              updatedMessage = value;
-            },
-            decoration: Constants.inputDecoration,
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Update'),
-              onPressed: () {
-                DatabaseService.updateMessageContent(
-                    widget.message, updatedMessage);
-                Navigator.pop(context);
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
       },
     );
   }
@@ -460,37 +343,6 @@ class GroupMessageTileState extends State<GroupMessageTile> {
           ],
         );
       },
-    );
-  }
-
-  void _showCustomSnackbar(String message) {
-    if (mounted) {
-      setState(() {
-        _snackbarMessage = message;
-        _showSnackbar = true;
-      });
-
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _showSnackbar = false;
-          });
-        }
-      });
-    }
-  }
-
-  Widget _buildSnackbar() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: _showSnackbar ? MediaQuery.of(context).size.height * 0.1 : 0,
-      color: CupertinoColors.white.withOpacity(0.7),
-      child: Center(
-        child: Text(
-          _snackbarMessage,
-          style: const TextStyle(color: CupertinoColors.systemPink),
-        ),
-      ),
     );
   }
 }
