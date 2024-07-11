@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
@@ -25,6 +26,7 @@ class EditEventPage extends StatefulWidget {
 
 class EditEventPageState extends State<EditEventPage> {
   Uint8List? selectedImagePath;
+  Uint8List? _oldImage;
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _eventDescriptionController =
       TextEditingController();
@@ -50,14 +52,18 @@ class EditEventPageState extends State<EditEventPage> {
   void initState() {
     super.initState();
     setState(() {
+      _eventNameController.text = widget.event.name;
+      _eventDescriptionController.text = widget.event.description;
       isPublic = widget.event.isPublic;
       notify = widget.event.notify;
       startDate = widget.event.startDate;
       endDate = widget.event.endDate;
       startTime = widget.event.startDate;
       endTime = widget.event.endDate;
+      _selectedLocation = widget.event.location;
     });
     _fetchProfileImage();
+    _fetchLocation();
   }
 
   Future<void> _fetchProfileImage() async {
@@ -65,7 +71,14 @@ class EditEventPageState extends State<EditEventPage> {
         await StorageService.downloadImageFromStorage(widget.event.imagePath!);
     setState(() {
       selectedImagePath = image;
-      //_oldImage = image;
+      _oldImage = image;
+    });
+  }
+
+  Future<void> _fetchLocation() async {
+    final loc = await EventService.getAddressFromLatLng(widget.event.location);
+    setState(() {
+      location = loc!;
     });
   }
 
@@ -95,9 +108,24 @@ class EditEventPageState extends State<EditEventPage> {
               ),
               trailing: CupertinoButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: () {
-                    //TODO: update name and desription
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    if (startDate != null &&
+                        endDate != null &&
+                        startTime != null &&
+                        endTime != null &&
+                        EventService.validateForm(
+                          context,
+                          _eventNameController.text,
+                          _eventDescriptionController.text,
+                          location,
+                          startDate!,
+                          endDate!,
+                          startTime!,
+                          endTime!,
+                        )) {
+                      await updateEvent();
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
                   },
                   child: const Text(
                     'Done',
@@ -316,10 +344,10 @@ class EditEventPageState extends State<EditEventPage> {
                               ),
                               Text(
                                 location == '' ? 'Location' : location,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: CupertinoColors.systemGrey,
                                   fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               )
                             ],
@@ -422,5 +450,30 @@ class EditEventPageState extends State<EditEventPage> {
         debugPrint('Selected location: $_selectedLocation');
       });
     }
+  }
+
+  Future<void> updateEvent() async {
+    final event = Event(
+      id: widget.event.id,
+      admin: widget.event.admin,
+      name: _eventNameController.text,
+      description: _eventDescriptionController.text,
+      location: _selectedLocation!,
+      startDate: DateTime(startDate!.year, startDate!.month, startDate!.day,
+          startTime!.hour, startTime!.minute),
+      endDate: DateTime(endDate!.year, endDate!.month, endDate!.day,
+          endTime!.hour, endTime!.minute),
+      isPublic: isPublic,
+      notify: notify,
+      imagePath: widget.event.imagePath,
+      members: widget.event.members,
+    );
+    await DatabaseService.updateEvent(
+      event,
+      selectedImagePath!,
+      _oldImage == selectedImagePath,
+      widget.event.isPublic != isPublic,
+      uuids,
+    );
   }
 }

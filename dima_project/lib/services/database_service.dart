@@ -1034,6 +1034,10 @@ class DatabaseService {
     });
   }
 
+  static Future<List<String>> getEventRequests(String id) async {
+    return (await eventsRef.doc(id).get())['requests'];
+  }
+
   static Future<void> denyGroupRequest(String groupId, String uuid) async {
     return await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])
@@ -1327,7 +1331,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<dynamic>> getEventRequests(String uuid) {
+  static Stream<List<dynamic>> getEventRequestsStream(String uuid) {
     return usersRef.doc(uuid).snapshots().map((snapshot) {
       return snapshot['eventsRequests'];
     });
@@ -1407,5 +1411,33 @@ class DatabaseService {
         'recentMessageTime': message.time,
       }),
     ]);
+  }
+
+  static Future<void> updateEvent(Event event, Uint8List uint8list,
+      bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
+    await eventsRef.doc(event.id).update(Event.toMap(event));
+    if (!sameImage) {
+      String imageUrl = await StorageService.uploadImageToStorage(
+          'event_images/${event.id}.jpg', uint8list);
+      await eventsRef.doc(event.id).update({
+        'imagePath': imageUrl,
+      });
+    }
+    List<String> members = event.members;
+
+    if (visibilityHasChanged && event.isPublic) {
+      List<String> requests = await getEventRequests(event.id!);
+      for (var id in requests) {
+        await acceptEventRequest(event.id!, id);
+        members.add(id);
+      }
+    }
+    for (var id in uuids) {
+      if (!members.contains(id)) {
+        await usersRef.doc(id).update({
+          'eventsRequests': FieldValue.arrayUnion([event.id])
+        });
+      }
+    }
   }
 }

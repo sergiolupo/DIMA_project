@@ -58,84 +58,17 @@ class CreateEventPageState extends State<CreateEventPage> {
     endTime = getEndTime();
   }
 
-  bool _validateForm() {
-    if (_eventNameController.text.isEmpty) {
-      _showErrorDialog('Event name is required');
-      return false;
-    }
-    if (_eventDescriptionController.text.isEmpty) {
-      _showErrorDialog('Event description is required');
-      return false;
-    }
-    if (startDateString.isEmpty) {
-      _showErrorDialog('Event start date is required');
-      return false;
-    }
-    if (endDateString.isEmpty) {
-      _showErrorDialog('Event end date is required');
-      return false;
-    }
-    if (startTimeString.isEmpty) {
-      _showErrorDialog('Event start time is required');
-      return false;
-    }
-    if (endTimeString.isEmpty) {
-      _showErrorDialog('Event end time is required');
-      return false;
-    }
-    if (location.isEmpty) {
-      _showErrorDialog('Event location is required');
-      return false;
-    }
-    if (_isEventInThePast()) {
-      _showErrorDialog('Event cannot be scheduled in the past');
-      return false;
-    }
-    if (!_isStartDateBeforeEndDate()) {
-      _showErrorDialog('Event start date must be before end date');
-      return false;
-    }
-    return true;
-  }
-
-  bool _isStartDateBeforeEndDate() {
-    final startDateTime = DateTime(startDate.year, startDate.month,
-        startDate.day, startTime.hour, startTime.minute);
-    final endDateTime = DateTime(
-        endDate.year, endDate.month, endDate.day, endTime.hour, endTime.minute);
-    return startDateTime.isBefore(endDateTime);
-  }
-
-  bool _isEventInThePast() {
-    final now = DateTime.now();
-    final eventDateTime = DateTime(startDate.year, startDate.month,
-        startDate.day, startTime.hour, startTime.minute);
-    return eventDateTime.isBefore(now);
-  }
-
-  void _showErrorDialog(String message) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Validation Error'),
-          content: Text(message),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _createEvent() async {
-    if (_validateForm()) {
+    if (EventService.validateForm(
+      context,
+      _eventNameController.text,
+      _eventDescriptionController.text,
+      location,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+    )) {
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
@@ -400,10 +333,10 @@ class CreateEventPageState extends State<CreateEventPage> {
                               ),
                               Text(
                                 location == '' ? 'Location' : location,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: CupertinoColors.systemGrey,
                                   fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               )
                             ],

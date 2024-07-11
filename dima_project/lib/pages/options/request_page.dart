@@ -32,7 +32,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
         return group.length;
       },
     );
-    _numEventRequests = DatabaseService.getEventRequests(widget.uuid).map(
+    _numEventRequests = DatabaseService.getEventRequestsStream(widget.uuid).map(
       (event) {
         return event.length;
       },

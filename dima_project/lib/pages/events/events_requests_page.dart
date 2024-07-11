@@ -19,7 +19,7 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
   }
 
   init() {
-    eventRequests = DatabaseService.getEventRequests(widget.uuid);
+    eventRequests = DatabaseService.getEventRequestsStream(widget.uuid);
   }
 
   @override
