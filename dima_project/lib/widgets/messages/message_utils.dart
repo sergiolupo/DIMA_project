@@ -13,14 +13,15 @@ import 'package:http/http.dart' as http;
 
 class MessageUtils {
   static void showBottomSheet(
-      BuildContext context, Message message, String uuid) {
+      BuildContext context, Message message, String uuid,
+      {required VoidCallback? showCustomSnackbar}) {
     List<Widget> actions = [
       if (message.type == Type.text)
         _buildOptionItem(
           icon: CupertinoIcons.doc_on_clipboard,
           color: CupertinoColors.systemBlue,
           text: 'Copy Text',
-          onPressed: () => _copyText(context, message),
+          onPressed: () => _copyText(context, message, showCustomSnackbar!),
           context: context,
         ),
       if (message.type == Type.image)
@@ -103,9 +104,10 @@ class MessageUtils {
         : const SizedBox();
   }
 
-  static Future<void> _copyText(BuildContext context, Message message) async {
+  static Future<void> _copyText(BuildContext context, Message message,
+      VoidCallback showCustomSnackbar) async {
     await Clipboard.setData(ClipboardData(text: message.content));
-    if (context.mounted) _buildSnackbar(context);
+    if (context.mounted) showCustomSnackbar();
   }
 
   static Future<File> _saveImage(Message message) async {
@@ -257,20 +259,6 @@ class MessageUtils {
           ],
         );
       },
-    );
-  }
-
-  static Widget _buildSnackbar(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: MediaQuery.of(context).size.height * 0.1,
-      color: CupertinoColors.white.withOpacity(0.7),
-      child: const Center(
-        child: Text(
-          "Copied to clipboard",
-          style: TextStyle(color: CupertinoColors.systemPink),
-        ),
-      ),
     );
   }
 }
