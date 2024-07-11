@@ -88,7 +88,9 @@ class EditEventPageState extends State<EditEventPage> {
             startDate == null ||
             endDate == null ||
             startTime == null ||
-            endTime == null
+            endTime == null ||
+            _selectedLocation == null ||
+            location == ''
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(

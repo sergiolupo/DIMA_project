@@ -1417,8 +1417,10 @@ class DatabaseService {
       bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
     if (!sameImage) {
-      String imageUrl = await StorageService.uploadImageToStorage(
-          'event_images/${event.id}.jpg', uint8list);
+      String imageUrl = uint8list.toString() == '[]' || uint8list.isEmpty
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'event_images/${event.id}.jpg', uint8list);
       await eventsRef.doc(event.id).update({
         'imagePath': imageUrl,
       });

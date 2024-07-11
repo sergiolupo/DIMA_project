@@ -183,6 +183,10 @@ class ImageCropPageState extends State<ImageCropPage> {
                   style: TextStyle(color: CupertinoColors.systemRed),
                 )),
             onPressed: () {
+              setState(() {
+                _selectedImagePath = Uint8List(0);
+                widget.imageInsertPageKey(_selectedImagePath);
+              });
               Navigator.of(context).pop();
             },
           ),
