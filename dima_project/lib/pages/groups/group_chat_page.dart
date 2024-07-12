@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -35,6 +36,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -52,9 +54,8 @@ class GroupChatPageState extends State<GroupChatPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              middle: CupertinoButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
+              middle: GestureDetector(
+                onTap: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => GroupInfoPage(
@@ -74,6 +75,87 @@ class GroupChatPageState extends State<GroupChatPage> {
                             fontSize: 16, color: CupertinoColors.white)),
                   ],
                 ),
+              ),
+              trailing: GestureDetector(
+                child: const Icon(CupertinoIcons.ellipsis_vertical,
+                    color: CupertinoColors.white),
+                onTap: () {
+                  final RenderBox renderBox =
+                      context.findRenderObject() as RenderBox;
+                  final Offset position = renderBox.localToGlobal(Offset.zero);
+                  final Size size = renderBox.size;
+
+                  _overlayEntry = OverlayEntry(
+                    builder: (context) => Stack(
+                      children: [
+                        Positioned.fill(
+                          child: GestureDetector(
+                            onTap: () {
+                              _overlayEntry?.remove();
+                            },
+                            child: Container(
+                              color:
+                                  CupertinoColors.inactiveGray.withOpacity(0.5),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: MediaQuery.of(context).size.height * 0.85,
+                          left: MediaQuery.of(context).size.width - 160,
+                          width: 160,
+                          child: CupertinoPopupSurface(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CupertinoButton(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  onPressed: () {
+                                    _overlayEntry?.remove();
+
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => GroupInfoPage(
+                                          uuid: widget.uuid,
+                                          group: widget.group,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Group Info'),
+                                ),
+                                CupertinoButton(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  onPressed: () {
+                                    _overlayEntry?.remove();
+
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                          builder: (context) => CreateEventPage(
+                                                uuid: widget.uuid,
+                                              )),
+                                    );
+                                  },
+                                  child: const Text('Create Event'),
+                                ),
+                                CupertinoButton(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  onPressed: () {
+                                    _overlayEntry?.remove();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  Overlay.of(context).insert(_overlayEntry!);
+                },
               ),
               backgroundColor: CupertinoTheme.of(context).primaryColor,
               leading: CupertinoButton(
