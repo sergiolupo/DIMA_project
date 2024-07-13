@@ -8,7 +8,9 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../models/event.dart';
 
@@ -1016,10 +1018,14 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<dynamic>> getGroupRequests(String id) {
+  static Stream<List<dynamic>> getGroupRequestsStream(String id) {
     return groupsRef.doc(id).snapshots().map((snapshot) {
       return snapshot['requests'];
     });
+  }
+
+  static Future<List<String>> getGroupRequests(String id) async {
+    return (await groupsRef.doc(id).get())['requests'];
   }
 
   static Stream<List<dynamic>> getUserGroupRequests(String id) {
@@ -1465,5 +1471,34 @@ class DatabaseService {
     return eventsRef.doc(id).get().then((value) {
       return Event.fromSnapshot(value);
     });
+  }
+
+  static updateGroup(Group group, Uint8List uint8list, bool sameImage,
+      bool visibilityHasChanged, List<String> uuids) async {
+    await groupsRef.doc(group.id).update(Group.toMap(group));
+    if (!sameImage) {
+      String imageUrl = uint8list.toString() == '[]' || uint8list.isEmpty
+          ? ''
+          : await StorageService.uploadImageToStorage(
+              'group_images/${group.id}.jpg', uint8list);
+      await groupsRef.doc(group.id).update({
+        'imagePath': imageUrl,
+      });
+    }
+    List<String> members = group.members!;
+    if (visibilityHasChanged && group.isPublic) {
+      List<String> requests = await getGroupRequests(group.id);
+      for (var id in requests) {
+        await acceptGroupRequest(group.id, id);
+        members.add(id);
+      }
+    }
+    for (var id in uuids) {
+      if (!members.contains(id)) {
+        await usersRef.doc(id).update({
+          'groupsRequests': FieldValue.arrayUnion([group.id])
+        });
+      }
+    }
   }
 }

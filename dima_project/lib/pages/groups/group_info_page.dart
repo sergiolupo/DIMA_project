@@ -38,7 +38,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   void getMembers() {
     _membersStream = DatabaseService.getGroupMembers(widget.group.id);
     _numberOfRequestsStream =
-        DatabaseService.getGroupRequests(widget.group.id).map((event) {
+        DatabaseService.getGroupRequestsStream(widget.group.id).map((event) {
       return event.length;
     });
     _numberOfMediaStream = DatabaseService.getGroupMedia(widget.group.id).map(

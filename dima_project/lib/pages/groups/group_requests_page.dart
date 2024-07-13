@@ -23,7 +23,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
   }
 
   init() {
-    requests = DatabaseService.getGroupRequests(widget.groupId);
+    requests = DatabaseService.getGroupRequestsStream(widget.groupId);
   }
 
   @override

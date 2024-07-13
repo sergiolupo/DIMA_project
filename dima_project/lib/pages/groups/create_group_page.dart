@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
@@ -82,7 +83,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 50),
                           color: CupertinoColors.systemPink,
                           borderRadius: BorderRadius.circular(20),
-                          onPressed: () => {if (_validateForm()) managePage()},
+                          onPressed: () => {managePage()},
                           child:
                               Text(_currentPage == 1 ? 'Next' : 'Create Group'),
                         ),
@@ -97,12 +98,10 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   }
 
   void createGroup(Group group, Uint8List imagePath) async {
-    if (_validateForm()) {
-      await DatabaseService.createGroup(
-          group, FirebaseAuth.instance.currentUser!.uid, imagePath, uuids);
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+    await DatabaseService.createGroup(
+        group, FirebaseAuth.instance.currentUser!.uid, imagePath, uuids);
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -260,28 +259,15 @@ class CreateGroupPageState extends State<CreateGroupPage> {
 
   void managePage() {
     if (_currentPage == 1) {
+      if (!GroupHelper.validateFirstPage(context, _groupNameController.text,
+          _groupDescriptionController.text)) {
+        return;
+      }
       setState(() {
         _currentPage = 2;
       });
     } else {
-      if (selectedCategories.isEmpty) {
-        showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: const Text('Invalid choice'),
-              content: const Text('Please select at least one category'),
-              actions: <CupertinoDialogAction>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+      if (!GroupHelper.validateSecondPage(context, selectedCategories)) {
         return;
       } else {
         createGroup(
@@ -297,38 +283,5 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         );
       }
     }
-  }
-
-  bool _validateForm() {
-    if (_groupNameController.text.isEmpty) {
-      _showErrorDialog('Event name is required');
-      return false;
-    }
-    if (_groupDescriptionController.text.isEmpty) {
-      _showErrorDialog('Event description is required');
-      return false;
-    }
-    return true;
-  }
-
-  void _showErrorDialog(String message) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Validation Error'),
-          content: Text(message),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

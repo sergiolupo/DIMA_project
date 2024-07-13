@@ -27,6 +27,22 @@ class Group {
     required this.notify,
   });
 
+  static Map<String, dynamic> toMap(Group group) {
+    return {
+      'groupId': group.id,
+      'groupName': group.name,
+      'admin': group.admin ?? "",
+      'groupImage': group.imagePath ?? "",
+      'description': group.description ?? "",
+      'categories':
+          group.categories?.map((category) => {'value': category}).toList(),
+      'members': group.members ?? [],
+      'isPublic': group.isPublic,
+      'requests': group.requests ?? [],
+      'notify': group.notify,
+    };
+  }
+
   static Group fromSnapshot(DocumentSnapshot documentSnapshot) {
     return Group(
       name: documentSnapshot['groupName'],
