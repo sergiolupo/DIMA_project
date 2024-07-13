@@ -10,6 +10,7 @@ import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
@@ -364,7 +365,14 @@ class GroupChatPageState extends State<GroupChatPage> {
                               senderUsername: user.username,
                             );
                           }
-                          return NewsMessageTile(
+                          if (message.type == Type.news) {
+                            return NewsMessageTile(
+                              message: message,
+                              uuid: widget.uuid,
+                              senderUsername: user.username,
+                            );
+                          }
+                          return EventMessageTile(
                             message: message,
                             uuid: widget.uuid,
                             senderUsername: user.username,

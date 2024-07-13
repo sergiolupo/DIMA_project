@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/events/share_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
@@ -43,6 +44,7 @@ class CreateEventPageState extends State<CreateEventPage> {
   bool isPublic = true;
   bool notify = true;
   List<String> uuids = [];
+  List<String> groupIds = [];
 
   @override
   void dispose() {
@@ -85,7 +87,7 @@ class CreateEventPageState extends State<CreateEventPage> {
       );
 
       await DatabaseService.createEvent(
-          event, widget.uuid, selectedImagePath, uuids);
+          event, widget.uuid, selectedImagePath, uuids, groupIds);
     }
   }
 
@@ -380,6 +382,30 @@ class CreateEventPageState extends State<CreateEventPage> {
                                 },
                                 isGroup: false,
                                 id: null,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator,
+                      ),
+                      CupertinoListTile(
+                        title: const Row(
+                          children: [
+                            Icon(CupertinoIcons.person_2_square_stack),
+                            SizedBox(width: 10),
+                            Text('Groups'),
+                          ],
+                        ),
+                        trailing: const Icon(CupertinoIcons.forward),
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            CupertinoPageRoute(
+                              builder: (context) => ShareEventPage(
+                                uuid: widget.uuid,
+                                groupIds: groupIds,
                               ),
                             ),
                           );

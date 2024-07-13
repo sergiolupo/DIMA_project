@@ -1,0 +1,105 @@
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/news/share_news_page.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:flutter/cupertino.dart';
+
+class ShareEventPage extends StatefulWidget {
+  final String uuid;
+  final List<String> groupIds;
+  @override
+  const ShareEventPage({super.key, required this.uuid, required this.groupIds});
+
+  @override
+  State<ShareEventPage> createState() => ShareEventPageState();
+}
+
+class ShareEventPageState extends State<ShareEventPage> {
+  List<String> groupsIds = [];
+
+  List<Group>? groups;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGroups();
+  }
+
+  void fetchGroups() async {
+    final List<Group> userGroups = await DatabaseService.getGroups(widget.uuid);
+    setState(() {
+      groups = userGroups;
+      groupsIds = widget.groupIds;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoColors.systemPink,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getGroups(),
+              ],
+            ),
+            Visibility(
+              visible: groupsIds.isNotEmpty,
+              child: SafeArea(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: CupertinoButton(
+                    child: const Icon(CupertinoIcons.paperplane),
+                    onPressed: () {
+                      Navigator.of(context).pop(groupsIds);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getGroups() {
+    if (groups == null) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
+    if (groups!.isEmpty) {
+      return const Center(
+        child: Text("No groups"),
+      );
+    }
+    return ListView.builder(
+      itemCount: groups!.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return ShareGroupTile(
+          group: groups![index],
+          onSelected: (String id) {
+            setState(() {
+              if (groupsIds.contains(id)) {
+                groupsIds.remove(id);
+              } else {
+                groupsIds.add(id);
+              }
+            });
+          },
+          active: groupsIds.contains(groups![index].id),
+        );
+      },
+    );
+  }
+}

@@ -4,6 +4,7 @@ enum Type {
   text,
   image,
   news,
+  event,
 }
 
 class ReadBy {
@@ -80,7 +81,9 @@ class Message {
           ? Type.text
           : snapshot['type'] == 'Type.news'
               ? Type.news
-              : Type.image,
+              : snapshot['type'] == 'Type.event'
+                  ? Type.event
+                  : Type.image,
       senderImage: snapshot['senderImage'],
     );
   }

@@ -1145,8 +1145,8 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> createEvent(
-      Event event, String uuid, Uint8List imagePath, List<String> uuids) async {
+  static Future<void> createEvent(Event event, String uuid, Uint8List imagePath,
+      List<String> uuids, List<String> groupIds) async {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
 
@@ -1170,6 +1170,24 @@ class DatabaseService {
           'eventsRequests': FieldValue.arrayUnion([
             docRef.id,
           ])
+        });
+      }
+      Message message = Message(
+        content: docRef.id,
+        sender: FirebaseAuth.instance.currentUser!.uid,
+        isGroupMessage: true,
+        time: Timestamp.now(),
+        type: Type.event,
+        readBy: [],
+      );
+      for (var id in groupIds) {
+        await groupsRef.doc(id).collection('messages').add(
+              message.toMap(),
+            );
+        await groupsRef.doc(id).update({
+          'recentMessage': 'Event',
+          'recentMessageSender': message.sender,
+          'recentMessageTime': message.time,
         });
       }
     } catch (e) {
@@ -1441,5 +1459,11 @@ class DatabaseService {
         });
       }
     }
+  }
+
+  static Future<Event> getEvent(String id) {
+    return eventsRef.doc(id).get().then((value) {
+      return Event.fromSnapshot(value);
+    });
   }
 }
