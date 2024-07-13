@@ -124,8 +124,14 @@ class DatabaseService {
     });
   }
 
-  static Stream<Group> getGroupFromId(String id) {
+  static Stream<Group> getGroupFromIdStream(String id) {
     return groupsRef.doc(id).snapshots().map((snapshot) {
+      return Group.fromSnapshot(snapshot);
+    });
+  }
+
+  static Future<Group> getGroupFromId(String id) {
+    return groupsRef.doc(id).get().then((snapshot) {
       return Group.fromSnapshot(snapshot);
     });
   }
@@ -1482,7 +1488,7 @@ class DatabaseService {
           : await StorageService.uploadImageToStorage(
               'group_images/${group.id}.jpg', uint8list);
       await groupsRef.doc(group.id).update({
-        'imagePath': imageUrl,
+        'groupImage': imageUrl,
       });
     }
     List<String> members = group.members!;

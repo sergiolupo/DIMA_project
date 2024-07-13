@@ -12,9 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class GroupInfoPage extends StatefulWidget {
-  final Group group;
   final String uuid;
-
+  final Group group;
   const GroupInfoPage({
     super.key,
     required this.group,
@@ -26,17 +25,19 @@ class GroupInfoPage extends StatefulWidget {
 }
 
 class GroupInfoPageState extends State<GroupInfoPage> {
-  Stream<List<dynamic>>? _membersStream;
   Stream<int>? _numberOfRequestsStream;
   Stream<int>? _numberOfMediaStream;
+  Group? group;
   @override
   void initState() {
     super.initState();
+    setState(() {
+      group = widget.group;
+    });
     getMembers();
   }
 
   void getMembers() {
-    _membersStream = DatabaseService.getGroupMembers(widget.group.id);
     _numberOfRequestsStream =
         DatabaseService.getGroupRequestsStream(widget.group.id).map((event) {
       return event.length;
@@ -50,7 +51,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _membersStream == null || _numberOfRequestsStream == null
+    return _numberOfRequestsStream == null ||
+            _numberOfMediaStream == null ||
+            group == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -65,13 +68,20 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               backgroundColor: CupertinoTheme.of(context).primaryColor,
               trailing: CupertinoButton(
                 padding: const EdgeInsets.all(0),
-                onPressed: () => Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) => EditGroupPage(
-                              group: widget.group,
-                              uuid: widget.uuid,
-                            ))),
+                onPressed: () async {
+                  final Group? newGroup = await Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => EditGroupPage(
+                                group: group!,
+                                uuid: widget.uuid,
+                              )));
+                  if (newGroup != null) {
+                    setState(() {
+                      group = newGroup;
+                    });
+                  }
+                },
                 child: const Text(
                   'Edit',
                   style: TextStyle(
@@ -99,11 +109,11 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 CreateImageWidget.getGroupImage(
-                                  widget.group.imagePath!,
+                                  group!.imagePath!,
                                 ),
                                 const SizedBox(width: 20),
                                 Text(
-                                  widget.group.name,
+                                  group!.name,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -114,7 +124,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             const SizedBox(height: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: widget.group.categories!
+                              children: group!.categories!
                                   .map((category) => Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 4),
@@ -161,7 +171,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    widget.group.description!,
+                                    group!.description!,
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -171,8 +181,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            if (!widget.group.isPublic &&
-                                widget.group.admin == widget.uuid)
+                            if (!group!.isPublic && group!.admin == widget.uuid)
                               StreamBuilder<int>(
                                 stream: _numberOfRequestsStream,
                                 builder: (context, snapshot) {
@@ -347,34 +356,15 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   }
 
   Widget memberList() {
-    return StreamBuilder<List<dynamic>>(
-        stream: _membersStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(
-                radius: 16,
-              ),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          final data = snapshot.data;
-          if (data == null || data.isEmpty) {
-            return const Center(
-              child: Text("No members in this group"),
-            );
-          }
-          var members = snapshot.data!;
-          return ListView.builder(
+    return group == null || group!.members == null
+        ? const CupertinoActivityIndicator()
+        : ListView.builder(
             shrinkWrap: true,
-            itemCount: members.length,
+            itemCount: group!.members!.length,
             itemBuilder: (context, index) {
               return StreamBuilder(
-                stream: DatabaseService.getUserDataFromUUID(members[index]),
+                stream:
+                    DatabaseService.getUserDataFromUUID(group!.members![index]),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CupertinoActivityIndicator(); // Or any loading indicator
@@ -393,7 +383,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             return Text('Error: ${snapshot.error}');
                           } else {
                             final isFollowing = snapshot.data!;
-                            if (userData.uuid == widget.group.admin) {
+                            if (userData.uuid == group!.admin) {
                               return Row(
                                 children: [
                                   Expanded(
@@ -425,7 +415,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               );
             },
           );
-        });
   }
 
   void showLeaveGroupDialog(BuildContext context) {

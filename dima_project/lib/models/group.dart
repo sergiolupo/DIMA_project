@@ -31,14 +31,12 @@ class Group {
     return {
       'groupId': group.id,
       'groupName': group.name,
-      'admin': group.admin ?? "",
       'groupImage': group.imagePath ?? "",
       'description': group.description ?? "",
       'categories':
           group.categories?.map((category) => {'value': category}).toList(),
       'members': group.members ?? [],
       'isPublic': group.isPublic,
-      'requests': group.requests ?? [],
       'notify': group.notify,
     };
   }

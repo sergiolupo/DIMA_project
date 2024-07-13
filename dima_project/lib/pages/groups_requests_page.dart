@@ -46,7 +46,7 @@ class GroupsRequestsPageState extends State<GroupsRequestsPage> {
                         itemCount: requests.length,
                         itemBuilder: (context, index) {
                           return StreamBuilder<Group>(
-                            stream: DatabaseService.getGroupFromId(
+                            stream: DatabaseService.getGroupFromIdStream(
                               requests[index],
                             ),
                             builder: (context, snapshot) {

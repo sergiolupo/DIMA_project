@@ -91,7 +91,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                     ),
               trailing: CupertinoButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: () {
+                  onPressed: () async {
                     if (index == 0) {
                       if (!GroupHelper.validateFirstPage(
                         context,
@@ -108,8 +108,12 @@ class EditGroupPageState extends State<EditGroupPage> {
                           context, selectedCategories)) {
                         return;
                       }
-                      updateGroup();
-                      Navigator.of(context).pop();
+                      await updateGroup();
+                      if (context.mounted) {
+                        Navigator.of(context).pop(
+                            await DatabaseService.getGroupFromId(
+                                widget.group.id));
+                      }
                     }
                   },
                   child: Text(
@@ -272,7 +276,7 @@ class EditGroupPageState extends State<EditGroupPage> {
     );
   }
 
-  void updateGroup() async {
+  Future<void> updateGroup() async {
     final group = Group(
       id: widget.group.id,
       name: _groupNameController.text,
