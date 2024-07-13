@@ -135,6 +135,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                                       CupertinoPageRoute(
                                           builder: (context) => CreateEventPage(
                                                 uuid: widget.uuid,
+                                                groupId: widget.group.id,
                                               )),
                                     );
                                   },

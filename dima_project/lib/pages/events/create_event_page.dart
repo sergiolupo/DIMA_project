@@ -16,8 +16,8 @@ import 'package:latlong2/latlong.dart';
 
 class CreateEventPage extends StatefulWidget {
   final String uuid;
-
-  const CreateEventPage({super.key, required this.uuid});
+  final String? groupId;
+  const CreateEventPage({super.key, required this.uuid, this.groupId});
 
   @override
   CreateEventPageState createState() => CreateEventPageState();
@@ -55,9 +55,12 @@ class CreateEventPageState extends State<CreateEventPage> {
 
   @override
   void initState() {
-    super.initState();
     startTime = getTime();
     endTime = getEndTime();
+    setState(() {
+      if (widget.groupId != null) groupIds.add(widget.groupId!);
+    });
+    super.initState();
   }
 
   Future<void> _createEvent() async {
@@ -88,6 +91,9 @@ class CreateEventPageState extends State<CreateEventPage> {
 
       await DatabaseService.createEvent(
           event, widget.uuid, selectedImagePath, uuids, groupIds);
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -96,13 +102,14 @@ class CreateEventPageState extends State<CreateEventPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).primaryColor,
-        leading: CupertinoButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(CupertinoIcons.back,
-              color: CupertinoColors.systemPink),
-        ),
+        leading: Navigator.canPop(context)
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoColors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            : null,
         middle: const Text(
           'Create Event',
           style: TextStyle(color: CupertinoColors.white),
