@@ -395,6 +395,18 @@ class DatabaseService {
         await privateChatRef.doc(value.docs.first.id).get());
   }
 
+  static Stream<String?> getPrivateChatIdFromMembers(List<String> members) {
+    return privateChatRef.snapshots().map((snapshot) {
+      for (var doc in snapshot.docs) {
+        if (doc['members'].contains(members[0]) &&
+            doc['members'].contains(members[1])) {
+          return doc.id;
+        }
+      }
+      return null;
+    });
+  }
+
   static Future sendFirstPrivateMessage(Message message, String id) async {
     Map<String, dynamic> messageMap = message.toMap();
     return await privateChatRef.doc(id).collection('messages').add(messageMap);
@@ -685,44 +697,38 @@ class DatabaseService {
     }
   }
 
-// Assuming privateChatRef is your reference to the private chat collection
-
-  static Stream<List<Message>> getPrivateChats(List<String> members) async* {
-    // Sort members to maintain a consistent order
-    members.sort();
-
-    // Helper function to fetch and yield initial chat messages
-    Future<List<Message>> fetchInitialMessages(String chatId) async {
+  static Stream<List<Message>> getPrivateChats(String? privateChatId) async* {
+    if (privateChatId == null) {
+      yield [];
+      return;
+    }
+    try {
       final chats = await privateChatRef
-          .doc(chatId)
+          .doc(privateChatId)
           .collection('messages')
           .orderBy('time', descending: true)
           .get();
 
-      return chats.docs.map<Message>((doc) {
-        return Message.fromSnapshot(
-            doc, chatId, FirebaseAuth.instance.currentUser!.uid);
-      }).toList();
-    }
+      final chatList = <Message>[];
+      for (var chat in chats.docs) {
+        chatList.add(Message.fromSnapshot(
+            chat, privateChatId, FirebaseAuth.instance.currentUser!.uid));
+      }
+      yield chatList; // Yield the initial list of messages
 
-    // Helper function to listen for real-time updates
-    Stream<List<Message>> listenToChatUpdates(String chatId) async* {
       final snapshots = privateChatRef
-          .doc(chatId)
+          .doc(privateChatId)
           .collection('messages')
           .orderBy('time', descending: true)
-          .snapshots();
-
-      var chatList = await fetchInitialMessages(chatId);
-      yield chatList; // Yield the initial list of messages
+          .snapshots(); // Listen to changes in the messages collection
 
       await for (var snapshot in snapshots) {
         for (var change in snapshot.docChanges) {
-          final chat = Message.fromSnapshot(
-              change.doc, chatId, FirebaseAuth.instance.currentUser!.uid);
-
+          final chat = Message.fromSnapshot(change.doc, privateChatId,
+              FirebaseAuth.instance.currentUser!.uid);
           if (change.type == DocumentChangeType.removed) {
             chatList.removeWhere((c) => c.id == chat.id);
+            yield chatList;
           } else {
             final existingChatIndex =
                 chatList.indexWhere((c) => c.id == chat.id);
@@ -731,58 +737,15 @@ class DatabaseService {
             } else {
               chatList.insert(0, chat);
             }
-          }
-          yield chatList;
-        }
-      }
-    }
-
-    Stream<List<Message>> findPrivateChatFromMembers() async* {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await privateChatRef.where("members", isEqualTo: members).get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final privateChatId = querySnapshot.docs.first.id;
-        try {
-          yield* listenToChatUpdates(privateChatId);
-        } catch (e) {
-          debugPrint(e.toString());
-        }
-      } else {
-        yield <Message>[];
-
-        await for (var snapshot in privateChatRef.snapshots()) {
-          for (var change in snapshot.docChanges) {
-            if (change.type == DocumentChangeType.added) {
-              final privateChat = PrivateChat.fromSnapshot(change.doc);
-              if (privateChat.members.contains(members[0]) &&
-                  privateChat.members.contains(members[1])) {
-                final privateChatId = change.doc.id;
-                try {
-                  yield* listenToChatUpdates(privateChatId);
-                } catch (e) {
-                  debugPrint(e.toString());
-                }
-              }
-            }
+            yield chatList;
           }
         }
       }
+    } catch (e) {
+      debugPrint('Error while getting private chats: $e');
+      yield [];
+      return;
     }
-
-    yield* findPrivateChatFromMembers();
-
-    await for (var snapshot in privateChatRef
-        .where("members", arrayContainsAny: members)
-        .snapshots()) {
-      for (var change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.removed) {
-          yield <Message>[];
-          yield* findPrivateChatFromMembers();
-        }
-      }
-    }
-
-    yield* findPrivateChatFromMembers();
   }
 
   static Stream<int> getUnreadMessages(bool isGroup, String id, String uuid) {
@@ -1504,5 +1467,9 @@ class DatabaseService {
         });
       }
     }
+  }
+
+  static Future<void> deletePrivateChat(String id) async {
+    return await privateChatRef.doc(id).delete();
   }
 }

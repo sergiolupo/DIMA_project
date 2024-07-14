@@ -38,12 +38,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
   @override
   void initState() {
-    getChats();
+    _checkPrivateChatId();
     super.initState();
-  }
-
-  void getChats() {
-    chats = DatabaseService.getPrivateChats(widget.privateChat.members);
   }
 
   @override
@@ -385,6 +381,20 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       setState(() {
         messageEditingController.clear();
       });
+    }
+  }
+
+  _checkPrivateChatId() async {
+    final idStream =
+        DatabaseService.getPrivateChatIdFromMembers(widget.privateChat.members);
+
+    await for (final id in idStream) {
+      if (mounted) {
+        setState(() {
+          widget.privateChat.id = id;
+          chats = DatabaseService.getPrivateChats(widget.privateChat.id);
+        });
+      }
     }
   }
 }
