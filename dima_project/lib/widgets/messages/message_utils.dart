@@ -98,9 +98,9 @@ class MessageUtils {
         ? message.readBy!.isNotEmpty &&
                 !message.readBy!.every((element) => element.username == uuid)
             ? const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemBlue, size: 18)
+                color: CupertinoColors.systemBlue, size: 10)
             : const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemGreen, size: 18)
+                color: CupertinoColors.systemGreen, size: 10)
         : const SizedBox();
   }
 

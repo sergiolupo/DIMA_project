@@ -118,15 +118,27 @@ class CreateImageWidget {
     );
   }
 
-  static getImage(String content, {bool small = false}) {
-    debugPrint('content: $content');
-    return Container(
-      width: small ? 30 : 100,
-      height: small ? 30 : 100,
-      color: CupertinoColors.lightBackgroundGray,
-      child: CachedNetworkImage(
-        imageUrl: content,
-        fit: BoxFit.cover,
+  static getImage(String content, bool sentByMe, {bool small = false}) {
+    double size = small ? 30.0 : 200.0;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(20),
+          topRight: const Radius.circular(20),
+          bottomLeft:
+              sentByMe ? const Radius.circular(20) : const Radius.circular(0),
+          bottomRight:
+              sentByMe ? const Radius.circular(0) : const Radius.circular(20),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: content,
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+        ),
       ),
     );
   }

@@ -40,97 +40,114 @@ class TextMessageTileState extends State<TextMessageTile> {
             padding: EdgeInsets.only(
               top: 8,
               bottom: 8,
-              left: widget.message.sentByMe! ? 0 : 24,
-              right: widget.message.sentByMe! ? 24 : 0,
+              left: widget.message.sentByMe! ? 24 : 0,
+              right: widget.message.sentByMe! ? 0 : 24,
             ),
             alignment: widget.message.sentByMe!
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
-            child: Container(
-              margin: widget.message.sentByMe!
-                  ? const EdgeInsets.only(left: 30)
-                  : const EdgeInsets.only(right: 30),
-              padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
-              decoration: BoxDecoration(
-                borderRadius: widget.message.sentByMe!
-                    ? const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                      )
-                    : const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                color: widget.message.sentByMe!
-                    ? CupertinoTheme.of(context).primaryColor
-                    : CupertinoColors.systemGrey,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  if (!widget.message.sentByMe! &&
-                      widget.message.isGroupMessage)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: widget.message.sentByMe!
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: [
+                if (!widget.message.sentByMe! && widget.message.isGroupMessage)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 3.0),
+                    child: Column(
                       children: [
+                        const SizedBox(height: 45),
                         CreateImageWidget.getUserImage(
                           widget.message.senderImage!,
                           small: true,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.senderUsername!,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: widget.message.sentByMe!
-                                ? CupertinoColors.white
-                                : CupertinoColors.black,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
                       ],
                     ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.message.content,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: widget.message.sentByMe!
-                              ? CupertinoColors.white
-                              : CupertinoColors.black,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(width: 8),
-                              Text(
-                                DateUtil.getFormattedTime(
-                                    context: context,
-                                    time: widget
-                                        .message.time.microsecondsSinceEpoch
-                                        .toString()),
-                                style: TextStyle(
-                                  color: widget.message.sentByMe!
-                                      ? CupertinoColors.white
-                                      : CupertinoColors.black,
-                                  fontSize: 9,
-                                ),
+                  ),
+                Container(
+                  margin: widget.message.sentByMe!
+                      ? const EdgeInsets.only(left: 30)
+                      : const EdgeInsets.only(right: 30),
+                  padding: const EdgeInsets.only(
+                      top: 2, left: 8, right: 8, bottom: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: widget.message.sentByMe!
+                        ? const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          )
+                        : const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                    color: widget.message.sentByMe!
+                        ? CupertinoTheme.of(context).primaryColor
+                        : CupertinoColors.systemGrey,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      if (!widget.message.sentByMe! &&
+                          widget.message.isGroupMessage)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.senderUsername!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: widget.message.sentByMe!
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                letterSpacing: -0.5,
                               ),
-                              const SizedBox(width: 8),
-                              MessageUtils.buildReadByIcon(
-                                widget.message,
-                                widget.uuid,
+                            ),
+                          ],
+                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.message.content,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: widget.message.sentByMe!
+                                  ? CupertinoColors.white
+                                  : CupertinoColors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    DateUtil.getFormattedTime(
+                                        context: context,
+                                        time: widget
+                                            .message.time.microsecondsSinceEpoch
+                                            .toString()),
+                                    style: TextStyle(
+                                      color: widget.message.sentByMe!
+                                          ? CupertinoColors.white
+                                          : CupertinoColors.black,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  MessageUtils.buildReadByIcon(
+                                    widget.message,
+                                    widget.uuid,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -138,8 +155,8 @@ class TextMessageTileState extends State<TextMessageTile> {
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           if (_showSnackbar) _buildSnackbar(),
