@@ -38,7 +38,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
   OverlayEntry? _overlayEntry;
-
+  final GlobalKey _navigationBarKey = GlobalKey();
   @override
   void initState() {
     getChats();
@@ -55,6 +55,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              key: _navigationBarKey,
               middle: GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
@@ -83,8 +84,11 @@ class GroupChatPageState extends State<GroupChatPage> {
                 onTap: () {
                   final RenderBox renderBox =
                       context.findRenderObject() as RenderBox;
-                  final Offset position = renderBox.localToGlobal(Offset.zero);
                   final Size size = renderBox.size;
+                  final RenderBox navBarRenderBox =
+                      _navigationBarKey.currentContext!.findRenderObject()
+                          as RenderBox;
+                  final double navBarHeight = navBarRenderBox.size.height;
 
                   _overlayEntry = OverlayEntry(
                     builder: (context) => Stack(
@@ -95,14 +99,14 @@ class GroupChatPageState extends State<GroupChatPage> {
                               _overlayEntry?.remove();
                             },
                             child: Container(
-                              color:
-                                  CupertinoColors.inactiveGray.withOpacity(0.5),
-                            ),
+                                color: const Color(
+                                    0x00000000) // ARGB value: A=00, R=00, G=00, B=00
+                                ),
                           ),
                         ),
                         Positioned(
-                          bottom: MediaQuery.of(context).size.height * 0.85,
-                          left: MediaQuery.of(context).size.width - 160,
+                          top: navBarHeight,
+                          left: size.width - 160,
                           width: 160,
                           child: CupertinoPopupSurface(
                             child: Column(
@@ -140,14 +144,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                                     );
                                   },
                                   child: const Text('Create Event'),
-                                ),
-                                CupertinoButton(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 20),
-                                  onPressed: () {
-                                    _overlayEntry?.remove();
-                                  },
-                                  child: const Text('Cancel'),
                                 ),
                               ],
                             ),
