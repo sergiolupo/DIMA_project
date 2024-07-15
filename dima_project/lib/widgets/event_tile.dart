@@ -30,7 +30,7 @@ class EventTileState extends State<EventTile> {
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => DetailPage(
+                  builder: (context) => EventPage(
                     eventId: widget.event.id!,
                     uuid: widget.uuid,
                   ),
