@@ -73,9 +73,16 @@ class GroupChatPageState extends State<GroupChatPage> {
                     CreateImageWidget.getGroupImage(widget.group.imagePath!,
                         small: true),
                     const SizedBox(width: 10),
-                    Text(widget.group.name,
-                        style: const TextStyle(
-                            fontSize: 16, color: CupertinoColors.white)),
+                    Container(
+                      constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.6),
+                      child: Text(widget.group.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: CupertinoColors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
               ),

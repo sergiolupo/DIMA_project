@@ -14,6 +14,7 @@ import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PrivateChatPage extends StatefulWidget {
@@ -79,9 +80,15 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              user.username,
-                              style: const TextStyle(fontSize: 16),
+                            Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.6,
+                              ),
+                              child: Text(
+                                user.username,
+                                style: const TextStyle(fontSize: 16),
+                              ),
                             ),
                             _userStatus(user),
                           ]),
