@@ -9,7 +9,7 @@ import 'package:flutter_map/flutter_map.dart';
 class DetailPage extends StatefulWidget {
   final Event event;
   final String uuid;
-  final detail;
+  final Details detail;
   const DetailPage(
       {super.key,
       required this.event,
