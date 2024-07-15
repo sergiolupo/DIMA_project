@@ -56,6 +56,7 @@ class EditEventPageState extends State<EditEventPage> {
         details[i] = widget.event.details[i];
         map[i] = false;
       }
+      numInfos = widget.event.details.length;
     });
     _fetchProfileImage();
     _fetchLocations();
