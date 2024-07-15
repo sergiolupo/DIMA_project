@@ -118,7 +118,9 @@ class HomePageState extends State<HomePage> {
                   );
                   break;
                 default:
-                  page = _buildNewsPage(context);
+                  page = NewsPage(
+                    uuid: uuid!,
+                  );
               }
               // Initialize a GlobalKey for each tab's navigator
               _navigatorKeys.putIfAbsent(
@@ -131,30 +133,5 @@ class HomePageState extends State<HomePage> {
               );
             },
           );
-  }
-
-  Widget _buildNewsPage(BuildContext context) {
-    return const CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'News',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'News Page',
-          style: TextStyle(
-            fontSize: 24, // Adjust font size as needed
-            fontWeight: FontWeight.bold, // Adjust font weight as needed
-            color: CupertinoColors.black, // Adjust text color as needed
-          ),
-        ),
-      ),
-    );
   }
 }

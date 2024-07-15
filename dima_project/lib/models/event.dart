@@ -67,6 +67,7 @@ class Event {
       'isPublic': event.isPublic,
       'requests': event.requests ?? [],
       'notify': event.notify,
+      'createdAt': event.createdAt,
     };
   }
 

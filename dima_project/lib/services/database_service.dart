@@ -1254,7 +1254,10 @@ class DatabaseService {
   }
 
   static Stream<List<Event>> getCreatedEventStream(String uuid) async* {
-    final eventsIds = await eventsRef.where('admin', isEqualTo: uuid).get();
+    final eventsIds = await eventsRef
+        .where('admin', isEqualTo: uuid)
+        .orderBy('createdAt', descending: true)
+        .get();
 
     final eventsList = <Event>[];
 
@@ -1264,7 +1267,6 @@ class DatabaseService {
         eventsList.add(Event.fromSnapshot(snapshot));
       }
     }
-    eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
     yield eventsList;
     final snapshots = eventsRef.snapshots();
     await for (var snapshot in snapshots) {
@@ -1280,8 +1282,8 @@ class DatabaseService {
             if (existingEventIndex != -1) {
               eventsList[existingEventIndex] = event;
             } else {
-              eventsList.add(event);
-              eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+              //eventsList.add(event);
+              eventsList.insert(0, event);
             }
             yield eventsList;
           } else {
@@ -1297,6 +1299,7 @@ class DatabaseService {
     final eventsIds = await eventsRef
         .where('admin', isNotEqualTo: uuid)
         .where('members', arrayContains: uuid)
+        .orderBy('createdAt', descending: true)
         .get();
 
     final eventsList = <Event>[];
@@ -1307,7 +1310,6 @@ class DatabaseService {
         eventsList.add(Event.fromSnapshot(snapshot));
       }
     }
-    eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
     yield eventsList;
 
     final snapshots = eventsRef.snapshots();
@@ -1324,8 +1326,7 @@ class DatabaseService {
             if (existingEventIndex != -1) {
               eventsList[existingEventIndex] = event;
             } else {
-              eventsList.add(event);
-              eventsList.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+              eventsList.insert(0, event);
             }
             yield eventsList;
           } else {
