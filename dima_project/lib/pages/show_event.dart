@@ -71,7 +71,7 @@ class ShowEventState extends State<ShowEvent> {
                         Navigator.push(
                           context,
                           CupertinoPageRoute(
-                            builder: (context) => DetailPage(
+                            builder: (context) => EventPage(
                               uuid: widget.uuid,
                               eventId: widget.event.id!,
                             ),
