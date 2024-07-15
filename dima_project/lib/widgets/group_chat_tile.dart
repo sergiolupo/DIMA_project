@@ -70,32 +70,36 @@ class GroupChatTileState extends State<GroupChatTile> {
                   CreateImageWidget.getGroupImage(widget.group.imagePath!,
                       small: true),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.group.name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      const SizedBox(height: 2),
-                      (widget.lastMessage != null)
-                          ? Text(
-                              widget.lastMessage!.sentByMe == true
-                                  ? "You: ${widget.lastMessage!.recentMessage}"
-                                  : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  color: CupertinoColors.inactiveGray),
-                            )
-                          : const Text(
-                              "Join the conversation!",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: CupertinoColors.inactiveGray),
-                            ),
-                    ],
+                  Container(
+                    constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.group.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 2),
+                        (widget.lastMessage != null)
+                            ? Text(
+                                widget.lastMessage!.sentByMe == true
+                                    ? "You: ${widget.lastMessage!.recentMessage}"
+                                    : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    color: CupertinoColors.inactiveGray),
+                              )
+                            : const Text(
+                                "Join the conversation!",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: CupertinoColors.inactiveGray),
+                              ),
+                      ],
+                    ),
                   ),
                 ],
               ),
