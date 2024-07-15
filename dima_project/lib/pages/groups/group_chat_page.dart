@@ -199,10 +199,11 @@ class GroupChatPageState extends State<GroupChatPage> {
       _overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
           bottom: size.height,
-          left: MediaQuery.of(context).size.width / 2 - 50,
+          left: 0,
+          right: 0,
           child: const Center(
             child: Text(
-              "Copied",
+              "Copied to clipboard",
               style: TextStyle(color: CupertinoColors.systemPink),
             ),
           ),
