@@ -22,7 +22,6 @@ class TextMessageTile extends StatefulWidget {
 class TextMessageTileState extends State<TextMessageTile> {
   bool _showSnackbar = false;
   late String _snackbarMessage;
-  final GlobalKey _key = GlobalKey();
 
   @override
   void initState() {

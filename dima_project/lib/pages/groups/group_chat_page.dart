@@ -197,6 +197,8 @@ class GroupChatPageState extends State<GroupChatPage> {
         children: [
           Expanded(
             child: CupertinoTextField(
+              minLines: 1,
+              maxLines: 3,
               controller: messageEditingController,
               style: const TextStyle(color: CupertinoColors.white),
               placeholder: "Type a message...",
