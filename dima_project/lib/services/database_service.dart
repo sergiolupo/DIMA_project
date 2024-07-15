@@ -1160,7 +1160,12 @@ class DatabaseService {
         isGroupMessage: true,
         time: Timestamp.now(),
         type: Type.event,
-        readBy: [],
+        readBy: [
+          ReadBy(
+            readAt: Timestamp.now(),
+            username: FirebaseAuth.instance.currentUser!.uid,
+          ),
+        ],
       );
       for (var id in groupIds) {
         await groupsRef.doc(id).collection('messages').add(
@@ -1361,7 +1366,12 @@ class DatabaseService {
       isGroupMessage: true,
       time: Timestamp.now(),
       type: Type.news,
-      readBy: [],
+      readBy: [
+        ReadBy(
+          readAt: Timestamp.now(),
+          username: FirebaseAuth.instance.currentUser!.uid,
+        ),
+      ],
     );
     return await Future.wait([
       groupsRef.doc(id).collection('messages').add(
@@ -1384,7 +1394,12 @@ class DatabaseService {
       isGroupMessage: false,
       time: Timestamp.now(),
       type: Type.news,
-      readBy: [],
+      readBy: [
+        ReadBy(
+          readAt: Timestamp.now(),
+          username: FirebaseAuth.instance.currentUser!.uid,
+        ),
+      ],
     );
     final PrivateChat privateChat = await getPrivateChatsFromMember(
         [uuid, FirebaseAuth.instance.currentUser!.uid]);
