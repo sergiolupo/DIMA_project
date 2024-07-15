@@ -57,6 +57,24 @@
 	<string>We need your location to provide better service.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to provide better service.</string>
-
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.polimi.dimaProject</string>
+        </array>
+    </dict>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.686958564481-gnd6r6n6h6vmcpfvjt7cen4nkbc789pn</string>
+        </array>
+    </dict>
+</array>
 </dict>
 </plist>
