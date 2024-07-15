@@ -22,6 +22,7 @@ class TextMessageTile extends StatefulWidget {
 class TextMessageTileState extends State<TextMessageTile> {
   bool _showSnackbar = false;
   late String _snackbarMessage;
+  final GlobalKey _key = GlobalKey();
 
   @override
   void initState() {
@@ -65,93 +66,95 @@ class TextMessageTileState extends State<TextMessageTile> {
                       ],
                     ),
                   ),
-                Container(
-                  margin: widget.message.sentByMe!
-                      ? const EdgeInsets.only(left: 30)
-                      : const EdgeInsets.only(right: 30),
-                  padding: const EdgeInsets.only(
-                      top: 2, left: 8, right: 8, bottom: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: widget.message.sentByMe!
-                        ? const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          )
-                        : const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
-                          ),
-                    color: widget.message.sentByMe!
-                        ? CupertinoTheme.of(context).primaryColor
-                        : CupertinoColors.systemGrey,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      if (!widget.message.sentByMe! &&
-                          widget.message.isGroupMessage)
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              widget.senderUsername!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: widget.message.sentByMe!
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ],
+                Flexible(
+                  child: Stack(
+                    children: [
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                          minWidth: 80,
                         ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            widget.message.content,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: widget.message.sentByMe!
-                                  ? CupertinoColors.white
-                                  : CupertinoColors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              const SizedBox(height: 20),
+                        padding: const EdgeInsets.only(
+                            top: 8.0, right: 8.0, left: 8.0, bottom: 24.0),
+                        decoration: BoxDecoration(
+                          borderRadius: widget.message.sentByMe!
+                              ? const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
+                                )
+                              : const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                  bottomRight: Radius.circular(20),
+                                ),
+                          color: widget.message.sentByMe!
+                              ? CupertinoTheme.of(context).primaryColor
+                              : CupertinoColors.systemGrey,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            if (!widget.message.sentByMe! &&
+                                widget.message.isGroupMessage)
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const SizedBox(width: 8),
                                   Text(
-                                    DateUtil.getFormattedTime(
-                                        context: context,
-                                        time: widget
-                                            .message.time.microsecondsSinceEpoch
-                                            .toString()),
+                                    widget.senderUsername!,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
+                                      fontSize: 14,
                                       color: widget.message.sentByMe!
                                           ? CupertinoColors.white
                                           : CupertinoColors.black,
-                                      fontSize: 9,
+                                      letterSpacing: -0.5,
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  MessageUtils.buildReadByIcon(
-                                    widget.message,
-                                    widget.uuid,
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ],
+                            Text(
+                              widget.message.content,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                color: widget.message.sentByMe!
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                fontSize: 16,
+                              ),
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 3,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              DateUtil.getFormattedTime(
+                                  context: context,
+                                  time: widget
+                                      .message.time.microsecondsSinceEpoch
+                                      .toString()),
+                              style: TextStyle(
+                                color: widget.message.sentByMe!
+                                    ? CupertinoColors.white
+                                    : CupertinoColors.black,
+                                fontSize: 9,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            MessageUtils.buildReadByIcon(
+                              widget.message,
+                              widget.uuid,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
