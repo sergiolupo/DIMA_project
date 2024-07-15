@@ -650,14 +650,19 @@ class CreateEventPageState extends State<CreateEventPage>
                             ),
                             onPressed: () => location(),
                           ),
-                          Text(
-                            detailsList[index]!.location == null
-                                ? 'Location'
-                                : detailsList[index]!.location!,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: CupertinoColors.systemGrey,
-                              fontSize: 14,
+                          Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.5,
+                            ),
+                            child: Text(
+                              detailsList[index]!.location == null
+                                  ? 'Location'
+                                  : detailsList[index]!.location!,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: CupertinoColors.systemGrey,
+                                fontSize: 14,
+                              ),
                             ),
                           )
                         ],
@@ -764,10 +769,15 @@ class CreateEventPageState extends State<CreateEventPage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        detailsList[index]!.location == null
-                            ? 'Location'
-                            : detailsList[index]!.location!,
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.5,
+                        ),
+                        child: Text(
+                          detailsList[index]!.location == null
+                              ? 'Location'
+                              : detailsList[index]!.location!,
+                        ),
                       ),
                       if (numInfos > 1)
                         Align(
