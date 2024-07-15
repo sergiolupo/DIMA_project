@@ -8,10 +8,12 @@ class TextMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
   final String uuid;
+  final VoidCallback showCustomSnackbar;
   const TextMessageTile({
     required this.message,
     this.senderUsername,
     required this.uuid,
+    required this.showCustomSnackbar,
     super.key,
   });
 
@@ -20,9 +22,6 @@ class TextMessageTile extends StatefulWidget {
 }
 
 class TextMessageTileState extends State<TextMessageTile> {
-  bool _showSnackbar = false;
-  late String _snackbarMessage;
-
   @override
   void initState() {
     super.initState();
@@ -33,7 +32,7 @@ class TextMessageTileState extends State<TextMessageTile> {
     return GestureDetector(
       onLongPress: () => MessageUtils.showBottomSheet(
           context, widget.message, widget.uuid,
-          showCustomSnackbar: () => showCustomSnackbar('Copied to clipboard')),
+          showCustomSnackbar: () => widget.showCustomSnackbar()),
       child: Stack(
         children: [
           Container(
@@ -161,39 +160,7 @@ class TextMessageTileState extends State<TextMessageTile> {
               ],
             ),
           ),
-          if (_showSnackbar) _buildSnackbar(),
         ],
-      ),
-    );
-  }
-
-  void showCustomSnackbar(String message) {
-    if (mounted) {
-      setState(() {
-        _snackbarMessage = message;
-        _showSnackbar = true;
-      });
-
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _showSnackbar = false;
-          });
-        }
-      });
-    }
-  }
-
-  Widget _buildSnackbar() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: _showSnackbar ? MediaQuery.of(context).size.height * 0.1 : 0,
-      color: CupertinoColors.white.withOpacity(0.7),
-      child: Center(
-        child: Text(
-          _snackbarMessage,
-          style: const TextStyle(color: CupertinoColors.systemPink),
-        ),
       ),
     );
   }

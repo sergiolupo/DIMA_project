@@ -39,6 +39,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   bool isUploading = false;
   OverlayEntry? _overlayEntry;
   final GlobalKey _navigationBarKey = GlobalKey();
+  final GlobalKey _inputBarKey = GlobalKey();
   @override
   void initState() {
     getChats();
@@ -189,8 +190,37 @@ class GroupChatPageState extends State<GroupChatPage> {
           );
   }
 
+  void showCustomSnackbar() {
+    if (mounted) {
+      final RenderBox renderBox =
+          _inputBarKey.currentContext!.findRenderObject() as RenderBox;
+      final Size size = renderBox.size;
+      debugPrint(size.toString());
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          bottom: size.height,
+          left: MediaQuery.of(context).size.width / 2 - 50,
+          child: const Center(
+            child: Text(
+              "Copied",
+              style: TextStyle(color: CupertinoColors.systemPink),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context).insert(_overlayEntry!);
+
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          _overlayEntry?.remove();
+        }
+      });
+    }
+  }
+
   Widget _buildInputBar() {
     return Container(
+      key: _inputBarKey,
       color: CupertinoColors.inactiveGray,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       child: Row(
@@ -353,6 +383,9 @@ class GroupChatPageState extends State<GroupChatPage> {
                           message.senderImage = user.imagePath;
                           if (message.type == Type.text) {
                             return TextMessageTile(
+                                showCustomSnackbar: () {
+                                  showCustomSnackbar();
+                                },
                                 message: message,
                                 uuid: widget.uuid,
                                 senderUsername: user.username);

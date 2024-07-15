@@ -35,6 +35,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   TextEditingController messageEditingController = TextEditingController();
   bool isTyping = false;
   bool isUploading = false;
+  final GlobalKey _inputBarKey = GlobalKey();
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -155,6 +157,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
   Widget _buildInputBar() {
     return Container(
+      key: _inputBarKey,
       color: CupertinoColors.inactiveGray,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       child: Row(
@@ -334,6 +337,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                         ? TextMessageTile(
                             message: message,
                             uuid: widget.uuid,
+                            showCustomSnackbar: () {
+                              showCustomSnackbar();
+                            },
                           )
                         : (message.type == Type.image)
                             ? ImageMessageTile(
@@ -354,6 +360,34 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         }
       },
     );
+  }
+
+  void showCustomSnackbar() {
+    if (mounted) {
+      final RenderBox renderBox =
+          _inputBarKey.currentContext!.findRenderObject() as RenderBox;
+      final Size size = renderBox.size;
+      debugPrint(size.toString());
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          bottom: size.height,
+          left: MediaQuery.of(context).size.width / 2 - 50,
+          child: const Center(
+            child: Text(
+              "Copied",
+              style: TextStyle(color: CupertinoColors.systemPink),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context).insert(_overlayEntry!);
+
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          _overlayEntry?.remove();
+        }
+      });
+    }
   }
 
   void sendMessage() async {
