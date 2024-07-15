@@ -147,6 +147,8 @@ class ListChatPageState extends State<ListChatPage> {
                             uuid: widget.uuid,
                             group: group,
                             lastMessage: LastMessage(
+                              recentMessageType:
+                                  group.lastMessage!.recentMessageType,
                               recentMessage: group.lastMessage!.recentMessage,
                               recentMessageSender: user.username,
                               recentMessageTimestamp:
@@ -243,6 +245,8 @@ class ListChatPageState extends State<ListChatPage> {
                             uuid: widget.uuid,
                             privateChat: privateChat,
                             lastMessage: LastMessage(
+                              recentMessageType:
+                                  privateChat.lastMessage!.recentMessageType,
                               recentMessage:
                                   privateChat.lastMessage!.recentMessage,
                               recentMessageSender: user.username,

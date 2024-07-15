@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/last_message.dart';
+import 'package:dima_project/models/message.dart';
 
 class Group {
   final String name;
@@ -55,6 +56,14 @@ class Group {
       lastMessage: documentSnapshot['recentMessage'] == ""
           ? null
           : LastMessage(
+              recentMessageType:
+                  documentSnapshot['recentMessageType'] == 'Type.event'
+                      ? Type.event
+                      : documentSnapshot['recentMessageType'] == 'Type.text'
+                          ? Type.text
+                          : documentSnapshot['recentMessageType'] == 'Type.news'
+                              ? Type.news
+                              : Type.image,
               recentMessage: documentSnapshot['recentMessage'],
               recentMessageSender: documentSnapshot['recentMessageSender'],
               recentMessageTimestamp: documentSnapshot['recentMessageTime'],

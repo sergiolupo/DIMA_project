@@ -6,6 +6,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:dima_project/models/message.dart';
 
 class PrivateChatTile extends StatefulWidget {
   final String uuid;
@@ -25,7 +26,14 @@ class PrivateChatTile extends StatefulWidget {
 class PrivateChatTileState extends State<PrivateChatTile> {
   Stream<UserData>? streamUserData;
   Stream<int>? unreadMessagesStream;
-
+  Map<Type, Icon> map = {
+    Type.event: const Icon(CupertinoIcons.calendar,
+        color: CupertinoColors.inactiveGray, size: 16),
+    Type.news: const Icon(CupertinoIcons.news,
+        color: CupertinoColors.inactiveGray, size: 16),
+    Type.image: const Icon(CupertinoIcons.photo,
+        color: CupertinoColors.inactiveGray, size: 16),
+  };
   @override
   void initState() {
     super.initState();
@@ -103,15 +111,35 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                     ),
                                     const SizedBox(height: 2),
                                     (widget.lastMessage != null)
-                                        ? Text(
-                                            widget.lastMessage!.sentByMe == true
-                                                ? "You: ${widget.lastMessage!.recentMessage}"
-                                                : "${widget.lastMessage!.recentMessageSender}: ${widget.lastMessage!.recentMessage}",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                color: CupertinoColors
-                                                    .inactiveGray),
+                                        ? Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.lastMessage!.sentByMe ==
+                                                        true
+                                                    ? "You: "
+                                                    : "${widget.lastMessage!.recentMessageSender}: ",
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: CupertinoColors
+                                                        .inactiveGray),
+                                              ),
+                                              if (widget.lastMessage!
+                                                      .recentMessageType !=
+                                                  Type.text)
+                                                map[widget.lastMessage!
+                                                    .recentMessageType]!,
+                                              Text(
+                                                widget
+                                                    .lastMessage!.recentMessage,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: CupertinoColors
+                                                        .inactiveGray),
+                                              ),
+                                            ],
                                           )
                                         : const Text(
                                             "Join the conversation!",

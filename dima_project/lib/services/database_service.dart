@@ -198,6 +198,7 @@ class DatabaseService {
         'recentMessage': "",
         'recentMessageSender': "",
         'recentMessageTime': "",
+        'recentMessageType': "",
         'members': FieldValue.arrayUnion([group.admin]),
         'categories': serializedList,
         'isPublic': group.isPublic,
@@ -373,6 +374,7 @@ class DatabaseService {
         'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
+        'recentMessageType': message.type.toString(),
       });
     } else {
       privateChatRef.doc(id).collection('messages').add(messageMap);
@@ -380,6 +382,7 @@ class DatabaseService {
         'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
+        'recentMessageType': message.type.toString(),
       });
     }
   }
@@ -420,6 +423,7 @@ class DatabaseService {
       'recentMessage': "",
       'recentMessageSender': "",
       'recentMessageTime': "",
+      'recentMessageType': "",
     }).then((value) async {
       final id = value.id;
       await usersRef.doc(members[0]).update({
@@ -854,12 +858,14 @@ class DatabaseService {
             'recentMessage': messagesSnapshot.docs.last['content'],
             'recentMessageSender': messagesSnapshot.docs.last['sender'],
             'recentMessageTime': messagesSnapshot.docs.last['time'],
+            'recentMessageType': messagesSnapshot.docs.last['type'],
           });
         } else {
           await groupsRef.doc(message.chatID).update({
             'recentMessage': '',
             'recentMessageSender': '',
             'recentMessageTime': '',
+            'recentMessageType': '',
           });
         }
       }
@@ -885,6 +891,7 @@ class DatabaseService {
                 'recentMessage': messagesSnapshot.docs.last['content'],
                 'recentMessageSender': messagesSnapshot.docs.last['sender'],
                 'recentMessageTime': messagesSnapshot.docs.last['time'],
+                'recentMessageType': messagesSnapshot.docs.last['type'],
               });
             } else {
               await privateChatRef.doc(message.chatID).delete();
@@ -916,6 +923,7 @@ class DatabaseService {
         'recentMessage': updatedMessage,
         'recentMessageSender': message.sender,
         'recentMessageTime': time,
+        'recentMessageType': message.type.toString(),
       });
     } else {
       privateChatRef
@@ -927,6 +935,7 @@ class DatabaseService {
         'recentMessage': updatedMessage,
         'recentMessageSender': message.sender,
         'recentMessageTime': time,
+        'recentMessageType': message.type.toString(),
       });
     }
   }
@@ -1161,6 +1170,7 @@ class DatabaseService {
           'recentMessage': 'Event',
           'recentMessageSender': message.sender,
           'recentMessageTime': message.time,
+          'recentMessageType': message.type.toString(),
         });
       }
     } catch (e) {
@@ -1361,6 +1371,7 @@ class DatabaseService {
         'recentMessage': 'News',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
+        'recentMessageType': message.type.toString(),
       }),
     ]);
   }
@@ -1388,6 +1399,7 @@ class DatabaseService {
           'recentMessage': 'News',
           'recentMessageSender': message.sender,
           'recentMessageTime': message.time,
+          'recentMessageType': message.type.toString(),
         }),
       ]);
     }
@@ -1400,6 +1412,7 @@ class DatabaseService {
         'recentMessage': 'News',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
+        'recentMessageType': message.type.toString(),
       }),
     ]);
   }
