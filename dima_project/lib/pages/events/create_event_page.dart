@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
@@ -13,6 +14,7 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lottie/lottie.dart';
 
 class CreateEventPage extends StatefulWidget {
   final String uuid;
@@ -23,12 +25,14 @@ class CreateEventPage extends StatefulWidget {
   CreateEventPageState createState() => CreateEventPageState();
 }
 
-class CreateEventPageState extends State<CreateEventPage> {
+class CreateEventPageState extends State<CreateEventPage>
+    with TickerProviderStateMixin {
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
+  late AnimationController animationController;
 
   DateTime now = DateTime.now();
   LatLng? _selectedLocation;
@@ -44,6 +48,7 @@ class CreateEventPageState extends State<CreateEventPage> {
     _eventNameController.dispose();
     _eventDescriptionController.dispose();
     super.dispose();
+    animationController.dispose();
   }
 
   @override
@@ -52,6 +57,9 @@ class CreateEventPageState extends State<CreateEventPage> {
       if (widget.groupId != null) groupIds.add(widget.groupId!);
     });
     super.initState();
+    animationController = AnimationController(
+      vsync: this,
+    );
   }
 
   Future<void> _createEvent() async {
@@ -61,6 +69,7 @@ class CreateEventPageState extends State<CreateEventPage> {
       _eventDescriptionController.text,
       details.values.toList(),
     )) {
+      showDoneDialog();
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
@@ -74,6 +83,7 @@ class CreateEventPageState extends State<CreateEventPage> {
 
       await DatabaseService.createEvent(
           event, widget.uuid, selectedImagePath, uuids, groupIds);
+      //When the event is created inside a group
       if (mounted && Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
@@ -369,6 +379,57 @@ class CreateEventPageState extends State<CreateEventPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void showDoneDialog() {
+    showCupertinoDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Lottie.asset(
+                'assets/animations/done.json',
+                repeat: true,
+                controller: animationController,
+                onLoaded: (composition) {
+                  animationController.duration = composition.duration;
+                  animationController.forward();
+                },
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Event created successfully!',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              CupertinoButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  animationController.reset();
+                  Navigator.of(context).pop();
+                  setState(() {
+                    _eventNameController.clear();
+                    _eventDescriptionController.clear();
+                    selectedImagePath = Uint8List(0);
+                    _selectedLocation = null;
+                    isPublic = true;
+                    notify = true;
+                    uuids = [];
+                    groupIds = [];
+                    numInfos = 1;
+                    map = {};
+                    details = {};
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

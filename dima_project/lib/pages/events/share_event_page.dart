@@ -39,35 +39,16 @@ class ShareEventPageState extends State<ShareEventPage> {
         leading: CupertinoNavigationBarBackButton(
           color: CupertinoColors.systemPink,
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(groupsIds);
           },
         ),
       ),
       child: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                getGroups(),
-              ],
-            ),
-            Visibility(
-              visible: groupsIds.isNotEmpty,
-              child: SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: CupertinoButton(
-                    child: const Icon(CupertinoIcons.paperplane),
-                    onPressed: () {
-                      Navigator.of(context).pop(groupsIds);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 16.0,
+          ),
+          child: getGroups(),
         ),
       ),
     );

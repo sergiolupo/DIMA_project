@@ -1,5 +1,6 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -35,114 +36,143 @@ class ShowEventState extends State<ShowEvent> {
       child: Container(
         color: CupertinoColors.white,
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Stack centered horizontally
-            Center(
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  // Conditional rendering of the event image
-                  Container(
-                    width: 400,
-                    height: 400,
-                    color: CupertinoColors.white,
-                    child: (widget.event.imagePath != null &&
-                            widget.event.imagePath!.isNotEmpty)
-                        ? Image.network(
-                            widget.event.imagePath!,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            'assets/default_event_image.png',
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                  // Join Event button
-                  Container(
-                    margin: const EdgeInsets.only(top: 370),
-                    width: 400,
-                    child: CupertinoButton.filled(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 24),
-                      borderRadius: BorderRadius.zero,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => EventPage(
-                              uuid: widget.uuid,
-                              eventId: widget.event.id!,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Stack centered horizontally
+              Center(
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    // Conditional rendering of the event image
+                    Container(
+                      width: 400,
+                      height: 400,
+                      color: CupertinoColors.white,
+                      child: (widget.event.imagePath != null &&
+                              widget.event.imagePath!.isNotEmpty)
+                          ? Image.network(
+                              widget.event.imagePath!,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/default_event_image.png',
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        );
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Go to Event',
-                            style: TextStyle(
-                              color: CupertinoColors.white,
-                              fontSize: 18,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10.0,
-                                  color: CupertinoColors.black,
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ],
+                    ),
+                    // Join Event button
+                    Container(
+                      margin: const EdgeInsets.only(top: 370),
+                      width: 400,
+                      child: CupertinoButton.filled(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
+                        borderRadius: BorderRadius.zero,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => EventPage(
+                                uuid: widget.uuid,
+                                eventId: widget.event.id!,
+                              ),
                             ),
-                          ),
-                          Icon(CupertinoIcons.forward)
-                        ],
+                          );
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Go to Event',
+                              style: TextStyle(
+                                color: CupertinoColors.white,
+                                fontSize: 18,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 10.0,
+                                    color: CupertinoColors.black,
+                                    offset: Offset(2.0, 2.0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(CupertinoIcons.forward)
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            // Event name
-            Text(
-              widget.event.name,
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: CupertinoColors.black,
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            // Event description
-            Text(
-              widget.event.description,
-              style: const TextStyle(
-                fontSize: 18,
-                color: CupertinoColors.black,
-              ),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.event.details.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    DateTime(
-                                widget.event.details[index].startDate!.year,
-                                widget.event.details[index].startDate!.month,
-                                widget.event.details[index].startDate!.day,
-                                widget.event.details[index].startDate!.hour,
-                                widget.event.details[index].startDate!.minute)
-                            .isBefore(DateTime.now())
-                        ? ShowDate(date: widget.event.details[index].startDate!)
-                        : ShowDate(date: widget.event.details[index].endDate!),
                   ],
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              // Event name
+              Text(
+                widget.event.name,
+                textAlign: TextAlign.start,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: CupertinoColors.black,
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              // Event description
+              Text(
+                widget.event.description,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: CupertinoColors.black,
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.event.details.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Transform.scale(
+                              scale: 0.75,
+                              child: ShowDate(
+                                  date:
+                                      widget.event.details[index].startDate!)),
+                          const Text(
+                            ' - ',
+                          ),
+                          Transform.scale(
+                              scale: 0.75,
+                              child: ShowDate(
+                                  date: widget.event.details[index].endDate!)),
+                        ],
+                      ),
+                      FutureBuilder(
+                          future: EventService.getAddressFromLatLng(
+                              widget.event.details[index].latlng!),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              final address = snapshot.data as String;
+                              return Text(
+                                address,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              );
+                            } else {
+                              return const Center(
+                                child: CupertinoActivityIndicator(),
+                              );
+                            }
+                          })
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

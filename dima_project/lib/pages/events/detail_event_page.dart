@@ -20,18 +20,11 @@ class DetailPage extends StatefulWidget {
 }
 
 class DetailPageState extends State<DetailPage> {
-  Stream<Event>? _eventStream;
-
   int _isJoining = 0;
   @override
   void initState() {
-    init();
     _checkJoin();
     super.initState();
-  }
-
-  init() {
-    _eventStream = DatabaseService.getEventStream(widget.event.id!);
   }
 
   @override
@@ -50,49 +43,9 @@ class DetailPageState extends State<DetailPage> {
             : null,
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Column(children: [
-            Text(
-              widget.event.members.length.toString(),
-              style: CupertinoTheme.of(context).textTheme.textStyle,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => ShowEventMembersPage(
-                      uuid: widget.uuid,
-                      eventId: widget.event.id!,
-                    ),
-                  ),
-                );
-              },
-              child: Text(
-                widget.event.members.length > 1
-                    ? " Participants"
-                    : " Participant",
-                style: CupertinoTheme.of(context)
-                    .textTheme
-                    .textStyle
-                    .copyWith(color: CupertinoColors.systemGrey),
-              ),
-            ),
-            const SizedBox(height: 10),
-            CupertinoButton.filled(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-              onPressed: () async {
-                await DatabaseService.toggleEventJoin(
-                    widget.event.id!, widget.uuid);
-              },
-              child: Text(
-                _isJoining == 0
-                    ? "Subscribe"
-                    : _isJoining == 1
-                        ? "Unsubscribe"
-                        : "Requested",
-              ),
-            ),
-          ]),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -103,7 +56,6 @@ class DetailPageState extends State<DetailPage> {
               ShowDate(date: widget.detail.endDate!)
             ],
           ),
-          const SizedBox(height: 20),
           FutureBuilder(
               future: EventService.getAddressFromLatLng(widget.detail.latlng!),
               builder: (context, snapshot) {
@@ -147,6 +99,47 @@ class DetailPageState extends State<DetailPage> {
                     ],
                   ),
                 ]),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            widget.event.members.length.toString(),
+            style: CupertinoTheme.of(context).textTheme.textStyle,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => ShowEventMembersPage(
+                    uuid: widget.uuid,
+                    eventId: widget.event.id!,
+                  ),
+                ),
+              );
+            },
+            child: Text(
+              widget.event.members.length > 1
+                  ? " Participants"
+                  : " Participant",
+              style: CupertinoTheme.of(context)
+                  .textTheme
+                  .textStyle
+                  .copyWith(color: CupertinoColors.systemGrey),
+            ),
+          ),
+          const SizedBox(height: 20),
+          CupertinoButton.filled(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+            onPressed: () async {
+              await DatabaseService.toggleEventJoin(
+                  widget.event.id!, widget.uuid);
+            },
+            child: Text(
+              _isJoining == 0
+                  ? "Subscribe"
+                  : _isJoining == 1
+                      ? "Unsubscribe"
+                      : "Requested",
+            ),
           ),
         ],
       ),

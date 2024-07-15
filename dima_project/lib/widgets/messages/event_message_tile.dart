@@ -34,9 +34,11 @@ class EventMessageTileState extends State<EventMessageTile> {
   void fetchEvent() async {
     final Event fetchedEvent =
         await DatabaseService.getEvent(widget.message.content);
-    setState(() {
-      event = fetchedEvent;
-    });
+    if (mounted) {
+      setState(() {
+        event = fetchedEvent;
+      });
+    }
   }
 
   @override

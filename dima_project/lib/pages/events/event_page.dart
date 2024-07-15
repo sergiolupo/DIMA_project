@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/detail_event_page.dart';
-import 'package:dima_project/widgets/home/show_event_members.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -22,11 +22,9 @@ class EventPage extends StatefulWidget {
 
 class EventPageState extends State<EventPage> {
   Stream<Event>? _eventStream;
-  int _isJoining = 0;
   @override
   void initState() {
     init();
-    _checkJoin();
     super.initState();
   }
 
@@ -130,31 +128,73 @@ class EventPageState extends State<EventPage> {
                                   ),
                                 ],
                               )),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
                           ListView.builder(
                             shrinkWrap: true,
                             itemCount: event.details.length,
                             itemBuilder: (BuildContext context, int index) {
                               final detail = event.details[index];
-                              return CupertinoListTile(
-                                title: Column(
-                                  children: [
-                                    Text(
-                                        '${DateFormat('dd/MM/yyyy').format(detail.startDate!)}-${DateFormat('dd/MM/yyyy').format(detail.endDate!)}'),
-                                  ],
-                                ),
-                                trailing: const Icon(CupertinoIcons.forward),
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    CupertinoPageRoute(
-                                      builder: (context) => DetailPage(
-                                        event: event,
-                                        detail: detail,
-                                        uuid: widget.uuid,
-                                      ),
+                              return Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: CupertinoColors
+                                          .extraLightBackgroundGray,
                                     ),
-                                  );
-                                },
+                                    child: CupertinoListTile(
+                                      leading: const Icon(
+                                        CupertinoIcons.calendar,
+                                        color: CupertinoColors.systemPink,
+                                      ),
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                          ),
+                                          FutureBuilder(
+                                              future: EventService
+                                                  .getAddressFromLatLng(
+                                                      detail.latlng!),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData &&
+                                                    snapshot.data != null) {
+                                                  final address =
+                                                      snapshot.data as String;
+                                                  return Text(
+                                                    address,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  return const Center(
+                                                    child:
+                                                        CupertinoActivityIndicator(),
+                                                  );
+                                                }
+                                              }),
+                                        ],
+                                      ),
+                                      trailing:
+                                          const Icon(CupertinoIcons.forward),
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          CupertinoPageRoute(
+                                            builder: (context) => DetailPage(
+                                              event: event,
+                                              detail: detail,
+                                              uuid: widget.uuid,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
                               );
                             },
                           ),
@@ -190,22 +230,5 @@ class EventPageState extends State<EventPage> {
               }
             },
           );
-  }
-
-  _checkJoin() async {
-    // Listen for updates on the isFollowing stream
-    final isJoiningStream = DatabaseService.isJoining(
-      widget.uuid,
-      widget.eventId,
-    );
-
-    // Listen for updates and update _isFollowing accordingly
-    await for (final isJoining in isJoiningStream) {
-      if (mounted) {
-        setState(() {
-          _isJoining = isJoining;
-        });
-      }
-    }
   }
 }
