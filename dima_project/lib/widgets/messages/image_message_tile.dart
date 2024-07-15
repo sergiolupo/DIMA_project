@@ -37,7 +37,6 @@ class ImageMessageTileState extends State<ImageMessageTile> {
       child: Stack(
         children: [
           Container(
-            width: 420,
             padding: EdgeInsets.only(
               top: 8,
               bottom: 8,
