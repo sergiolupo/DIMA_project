@@ -1,17 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
-import 'package:dima_project/widgets/events/date_picker.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
-import 'package:dima_project/widgets/events/time_picker.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
 class EditEventPage extends StatefulWidget {
@@ -33,14 +31,12 @@ class EditEventPageState extends State<EditEventPage> {
   bool isPublic = true;
   bool notify = true;
   List<String> uuids = [];
-  DateTime? startDate;
-  DateTime? endDate;
-  DateTime? startTime;
-  DateTime? endTime;
-
-  String location = '';
+  Map<int, bool> map = {};
+  Map<int, Details> details = {};
+  bool isLoaded = false;
+  int numInfos = 1;
   LatLng? _selectedLocation;
-  DateTime? start;
+
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -56,14 +52,13 @@ class EditEventPageState extends State<EditEventPage> {
       _eventDescriptionController.text = widget.event.description;
       isPublic = widget.event.isPublic;
       notify = widget.event.notify;
-      startDate = widget.event.startDate;
-      endDate = widget.event.endDate;
-      startTime = widget.event.startDate;
-      endTime = widget.event.endDate;
-      _selectedLocation = widget.event.location;
+      for (int i = 0; i < widget.event.details.length; i++) {
+        details[i] = widget.event.details[i];
+        map[i] = false;
+      }
     });
     _fetchProfileImage();
-    _fetchLocation();
+    _fetchLocations();
   }
 
   Future<void> _fetchProfileImage() async {
@@ -75,22 +70,25 @@ class EditEventPageState extends State<EditEventPage> {
     });
   }
 
-  Future<void> _fetchLocation() async {
-    final loc = await EventService.getAddressFromLatLng(widget.event.location);
-    setState(() {
-      location = loc!;
-    });
+  Future<void> _fetchLocations() async {
+    for (int i = 0; i < widget.event.details.length; i++) {
+      final loc = await EventService.getAddressFromLatLng(
+          widget.event.details[i].latlng!);
+      setState(() {
+        details[i]!.location = loc!;
+        if (i == widget.event.details.length - 1) {
+          isLoaded = true;
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return selectedImagePath == null ||
-            startDate == null ||
-            endDate == null ||
-            startTime == null ||
-            endTime == null ||
-            _selectedLocation == null ||
-            location == ''
+            _eventNameController.text.isEmpty ||
+            _eventDescriptionController.text.isEmpty ||
+            !isLoaded
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -111,7 +109,7 @@ class EditEventPageState extends State<EditEventPage> {
               trailing: CupertinoButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () async {
-                    if (startDate != null &&
+                    /*if (startDate != null &&
                         endDate != null &&
                         startTime != null &&
                         endTime != null &&
@@ -126,8 +124,7 @@ class EditEventPageState extends State<EditEventPage> {
                           endTime!,
                         )) {
                       await updateEvent();
-                      if (context.mounted) Navigator.of(context).pop();
-                    }
+                      if (context.mounted) Navigator.of(context).pop();}*/
                   },
                   child: const Text(
                     'Done',
@@ -197,168 +194,60 @@ class EditEventPageState extends State<EditEventPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: CupertinoColors.extraLightBackgroundGray,
-                  ),
-                  child: Column(
-                    children: [
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            children: [
-                              DatePicker(
-                                initialDateTime: startDate!,
-                                onDateTimeChanged: (selectedDate) =>
-                                    setState(() {
-                                  startDate = selectedDate;
-                                }),
-                              ),
-                              Text(
-                                DateFormat('dd/MM/yyyy').format(startTime!),
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              )
-                            ],
-                          ),
+                ListView.builder(
+                    itemCount: numInfos,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      map.putIfAbsent(index, () => true);
+                      details.putIfAbsent(index, () => Details());
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: CreateEventPageState.getEventInfo(
+                          location: () => _selectLocation(context, index),
+                          startDate: (DateTime selectedDate, int index) {
+                            setState(() {
+                              details[index]!.startDate = selectedDate;
+                            });
+                          },
+                          endDate: (DateTime selectedDate, int index) {
+                            setState(() {
+                              details[index]!.endDate = selectedDate;
+                            });
+                          },
+                          startTime: (DateTime selectedTime, int index) {
+                            setState(() {
+                              details[index]!.startTime = selectedTime;
+                            });
+                          },
+                          endTime: (DateTime selectedTime, int index) {
+                            setState(() {
+                              details[index]!.endTime = selectedTime;
+                            });
+                          },
+                          add: () {
+                            setState(() {
+                              numInfos++;
+                            });
+                          },
+                          numInfos: numInfos,
+                          context: context,
+                          index: index,
+                          detailsList: details,
+                          boolMap: map,
+                          onTap: () {
+                            setState(() {
+                              map[index] = !map[index]!;
+                            });
+                          },
+                          delete: (int index) {
+                            setState(() {
+                              delete(index);
+                            });
+                          },
                         ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            children: [
-                              DatePicker(
-                                initialDateTime: widget.event.endDate,
-                                onDateTimeChanged: (selectedDate) =>
-                                    setState(() {
-                                  endDate = selectedDate;
-                                }),
-                              ),
-                              Text(
-                                DateFormat('dd/MM/yyyy').format(endDate!),
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                          title: Container(
-                        decoration: const BoxDecoration(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            TimePicker(
-                              initialTime: startTime!,
-                              onTimeChanged: (selectedTime) => setState(
-                                () {
-                                  startTime = selectedTime;
-                                },
-                              ),
-                            ),
-                            Text(
-                              DateFormat('HH:mm').format(startTime!),
-                              style: const TextStyle(
-                                color: CupertinoColors.systemGrey,
-                                fontSize: 14,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              TimePicker(
-                                initialTime: endTime!,
-                                onTimeChanged: (selectedTime) => setState(() {
-                                  endTime = selectedTime;
-                                }),
-                              ),
-                              Text(
-                                DateFormat('HH:mm').format(endTime!),
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CupertinoButton(
-                                padding: const EdgeInsets.all(12),
-                                color: CupertinoColors.extraLightBackgroundGray,
-                                borderRadius: BorderRadius.circular(30),
-                                child: Icon(
-                                  CupertinoIcons.map_pin_ellipse,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                ),
-                                onPressed: () => _selectLocation(context),
-                              ),
-                              Text(
-                                location == '' ? 'Location' : location,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                      );
+                    }),
                 const SizedBox(height: 10),
                 Container(
                     decoration: BoxDecoration(
@@ -433,7 +322,7 @@ class EditEventPageState extends State<EditEventPage> {
             )));
   }
 
-  Future<void> _selectLocation(BuildContext context) async {
+  Future<void> _selectLocation(BuildContext context, int idx) async {
     final result = await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => LocationPage(
@@ -447,9 +336,8 @@ class EditEventPageState extends State<EditEventPage> {
 
       setState(() {
         _selectedLocation = result;
-        location = loc!;
-        debugPrint('Selected location: $location');
-        debugPrint('Selected location: $_selectedLocation');
+        details[idx]!.latlng = result;
+        details[idx]!.location = loc!;
       });
     }
   }
@@ -460,15 +348,11 @@ class EditEventPageState extends State<EditEventPage> {
       admin: widget.event.admin,
       name: _eventNameController.text,
       description: _eventDescriptionController.text,
-      location: _selectedLocation!,
-      startDate: DateTime(startDate!.year, startDate!.month, startDate!.day,
-          startTime!.hour, startTime!.minute),
-      endDate: DateTime(endDate!.year, endDate!.month, endDate!.day,
-          endTime!.hour, endTime!.minute),
       isPublic: isPublic,
       notify: notify,
       imagePath: widget.event.imagePath,
       members: widget.event.members,
+      details: details.values.toList(),
     );
     await DatabaseService.updateEvent(
       event,
@@ -477,5 +361,22 @@ class EditEventPageState extends State<EditEventPage> {
       widget.event.isPublic != isPublic,
       uuids,
     );
+  }
+
+  void delete(int index) {
+    setState(() {
+      if (index == numInfos - 1) {
+        map.remove(index);
+        details.remove(index);
+      } else {
+        for (int i = numInfos - 1; i > index; i--) {
+          map[i - 1] = map[i]!;
+          details[i - 1] = details[i]!;
+        }
+        details.remove(numInfos - 1);
+        map.remove(numInfos - 1);
+      }
+      numInfos--;
+    });
   }
 }

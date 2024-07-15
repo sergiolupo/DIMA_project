@@ -1,3 +1,4 @@
+import 'package:dima_project/models/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -60,15 +61,8 @@ class EventService {
     }
   }
 
-  static bool validateForm(
-      BuildContext context,
-      String name,
-      String description,
-      String location,
-      DateTime startDate,
-      DateTime endDate,
-      DateTime startTime,
-      DateTime endTime) {
+  static bool validateForm(BuildContext context, String name,
+      String description, List<Details> detailsList) {
     if (name.isEmpty) {
       _showErrorDialog(context, 'Event name is required');
       return false;
@@ -77,33 +71,48 @@ class EventService {
       _showErrorDialog(context, 'Event description is required');
       return false;
     }
-    if (DateFormat('dd/MM/yyyy').format(startDate).isEmpty) {
-      _showErrorDialog(context, 'Event start date is required');
-      return false;
-    }
-    if (DateFormat('dd/MM/yyyy').format(endDate).isEmpty) {
-      _showErrorDialog(context, 'Event end date is required');
-      return false;
-    }
-    if (DateFormat('HH:mm').format(startTime).isEmpty) {
-      _showErrorDialog(context, 'Event start time is required');
-      return false;
-    }
-    if (DateFormat('HH:mm').format(endTime).isEmpty) {
-      _showErrorDialog(context, 'Event end time is required');
-      return false;
-    }
-    if (location.isEmpty) {
-      _showErrorDialog(context, 'Event location is required');
-      return false;
-    }
-    if (_isEventInThePast(startDate, startTime)) {
-      _showErrorDialog(context, 'Event cannot be scheduled in the past');
-      return false;
-    }
-    if (!_isStartDateBeforeEndDate(startDate, endDate, startTime, endTime)) {
-      _showErrorDialog(context, 'Event start date must be before end date');
-      return false;
+    for (int i = 0; i < detailsList.length; i++) {
+      final Details detail = detailsList[i];
+      if (detail.startDate == null ||
+          DateFormat('dd/MM/yyyy').format(detail.startDate!).isEmpty) {
+        _showErrorDialog(
+            context, 'Event start date is not correct in the box ${i + 1}');
+        return false;
+      }
+      if (detail.endDate == null ||
+          DateFormat('dd/MM/yyyy').format(detail.endDate!).isEmpty) {
+        _showErrorDialog(
+            context, 'Event end date is not correct in the box ${i + 1}');
+        return false;
+      }
+      if (detail.startTime == null ||
+          DateFormat('HH:mm').format(detail.startTime!).isEmpty) {
+        _showErrorDialog(
+            context, 'Event start time is not correct in the box ${i + 1}');
+        return false;
+      }
+      if (detail.endTime == null ||
+          DateFormat('HH:mm').format(detail.endTime!).isEmpty) {
+        _showErrorDialog(
+            context, 'Event end time is not correct in the box ${i + 1}');
+        return false;
+      }
+      if (detail.location == null || detail.location!.isEmpty) {
+        _showErrorDialog(
+            context, 'Event location is required in the box ${i + 1}');
+        return false;
+      }
+      if (_isEventInThePast(detail.startDate!, detail.startTime!)) {
+        _showErrorDialog(
+            context, 'Event in the box ${i + 1} is scheduled in the past');
+        return false;
+      }
+      if (!_isStartDateBeforeEndDate(detail.startDate!, detail.endDate!,
+          detail.startTime!, detail.endTime!)) {
+        _showErrorDialog(context,
+            'Event start date is after the end date in the box ${i + 1}');
+        return false;
+      }
     }
     return true;
   }

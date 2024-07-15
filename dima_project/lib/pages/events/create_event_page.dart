@@ -29,23 +29,16 @@ class CreateEventPageState extends State<CreateEventPage> {
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
-  DateTime startDate = DateTime.now();
-  late DateTime endDate = DateTime(startDate.year, startDate.month,
-      startDate.day, startDate.hour + 1, startDate.minute);
-  late DateTime startTime = DateTime.now();
-  late DateTime endTime = DateTime(startTime.day, startTime.month,
-      startTime.year, startTime.hour + 1, startTime.minute);
-  late var startDateString = '';
-  late var endDateString = '';
-  late var startTimeString = '';
-  late var endTimeString = '';
-  String location = '';
+
+  DateTime now = DateTime.now();
   LatLng? _selectedLocation;
   bool isPublic = true;
   bool notify = true;
   List<String> uuids = [];
   List<String> groupIds = [];
-
+  int numInfos = 1;
+  Map<int, bool> map = {};
+  Map<int, Details> details = {};
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -55,8 +48,6 @@ class CreateEventPageState extends State<CreateEventPage> {
 
   @override
   void initState() {
-    startTime = getTime();
-    endTime = getEndTime();
     setState(() {
       if (widget.groupId != null) groupIds.add(widget.groupId!);
     });
@@ -68,25 +59,17 @@ class CreateEventPageState extends State<CreateEventPage> {
       context,
       _eventNameController.text,
       _eventDescriptionController.text,
-      location,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
+      details.values.toList(),
     )) {
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
         description: _eventDescriptionController.text,
-        startDate: DateTime(startDate.year, startDate.month, startDate.day,
-            startTime.hour, startTime.minute),
-        endDate: DateTime(endDate.year, endDate.month, endDate.day,
-            endTime.hour, endTime.minute),
         members: [widget.uuid],
         isPublic: isPublic,
         notify: notify,
         imagePath: selectedImagePath.isNotEmpty ? '' : null,
-        location: _selectedLocation!,
+        details: details.values.toList(),
       );
 
       await DatabaseService.createEvent(
@@ -121,6 +104,8 @@ class CreateEventPageState extends State<CreateEventPage> {
           child: Container(
             alignment: Alignment.center,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 const SizedBox(height: 20),
                 CupertinoTextField(
@@ -176,186 +161,60 @@ class CreateEventPageState extends State<CreateEventPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: CupertinoColors.extraLightBackgroundGray,
-                  ),
-                  child: Column(
-                    children: [
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            children: [
-                              DatePicker(
-                                initialDateTime: startDate,
-                                onDateTimeChanged: (selectedDate) =>
-                                    setState(() {
-                                  startDate = selectedDate;
-                                  startDateString = DateFormat('dd/MM/yyyy')
-                                      .format(startDate);
-                                }),
-                              ),
-                              Text(
-                                startDateString == ''
-                                    ? 'Start Date'
-                                    : startDateString,
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              )
-                            ],
-                          ),
+                ListView.builder(
+                    itemCount: numInfos,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      map.putIfAbsent(index, () => true);
+                      details.putIfAbsent(index, () => Details());
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: getEventInfo(
+                          location: () => _selectLocation(context, index),
+                          startDate: (DateTime selectedDate, int index) {
+                            setState(() {
+                              details[index]!.startDate = selectedDate;
+                            });
+                          },
+                          endDate: (DateTime selectedDate, int index) {
+                            setState(() {
+                              details[index]!.endDate = selectedDate;
+                            });
+                          },
+                          startTime: (DateTime selectedTime, int index) {
+                            setState(() {
+                              details[index]!.startTime = selectedTime;
+                            });
+                          },
+                          endTime: (DateTime selectedTime, int index) {
+                            setState(() {
+                              details[index]!.endTime = selectedTime;
+                            });
+                          },
+                          add: () {
+                            setState(() {
+                              numInfos++;
+                            });
+                          },
+                          numInfos: numInfos,
+                          context: context,
+                          index: index,
+                          detailsList: details,
+                          boolMap: map,
+                          onTap: () {
+                            setState(() {
+                              map[index] = !map[index]!;
+                            });
+                          },
+                          delete: (int index) {
+                            setState(() {
+                              delete(index);
+                            });
+                          },
                         ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            children: [
-                              DatePicker(
-                                initialDateTime: endDate,
-                                onDateTimeChanged: (selectedDate) =>
-                                    setState(() {
-                                  endDate = selectedDate;
-                                  endDateString =
-                                      DateFormat('dd/MM/yyyy').format(endDate);
-                                }),
-                              ),
-                              Text(
-                                endDateString == ''
-                                    ? 'End Date'
-                                    : endDateString,
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                          title: Container(
-                        decoration: const BoxDecoration(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            TimePicker(
-                              initialTime: startTime,
-                              onTimeChanged: (selectedTime) => setState(
-                                () {
-                                  startTime = selectedTime;
-                                  startTimeString =
-                                      DateFormat('HH:mm').format(startTime);
-                                },
-                              ),
-                            ),
-                            Text(
-                              startTimeString == ''
-                                  ? 'Start Time'
-                                  : startTimeString,
-                              style: const TextStyle(
-                                color: CupertinoColors.systemGrey,
-                                fontSize: 14,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              TimePicker(
-                                initialTime: endTime,
-                                onTimeChanged: (selectedTime) => setState(() {
-                                  endTime = selectedTime;
-                                  endTimeString =
-                                      DateFormat('HH:mm').format(endTime);
-                                }),
-                              ),
-                              Text(
-                                endTimeString == ''
-                                    ? 'End Time'
-                                    : endTimeString,
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator,
-                      ),
-                      CupertinoListTile(
-                        title: Container(
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              CupertinoButton(
-                                padding: const EdgeInsets.all(12),
-                                color: CupertinoColors.extraLightBackgroundGray,
-                                borderRadius: BorderRadius.circular(30),
-                                child: Icon(
-                                  CupertinoIcons.map_pin_ellipse,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                ),
-                                onPressed: () => _selectLocation(context),
-                              ),
-                              Text(
-                                location == '' ? 'Location' : location,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                  fontSize: 14,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
+                      );
+                    }),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -506,17 +365,17 @@ class CreateEventPageState extends State<CreateEventPage> {
     );
   }
 
-  DateTime getTime() {
+  static DateTime getStartTime() {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, now.hour, 0);
   }
 
-  DateTime getEndTime() {
+  static DateTime getEndTime() {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, now.hour + 1, 0);
   }
 
-  Future<void> _selectLocation(BuildContext context) async {
+  Future<void> _selectLocation(BuildContext context, int idx) async {
     final result = await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => LocationPage(
@@ -530,10 +389,349 @@ class CreateEventPageState extends State<CreateEventPage> {
 
       setState(() {
         _selectedLocation = result;
-        location = loc!;
-        debugPrint('Selected location: $location');
-        debugPrint('Selected location: $_selectedLocation');
+        details[idx]!.latlng = result;
+        details[idx]!.location = loc!;
       });
     }
+  }
+
+  static Widget getEventInfo({
+    required int index,
+    required Map<int, Details> detailsList,
+    required Map<int, bool> boolMap,
+    required Function onTap,
+    required Function delete,
+    required BuildContext context,
+    required int numInfos,
+    required Function startDate,
+    required Function endDate,
+    required Function startTime,
+    required Function endTime,
+    required Function add,
+    required Function location,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+      },
+      child: boolMap[index]!
+          ? Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: CupertinoColors.extraLightBackgroundGray,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CupertinoListTile(
+                    title: Container(
+                      decoration: const BoxDecoration(
+                        color: CupertinoColors.extraLightBackgroundGray,
+                      ),
+                      child: Row(
+                        children: [
+                          DatePicker(
+                            initialDateTime:
+                                detailsList[index]!.startDate ?? DateTime.now(),
+                            onDateTimeChanged: (selectedDate) => startDate(
+                              selectedDate,
+                              index,
+                            ),
+                          ),
+                          Text(
+                            detailsList[index]!.startDate == null
+                                ? 'Start Date'
+                                : DateFormat('dd/MM/yyyy').format(
+                                    detailsList[index]!.startDate!,
+                                  ),
+                            style: const TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: CupertinoColors.opaqueSeparator,
+                  ),
+                  CupertinoListTile(
+                    title: Container(
+                      decoration: const BoxDecoration(
+                        color: CupertinoColors.extraLightBackgroundGray,
+                      ),
+                      child: Row(
+                        children: [
+                          DatePicker(
+                            initialDateTime:
+                                detailsList[index]!.endDate ?? DateTime.now(),
+                            onDateTimeChanged: (selectedDate) => endDate(
+                              selectedDate,
+                              index,
+                            ),
+                          ),
+                          Text(
+                            detailsList[index]!.endDate == null
+                                ? 'End Date'
+                                : DateFormat('dd/MM/yyyy').format(
+                                    detailsList[index]!.endDate!,
+                                  ),
+                            style: const TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: CupertinoColors.opaqueSeparator,
+                  ),
+                  CupertinoListTile(
+                      title: Container(
+                    decoration: const BoxDecoration(
+                      color: CupertinoColors.extraLightBackgroundGray,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TimePicker(
+                          initialTime:
+                              detailsList[index]!.startTime ?? getStartTime(),
+                          onTimeChanged: (selectedTime) => startTime(
+                            selectedTime,
+                            index,
+                          ),
+                        ),
+                        Text(
+                          detailsList[index]!.startTime == null
+                              ? 'Start Time'
+                              : DateFormat('HH:mm').format(
+                                  detailsList[index]!.startTime!,
+                                ),
+                          style: const TextStyle(
+                            color: CupertinoColors.systemGrey,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                  Container(
+                    height: 1,
+                    color: CupertinoColors.opaqueSeparator,
+                  ),
+                  CupertinoListTile(
+                    title: Container(
+                      decoration: const BoxDecoration(
+                        color: CupertinoColors.extraLightBackgroundGray,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          TimePicker(
+                            initialTime:
+                                detailsList[index]!.endTime ?? getEndTime(),
+                            onTimeChanged: (selectedTime) => endTime(
+                              selectedTime,
+                              index,
+                            ),
+                          ),
+                          Text(
+                            detailsList[index]!.endTime == null
+                                ? 'End Time'
+                                : DateFormat('HH:mm').format(
+                                    detailsList[index]!.endTime!,
+                                  ),
+                            style: const TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: CupertinoColors.opaqueSeparator,
+                  ),
+                  CupertinoListTile(
+                    title: Container(
+                      decoration: const BoxDecoration(
+                        color: CupertinoColors.extraLightBackgroundGray,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CupertinoButton(
+                            padding: const EdgeInsets.all(12),
+                            color: CupertinoColors.extraLightBackgroundGray,
+                            borderRadius: BorderRadius.circular(30),
+                            child: Icon(
+                              CupertinoIcons.map_pin_ellipse,
+                              color: CupertinoTheme.of(context).primaryColor,
+                            ),
+                            onPressed: () => location(),
+                          ),
+                          Text(
+                            detailsList[index]!.location == null
+                                ? 'Location'
+                                : detailsList[index]!.location!,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 14,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (index == numInfos - 1)
+                    CupertinoButton(
+                      padding: const EdgeInsets.only(right: 10),
+                      alignment: Alignment.topRight,
+                      onPressed: () {
+                        add();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Add',
+                            style: TextStyle(
+                              color: CupertinoTheme.of(context).primaryColor,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const Icon(
+                            CupertinoIcons.add,
+                            size: 14,
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (numInfos > 1)
+                    CupertinoButton(
+                      padding: const EdgeInsets.only(right: 10),
+                      alignment: Alignment.centerLeft,
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Delete',
+                            style: TextStyle(
+                              color: CupertinoTheme.of(context).primaryColor,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const Icon(
+                            CupertinoIcons.trash,
+                            size: 14,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            )
+          : Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: CupertinoColors.extraLightBackgroundGray,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Text(
+                        detailsList[index]!.startDate == null
+                            ? 'Start Date'
+                            : DateFormat('dd/MM/yyyy').format(
+                                detailsList[index]!.startDate!,
+                              ),
+                      ),
+                      const Text('-'),
+                      Text(
+                        detailsList[index]!.startTime == null
+                            ? 'Start Time'
+                            : DateFormat('HH:mm').format(
+                                detailsList[index]!.startTime!,
+                              ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        detailsList[index]!.endDate == null
+                            ? 'End Date'
+                            : DateFormat('dd/MM/yyyy').format(
+                                detailsList[index]!.endDate!,
+                              ),
+                      ),
+                      const Text('-'),
+                      Text(
+                        detailsList[index]!.endTime == null
+                            ? 'End Time'
+                            : DateFormat('HH:mm').format(
+                                detailsList[index]!.endTime!,
+                              ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        detailsList[index]!.location == null
+                            ? 'Location'
+                            : detailsList[index]!.location!,
+                      ),
+                      if (numInfos > 1)
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: CupertinoButton(
+                            onPressed: () {
+                              delete(index);
+                            },
+                            child: const Icon(CupertinoIcons.trash),
+                          ),
+                        )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  void delete(int index) {
+    setState(() {
+      if (index == numInfos - 1) {
+        map.remove(index);
+        details.remove(index);
+      } else {
+        for (int i = numInfos - 1; i > index; i--) {
+          map[i - 1] = map[i]!;
+          details[i - 1] = details[i]!;
+        }
+        details.remove(numInfos - 1);
+        map.remove(numInfos - 1);
+      }
+      numInfos--;
+    });
   }
 }

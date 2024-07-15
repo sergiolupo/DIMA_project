@@ -11,17 +11,17 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:dima_project/pages/events/edit_event_page.dart';
 
-class EventPage extends StatefulWidget {
+class DetailPage extends StatefulWidget {
   final String uuid;
   final String eventId;
 
-  const EventPage({super.key, required this.eventId, required this.uuid});
+  const DetailPage({super.key, required this.eventId, required this.uuid});
 
   @override
-  State<EventPage> createState() => EventPageState();
+  State<DetailPage> createState() => DetailPageState();
 }
 
-class EventPageState extends State<EventPage> {
+class DetailPageState extends State<DetailPage> {
   Stream<Event>? _eventStream;
   int _isJoining = 0;
   @override
@@ -179,62 +179,78 @@ class EventPageState extends State<EventPage> {
                                 ],
                               )),
                           const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ShowDate(date: event.startDate),
-                              const Text(
-                                ' - ',
-                              ),
-                              ShowDate(date: event.endDate)
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          FutureBuilder(
-                              future: EventService.getAddressFromLatLng(
-                                  event.location),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData && snapshot.data != null) {
-                                  final address = snapshot.data as String;
-                                  return Text(
-                                    'Location: $address',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  );
-                                } else {
-                                  return const Center(
-                                    child: CupertinoActivityIndicator(),
-                                  );
-                                }
-                              }),
-                          SizedBox(
-                            height: 200,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            child: FlutterMap(
-                                options: MapOptions(
-                                  initialCenter: event.location,
-                                  initialZoom: 11,
-                                  interactionOptions: const InteractionOptions(
-                                      flags: InteractiveFlag.all),
-                                ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: event.details.length,
+                            itemBuilder: (context, index) {
+                              final detail = event.details[index];
+                              return Column(
                                 children: [
-                                  openStreetMapTileLayer,
-                                  MarkerLayer(
-                                    markers: [
-                                      Marker(
-                                        width: 80.0,
-                                        height: 80.0,
-                                        point: event.location,
-                                        child: Icon(
-                                          CupertinoIcons.location_solid,
-                                          color: CupertinoTheme.of(context)
-                                              .primaryColor,
-                                        ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ShowDate(date: detail.startDate!),
+                                      const Text(
+                                        ' - ',
                                       ),
+                                      ShowDate(date: detail.endDate!)
                                     ],
                                   ),
-                                ]),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder(
+                                      future: EventService.getAddressFromLatLng(
+                                          detail.latlng!),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData &&
+                                            snapshot.data != null) {
+                                          final address =
+                                              snapshot.data as String;
+                                          return Text(
+                                            'Location: $address',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          );
+                                        } else {
+                                          return const Center(
+                                            child: CupertinoActivityIndicator(),
+                                          );
+                                        }
+                                      }),
+                                  SizedBox(
+                                    height: 200,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    child: FlutterMap(
+                                        options: MapOptions(
+                                          initialCenter: detail.latlng!,
+                                          initialZoom: 11,
+                                          interactionOptions:
+                                              const InteractionOptions(
+                                                  flags: InteractiveFlag.all),
+                                        ),
+                                        children: [
+                                          openStreetMapTileLayer,
+                                          MarkerLayer(
+                                            markers: [
+                                              Marker(
+                                                width: 80.0,
+                                                height: 80.0,
+                                                point: detail.latlng!,
+                                                child: Icon(
+                                                  CupertinoIcons.location_solid,
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .primaryColor,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ]),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ],
 

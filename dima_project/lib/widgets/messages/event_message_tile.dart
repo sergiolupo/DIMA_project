@@ -116,7 +116,7 @@ class EventMessageTileState extends State<EventMessageTile> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
-                                    builder: (context) => EventPage(
+                                    builder: (context) => DetailPage(
                                       eventId: widget.message.content,
                                       uuid: widget.uuid,
                                     ),

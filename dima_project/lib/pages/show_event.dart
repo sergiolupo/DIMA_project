@@ -71,7 +71,7 @@ class ShowEventState extends State<ShowEvent> {
                         Navigator.push(
                           context,
                           CupertinoPageRoute(
-                            builder: (context) => EventPage(
+                            builder: (context) => DetailPage(
                               uuid: widget.uuid,
                               eventId: widget.event.id!,
                             ),
@@ -123,15 +123,25 @@ class ShowEventState extends State<ShowEvent> {
                 color: CupertinoColors.black,
               ),
             ),
-            DateTime(
-                        widget.event.startDate.year,
-                        widget.event.startDate.month,
-                        widget.event.startDate.day,
-                        widget.event.startDate.hour,
-                        widget.event.startDate.minute)
-                    .isBefore(DateTime.now())
-                ? ShowDate(date: widget.event.startDate)
-                : ShowDate(date: widget.event.endDate),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: widget.event.details.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    DateTime(
+                                widget.event.details[index].startDate!.year,
+                                widget.event.details[index].startDate!.month,
+                                widget.event.details[index].startDate!.day,
+                                widget.event.details[index].startDate!.hour,
+                                widget.event.details[index].startDate!.minute)
+                            .isBefore(DateTime.now())
+                        ? ShowDate(date: widget.event.details[index].startDate!)
+                        : ShowDate(date: widget.event.details[index].endDate!),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
