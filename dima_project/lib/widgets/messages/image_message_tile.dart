@@ -1,4 +1,5 @@
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/pages/media_view_page.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
@@ -34,6 +35,15 @@ class ImageMessageTileState extends State<ImageMessageTile> {
         widget.uuid,
         showCustomSnackbar: null,
       ),
+      onTap: () {
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (context) => MediaViewPage(
+              media: widget.message,
+            ),
+          ),
+        );
+      },
       child: Stack(
         children: [
           Container(
