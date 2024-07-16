@@ -132,8 +132,9 @@ class ListChatPageState extends State<ListChatPage> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final group = data[index];
-                    if (!RegExp(searchedText, caseSensitive: false)
-                        .hasMatch(group.name)) {
+                    if (!group.name
+                        .toLowerCase()
+                        .contains(searchedText.toLowerCase())) {
                       i += 1;
                       if (i == data.length) {
                         return Center(
@@ -286,8 +287,9 @@ class ListChatPageState extends State<ListChatPage> {
                               if (snapshot.hasData) {
                                 final other = snapshot.data!;
 
-                                if (!RegExp(searchedText, caseSensitive: false)
-                                    .hasMatch(other.username)) {
+                                if (!other.username
+                                    .toLowerCase()
+                                    .contains(searchedText.toLowerCase())) {
                                   i += 1;
                                   if (i == data.length) {
                                     return Center(

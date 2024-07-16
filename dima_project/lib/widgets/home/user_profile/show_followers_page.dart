@@ -5,7 +5,6 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class ShowFollowers extends StatefulWidget {
   final String user;

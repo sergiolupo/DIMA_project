@@ -5,7 +5,6 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class ShowGroupsPage extends StatefulWidget {
   final String user;
