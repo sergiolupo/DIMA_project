@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/pages/show_event.dart';
@@ -276,8 +277,8 @@ class UserProfileState extends State<UserProfile> {
                                   });
                                 },
                               ),
-                              getCreatedEvents(),
-                              getJoinedEvents(),
+                              getCreatedEvents(user),
+                              getJoinedEvents(user),
                             ],
                           ),
                         ),
@@ -289,7 +290,7 @@ class UserProfileState extends State<UserProfile> {
             });
   }
 
-  Widget getJoinedEvents() {
+  Widget getJoinedEvents(UserData user) {
     return Visibility(
       visible: index == 1,
       child: StreamBuilder<List<Event>>(
@@ -309,9 +310,22 @@ class UserProfileState extends State<UserProfile> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final event = snapshot.data![index];
-                    return EventGrid(
-                      uuid: widget.uuid,
-                      event: event,
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => ShowEvent(
+                            uuid: widget.uuid,
+                            eventId: event.id!,
+                            events: snapshot.data!,
+                            userData: user,
+                          ),
+                        ),
+                      ),
+                      child: EventGrid(
+                        uuid: widget.uuid,
+                        event: event,
+                      ),
                     );
                   },
                 ),
@@ -331,7 +345,7 @@ class UserProfileState extends State<UserProfile> {
     );
   }
 
-  Widget getCreatedEvents() {
+  Widget getCreatedEvents(UserData user) {
     return Visibility(
       visible: index == 0,
       child: StreamBuilder<List<Event>>(
@@ -359,6 +373,7 @@ class UserProfileState extends State<UserProfile> {
                             uuid: widget.uuid,
                             eventId: event.id!,
                             events: snapshot.data!,
+                            userData: user,
                           ),
                         ),
                       ),

@@ -1,6 +1,8 @@
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -8,12 +10,13 @@ class ShowEvent extends StatefulWidget {
   final String uuid;
   final String eventId;
   final List<Event> events;
-
+  final UserData userData;
   const ShowEvent({
     super.key,
     required this.uuid,
     required this.events,
     required this.eventId,
+    required this.userData,
   });
 
   @override
@@ -65,6 +68,22 @@ class ShowEventState extends State<ShowEvent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CreateImageWidget.getUserImage(
+                            widget.userData.imagePath!,
+                            small: true),
+                        const SizedBox(width: 10.0),
+                        Text(
+                          widget.userData.username,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                     Center(
                       child: Stack(
                         alignment: Alignment.bottomCenter,
