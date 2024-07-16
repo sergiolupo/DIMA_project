@@ -88,7 +88,7 @@ class ListChatPageState extends State<ListChatPage> {
                         privateChatList(),
                         if (idx == 0)
                           Positioned(
-                            bottom: 50,
+                            bottom: 100,
                             right: 20,
                             child: CupertinoButton(
                               onPressed: () {
@@ -98,7 +98,10 @@ class ListChatPageState extends State<ListChatPage> {
                                         builder: (context) => CreateGroupPage(
                                             uuid: widget.uuid)));
                               },
-                              child: const Icon(CupertinoIcons.add, size: 30),
+                              child: const Icon(
+                                CupertinoIcons.add,
+                                size: 30,
+                              ),
                             ),
                           ),
                       ],
