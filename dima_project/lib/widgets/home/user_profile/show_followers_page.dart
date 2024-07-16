@@ -5,6 +5,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class ShowFollowers extends StatefulWidget {
   final String user;
@@ -61,15 +62,13 @@ class ShowFollowersState extends State<ShowFollowers> {
       child: SafeArea(
         child: Column(
           children: [
-            Container(
+            Padding(
               padding: const EdgeInsets.all(8),
-              height: 50,
               child: CupertinoSearchTextField(
                 controller: _searchController,
                 onChanged: (_) => (setState(() {
                   _searchText = _searchController.text;
                 })),
-                decoration: BoxDecoration(border: Border.all(width: 0)),
               ),
             ),
             StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(

@@ -79,24 +79,13 @@ class SearchPageState extends State<SearchPage> {
       ),
       child: Column(
         children: [
-          Container(
-            color: CupertinoTheme.of(context).primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: CupertinoSearchTextField(
-                    controller: _searchController,
-                    onChanged: (_) => _initiateSearchMethod(),
-                    placeholder:
-                        "Search${searchIdx == 0 ? " users" : searchIdx == 1 ? " groups" : " events"}...",
-                    placeholderStyle:
-                        const TextStyle(color: CupertinoColors.white),
-                    style: const TextStyle(color: CupertinoColors.white),
-                    decoration: BoxDecoration(border: Border.all(width: 0)),
-                  ),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0, left: 10.0, right: 10),
+            child: CupertinoSearchTextField(
+              controller: _searchController,
+              onChanged: (_) => _initiateSearchMethod(),
+              placeholder:
+                  "Search${searchIdx == 0 ? " users" : searchIdx == 1 ? " groups" : " events"}...",
             ),
           ),
           const SizedBox(height: 10),
