@@ -116,12 +116,6 @@ class DatabaseService {
     });
   }
 
-  static Stream<Event> getEventFromId(String id) {
-    return eventsRef.doc(id).snapshots().map((snapshot) {
-      return Event.fromSnapshot(snapshot);
-    });
-  }
-
   static Stream<Group> getGroupFromIdStream(String id) {
     return groupsRef.doc(id).snapshots().map((snapshot) {
       return Group.fromSnapshot(snapshot);
@@ -561,8 +555,9 @@ class DatabaseService {
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
-      String eventId) {
-    final stream = eventsRef.doc(eventId).snapshots();
+      String eventId, String detailId) {
+    final stream =
+        eventsRef.doc(eventId).collection('details').doc(detailId).snapshots();
 
     return stream.map((snapshot) {
       return snapshot;
@@ -627,29 +622,37 @@ class DatabaseService {
     }
   }
 
-  static Stream<int> isJoining(String uuid, String eventId) async* {
+  static Stream<int> isJoining(
+      String uuid, String eventId, String detailId) async* {
     // 0 is not joining, 1 is joining, 2 is requested
 
     // Initial check
     DocumentSnapshot eventDoc = await eventsRef.doc(eventId).get();
+    DocumentSnapshot detailDoc =
+        await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
-    yield _getEventStatus(eventDoc, uuid);
+    yield _getEventStatus(eventDoc, detailDoc, uuid);
 
     // Listen for real-time updates
-    await for (var snapshot in eventsRef.doc(eventId).snapshots()) {
-      yield _getEventStatus(snapshot, uuid);
+    await for (var snapshot in eventsRef
+        .doc(eventId)
+        .collection('details')
+        .doc(detailId)
+        .snapshots()) {
+      yield _getEventStatus(await eventsRef.doc(eventId).get(), snapshot, uuid);
     }
   }
 
   // Helper method to determine follow status
   static int _getEventStatus(
     DocumentSnapshot eventDoc,
+    DocumentSnapshot detailDoc,
     String uuid,
   ) {
-    if (eventDoc['members'].contains(uuid)) {
+    if (detailDoc['members'].contains(uuid)) {
       return 1;
     } else if (eventDoc['isPublic'] == false &&
-        eventDoc['requests'].contains(uuid)) {
+        detailDoc['requests'].contains(uuid)) {
       return 2;
     } else {
       return 0;
@@ -1016,8 +1019,13 @@ class DatabaseService {
     });
   }
 
-  static Future<List<String>> getEventRequests(String id) async {
-    return (await eventsRef.doc(id).get())['requests'];
+  static Future<Map<String, List<String>>> getEventRequests(String id) async {
+    Map<String, List<String>> requests = {};
+    final det = await eventsRef.doc(id).collection('details').get();
+    for (var detail in det.docs) {
+      requests.putIfAbsent(detail.id, () => detail['requests']);
+    }
+    return requests;
   }
 
   static Future<void> denyGroupRequest(String groupId, String uuid) async {
@@ -1084,22 +1092,22 @@ class DatabaseService {
     });
   }
 
-  static Future<void> denyEventRequest(String eventId, String uuid) async {
-    await usersRef.doc(uuid).update({
-      'eventsRequests': FieldValue.arrayRemove([eventId])
-    });
-  }
-
-  static Future<void> acceptEventRequest(String eventId, String uuid) async {
+  static Future<void> acceptEventRequest(
+      String eventId, String detailId, String uuid) async {
     await Future.wait([
-      eventsRef.doc(eventId).update({
+      eventsRef.doc(eventId).collection('details').doc(detailId).update({
         'members': FieldValue.arrayUnion([uuid]),
       }),
       usersRef.doc(uuid).update({
-        'eventsRequests': FieldValue.arrayRemove([eventId])
+        'eventsRequests': FieldValue.arrayRemove(["$eventId:$detailId"])
       }),
-      if ((await eventsRef.doc(eventId).get())['requests'].contains(uuid))
-        eventsRef.doc(eventId).update({
+      if ((await eventsRef
+              .doc(eventId)
+              .collection('details')
+              .doc(detailId)
+              .get())['requests']
+          .contains(uuid))
+        eventsRef.doc(eventId).collection('details').doc(detailId).update({
           'requests': FieldValue.arrayRemove([uuid])
         }),
     ]);
@@ -1131,6 +1139,10 @@ class DatabaseService {
       List<String> uuids, List<String> groupIds) async {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
+
+      for (Details details in event.details!) {
+        await docRef.collection('details').add(Details.toMap(details));
+      }
 
       String imageUrl = imagePath.toString() == '[]'
           ? ''
@@ -1198,48 +1210,54 @@ class DatabaseService {
     });
   }
 
-  static Future<void> toggleEventJoin(String eventId, String uuid) async {
+  static Future<void> toggleEventJoin(
+      String eventId, String detailId, String uuid) async {
     DocumentSnapshot<Map<String, dynamic>> eventDoc =
         await eventsRef.doc(eventId).get();
+    DocumentSnapshot<Map<String, dynamic>> detailDoc =
+        await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
-    bool isJoined = eventDoc['members'].contains(uuid);
+    bool isJoined = detailDoc['members'].contains(uuid);
 
     if (isJoined) {
       await Future.wait([
-        eventsRef.doc(eventId).update({
+        eventsRef.doc(eventId).collection('details').doc(detailId).update({
           'members': FieldValue.arrayRemove([uuid])
         }),
         usersRef.doc(uuid).update({
-          'events': FieldValue.arrayRemove([eventId])
+          'events': FieldValue.arrayRemove(["$eventId:$detailId"])
         }),
       ]);
-      if (eventDoc['members'].isEmpty) {
-        //await eventsRef.doc(eventId).delete();
-      } else if (eventDoc['admin'] == uuid) {
-        await eventsRef.doc(eventId).update({'admin': eventDoc['members'][0]});
-      }
     } else {
       if (eventDoc['isPublic']) {
         await Future.wait([
-          eventsRef.doc(eventId).update({
+          eventsRef.doc(eventId).collection('details').doc(detailId).update({
             'members': FieldValue.arrayUnion([uuid])
           }),
           usersRef.doc(uuid).update({
-            'events': FieldValue.arrayUnion([eventId])
+            'events': FieldValue.arrayUnion(["$eventId:$detailId"])
           }),
           if ((await usersRef.doc(uuid).get())['eventsRequests']
-              .contains(eventId))
+              .contains("$eventId:$detailId"))
             usersRef.doc(uuid).update({
-              'eventsRequests': FieldValue.arrayRemove([eventId])
+              'eventsRequests': FieldValue.arrayRemove(["$eventId:$detailId"])
             }),
         ]);
       } else {
-        if (!eventDoc['requests'].contains(uuid)) {
-          await eventsRef.doc(eventId).update({
+        if (!detailDoc['requests'].contains(uuid)) {
+          await eventsRef
+              .doc(eventId)
+              .collection('details')
+              .doc(detailId)
+              .update({
             'requests': FieldValue.arrayUnion([uuid])
           });
         } else {
-          await eventsRef.doc(eventId).update({
+          await eventsRef
+              .doc(eventId)
+              .collection('details')
+              .doc(detailId)
+              .update({
             'requests': FieldValue.arrayRemove([uuid])
           });
         }
@@ -1248,8 +1266,8 @@ class DatabaseService {
   }
 
   static Stream<Event> getEventStream(String eventId) {
-    return eventsRef.doc(eventId).snapshots().map((snapshot) {
-      return Event.fromSnapshot(snapshot);
+    return eventsRef.doc(eventId).snapshots().asyncMap((snapshot) async {
+      return await Event.fromSnapshot(snapshot);
     });
   }
 
@@ -1264,14 +1282,14 @@ class DatabaseService {
     for (var eventId in eventsIds.docs) {
       final snapshot = await eventsRef.doc(eventId.id).get();
       if (snapshot.exists) {
-        eventsList.add(Event.fromSnapshot(snapshot));
+        eventsList.add(await Event.fromSnapshot(snapshot));
       }
     }
     yield eventsList;
     final snapshots = eventsRef.snapshots();
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final event = Event.fromSnapshot(change.doc);
+        final event = await Event.fromSnapshot(change.doc);
         if (change.type == DocumentChangeType.removed) {
           eventsList.removeWhere((e) => e.id == event.id);
           yield eventsList;
@@ -1298,16 +1316,27 @@ class DatabaseService {
   static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
     final eventsIds = await eventsRef
         .where('admin', isNotEqualTo: uuid)
-        .where('members', arrayContains: uuid)
         .orderBy('createdAt', descending: true)
         .get();
+
+    for (var event in eventsIds.docs) {
+      final docs = await eventsRef
+          .doc(event.id)
+          .collection('details')
+          .where('admin', isNotEqualTo: uuid)
+          .where('members', arrayContains: uuid)
+          .get();
+      if (docs.docs.isEmpty) {
+        eventsIds.docs.remove(event);
+      }
+    }
 
     final eventsList = <Event>[];
 
     for (var eventId in eventsIds.docs) {
       final snapshot = await eventsRef.doc(eventId.id).get();
       if (snapshot.exists) {
-        eventsList.add(Event.fromSnapshot(snapshot));
+        eventsList.add(await Event.fromSnapshot(snapshot));
       }
     }
     yield eventsList;
@@ -1315,12 +1344,14 @@ class DatabaseService {
     final snapshots = eventsRef.snapshots();
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final event = Event.fromSnapshot(change.doc);
+        final event = await Event.fromSnapshot(change.doc);
         if (change.type == DocumentChangeType.removed) {
           eventsList.removeWhere((e) => e.id == event.id);
           yield eventsList;
         } else {
-          if (event.admin != uuid && event.members.contains(uuid)) {
+          if (event.admin != uuid &&
+              event.details!
+                  .any((element) => element.members!.contains(uuid))) {
             final existingEventIndex =
                 eventsList.indexWhere((e) => e.id == event.id);
             if (existingEventIndex != -1) {
@@ -1352,9 +1383,10 @@ class DatabaseService {
             .contains(uuid); // Check if the user is a member of the group
       });
     } else {
-      return eventsRef.doc(id).snapshots().map((snapshot) {
-        return snapshot['members']
-            .contains(uuid); // Check if the user is a member of the event
+      return eventsRef.doc(id).snapshots().asyncMap((snapshot) async {
+        return (await Event.fromSnapshot(snapshot))
+            .details!
+            .any((element) => element.members!.contains(uuid));
       });
     }
   }
@@ -1436,6 +1468,23 @@ class DatabaseService {
   static Future<void> updateEvent(Event event, Uint8List uint8list,
       bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
+
+    for (Details detail in event.details!) {
+      final doc = await eventsRef.doc(event.id).collection('details').get();
+      if (doc.docs.isEmpty) {
+        await eventsRef
+            .doc(event.id)
+            .collection('details')
+            .add(Details.toMap(detail));
+      } else {
+        await eventsRef
+            .doc(event.id)
+            .collection('details')
+            .doc(detail.id)
+            .update(Details.toMap(detail));
+      }
+    }
+
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list.isEmpty
           ? ''
@@ -1445,13 +1494,20 @@ class DatabaseService {
         'imagePath': imageUrl,
       });
     }
-    List<String> members = event.members;
+
+    List<String> members = [];
+    for (Details detail in event.details!) {
+      members.addAll(detail.members!);
+    }
 
     if (visibilityHasChanged && event.isPublic) {
-      List<String> requests = await getEventRequests(event.id!);
-      for (var id in requests) {
-        await acceptEventRequest(event.id!, id);
-        members.add(id);
+      Map<String, List<String>> requests = await getEventRequests(event.id!);
+      for (var key in requests.keys) {
+        List<String> ids = requests[key]!;
+        for (var id in ids) {
+          await acceptEventRequest(event.id!, key, id);
+          members.add(id);
+        }
       }
     }
     for (var id in uuids) {

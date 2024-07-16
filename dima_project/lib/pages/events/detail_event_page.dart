@@ -49,11 +49,14 @@ class DetailPageState extends State<DetailPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ShowDate(date: widget.detail.startDate!),
+              ShowDate(
+                  date: widget.detail.startDate!,
+                  time: widget.detail.startTime!),
               const Text(
                 ' - ',
               ),
-              ShowDate(date: widget.detail.endDate!)
+              ShowDate(
+                  date: widget.detail.endDate!, time: widget.detail.endTime!)
             ],
           ),
           FutureBuilder(
@@ -102,7 +105,7 @@ class DetailPageState extends State<DetailPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            widget.event.members.length.toString(),
+            widget.detail.members!.length.toString(),
             style: CupertinoTheme.of(context).textTheme.textStyle,
           ),
           GestureDetector(
@@ -112,12 +115,13 @@ class DetailPageState extends State<DetailPage> {
                   builder: (context) => ShowEventMembersPage(
                     uuid: widget.uuid,
                     eventId: widget.event.id!,
+                    detailId: widget.detail.id!,
                   ),
                 ),
               );
             },
             child: Text(
-              widget.event.members.length > 1
+              widget.detail.members!.length > 1
                   ? " Participants"
                   : " Participant",
               style: CupertinoTheme.of(context)
@@ -131,7 +135,7 @@ class DetailPageState extends State<DetailPage> {
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
             onPressed: () async {
               await DatabaseService.toggleEventJoin(
-                  widget.event.id!, widget.uuid);
+                  widget.event.id!, widget.detail.id!, widget.uuid);
             },
             child: Text(
               _isJoining == 0
@@ -151,6 +155,7 @@ class DetailPageState extends State<DetailPage> {
     final isJoiningStream = DatabaseService.isJoining(
       widget.uuid,
       widget.event.id!,
+      widget.detail.id!,
     );
 
     // Listen for updates and update _isFollowing accordingly

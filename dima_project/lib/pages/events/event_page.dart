@@ -22,6 +22,7 @@ class EventPage extends StatefulWidget {
 
 class EventPageState extends State<EventPage> {
   Stream<Event>? _eventStream;
+
   @override
   void initState() {
     init();
@@ -131,9 +132,9 @@ class EventPageState extends State<EventPage> {
                           const SizedBox(height: 20),
                           ListView.builder(
                             shrinkWrap: true,
-                            itemCount: event.details.length,
+                            itemCount: event.details!.length,
                             itemBuilder: (BuildContext context, int index) {
-                              final detail = event.details[index];
+                              final detail = event.details![index];
                               return Column(
                                 children: [
                                   Container(

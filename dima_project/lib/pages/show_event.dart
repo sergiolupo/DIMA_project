@@ -149,7 +149,7 @@ class ShowEventState extends State<ShowEvent> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: event.details.length,
+                      itemCount: event.details!.length,
                       itemBuilder: (context, index) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,17 +160,20 @@ class ShowEventState extends State<ShowEvent> {
                                 Transform.scale(
                                     scale: 0.75,
                                     child: ShowDate(
-                                        date: event.details[index].startDate!)),
+                                        date: event.details![index].startDate!,
+                                        time:
+                                            event.details![index].startTime!)),
                                 const Text(' - '),
                                 Transform.scale(
                                     scale: 0.75,
                                     child: ShowDate(
-                                        date: event.details[index].endDate!)),
+                                        date: event.details![index].endDate!,
+                                        time: event.details![index].endTime!)),
                               ],
                             ),
                             FutureBuilder(
                                 future: EventService.getAddressFromLatLng(
-                                    event.details[index].latlng!),
+                                    event.details![index].latlng!),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData &&
                                       snapshot.data != null) {

@@ -52,11 +52,11 @@ class EditEventPageState extends State<EditEventPage> {
       _eventDescriptionController.text = widget.event.description;
       isPublic = widget.event.isPublic;
       notify = widget.event.notify;
-      for (int i = 0; i < widget.event.details.length; i++) {
-        details[i] = widget.event.details[i];
+      for (int i = 0; i < widget.event.details!.length; i++) {
+        details[i] = widget.event.details![i];
         map[i] = false;
       }
-      numInfos = widget.event.details.length;
+      numInfos = widget.event.details!.length;
     });
     _fetchProfileImage();
     _fetchLocations();
@@ -72,12 +72,12 @@ class EditEventPageState extends State<EditEventPage> {
   }
 
   Future<void> _fetchLocations() async {
-    for (int i = 0; i < widget.event.details.length; i++) {
+    for (int i = 0; i < widget.event.details!.length; i++) {
       final loc = await EventService.getAddressFromLatLng(
-          widget.event.details[i].latlng!);
+          widget.event.details![i].latlng!);
       setState(() {
         details[i]!.location = loc!;
-        if (i == widget.event.details.length - 1) {
+        if (i == widget.event.details!.length - 1) {
           isLoaded = true;
         }
       });
@@ -125,7 +125,7 @@ class EditEventPageState extends State<EditEventPage> {
                           endTime!,
                         )) {
                       await updateEvent();
-                      if (context.mounted) Navigator.of(context).pop();}*/
+                      if (context.mounted) Navigator.of(context).pop();*/
                   },
                   child: const Text(
                     'Done',
@@ -352,7 +352,6 @@ class EditEventPageState extends State<EditEventPage> {
       isPublic: isPublic,
       notify: notify,
       imagePath: widget.event.imagePath,
-      members: widget.event.members,
       details: details.values.toList(),
     );
     await DatabaseService.updateEvent(

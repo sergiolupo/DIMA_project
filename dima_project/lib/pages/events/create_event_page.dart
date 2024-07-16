@@ -69,11 +69,13 @@ class CreateEventPageState extends State<CreateEventPage>
       details.values.toList(),
     )) {
       showDoneDialog();
+      for (int i = 0; i < details.length; i++) {
+        details[i]!.members = [widget.uuid];
+      }
       final event = Event(
         name: _eventNameController.text,
         admin: widget.uuid,
         description: _eventDescriptionController.text,
-        members: [widget.uuid],
         isPublic: isPublic,
         notify: notify,
         imagePath: selectedImagePath.isNotEmpty ? '' : null,

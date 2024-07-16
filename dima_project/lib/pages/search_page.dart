@@ -197,16 +197,22 @@ class SearchPageState extends State<SearchPage> {
                           });
                     } else if (searchIdx == 2 &&
                         (docs[index].data()).containsKey('eventId')) {
-                      final event = Event.fromSnapshot(docs[index]);
-                      return EventTile(
-                        uuid: widget.uuid,
-                        event: event,
-                        isJoined: event.members.contains(widget.uuid)
-                            ? 1
-                            : event.requests!.contains(widget.uuid)
-                                ? 2
-                                : 0,
-                      );
+                      return FutureBuilder(
+                          future: Event.fromSnapshot(docs[index]),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CupertinoActivityIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final event = snapshot.data as Event;
+                              return EventTile(
+                                uuid: widget.uuid,
+                                event: event,
+                              );
+                            }
+                          });
                     } else {
                       return Container();
                     }

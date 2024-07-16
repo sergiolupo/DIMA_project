@@ -46,7 +46,7 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
                         itemCount: requests.length,
                         itemBuilder: (context, index) {
                           return StreamBuilder<Event>(
-                            stream: DatabaseService.getEventFromId(
+                            stream: DatabaseService.getEventStream(
                               requests[index],
                             ),
                             builder: (context, snapshot) {

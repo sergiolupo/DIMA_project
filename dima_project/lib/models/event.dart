@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:latlong2/latlong.dart';
 
 class Details {
@@ -8,6 +9,10 @@ class Details {
   DateTime? startTime;
   DateTime? endTime;
   LatLng? latlng;
+  String? id;
+  List<String>? members;
+  final List<String>? requests;
+
   Details({
     this.startDate,
     this.endDate,
@@ -15,7 +20,37 @@ class Details {
     this.startTime,
     this.endTime,
     this.latlng,
+    this.id,
+    this.members,
+    this.requests,
   });
+
+  static Map<String, dynamic> toMap(Details details) {
+    return {
+      'startDate': details.startDate,
+      'endDate': details.endDate,
+      'location': details.location,
+      'startTime': details.startTime,
+      'endTime': details.endTime,
+      'latlng': GeoPoint(details.latlng!.latitude, details.latlng!.longitude),
+      'members': details.members,
+      'requests': details.requests ?? [],
+    };
+  }
+
+  static Details fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return Details(
+      startDate: snapshot['startDate'].toDate(),
+      endDate: snapshot['endDate'].toDate(),
+      location: snapshot['location'],
+      startTime: snapshot['startTime'].toDate(),
+      endTime: snapshot['endTime'].toDate(),
+      latlng: LatLng(snapshot['latlng'].latitude, snapshot['latlng'].longitude),
+      id: snapshot.id,
+      members: List<String>.from(snapshot['members']),
+      requests: List<String>.from(snapshot['requests']),
+    );
+  }
 }
 
 class Event {
@@ -24,10 +59,8 @@ class Event {
   final String admin;
   final String? imagePath;
   final String description;
-  final List<Details> details;
-  final List<String> members;
+  final List<Details>? details;
   final bool isPublic;
-  final List<String>? requests;
 
   final bool notify;
   final Timestamp? createdAt;
@@ -38,12 +71,10 @@ class Event {
     required this.admin,
     this.imagePath,
     required this.description,
-    required this.details,
-    required this.members,
     required this.isPublic,
-    this.requests,
     required this.notify,
     this.createdAt,
+    this.details,
   });
 
   static Map<String, dynamic> toMap(Event event) {
@@ -53,50 +84,29 @@ class Event {
       'admin': event.admin,
       'imagePath': event.imagePath,
       'description': event.description,
-      'details': event.details
-          .map((detail) => {
-                'startDate': detail.startDate,
-                'endDate': detail.endDate,
-                'latlng':
-                    GeoPoint(detail.latlng!.latitude, detail.latlng!.longitude),
-                'startTime': detail.startTime,
-                'endTime': detail.endTime,
-              })
-          .toList(),
-      'members': event.members,
       'isPublic': event.isPublic,
-      'requests': event.requests ?? [],
       'notify': event.notify,
       'createdAt': event.createdAt,
     };
   }
 
-  static Event fromSnapshot(DocumentSnapshot documentSnapshot) {
+  static Future<Event> fromSnapshot(DocumentSnapshot documentSnapshot) async {
+    var detailsQuery =
+        await documentSnapshot.reference.collection('details').get();
+    debugPrint('detailsQuery: $detailsQuery');
+    List<Details> details =
+        detailsQuery.docs.map((doc) => Details.fromSnapshot(doc)).toList();
+    debugPrint('details: $details');
     return Event(
       name: documentSnapshot['name'],
       id: documentSnapshot.id,
       admin: documentSnapshot['admin'],
       imagePath: documentSnapshot['imagePath'],
       description: documentSnapshot['description'],
-      members: List<String>.from(documentSnapshot['members']),
       isPublic: documentSnapshot['isPublic'],
-      requests: List<String>.from(documentSnapshot['requests']),
-      details: List<Details>.from(
-        documentSnapshot['details'].map(
-          (detail) => Details(
-            startDate: detail['startDate']?.toDate(),
-            endDate: detail['endDate']?.toDate(),
-            latlng: LatLng(
-              detail['latlng'].latitude,
-              detail['latlng'].longitude,
-            ),
-            startTime: detail['startTime']?.toDate(),
-            endTime: detail['endTime']?.toDate(),
-          ),
-        ),
-      ),
       notify: documentSnapshot['notify'],
       createdAt: documentSnapshot['createdAt'],
+      details: details,
     );
   }
 }

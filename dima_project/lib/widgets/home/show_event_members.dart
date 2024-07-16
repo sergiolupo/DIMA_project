@@ -9,10 +9,12 @@ import 'package:flutter/cupertino.dart';
 class ShowEventMembersPage extends StatefulWidget {
   final String eventId;
   final String uuid;
+  final String detailId;
   const ShowEventMembersPage({
     super.key,
     required this.eventId,
     required this.uuid,
+    required this.detailId,
   });
 
   @override
@@ -33,7 +35,8 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
 
   init() {
     _membersStreamSubscription =
-        DatabaseService.getMembersStreamUser(widget.eventId).listen((snapshot) {
+        DatabaseService.getMembersStreamUser(widget.eventId, widget.detailId)
+            .listen((snapshot) {
       _membersStreamController.add(snapshot);
     });
   }

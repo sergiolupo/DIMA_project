@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 
 class ShowDate extends StatelessWidget {
   final DateTime date;
-  const ShowDate({super.key, required this.date});
+  final DateTime time;
+  const ShowDate({super.key, required this.date, required this.time});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class ShowDate extends StatelessWidget {
           top: 20,
           left: 28,
           child: Text(
-            DateFormat('HH:mm').format(date),
+            DateFormat('HH:mm').format(time),
             style: const TextStyle(color: CupertinoColors.white),
           ),
         ),
