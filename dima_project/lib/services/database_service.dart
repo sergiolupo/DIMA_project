@@ -1042,11 +1042,11 @@ class DatabaseService {
     ]);
   }
 
-  static Stream<List<dynamic>> getGroupMedia(String id) {
+  static Stream<List<dynamic>> getGroupMessagesType(String id, Type type) {
     return groupsRef
         .doc(id)
         .collection('messages')
-        .where("type", isEqualTo: 'Type.image')
+        .where("type", isEqualTo: type.toString())
         .orderBy('time', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -1054,11 +1054,11 @@ class DatabaseService {
     });
   }
 
-  static Stream<List<dynamic>> getPrivateChatMedia(String id) {
+  static Stream<List<dynamic>> getPrivateMessagesType(String id, Type type) {
     return privateChatRef
         .doc(id)
         .collection('messages')
-        .where("type", isEqualTo: 'Type.image')
+        .where("type", isEqualTo: type.toString())
         .orderBy('time', descending: true)
         .snapshots()
         .map((snapshot) {

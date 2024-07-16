@@ -1,5 +1,6 @@
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -30,8 +31,9 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
   }
 
   void getMembers() {
-    _numberOfMediaStream =
-        DatabaseService.getPrivateChatMedia(widget.privateChat.id!).map(
+    _numberOfMediaStream = DatabaseService.getPrivateMessagesType(
+            widget.privateChat.id!, Type.image)
+        .map(
       (event) {
         return event.length;
       },

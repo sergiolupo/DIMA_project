@@ -311,7 +311,6 @@ class UserProfileState extends State<UserProfile> {
                         return EventGrid(
                           uuid: widget.uuid,
                           event: event,
-                          isJoined: 1,
                         );
                       },
                     ),
@@ -344,7 +343,6 @@ class UserProfileState extends State<UserProfile> {
                       return EventGrid(
                         uuid: widget.uuid,
                         event: event,
-                        isJoined: 1,
                       );
                     },
                   ),

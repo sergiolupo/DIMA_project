@@ -1,8 +1,11 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/groups/edit_group_page.dart';
 import 'package:dima_project/pages/groups/group_requests_page.dart';
+import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
+import 'package:dima_project/pages/show_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
@@ -26,6 +29,8 @@ class GroupInfoPage extends StatefulWidget {
 class GroupInfoPageState extends State<GroupInfoPage> {
   Stream<int>? _numberOfRequestsStream;
   Stream<int>? _numberOfMediaStream;
+  Stream<int>? _numberOfEventsStream;
+  Stream<int>? _numberOfNewsStream;
   Group? group;
   @override
   void initState() {
@@ -41,7 +46,20 @@ class GroupInfoPageState extends State<GroupInfoPage> {
         DatabaseService.getGroupRequestsStream(widget.group.id).map((event) {
       return event.length;
     });
-    _numberOfMediaStream = DatabaseService.getGroupMedia(widget.group.id).map(
+    _numberOfMediaStream =
+        DatabaseService.getGroupMessagesType(widget.group.id, Type.image).map(
+      (event) {
+        return event.length;
+      },
+    );
+    _numberOfEventsStream =
+        DatabaseService.getGroupMessagesType(widget.group.id, Type.event).map(
+      (event) {
+        return event.length;
+      },
+    );
+    _numberOfNewsStream =
+        DatabaseService.getGroupMessagesType(widget.group.id, Type.news).map(
       (event) {
         return event.length;
       },
@@ -52,6 +70,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   Widget build(BuildContext context) {
     return _numberOfRequestsStream == null ||
             _numberOfMediaStream == null ||
+            _numberOfEventsStream == null ||
+            _numberOfNewsStream == null ||
             group == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
@@ -306,6 +326,142 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     Navigator.of(context).push(
                                       CupertinoPageRoute(
                                         builder: (context) => ShowMediasPage(
+                                          id: widget.group.id,
+                                          isGroup: true,
+                                        ),
+                                      ),
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            StreamBuilder<int>(
+                              stream: _numberOfEventsStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CupertinoActivityIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final events = snapshot.data;
+                                return CupertinoListTile(
+                                  padding: const EdgeInsets.all(0),
+                                  title: const Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.calendar,
+                                        color: CupertinoColors.black,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text("Events"),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    children: [
+                                      int.parse(events.toString()) > 0
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Container(
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .primaryColor,
+                                                child: Text(
+                                                  events.toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color:
+                                                        CupertinoColors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                      const SizedBox(width: 10),
+                                      const Icon(
+                                        CupertinoIcons.right_chevron,
+                                        color: CupertinoColors.black,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () => {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowEventsPage(
+                                          id: widget.group.id,
+                                          isGroup: true,
+                                        ),
+                                      ),
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            StreamBuilder<int>(
+                              stream: _numberOfNewsStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CupertinoActivityIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final news = snapshot.data;
+                                return CupertinoListTile(
+                                  padding: const EdgeInsets.all(0),
+                                  title: const Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.news,
+                                        color: CupertinoColors.black,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text("News"),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    children: [
+                                      int.parse(news.toString()) > 0
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Container(
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .primaryColor,
+                                                child: Text(
+                                                  news.toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color:
+                                                        CupertinoColors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                      const SizedBox(width: 10),
+                                      const Icon(
+                                        CupertinoIcons.right_chevron,
+                                        color: CupertinoColors.black,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () => {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowNewsPage(
                                           id: widget.group.id,
                                           isGroup: true,
                                         ),

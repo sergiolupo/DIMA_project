@@ -7,13 +7,11 @@ import 'package:flutter/cupertino.dart';
 class ShowEvent extends StatefulWidget {
   final String uuid;
   final Event event;
-  final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
 
   const ShowEvent({
     super.key,
     required this.uuid,
     required this.event,
-    required this.isJoined,
   });
 
   @override

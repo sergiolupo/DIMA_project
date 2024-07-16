@@ -5,12 +5,10 @@ import 'package:flutter/cupertino.dart';
 class EventGrid extends StatefulWidget {
   final String uuid;
   final Event event;
-  final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
   const EventGrid({
     super.key,
     required this.uuid,
     required this.event,
-    required this.isJoined,
   });
 
   @override
@@ -32,7 +30,6 @@ class EventGridState extends State<EventGrid> {
               builder: (context) => ShowEvent(
                 uuid: widget.uuid,
                 event: widget.event,
-                isJoined: widget.isJoined,
               ),
             ),
           );
