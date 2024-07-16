@@ -82,10 +82,6 @@ class CreateEventPageState extends State<CreateEventPage>
 
       await DatabaseService.createEvent(
           event, widget.uuid, selectedImagePath, uuids, groupIds);
-      //When the event is created inside a group
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.of(context).pop();
-      }
     }
   }
 
@@ -410,19 +406,26 @@ class CreateEventPageState extends State<CreateEventPage>
                 onPressed: () {
                   animationController.reset();
                   Navigator.of(context).pop();
-                  setState(() {
-                    _eventNameController.clear();
-                    _eventDescriptionController.clear();
-                    selectedImagePath = Uint8List(0);
-                    _selectedLocation = null;
-                    isPublic = true;
-                    notify = true;
-                    uuids = [];
-                    groupIds = [];
-                    numInfos = 1;
-                    map = {};
-                    details = {};
-                  });
+                  //When the event is created inside a group
+                  if (mounted && Navigator.canPop(context)) {
+                    debugPrint('Event created');
+                    Navigator.of(context).pop();
+                  }
+                  if (mounted) {
+                    setState(() {
+                      _eventNameController.clear();
+                      _eventDescriptionController.clear();
+                      selectedImagePath = Uint8List(0);
+                      _selectedLocation = null;
+                      isPublic = true;
+                      notify = true;
+                      uuids = [];
+                      groupIds = [];
+                      numInfos = 1;
+                      map = {};
+                      details = {};
+                    });
+                  }
                 },
               ),
             ],
