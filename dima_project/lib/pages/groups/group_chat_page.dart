@@ -57,8 +57,9 @@ class GroupChatPageState extends State<GroupChatPage> {
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               key: _navigationBarKey,
-              middle: GestureDetector(
-                onTap: () {
+              middle: CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => GroupInfoPage(

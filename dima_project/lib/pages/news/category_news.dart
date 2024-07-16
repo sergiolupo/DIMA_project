@@ -37,8 +37,8 @@ class _CategoryNewsState extends State<CategoryNews> {
             navigationBar: CupertinoNavigationBar(
               middle: Text(
                 widget.name,
-                style: const TextStyle(
-                    color: CupertinoColors.activeBlue,
+                style: TextStyle(
+                    color: CupertinoTheme.of(context).primaryColor,
                     fontWeight: FontWeight.bold),
               ),
             ),

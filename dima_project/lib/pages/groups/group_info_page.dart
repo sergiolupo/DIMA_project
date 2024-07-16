@@ -281,36 +281,27 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 final media = snapshot.data;
                                 return CupertinoListTile(
                                   padding: const EdgeInsets.all(0),
-                                  title: const Row(
+                                  title: Row(
                                     children: [
                                       Icon(
                                         CupertinoIcons.photo_on_rectangle,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                       ),
-                                      SizedBox(width: 10),
-                                      Text("Media"),
+                                      const SizedBox(width: 10),
+                                      const Text("Media"),
                                     ],
                                   ),
                                   trailing: Row(
                                     children: [
                                       int.parse(media.toString()) > 0
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .primaryColor,
-                                                child: Text(
-                                                  media.toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color:
-                                                        CupertinoColors.white,
-                                                  ),
-                                                ),
+                                          ? Text(
+                                              media.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal,
+                                                color: CupertinoColors
+                                                    .opaqueSeparator,
                                               ),
                                             )
                                           : const SizedBox(),
@@ -349,36 +340,27 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 final events = snapshot.data;
                                 return CupertinoListTile(
                                   padding: const EdgeInsets.all(0),
-                                  title: const Row(
+                                  title: Row(
                                     children: [
                                       Icon(
                                         CupertinoIcons.calendar,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                       ),
-                                      SizedBox(width: 10),
-                                      Text("Events"),
+                                      const SizedBox(width: 10),
+                                      const Text("Events"),
                                     ],
                                   ),
                                   trailing: Row(
                                     children: [
                                       int.parse(events.toString()) > 0
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .primaryColor,
-                                                child: Text(
-                                                  events.toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color:
-                                                        CupertinoColors.white,
-                                                  ),
-                                                ),
+                                          ? Text(
+                                              events.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal,
+                                                color: CupertinoColors
+                                                    .opaqueSeparator,
                                               ),
                                             )
                                           : const SizedBox(),
@@ -417,36 +399,27 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 final news = snapshot.data;
                                 return CupertinoListTile(
                                   padding: const EdgeInsets.all(0),
-                                  title: const Row(
+                                  title: Row(
                                     children: [
                                       Icon(
                                         CupertinoIcons.news,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                       ),
-                                      SizedBox(width: 10),
-                                      Text("News"),
+                                      const SizedBox(width: 10),
+                                      const Text("News"),
                                     ],
                                   ),
                                   trailing: Row(
                                     children: [
                                       int.parse(news.toString()) > 0
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .primaryColor,
-                                                child: Text(
-                                                  news.toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color:
-                                                        CupertinoColors.white,
-                                                  ),
-                                                ),
+                                          ? Text(
+                                              news.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal,
+                                                color: CupertinoColors
+                                                    .opaqueSeparator,
                                               ),
                                             )
                                           : const SizedBox(),

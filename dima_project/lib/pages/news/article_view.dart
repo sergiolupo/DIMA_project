@@ -22,16 +22,6 @@ class _ArticleViewState extends State<ArticleView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
-          middle: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("AGOR"),
-              Text("APP",
-                  style: TextStyle(
-                      color: CupertinoColors.activeBlue,
-                      fontWeight: FontWeight.bold))
-            ],
-          ),
           trailing: GestureDetector(
             child: const Icon(CupertinoIcons.share),
             onTap: () async {
