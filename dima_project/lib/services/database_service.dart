@@ -280,30 +280,39 @@ class DatabaseService {
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       searchByGroupNameStream(String searchText) {
+    // Convert the search text to lower case to make the search case-insensitive
+    String lowerCaseSearchText = searchText.toLowerCase();
+
     // Fetch all documents from Firestore collection
     return groupsRef.snapshots().map((snapshot) {
-      // Filter documents on the client side using regex and group ID check
+      // Filter documents on the client side without using regex
       return snapshot.docs.where((doc) {
-        // Match the 'groupName' field using a regex pattern
-        bool nameMatches =
-            RegExp(searchText, caseSensitive: false).hasMatch(doc['groupName']);
+        // Access the 'groupName' field and convert it to lower case
+        String groupName = (doc['groupName'] ?? '').toString().toLowerCase();
+
         // Check if the 'groupId' field is not empty
-        bool validGroupId = doc['groupId'] != '';
-        // Return true if both conditions are met
-        return nameMatches && validGroupId;
+        bool validGroupId = (doc['groupId'] ?? '').toString().isNotEmpty;
+
+        // Perform a case-insensitive substring search and check groupId
+        return groupName.contains(lowerCaseSearchText) && validGroupId;
       }).toList();
     });
   }
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       searchByUsernameStream(String searchText) {
+    // Convert the search text to lower case to make the search case-insensitive
+    String lowerCaseSearchText = searchText.toLowerCase();
+
     // Fetch all documents from Firestore collection
     return usersRef.snapshots().map((snapshot) {
-      // Filter documents on the client side using regex
+      // Filter documents on the client side without using regex
       return snapshot.docs.where((doc) {
-        // Match the 'username' field using a regex pattern
-        return RegExp(searchText, caseSensitive: false)
-            .hasMatch(doc['username']);
+        // Access the 'username' field and convert it to lower case
+        String username = (doc['username'] ?? '').toString().toLowerCase();
+
+        // Perform a case-insensitive substring search
+        return username.contains(lowerCaseSearchText);
       }).toList();
     });
   }
@@ -1195,17 +1204,23 @@ class DatabaseService {
     }
   }
 
-  static searchByEventNameStream(String searchText) {
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      searchByEventNameStream(String searchText) {
+    // Convert the search text to lower case to make the search case-insensitive
+    String lowerCaseSearchText = searchText.toLowerCase();
+
+    // Fetch all documents from Firestore collection
     return eventsRef.snapshots().map((snapshot) {
-      // Filter documents on the client side using regex and group ID check
+      // Filter documents on the client side without using regex
       return snapshot.docs.where((doc) {
-        // Match the 'groupName' field using a regex pattern
-        bool nameMatches =
-            RegExp(searchText, caseSensitive: false).hasMatch(doc['name']);
-        // Check if the 'groupId' field is not empty
-        bool validGroupId = doc['eventId'] != '';
-        // Return true if both conditions are met
-        return nameMatches && validGroupId;
+        // Access the 'name' field and convert it to lower case
+        String eventName = (doc['name'] ?? '').toString().toLowerCase();
+
+        // Check if the 'eventId' field is not empty
+        bool validEventId = (doc['eventId'] ?? '').toString().isNotEmpty;
+
+        // Perform a case-insensitive substring search and check eventId
+        return eventName.contains(lowerCaseSearchText) && validEventId;
       }).toList();
     });
   }
