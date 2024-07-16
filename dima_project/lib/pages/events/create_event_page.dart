@@ -680,7 +680,6 @@ class CreateEventPageState extends State<CreateEventPage>
                           onTap();
                         },
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               'Reduce',
@@ -821,9 +820,15 @@ class CreateEventPageState extends State<CreateEventPage>
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              Text(
+                                'Expand',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
                               Icon(
-                                CupertinoIcons.add_circled,
-                                size: 30,
+                                CupertinoIcons.add,
+                                size: 20,
                               ),
                             ],
                           ),
@@ -835,7 +840,18 @@ class CreateEventPageState extends State<CreateEventPage>
                               onPressed: () {
                                 delete(index);
                               },
-                              child: const Icon(CupertinoIcons.trash),
+                              child: const Row(
+                                children: [
+                                  Text(
+                                    'Delete',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  Icon(
+                                    CupertinoIcons.trash,
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                       ]),
