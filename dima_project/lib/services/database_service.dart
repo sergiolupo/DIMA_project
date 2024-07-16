@@ -1470,8 +1470,7 @@ class DatabaseService {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
     for (Details detail in event.details!) {
-      final doc = await eventsRef.doc(event.id).collection('details').get();
-      if (doc.docs.isEmpty) {
+      if (detail.id == null) {
         await eventsRef
             .doc(event.id)
             .collection('details')

@@ -110,22 +110,15 @@ class EditEventPageState extends State<EditEventPage> {
               trailing: CupertinoButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () async {
-                    /*if (startDate != null &&
-                        endDate != null &&
-                        startTime != null &&
-                        endTime != null &&
-                        EventService.validateForm(
-                          context,
-                          _eventNameController.text,
-                          _eventDescriptionController.text,
-                          location,
-                          startDate!,
-                          endDate!,
-                          startTime!,
-                          endTime!,
-                        )) {
+                    if (EventService.validateForm(
+                      context,
+                      _eventNameController.text,
+                      _eventDescriptionController.text,
+                      details.values.toList(),
+                    )) {
                       await updateEvent();
-                      if (context.mounted) Navigator.of(context).pop();*/
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
                   },
                   child: const Text(
                     'Done',
@@ -136,191 +129,200 @@ class EditEventPageState extends State<EditEventPage> {
                   )),
               middle: const Text('Edit Event'),
             ),
-            child: SafeArea(
-                child: Container(
-              alignment: Alignment.topCenter,
-              padding: const EdgeInsets.all(16),
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => ImageCropPage(
-                          imageType: 2,
-                          imagePath: selectedImagePath,
-                          imageInsertPageKey: (Uint8List selectedImagePath) {
-                            setState(() {
-                              this.selectedImagePath = selectedImagePath;
-                            });
-                          },
+            child: ListView(physics: const BouncingScrollPhysics(), children: [
+              SafeArea(
+                  child: Container(
+                alignment: Alignment.topCenter,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () => {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => ImageCropPage(
+                                imageType: 2,
+                                imagePath: selectedImagePath,
+                                imageInsertPageKey:
+                                    (Uint8List selectedImagePath) {
+                                  setState(() {
+                                    this.selectedImagePath = selectedImagePath;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        },
+                        child: CreateImageWidget.getEventImageMemory(
+                          selectedImagePath!,
                         ),
                       ),
-                    )
-                  },
-                  child: CreateImageWidget.getEventImageMemory(
-                    selectedImagePath!,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                CupertinoTextField(
-                  placeholder: widget.event.name,
-                  controller: _eventNameController,
-                  padding: const EdgeInsets.all(16),
-                  maxLines: 3,
-                  minLines: 1,
-                  suffix: CupertinoButton(
-                    onPressed: () => _eventNameController.clear(),
-                    child: const Icon(CupertinoIcons.clear_circled_solid),
-                  ),
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.extraLightBackgroundGray,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                CupertinoTextField(
-                  placeholder: widget.event.description,
-                  controller: _eventDescriptionController,
-                  padding: const EdgeInsets.all(16),
-                  maxLines: 3,
-                  minLines: 1,
-                  suffix: CupertinoButton(
-                    onPressed: () => _eventDescriptionController.clear(),
-                    child: const Icon(CupertinoIcons.clear_circled_solid),
-                  ),
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.extraLightBackgroundGray,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ListView.builder(
-                    itemCount: numInfos,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      map.putIfAbsent(index, () => true);
-                      details.putIfAbsent(index, () => Details());
+                      const SizedBox(height: 20),
+                      CupertinoTextField(
+                        placeholder: widget.event.name,
+                        controller: _eventNameController,
+                        padding: const EdgeInsets.all(16),
+                        maxLines: 3,
+                        minLines: 1,
+                        suffix: CupertinoButton(
+                          onPressed: () => _eventNameController.clear(),
+                          child: const Icon(CupertinoIcons.clear_circled_solid),
+                        ),
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.extraLightBackgroundGray,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CupertinoTextField(
+                        placeholder: widget.event.description,
+                        controller: _eventDescriptionController,
+                        padding: const EdgeInsets.all(16),
+                        maxLines: 3,
+                        minLines: 1,
+                        suffix: CupertinoButton(
+                          onPressed: () => _eventDescriptionController.clear(),
+                          child: const Icon(CupertinoIcons.clear_circled_solid),
+                        ),
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.extraLightBackgroundGray,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: numInfos,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            map.putIfAbsent(index, () => true);
+                            details.putIfAbsent(index, () => Details());
 
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: CreateEventPageState.getEventInfo(
-                          location: () => _selectLocation(context, index),
-                          startDate: (DateTime selectedDate, int index) {
-                            setState(() {
-                              details[index]!.startDate = selectedDate;
-                            });
-                          },
-                          endDate: (DateTime selectedDate, int index) {
-                            setState(() {
-                              details[index]!.endDate = selectedDate;
-                            });
-                          },
-                          startTime: (DateTime selectedTime, int index) {
-                            setState(() {
-                              details[index]!.startTime = selectedTime;
-                            });
-                          },
-                          endTime: (DateTime selectedTime, int index) {
-                            setState(() {
-                              details[index]!.endTime = selectedTime;
-                            });
-                          },
-                          add: () {
-                            setState(() {
-                              numInfos++;
-                            });
-                          },
-                          numInfos: numInfos,
-                          context: context,
-                          index: index,
-                          detailsList: details,
-                          boolMap: map,
-                          onTap: () {
-                            setState(() {
-                              map[index] = !map[index]!;
-                            });
-                          },
-                          delete: (int index) {
-                            setState(() {
-                              delete(index);
-                            });
-                          },
-                        ),
-                      );
-                    }),
-                const SizedBox(height: 10),
-                Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: CupertinoColors.extraLightBackgroundGray,
-                    ),
-                    child: Column(
-                      children: [
-                        CupertinoListTile(
-                          title: const Text('Partecipants'),
-                          leading: const Icon(CupertinoIcons.person_3_fill),
-                          trailing: const Icon(CupertinoIcons.forward),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                  builder: (context) => InvitePage(
-                                      uuid: widget.uuid,
-                                      invitePageKey: (String uuid) {
-                                        setState(() {
-                                          if (uuids.contains(uuid)) {
-                                            uuids.remove(uuid);
-                                          } else {
-                                            uuids.add(uuid);
-                                          }
-                                        });
-                                      },
-                                      invitedUsers: uuids,
-                                      isGroup: false,
-                                      id: widget.event.id)),
+                            return Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: CreateEventPageState.getEventInfo(
+                                location: () => _selectLocation(context, index),
+                                startDate: (DateTime selectedDate, int index) {
+                                  setState(() {
+                                    details[index]!.startDate = selectedDate;
+                                  });
+                                },
+                                endDate: (DateTime selectedDate, int index) {
+                                  setState(() {
+                                    details[index]!.endDate = selectedDate;
+                                  });
+                                },
+                                startTime: (DateTime selectedTime, int index) {
+                                  setState(() {
+                                    details[index]!.startTime = selectedTime;
+                                  });
+                                },
+                                endTime: (DateTime selectedTime, int index) {
+                                  setState(() {
+                                    details[index]!.endTime = selectedTime;
+                                  });
+                                },
+                                add: () {
+                                  setState(() {
+                                    numInfos++;
+                                  });
+                                },
+                                numInfos: numInfos,
+                                context: context,
+                                index: index,
+                                detailsList: details,
+                                boolMap: map,
+                                onTap: () {
+                                  setState(() {
+                                    map[index] = !map[index]!;
+                                  });
+                                },
+                                delete: (int index) {
+                                  setState(() {
+                                    delete(index);
+                                  });
+                                },
+                              ),
                             );
-                          },
-                        ),
-                        Container(
-                          height: 1,
-                          color: CupertinoColors.opaqueSeparator,
-                        ),
-                        CupertinoListTile(
-                          title: const Text('Notifications'),
-                          leading: notify
-                              ? const Icon(CupertinoIcons.bell_fill)
-                              : const Icon(CupertinoIcons.bell_slash_fill),
-                          trailing: CupertinoSwitch(
-                            value: notify,
-                            onChanged: (bool value) {
-                              setState(() {
-                                notify = value;
-                              });
-                            },
+                          }),
+                      const SizedBox(height: 10),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: CupertinoColors.extraLightBackgroundGray,
                           ),
-                        ),
-                        Container(
-                          height: 1,
-                          color: CupertinoColors.opaqueSeparator,
-                        ),
-                        CupertinoListTile(
-                          leading: isPublic
-                              ? const Icon(CupertinoIcons.lock_open_fill)
-                              : const Icon(CupertinoIcons.lock_fill),
-                          title: const Text('Public Group'),
-                          trailing: CupertinoSwitch(
-                            value: isPublic,
-                            onChanged: (bool value) {
-                              setState(() {
-                                isPublic = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    )),
-              ]),
-            )));
+                          child: Column(
+                            children: [
+                              CupertinoListTile(
+                                title: const Text('Partecipants'),
+                                leading:
+                                    const Icon(CupertinoIcons.person_3_fill),
+                                trailing: const Icon(CupertinoIcons.forward),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    CupertinoPageRoute(
+                                        builder: (context) => InvitePage(
+                                            uuid: widget.uuid,
+                                            invitePageKey: (String uuid) {
+                                              setState(() {
+                                                if (uuids.contains(uuid)) {
+                                                  uuids.remove(uuid);
+                                                } else {
+                                                  uuids.add(uuid);
+                                                }
+                                              });
+                                            },
+                                            invitedUsers: uuids,
+                                            isGroup: false,
+                                            id: widget.event.id)),
+                                  );
+                                },
+                              ),
+                              Container(
+                                height: 1,
+                                color: CupertinoColors.opaqueSeparator,
+                              ),
+                              CupertinoListTile(
+                                title: const Text('Notifications'),
+                                leading: notify
+                                    ? const Icon(CupertinoIcons.bell_fill)
+                                    : const Icon(
+                                        CupertinoIcons.bell_slash_fill),
+                                trailing: CupertinoSwitch(
+                                  value: notify,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      notify = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Container(
+                                height: 1,
+                                color: CupertinoColors.opaqueSeparator,
+                              ),
+                              CupertinoListTile(
+                                leading: isPublic
+                                    ? const Icon(CupertinoIcons.lock_open_fill)
+                                    : const Icon(CupertinoIcons.lock_fill),
+                                title: const Text('Public Group'),
+                                trailing: CupertinoSwitch(
+                                  value: isPublic,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      isPublic = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          )),
+                    ]),
+              )),
+            ]),
+          );
   }
 
   Future<void> _selectLocation(BuildContext context, int idx) async {
@@ -344,6 +346,10 @@ class EditEventPageState extends State<EditEventPage> {
   }
 
   Future<void> updateEvent() async {
+    for (int i = 0; i < details.length; i++) {
+      details[i]!.members = [widget.uuid];
+    }
+
     final event = Event(
       id: widget.event.id,
       admin: widget.event.admin,
@@ -354,6 +360,7 @@ class EditEventPageState extends State<EditEventPage> {
       imagePath: widget.event.imagePath,
       details: details.values.toList(),
     );
+
     await DatabaseService.updateEvent(
       event,
       selectedImagePath!,
