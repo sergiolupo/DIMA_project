@@ -48,7 +48,13 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No results found."));
+                    return Center(
+                        child: Column(
+                      children: [
+                        Image.asset('assets/images/search_news.png'),
+                        const Text("No results found."),
+                      ],
+                    ));
                   } else {
                     final articles = snapshot.data!;
                     return ListView.builder(

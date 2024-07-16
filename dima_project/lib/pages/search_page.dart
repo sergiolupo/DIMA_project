@@ -138,9 +138,36 @@ class SearchPageState extends State<SearchPage> {
                 }
                 final docs = snapshot.data ?? [];
                 if (docs.isEmpty) {
+                  if (_searchController.text.isNotEmpty) {
+                    return Center(
+                      child: Column(
+                        children: [
+                          searchIdx == 0
+                              ? Image.asset('assets/images/no_users_found.png')
+                              : searchIdx == 1
+                                  ? Image.asset(
+                                      'assets/images/no_groups_found.png')
+                                  : Image.asset(
+                                      'assets/images/no_events_found.png'),
+                          Text(
+                              "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
+                        ],
+                      ),
+                    );
+                  }
                   return Center(
-                    child: Text(
-                        "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
+                    child: Column(
+                      children: [
+                        searchIdx == 0
+                            ? Image.asset('assets/images/search_users.png')
+                            : searchIdx == 1
+                                ? Image.asset('assets/images/search_groups.png')
+                                : Image.asset(
+                                    'assets/images/search_events.png'),
+                        Text(
+                            "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}"),
+                      ],
+                    ),
                   );
                 }
 
