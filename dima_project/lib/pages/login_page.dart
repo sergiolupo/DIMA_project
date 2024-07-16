@@ -49,8 +49,15 @@ class LoginPageState extends State<LoginPage> {
               ),
             ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/logo.png',
+              height: 200,
+            ),
+          ),
           _showLogin
               ? LoginForm(_usernameController)
               : ForgotPasswordForm(_usernameController),
