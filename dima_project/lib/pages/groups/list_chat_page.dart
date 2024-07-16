@@ -23,7 +23,7 @@ class ListChatPageState extends State<ListChatPage> {
   Stream<List<PrivateChat>>? _privateChatsStream;
   Stream<List<Group>>? _groupsStream;
 
-  String groupName = "";
+  String searchedText = "";
   int idx = 0;
   @override
   void initState() {
@@ -62,13 +62,22 @@ class ListChatPageState extends State<ListChatPage> {
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CupertinoSearchTextField(
+                        onChanged: (value) {
+                          setState(() {
+                            searchedText = value;
+                          });
+                        },
+                      ),
+                    ),
                     CustomSelectOption(
                       textLeft: "Groups",
                       textRight: "Private",
                       onChanged: (value) {
                         setState(() {
                           idx = value;
-                          //print({"INDICE: $idx"});
                           _subscribe();
                         });
                       },
@@ -109,6 +118,7 @@ class ListChatPageState extends State<ListChatPage> {
         child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
+            int i = 0;
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CupertinoActivityIndicator(),
@@ -122,7 +132,14 @@ class ListChatPageState extends State<ListChatPage> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final group = data[index];
-
+                    if (!RegExp(searchedText, caseSensitive: false)
+                        .hasMatch(group.name)) {
+                      i += 1;
+                      if (i == data.length) {
+                        return const Center(child: Text('No groups'));
+                      }
+                      return const SizedBox.shrink();
+                    }
                     if (group.lastMessage == null) {
                       return GroupChatTile(
                         uuid: widget.uuid,
@@ -216,6 +233,7 @@ class ListChatPageState extends State<ListChatPage> {
         child: StreamBuilder<List<PrivateChat>>(
           stream: _privateChatsStream,
           builder: (context, snapshot) {
+            int i = 0;
             if (snapshot.hasData) {
               var data = snapshot.data!;
 
@@ -224,6 +242,7 @@ class ListChatPageState extends State<ListChatPage> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final privateChat = data[index];
+
                     if (privateChat.lastMessage == null) {
                       return const SizedBox();
                     }
@@ -238,22 +257,53 @@ class ListChatPageState extends State<ListChatPage> {
                             child: CupertinoActivityIndicator(),
                           );
                         }
+
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
-                          bool sentByMe = user.uuid == widget.uuid;
-                          return PrivateChatTile(
-                            uuid: widget.uuid,
-                            privateChat: privateChat,
-                            lastMessage: LastMessage(
-                              recentMessageType:
-                                  privateChat.lastMessage!.recentMessageType,
-                              recentMessage:
-                                  privateChat.lastMessage!.recentMessage,
-                              recentMessageSender: user.username,
-                              recentMessageTimestamp: privateChat
-                                  .lastMessage!.recentMessageTimestamp,
-                              sentByMe: sentByMe,
-                            ),
+                          return FutureBuilder(
+                            future: DatabaseService.getUserData(
+                                privateChat.members[0] == widget.uuid
+                                    ? privateChat.members[1]
+                                    : privateChat.members[0]),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CupertinoActivityIndicator(),
+                                );
+                              }
+                              if (snapshot.hasData) {
+                                final other = snapshot.data!;
+
+                                if (!RegExp(searchedText, caseSensitive: false)
+                                    .hasMatch(other.username)) {
+                                  i += 1;
+                                  if (i == data.length) {
+                                    return const Center(
+                                        child: Text('No private chats'));
+                                  }
+                                  return const SizedBox.shrink();
+                                }
+
+                                bool sentByMe = user.uuid == widget.uuid;
+                                return PrivateChatTile(
+                                  uuid: widget.uuid,
+                                  privateChat: privateChat,
+                                  lastMessage: LastMessage(
+                                    recentMessageType: privateChat
+                                        .lastMessage!.recentMessageType,
+                                    recentMessage:
+                                        privateChat.lastMessage!.recentMessage,
+                                    recentMessageSender: user.username,
+                                    recentMessageTimestamp: privateChat
+                                        .lastMessage!.recentMessageTimestamp,
+                                    sentByMe: sentByMe,
+                                  ),
+                                );
+                              } else {
+                                return Container(); // Return an empty container or handle other cases as needed
+                              }
+                            },
                           );
                         } else {
                           return Container(); // Return an empty container or handle other cases as needed
