@@ -102,6 +102,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         ),
         backgroundColor: CupertinoTheme.of(context).primaryColor,
         leading: CupertinoButton(
+          padding: const EdgeInsets.all(0),
           onPressed: () {
             if (isTyping && widget.privateChat.id != null) {
               DatabaseService.updateTyping(widget.privateChat.id!, false);

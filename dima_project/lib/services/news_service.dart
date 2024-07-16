@@ -13,7 +13,7 @@ class News {
 
   Future<void> getNews() async {
     String url =
-        "https://newsapi.org/v2/top-headlines?country=us&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+        "https://newsapi.org/v2/top-headlines?country=us&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -41,7 +41,7 @@ class News {
 
   Future<void> getCategoriesNews(String category) async {
     String url =
-        "https://newsapi.org/v2/everything?q=$category&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+        "https://newsapi.org/v2/everything?q=$category&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -69,7 +69,7 @@ class News {
 
   Future<void> getSliders() async {
     String url =
-        "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+        "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -109,7 +109,7 @@ class News {
     List<ArticleModel> news = [];
 
     String url =
-        "https://newsapi.org/v2/everything?q=$search&apiKey=b0c96299b05f4084a3b2cf516e2d775d";
+        "https://newsapi.org/v2/everything?q=$search&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);

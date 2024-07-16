@@ -20,6 +20,8 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   int index = 0;
   List<Group>? groups;
   List<UserData>? users;
+  String _searchText = "";
+
   @override
   void initState() {
     super.initState();
@@ -46,8 +48,14 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        leading: CupertinoNavigationBarBackButton(
-          color: CupertinoColors.systemPink,
+        middle: Text('Send To',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
+        leading: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -60,9 +68,19 @@ class ShareNewsPageState extends State<ShareNewsPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CupertinoSearchTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchText = value;
+                      });
+                    },
+                  ),
+                ),
                 CustomSelectOption(
                   textLeft: "Groups",
-                  textRight: "Private",
+                  textRight: "Followers",
                   onChanged: (value) {
                     setState(() {
                       index = value;
@@ -79,7 +97,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: CupertinoButton(
-                    child: const Icon(CupertinoIcons.paperplane),
+                    child: const Icon(CupertinoIcons.paperplane_fill),
                     onPressed: () {
                       dynamic map = {
                         "users": uuids,
@@ -98,18 +116,41 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   }
 
   Widget getUsers() {
+    int i = 0;
     if (users == null) {
       return const Center(child: CupertinoActivityIndicator());
     }
     if (users!.isEmpty) {
-      return const Center(
-        child: Text("No followers"),
+      return Center(
+        child: Column(
+          children: [
+            Image.asset('assets/images/search_followers.png'),
+            const Text("No followers"),
+          ],
+        ),
       );
     }
     return ListView.builder(
       itemCount: users!.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
+        if (!users![index]
+            .username
+            .toLowerCase()
+            .contains(_searchText.toLowerCase())) {
+          i += 1;
+          if (i == users!.length) {
+            return Center(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/search_followers.png'),
+                  const Text("No followers"),
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }
         return ShareUserTile(
           user: users![index],
           onSelected: (String uuid) {
@@ -128,18 +169,41 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   }
 
   Widget getGroups() {
+    int i = 0;
     if (groups == null) {
       return const Center(child: CupertinoActivityIndicator());
     }
     if (groups!.isEmpty) {
-      return const Center(
-        child: Text("No groups"),
+      return Center(
+        child: Column(
+          children: [
+            Image.asset('assets/images/no_groups_found.png'),
+            const Text("No groups"),
+          ],
+        ),
       );
     }
     return ListView.builder(
       itemCount: groups!.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
+        if (!groups![index]
+            .name
+            .toLowerCase()
+            .contains(_searchText.toLowerCase())) {
+          i += 1;
+          if (i == groups!.length) {
+            return Center(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/no_groups_found.png'),
+                  const Text("No groups"),
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }
         return ShareGroupTile(
           group: groups![index],
           onSelected: (String id) {
@@ -189,8 +253,30 @@ class ShareGroupTileState extends State<ShareGroupTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        color: isActive ? CupertinoColors.activeGreen : CupertinoColors.white,
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: CupertinoColors.extraLightBackgroundGray),
         child: CupertinoListTile(
+          trailing: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? CupertinoTheme.of(context).primaryColor
+                    : CupertinoColors.white,
+                shape: BoxShape.circle,
+              ),
+              child: isActive
+                  ? const Icon(
+                      CupertinoIcons.checkmark,
+                      color: CupertinoColors.white,
+                      size: 15,
+                    )
+                  : const Icon(
+                      CupertinoIcons.circle,
+                      color: CupertinoColors.white,
+                      size: 15,
+                    )),
           leading: Stack(
             children: [
               ClipOval(
@@ -202,23 +288,6 @@ class ShareGroupTileState extends State<ShareGroupTile> {
                       CreateImageWidget.getGroupImage(widget.group.imagePath!),
                 ),
               ),
-              if (isActive)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: CupertinoColors.activeGreen,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      CupertinoIcons.checkmark,
-                      color: CupertinoColors.white,
-                      size: 8,
-                    ),
-                  ),
-                ),
             ],
           ),
           title: Text(
@@ -269,8 +338,30 @@ class ShareUserTileState extends State<ShareUserTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        color: isActive ? CupertinoColors.activeGreen : CupertinoColors.white,
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: CupertinoColors.extraLightBackgroundGray),
         child: CupertinoListTile(
+          trailing: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? CupertinoTheme.of(context).primaryColor
+                    : CupertinoColors.white,
+                shape: BoxShape.circle,
+              ),
+              child: isActive
+                  ? const Icon(
+                      CupertinoIcons.checkmark,
+                      color: CupertinoColors.white,
+                      size: 15,
+                    )
+                  : const Icon(
+                      CupertinoIcons.circle,
+                      color: CupertinoColors.white,
+                      size: 15,
+                    )),
           leading: Stack(
             children: [
               ClipOval(
@@ -281,23 +372,6 @@ class ShareUserTileState extends State<ShareUserTile> {
                   child: CreateImageWidget.getUserImage(widget.user.imagePath!),
                 ),
               ),
-              if (isActive)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: CupertinoColors.activeGreen,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      CupertinoIcons.checkmark,
-                      color: CupertinoColors.white,
-                      size: 8,
-                    ),
-                  ),
-                ),
             ],
           ),
           title: Text(
