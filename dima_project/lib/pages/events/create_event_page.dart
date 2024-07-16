@@ -480,10 +480,7 @@ class CreateEventPageState extends State<CreateEventPage>
     required Function add,
     required Function location,
   }) {
-    return GestureDetector(
-      onTap: () {
-        onTap();
-      },
+    return SafeArea(
       child: boolMap[index]!
           ? Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
@@ -672,30 +669,58 @@ class CreateEventPageState extends State<CreateEventPage>
                       ),
                     ),
                   ),
-                  if (index == numInfos - 1)
-                    CupertinoButton(
-                      padding: const EdgeInsets.only(right: 10),
-                      alignment: Alignment.topRight,
-                      onPressed: () {
-                        add();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Add',
-                            style: TextStyle(
-                              color: CupertinoTheme.of(context).primaryColor,
-                              fontSize: 14,
+                  if (index == numInfos - 1) const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CupertinoButton(
+                        padding: const EdgeInsets.only(left: 10),
+                        alignment: Alignment.topLeft,
+                        onPressed: () {
+                          onTap();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Reduce',
+                              style: TextStyle(
+                                color: CupertinoTheme.of(context).primaryColor,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const Icon(
-                            CupertinoIcons.add,
-                            size: 14,
-                          ),
-                        ],
+                            const Icon(
+                              CupertinoIcons.minus,
+                              size: 14,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      CupertinoButton(
+                        padding: const EdgeInsets.only(right: 10),
+                        alignment: Alignment.topRight,
+                        onPressed: () {
+                          add();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Add',
+                              style: TextStyle(
+                                color: CupertinoTheme.of(context).primaryColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const Icon(
+                              CupertinoIcons.add,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   if (numInfos > 1)
                     CupertinoButton(
                       padding: const EdgeInsets.only(right: 10),
@@ -782,18 +807,38 @@ class CreateEventPageState extends State<CreateEventPage>
                               : detailsList[index]!.location!,
                         ),
                       ),
-                      if (numInfos > 1)
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: CupertinoButton(
-                            onPressed: () {
-                              delete(index);
-                            },
-                            child: const Icon(CupertinoIcons.trash),
-                          ),
-                        )
                     ],
                   ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CupertinoButton(
+                          padding: const EdgeInsets.only(left: 10),
+                          alignment: Alignment.centerLeft,
+                          onPressed: () {
+                            onTap();
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                CupertinoIcons.add_circled,
+                                size: 30,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (numInfos > 1)
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: CupertinoButton(
+                              onPressed: () {
+                                delete(index);
+                              },
+                              child: const Icon(CupertinoIcons.trash),
+                            ),
+                          )
+                      ]),
                 ],
               ),
             ),

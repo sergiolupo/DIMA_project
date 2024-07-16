@@ -88,7 +88,7 @@ class GroupChatPageState extends State<GroupChatPage> {
               ),
               trailing: GestureDetector(
                 child: const Icon(CupertinoIcons.ellipsis_vertical,
-                    color: CupertinoColors.white),
+                    size: 25, color: CupertinoColors.white),
                 onTap: () {
                   final RenderBox renderBox =
                       context.findRenderObject() as RenderBox;
@@ -165,6 +165,7 @@ class GroupChatPageState extends State<GroupChatPage> {
               ),
               backgroundColor: CupertinoTheme.of(context).primaryColor,
               leading: CupertinoButton(
+                padding: const EdgeInsets.all(0),
                 onPressed: () {
                   if (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
