@@ -362,7 +362,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                 newDate = isSameDate ? '' : date;
               }
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   children: [
                     newDate.isNotEmpty

@@ -319,7 +319,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
               }
 
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   children: [
                     newDate.isNotEmpty
