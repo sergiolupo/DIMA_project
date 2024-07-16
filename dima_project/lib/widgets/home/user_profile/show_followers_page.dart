@@ -87,14 +87,24 @@ class ShowFollowersState extends State<ShowFollowers> {
                 }
                 if (widget.followers &&
                     snapshot.data!.data()!["followers"].length == 0) {
-                  return const Center(
-                    child: Text('No followers'),
+                  return Column(
+                    children: [
+                      Image.asset('assets/images/no_followers_found.png'),
+                      const Center(
+                        child: Text('No followers'),
+                      ),
+                    ],
                   );
                 }
                 if (!widget.followers &&
                     snapshot.data!.data()!["following"].length == 0) {
-                  return const Center(
-                    child: Text('Not following anyone'),
+                  return Column(
+                    children: [
+                      Image.asset('assets/images/no_following_found.png'),
+                      const Center(
+                        child: Text('Not following anyone'),
+                      ),
+                    ],
                   );
                 }
                 int i = 0;
@@ -110,8 +120,20 @@ class ShowFollowersState extends State<ShowFollowers> {
                     if (uuids.isEmpty) {
                       return Center(
                         child: widget.followers
-                            ? const Text('No followers')
-                            : const Text('Not following anyone'),
+                            ? Column(
+                                children: [
+                                  Image.asset(
+                                      'assets/images/search_followers.png'),
+                                  const Text('No followers'),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Image.asset(
+                                      'assets/images/search_following.png'),
+                                  const Text('Not following anyone'),
+                                ],
+                              ),
                       );
                     }
 
@@ -134,8 +156,20 @@ class ShowFollowersState extends State<ShowFollowers> {
                             if (i == docs.length) {
                               return Center(
                                 child: widget.followers
-                                    ? const Text('No followers')
-                                    : const Text('Not following anyone'),
+                                    ? Column(
+                                        children: [
+                                          Image.asset(
+                                              'assets/images/search_followers.png'),
+                                          const Text('No followers'),
+                                        ],
+                                      )
+                                    : Column(
+                                        children: [
+                                          Image.asset(
+                                              'assets/images/search_following.png'),
+                                          const Text('Not following anyone'),
+                                        ],
+                                      ),
                               );
                             }
                             return const SizedBox.shrink();

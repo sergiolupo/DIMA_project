@@ -136,7 +136,14 @@ class ListChatPageState extends State<ListChatPage> {
                         .hasMatch(group.name)) {
                       i += 1;
                       if (i == data.length) {
-                        return const Center(child: Text('No groups'));
+                        return Center(
+                            child: Column(
+                          children: [
+                            Image.asset(
+                                'assets/images/no_groups_chat_found.png'),
+                            const Text('No groups'),
+                          ],
+                        ));
                       }
                       return const SizedBox.shrink();
                     }
@@ -199,11 +206,15 @@ class ListChatPageState extends State<ListChatPage> {
   Widget noChatWidget() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Icon(idx == 0 ? CupertinoIcons.group : CupertinoIcons.person,
-              size: 100, color: CupertinoColors.systemGrey),
-          const SizedBox(height: 20),
+          idx == 0
+              ? Image.asset(
+                  'assets/images/search_groups_chat.png',
+                )
+              : Image.asset(
+                  'assets/images/search_chat.png',
+                ),
           Text(
             "No ${idx == 0 ? "groups" : "chats"} yet",
             style: const TextStyle(
@@ -279,8 +290,14 @@ class ListChatPageState extends State<ListChatPage> {
                                     .hasMatch(other.username)) {
                                   i += 1;
                                   if (i == data.length) {
-                                    return const Center(
-                                        child: Text('No private chats'));
+                                    return Center(
+                                        child: Column(
+                                      children: [
+                                        Image.asset(
+                                            'assets/images/no_chat_found.png'),
+                                        const Text('No private chats'),
+                                      ],
+                                    ));
                                   }
                                   return const SizedBox.shrink();
                                 }

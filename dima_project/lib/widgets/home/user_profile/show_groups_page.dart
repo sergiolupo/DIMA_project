@@ -82,8 +82,13 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
 
               final docs = snapshot.data;
               if (docs == null || docs.isEmpty) {
-                return const Center(
-                  child: Text('No groups'),
+                return Column(
+                  children: [
+                    Image.asset('assets/images/search_groups.png'),
+                    const Center(
+                      child: Text('No groups'),
+                    ),
+                  ],
                 );
               }
               int i = 0;
@@ -96,8 +101,13 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
                       .hasMatch(group.name)) {
                     i += 1;
                     if (i == docs.length) {
-                      return const Center(
-                        child: Text('No groups found'),
+                      return Column(
+                        children: [
+                          Image.asset('assets/images/no_groups_found.png'),
+                          const Center(
+                            child: Text('No groups found'),
+                          ),
+                        ],
                       );
                     }
                     return const SizedBox.shrink();
