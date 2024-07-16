@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:latlong2/latlong.dart';
 
 class Details {
@@ -93,10 +92,8 @@ class Event {
   static Future<Event> fromSnapshot(DocumentSnapshot documentSnapshot) async {
     var detailsQuery =
         await documentSnapshot.reference.collection('details').get();
-    debugPrint('detailsQuery: $detailsQuery');
     List<Details> details =
         detailsQuery.docs.map((doc) => Details.fromSnapshot(doc)).toList();
-    debugPrint('details: $details');
     return Event(
       name: documentSnapshot['name'],
       id: documentSnapshot.id,

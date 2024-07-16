@@ -293,31 +293,41 @@ class UserProfileState extends State<UserProfile> {
     return Visibility(
       visible: index == 1,
       child: StreamBuilder<List<Event>>(
-          stream: DatabaseService.getJoinedEventStream(widget.user),
-          builder: (context, snapshot) => snapshot.hasData
-              ? Column(
-                  children: [
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 5.0,
-                        mainAxisSpacing: 5.0,
-                      ),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final event = snapshot.data![index];
-                        return EventGrid(
-                          uuid: widget.uuid,
-                          event: event,
-                        );
-                      },
-                    ),
-                  ],
-                )
-              : const SizedBox()),
+        stream: DatabaseService.getJoinedEventStream(widget.user),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
+                  ),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final event = snapshot.data![index];
+                    return EventGrid(
+                      uuid: widget.uuid,
+                      event: event,
+                    );
+                  },
+                ),
+              ],
+            );
+          } else {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              return const SizedBox();
+            }
+          }
+        },
+      ),
     );
   }
 
@@ -326,42 +336,51 @@ class UserProfileState extends State<UserProfile> {
       visible: index == 0,
       child: StreamBuilder<List<Event>>(
         stream: DatabaseService.getCreatedEventStream(widget.user),
-        builder: (context, snapshot) => snapshot.hasData
-            ? Column(
-                children: [
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5.0,
-                      mainAxisSpacing: 5.0,
-                    ),
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final event = snapshot.data![index];
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => ShowEvent(
-                              uuid: widget.uuid,
-                              eventId: event.id!,
-                              events: snapshot.data!,
-                            ),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
+                  ),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final event = snapshot.data![index];
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => ShowEvent(
+                            uuid: widget.uuid,
+                            eventId: event.id!,
+                            events: snapshot.data!,
                           ),
                         ),
-                        child: EventGrid(
-                          uuid: widget.uuid,
-                          event: event,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              )
-            : const CupertinoActivityIndicator(),
+                      ),
+                      child: EventGrid(
+                        uuid: widget.uuid,
+                        event: event,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          } else {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              return const CupertinoActivityIndicator();
+            }
+          }
+        },
       ),
     );
   }

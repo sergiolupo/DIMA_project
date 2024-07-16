@@ -1272,17 +1272,18 @@ class DatabaseService {
   }
 
   static Stream<List<Event>> getCreatedEventStream(String uuid) async* {
-    final eventsIds = await eventsRef
-        .where('admin', isEqualTo: uuid)
-        .orderBy('createdAt', descending: true)
-        .get();
-
+    final eventsIds = await usersRef.doc(uuid).get().then((value) {
+      return value['events'];
+    });
     final eventsList = <Event>[];
 
-    for (var eventId in eventsIds.docs) {
-      final snapshot = await eventsRef.doc(eventId.id).get();
+    for (var eventId in eventsIds) {
+      final snapshot = await eventsRef.doc(eventId).get();
       if (snapshot.exists) {
-        eventsList.add(await Event.fromSnapshot(snapshot));
+        Event event = await Event.fromSnapshot(snapshot);
+        if (event.admin == uuid) {
+          eventsList.add(event);
+        }
       }
     }
     yield eventsList;
@@ -1300,7 +1301,6 @@ class DatabaseService {
             if (existingEventIndex != -1) {
               eventsList[existingEventIndex] = event;
             } else {
-              //eventsList.add(event);
               eventsList.insert(0, event);
             }
             yield eventsList;
@@ -1314,29 +1314,19 @@ class DatabaseService {
   }
 
   static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
-    final eventsIds = await eventsRef
-        .where('admin', isNotEqualTo: uuid)
-        .orderBy('createdAt', descending: true)
-        .get();
-
-    for (var event in eventsIds.docs) {
-      final docs = await eventsRef
-          .doc(event.id)
-          .collection('details')
-          .where('admin', isNotEqualTo: uuid)
-          .where('members', arrayContains: uuid)
-          .get();
-      if (docs.docs.isEmpty) {
-        eventsIds.docs.remove(event);
-      }
-    }
+    final eventsIds = await usersRef.doc(uuid).get().then((value) {
+      return value['events'];
+    });
 
     final eventsList = <Event>[];
 
-    for (var eventId in eventsIds.docs) {
-      final snapshot = await eventsRef.doc(eventId.id).get();
+    for (var eventId in eventsIds) {
+      final snapshot = await eventsRef.doc(eventId).get();
       if (snapshot.exists) {
-        eventsList.add(await Event.fromSnapshot(snapshot));
+        Event event = await Event.fromSnapshot(snapshot);
+        if (event.admin != uuid) {
+          eventsList.add(event);
+        }
       }
     }
     yield eventsList;
