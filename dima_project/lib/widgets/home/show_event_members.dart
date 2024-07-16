@@ -10,11 +10,13 @@ class ShowEventMembersPage extends StatefulWidget {
   final String eventId;
   final String uuid;
   final String detailId;
+  final String admin;
   const ShowEventMembersPage({
     super.key,
     required this.eventId,
     required this.uuid,
     required this.detailId,
+    required this.admin,
   });
 
   @override
@@ -103,6 +105,32 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
                             return Text('Error: ${snapshot.error}');
                           } else {
                             final isFollowing = snapshot.data as int;
+
+                            if (userData.uuid == widget.admin) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: UserTile(
+                                      user: userData,
+                                      uuid: widget.uuid,
+                                      isFollowing: isFollowing,
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.only(right: 8.0),
+                                    child: Text(
+                                      "Host",
+                                      style: TextStyle(
+                                        color: CupertinoColors.systemGrey4,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
                             return UserTile(
                               user: userData,
                               uuid: widget.uuid,

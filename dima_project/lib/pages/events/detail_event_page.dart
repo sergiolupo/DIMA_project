@@ -116,6 +116,7 @@ class DetailPageState extends State<DetailPage> {
                     uuid: widget.uuid,
                     eventId: widget.event.id!,
                     detailId: widget.detail.id!,
+                    admin: widget.event.admin,
                   ),
                 ),
               );
