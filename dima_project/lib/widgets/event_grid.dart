@@ -1,5 +1,4 @@
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/show_event.dart';
 import 'package:flutter/cupertino.dart';
 
 class EventGrid extends StatefulWidget {
@@ -22,33 +21,17 @@ class EventGridState extends State<EventGrid> {
       decoration: BoxDecoration(
         border: Border.all(color: CupertinoColors.white),
       ),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => ShowEvent(
-                uuid: widget.uuid,
-                event: widget.event,
-              ),
+      width: 30,
+      height: 30,
+      child: widget.event.imagePath != ''
+          ? Image.network(
+              widget.event.imagePath!,
+              fit: BoxFit.cover,
+            )
+          : Image.asset(
+              'assets/default_event_image.png',
+              fit: BoxFit.cover,
             ),
-          );
-        },
-        child: Container(
-          width: 30,
-          height: 30,
-          color: CupertinoColors.lightBackgroundGray,
-          child: widget.event.imagePath != ''
-              ? Image.network(
-                  widget.event.imagePath!,
-                  fit: BoxFit.cover,
-                )
-              : Image.asset(
-                  'assets/default_event_image.png',
-                  fit: BoxFit.cover,
-                ),
-        ),
-      ),
     );
   }
 }

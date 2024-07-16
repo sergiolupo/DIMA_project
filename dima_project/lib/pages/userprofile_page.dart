@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
+import 'package:dima_project/pages/show_event.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
@@ -340,9 +341,21 @@ class UserProfileState extends State<UserProfile> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final event = snapshot.data![index];
-                      return EventGrid(
-                        uuid: widget.uuid,
-                        event: event,
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ShowEvent(
+                              uuid: widget.uuid,
+                              eventId: event.id!,
+                              events: snapshot.data!,
+                            ),
+                          ),
+                        ),
+                        child: EventGrid(
+                          uuid: widget.uuid,
+                          event: event,
+                        ),
                       );
                     },
                   ),
