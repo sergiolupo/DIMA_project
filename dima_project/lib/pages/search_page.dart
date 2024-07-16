@@ -58,6 +58,8 @@ class SearchPageState extends State<SearchPage> {
           _searchStreamController.add(snapshot);
         });
       }
+    } else {
+      _searchStreamController.add([]);
     }
   }
 

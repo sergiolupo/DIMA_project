@@ -150,8 +150,9 @@ class ShowFollowersState extends State<ShowFollowers> {
                           return Text('Error: ${snapshot.error}');
                         } else {
                           final UserData userData = snapshot.data!;
-                          if (!RegExp(_searchText, caseSensitive: false)
-                              .hasMatch(userData.username)) {
+                          if (!userData.username
+                              .toLowerCase()
+                              .contains(_searchText.toLowerCase())) {
                             i += 1;
                             if (i == docs.length) {
                               return Center(

@@ -97,8 +97,9 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final group = Group.fromSnapshot(docs[index]);
-                  if (!RegExp(_searchText, caseSensitive: false)
-                      .hasMatch(group.name)) {
+                  if (!group.name
+                      .toLowerCase()
+                      .contains(_searchText.toLowerCase())) {
                     i += 1;
                     if (i == docs.length) {
                       return Column(
