@@ -68,6 +68,8 @@ class MediaViewPageState extends State<MediaViewPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       snapshot.data!.username,
