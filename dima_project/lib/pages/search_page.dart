@@ -85,7 +85,7 @@ class SearchPageState extends State<SearchPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: CupertinoTextField(
+                  child: CupertinoSearchTextField(
                     controller: _searchController,
                     onChanged: (_) => _initiateSearchMethod(),
                     placeholder:
@@ -94,22 +94,6 @@ class SearchPageState extends State<SearchPage> {
                         const TextStyle(color: CupertinoColors.white),
                     style: const TextStyle(color: CupertinoColors.white),
                     decoration: BoxDecoration(border: Border.all(width: 0)),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: _initiateSearchMethod,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: CupertinoColors.white.withOpacity(1.0),
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: const Icon(
-                      CupertinoIcons.search,
-                      color: CupertinoColors.black,
-                    ),
                   ),
                 ),
               ],

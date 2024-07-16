@@ -58,13 +58,11 @@ class ShowGroupsPageState extends State<ShowGroupsPage> {
           Container(
             padding: const EdgeInsets.all(8),
             height: 50,
-            child: CupertinoTextField(
+            child: CupertinoSearchTextField(
               controller: _searchController,
               onChanged: (_) => (setState(() {
                 _searchText = _searchController.text;
               })),
-              prefix: const Icon(CupertinoIcons.search,
-                  color: CupertinoColors.systemPink),
               decoration: BoxDecoration(border: Border.all(width: 0)),
             ),
           ),
