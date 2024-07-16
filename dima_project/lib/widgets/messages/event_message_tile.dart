@@ -23,29 +23,24 @@ class EventMessageTile extends StatefulWidget {
 }
 
 class EventMessageTileState extends State<EventMessageTile> {
-  Event? event;
-
   @override
   void initState() {
-    fetchEvent();
     super.initState();
-  }
-
-  void fetchEvent() async {
-    final Event fetchedEvent =
-        await DatabaseService.getEvent(widget.message.content);
-    if (mounted) {
-      setState(() {
-        event = fetchedEvent;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return event == null
-        ? const CupertinoActivityIndicator()
-        : GestureDetector(
+    return StreamBuilder<Object>(
+        stream: DatabaseService.getEventStream(widget.message.content),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CupertinoActivityIndicator();
+          }
+          if (snapshot.hasError) {
+            return const Text('Error fetching event');
+          }
+          final event = snapshot.data as Event;
+          return GestureDetector(
             onLongPress: () => MessageUtils.showBottomSheet(
               context,
               widget.message,
@@ -145,13 +140,13 @@ class EventMessageTileState extends State<EventMessageTile> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       CreateImageWidget.getEventImage(
-                                        event!.imagePath!,
+                                        event.imagePath!,
                                         small: false,
                                       ),
                                       SizedBox(
                                         width: 150,
                                         child: Text(
-                                          event!.name,
+                                          event.name,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.center,
@@ -167,7 +162,7 @@ class EventMessageTileState extends State<EventMessageTile> {
                                       SizedBox(
                                         width: 150,
                                         child: Text(
-                                          event!.description,
+                                          event.description,
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.center,
@@ -224,5 +219,6 @@ class EventMessageTileState extends State<EventMessageTile> {
               ],
             ),
           );
+        });
   }
 }
