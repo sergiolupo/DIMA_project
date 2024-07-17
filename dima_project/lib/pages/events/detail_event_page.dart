@@ -132,20 +132,28 @@ class DetailPageState extends State<DetailPage> {
             ),
           ),
           const SizedBox(height: 20),
-          CupertinoButton.filled(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            onPressed: () async {
-              await DatabaseService.toggleEventJoin(
-                  widget.event.id!, widget.detail.id!, widget.uuid);
-            },
-            child: Text(
-              _isJoining == 0
-                  ? "Subscribe"
-                  : _isJoining == 1
-                      ? "Unsubscribe"
-                      : "Requested",
+          if (widget.event.admin != widget.uuid &&
+              DateTime.now().isBefore(DateTime(
+                widget.detail.startDate!.year,
+                widget.detail.startDate!.month,
+                widget.detail.startDate!.day,
+                widget.detail.startTime!.hour,
+                widget.detail.startTime!.minute,
+              )))
+            CupertinoButton.filled(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              onPressed: () async {
+                await DatabaseService.toggleEventJoin(
+                    widget.event.id!, widget.detail.id!, widget.uuid);
+              },
+              child: Text(
+                _isJoining == 0
+                    ? "Subscribe"
+                    : _isJoining == 1
+                        ? "Unsubscribe"
+                        : "Requested",
+              ),
             ),
-          ),
         ],
       ),
     );

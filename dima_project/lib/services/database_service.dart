@@ -1232,6 +1232,15 @@ class DatabaseService {
     DocumentSnapshot<Map<String, dynamic>> detailDoc =
         await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
+    if (DateTime.now().isBefore(DateTime(
+      detailDoc['startDate'].toDate().year,
+      detailDoc['startDate'].toDate().month,
+      detailDoc['startDate'].toDate().day,
+      detailDoc['startTime'].toDate().hour,
+      detailDoc['startTime'].toDate().minute,
+    ))) {
+      return;
+    }
     bool isJoined = detailDoc['members'].contains(uuid);
 
     if (isJoined) {
