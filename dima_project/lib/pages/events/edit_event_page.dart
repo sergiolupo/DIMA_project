@@ -328,6 +328,41 @@ class EditEventPageState extends State<EditEventPage> {
                               ),
                             ],
                           )),
+                      const SizedBox(height: 20),
+                      CupertinoButton.filled(
+                          child: const Text(
+                            'Delete Event',
+                            style: TextStyle(color: CupertinoColors.white),
+                          ),
+                          onPressed: () {
+                            showCupertinoDialog(
+                              context: context,
+                              builder: (context) => CupertinoAlertDialog(
+                                title: const Text('Delete Event'),
+                                content: const Text(
+                                    'Are you sure you want to delete this event?'),
+                                actions: <Widget>[
+                                  CupertinoDialogAction(
+                                    child: const Text('Cancel'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                  ),
+                                  CupertinoDialogAction(
+                                    child: const Text('Delete'),
+                                    onPressed: () async {
+                                      Navigator.of(context).pop();
+                                      await DatabaseService.deleteEvent(
+                                          widget.event.id!);
+                                      if (context.mounted) {
+                                        Navigator.of(context)
+                                            .popUntil((route) => route.isFirst);
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                     ]),
               )),
             ]),

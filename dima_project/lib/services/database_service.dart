@@ -1606,4 +1606,12 @@ class DatabaseService {
 
     await eventsRef.doc(eventId).collection('details').doc(detailId).delete();
   }
+
+  static Future<void> deleteEvent(String eventId) async {
+    final details = await eventsRef.doc(eventId).collection('details').get();
+    for (var detail in details.docs) {
+      await deleteDetail(eventId, detail.id);
+    }
+    await eventsRef.doc(eventId).delete();
+  }
 }
