@@ -232,9 +232,14 @@ class GroupChatPageState extends State<GroupChatPage> {
     return Container(
       key: _inputBarKey,
       color: CupertinoColors.inactiveGray,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      padding: const EdgeInsets.only(left: 15, right: 25, bottom: 25, top: 5),
       child: Row(
         children: [
+          CupertinoButton(
+              padding: const EdgeInsets.all(2),
+              onPressed: () {},
+              child: const Icon(CupertinoIcons.add,
+                  color: CupertinoColors.white, size: 30)),
           Expanded(
             child: CupertinoTextField(
               minLines: 1,

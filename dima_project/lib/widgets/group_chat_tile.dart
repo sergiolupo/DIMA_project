@@ -56,8 +56,9 @@ class GroupChatTileState extends State<GroupChatTile> {
       onDismissed: (direction) async {
         await DatabaseService.toggleGroupJoin(widget.group.id, widget.uuid);
       },
-      child: GestureDetector(
-        onTap: () {
+      child: CupertinoButton(
+        padding: const EdgeInsets.all(0),
+        onPressed: () {
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
@@ -87,7 +88,9 @@ class GroupChatTileState extends State<GroupChatTile> {
                         Text(
                           widget.group.name,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                              color: CupertinoColors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
                         ),
                         const SizedBox(height: 2),
                         (widget.lastMessage != null)
