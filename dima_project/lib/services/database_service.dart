@@ -642,13 +642,18 @@ class DatabaseService {
 
     yield _getEventStatus(eventDoc, detailDoc, uuid);
 
-    // Listen for real-time updates
-    await for (var snapshot in eventsRef
-        .doc(eventId)
-        .collection('details')
-        .doc(detailId)
-        .snapshots()) {
-      yield _getEventStatus(await eventsRef.doc(eventId).get(), snapshot, uuid);
+    try {
+      // Listen for real-time updates
+      await for (var snapshot in eventsRef
+          .doc(eventId)
+          .collection('details')
+          .doc(detailId)
+          .snapshots()) {
+        yield _getEventStatus(
+            await eventsRef.doc(eventId).get(), snapshot, uuid);
+      }
+    } catch (e) {
+      return;
     }
   }
 
@@ -1153,6 +1158,9 @@ class DatabaseService {
         await docRef.collection('details').add(Details.toMap(details));
       }
 
+      //get ids from the details
+      final docs = await docRef.collection('details').get();
+
       String imageUrl = imagePath.toString() == '[]'
           ? ''
           : await StorageService.uploadImageToStorage(
@@ -1163,11 +1171,15 @@ class DatabaseService {
         'eventId': docRef.id,
         'createdAt': Timestamp.now(),
       });
-      await usersRef.doc(uuid).update({
-        'events': FieldValue.arrayUnion([
-          docRef.id,
-        ])
-      });
+
+      for (var doc in docs.docs) {
+        await usersRef.doc(uuid).update({
+          'events': FieldValue.arrayUnion([
+            '${docRef.id}:${doc.id}',
+          ])
+        });
+      }
+
       for (var id in uuids) {
         await usersRef.doc(id).update({
           'eventsRequests': FieldValue.arrayUnion([
@@ -1232,7 +1244,7 @@ class DatabaseService {
     DocumentSnapshot<Map<String, dynamic>> detailDoc =
         await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
-    if (DateTime.now().isBefore(DateTime(
+    if (!DateTime.now().isBefore(DateTime(
       detailDoc['startDate'].toDate().year,
       detailDoc['startDate'].toDate().month,
       detailDoc['startDate'].toDate().day,
@@ -1241,8 +1253,9 @@ class DatabaseService {
     ))) {
       return;
     }
+    debugPrint('Event ID: $eventId');
     bool isJoined = detailDoc['members'].contains(uuid);
-
+    debugPrint('Is joined: $isJoined');
     if (isJoined) {
       await Future.wait([
         eventsRef.doc(eventId).collection('details').doc(detailId).update({
@@ -1296,9 +1309,14 @@ class DatabaseService {
   }
 
   static Stream<List<Event>> getCreatedEventStream(String uuid) async* {
-    final eventsIds = await usersRef.doc(uuid).get().then((value) {
+    final ids = await usersRef.doc(uuid).get().then((value) {
       return value['events'];
     });
+    final eventsIds = [];
+    ids.forEach((element) {
+      eventsIds.add(element.split(':')[0]);
+    });
+
     final eventsList = <Event>[];
 
     for (var eventId in eventsIds) {
@@ -1338,10 +1356,13 @@ class DatabaseService {
   }
 
   static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
-    final eventsIds = await usersRef.doc(uuid).get().then((value) {
+    final ids = await usersRef.doc(uuid).get().then((value) {
       return value['events'];
     });
-
+    final eventsIds = [];
+    ids.forEach((element) {
+      eventsIds.add(element.split(':')[0]);
+    });
     final eventsList = <Event>[];
 
     for (var eventId in eventsIds) {
@@ -1569,5 +1590,20 @@ class DatabaseService {
 
   static Future<void> deletePrivateChat(String id) async {
     return await privateChatRef.doc(id).delete();
+  }
+
+  static Future<void> deleteDetail(String eventId, String detailId) async {
+    final details =
+        await eventsRef.doc(eventId).collection('details').doc(detailId).get();
+
+    debugPrint(details['members'].toString());
+
+    details['members'].forEach((element) async {
+      await usersRef.doc(element).update({
+        'events': FieldValue.arrayRemove(["$eventId:$detailId"])
+      });
+    });
+
+    await eventsRef.doc(eventId).collection('details').doc(detailId).delete();
   }
 }

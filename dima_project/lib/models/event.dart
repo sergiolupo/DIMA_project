@@ -92,8 +92,9 @@ class Event {
   static Future<Event> fromSnapshot(DocumentSnapshot documentSnapshot) async {
     var detailsQuery =
         await documentSnapshot.reference.collection('details').get();
-    List<Details> details =
-        detailsQuery.docs.map((doc) => Details.fromSnapshot(doc)).toList();
+    List<Details> details = detailsQuery.docs.isEmpty
+        ? []
+        : detailsQuery.docs.map((doc) => Details.fromSnapshot(doc)).toList();
     return Event(
       name: documentSnapshot['name'],
       id: documentSnapshot.id,

@@ -33,6 +33,43 @@ class DetailPageState extends State<DetailPage> {
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.systemPink,
         middle: const Text('Detail Page'),
+        trailing: widget.event.admin == widget.uuid
+            ? CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: const Icon(CupertinoIcons.trash,
+                    color: CupertinoColors.white),
+                onPressed: () async {
+                  // Show confirmation dialog
+                  showCupertinoDialog(
+                    context: context,
+                    builder: (context) => CupertinoAlertDialog(
+                      title: const Text('Delete Event'),
+                      content: const Text(
+                          'Are you sure you want to delete this event?'),
+                      actions: <Widget>[
+                        CupertinoDialogAction(
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        CupertinoDialogAction(
+                          child: const Text('Delete'),
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            await DatabaseService.deleteDetail(
+                                widget.event.id!, widget.detail.id!);
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+
+                  // If the user confirmed, proceed with deletion
+                },
+              )
+            : null,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoColors.white,
@@ -143,6 +180,7 @@ class DetailPageState extends State<DetailPage> {
             CupertinoButton.filled(
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               onPressed: () async {
+                debugPrint('Joining event');
                 await DatabaseService.toggleEventJoin(
                     widget.event.id!, widget.detail.id!, widget.uuid);
               },

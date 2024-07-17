@@ -74,6 +74,12 @@ class EditEventPageState extends State<EditEventPage> {
   }
 
   Future<void> _fetchLocations() async {
+    if (widget.event.details!.isEmpty) {
+      setState(() {
+        isLoaded = true;
+      });
+      return;
+    }
     for (int i = 0; i < widget.event.details!.length; i++) {
       final loc = await EventService.getAddressFromLatLng(
           widget.event.details![i].latlng!);
