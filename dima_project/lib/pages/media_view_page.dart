@@ -7,16 +7,16 @@ import 'package:flutter/cupertino.dart';
 
 class MediaViewPage extends StatefulWidget {
   final Message media;
-
-  const MediaViewPage({super.key, required this.media});
+  final List<Message> messages;
+  const MediaViewPage({super.key, required this.media, required this.messages});
 
   @override
   MediaViewPageState createState() => MediaViewPageState();
 }
 
 class MediaViewPageState extends State<MediaViewPage> {
-  Stream<UserData>? _senderStream;
-
+  late PageController _pageController;
+  late int initialPage;
   @override
   void initState() {
     init();
@@ -24,26 +24,31 @@ class MediaViewPageState extends State<MediaViewPage> {
   }
 
   void init() {
-    _senderStream = DatabaseService.getUserDataFromUUID(widget.media.sender);
+    initialPage =
+        widget.messages.indexWhere((message) => message.id == widget.media.id);
+    _pageController = PageController(initialPage: initialPage);
   }
 
   @override
   Widget build(BuildContext context) {
-    return _senderStream == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoColors.systemPink,
-                leading: CupertinoButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: const EdgeInsets.only(left: 10),
-                  color: CupertinoColors.systemPink,
-                  child: const Icon(CupertinoIcons.back,
-                      color: CupertinoColors.white),
-                )),
-            child: SafeArea(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoColors.systemPink,
+          leading: CupertinoButton(
+            onPressed: () => Navigator.of(context).pop(),
+            padding: const EdgeInsets.only(left: 10),
+            color: CupertinoColors.systemPink,
+            child:
+                const Icon(CupertinoIcons.back, color: CupertinoColors.white),
+          )),
+      child: PageView.builder(
+          controller: _pageController,
+          itemCount: widget.messages.length,
+          itemBuilder: (context, index) {
+            final message = widget.messages[index];
+            return SafeArea(
               child: StreamBuilder<UserData>(
-                stream: _senderStream,
+                stream: DatabaseService.getUserDataFromUUID(message.sender),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Container(
@@ -52,7 +57,7 @@ class MediaViewPageState extends State<MediaViewPage> {
                         children: [
                           Center(
                             child: CachedNetworkImage(
-                              imageUrl: widget.media.content,
+                              imageUrl: message.content,
                               fit: BoxFit.cover,
                               placeholder: (context, url) =>
                                   const CupertinoActivityIndicator(),
@@ -89,8 +94,8 @@ class MediaViewPageState extends State<MediaViewPage> {
                                     Text(
                                       DateUtil.getFormattedDateAndTime(
                                           context: context,
-                                          time: widget
-                                              .media.time.microsecondsSinceEpoch
+                                          time: message
+                                              .time.microsecondsSinceEpoch
                                               .toString()),
                                       style: const TextStyle(
                                         color: CupertinoColors.white,
@@ -153,7 +158,8 @@ class MediaViewPageState extends State<MediaViewPage> {
                   }
                 },
               ),
-            ),
-          );
+            );
+          }),
+    );
   }
 }

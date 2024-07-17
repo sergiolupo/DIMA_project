@@ -40,6 +40,7 @@ class ImageMessageTileState extends State<ImageMessageTile> {
           CupertinoPageRoute(
             builder: (context) => MediaViewPage(
               media: widget.message,
+              messages: [widget.message],
             ),
           ),
         );

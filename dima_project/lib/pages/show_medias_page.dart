@@ -119,6 +119,9 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                                       CupertinoPageRoute(
                                         builder: (context) => MediaViewPage(
                                           media: message,
+                                          messages: groupedMedias.values
+                                              .expand((element) => element)
+                                              .toList(),
                                         ),
                                       ),
                                     );
