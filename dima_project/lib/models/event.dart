@@ -58,7 +58,7 @@ class Event {
   final String admin;
   final String? imagePath;
   final String description;
-  final List<Details>? details;
+  List<Details>? details;
   final bool isPublic;
 
   final bool notify;

@@ -67,6 +67,7 @@ class CreateEventPageState extends State<CreateEventPage>
       _eventNameController.text,
       _eventDescriptionController.text,
       details.values.toList(),
+      null,
     )) {
       showDoneDialog();
       for (int i = 0; i < details.length; i++) {
@@ -224,6 +225,7 @@ class CreateEventPageState extends State<CreateEventPage>
                                   delete(index);
                                 });
                               },
+                              fixedIndex: 0,
                             ),
                           );
                         }),
@@ -481,9 +483,10 @@ class CreateEventPageState extends State<CreateEventPage>
     required Function endTime,
     required Function add,
     required Function location,
+    required int fixedIndex,
   }) {
     return SafeArea(
-      child: boolMap[index]!
+      child: boolMap[index]! && index > fixedIndex - 1
           ? Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
@@ -810,53 +813,54 @@ class CreateEventPageState extends State<CreateEventPage>
                       ),
                     ],
                   ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CupertinoButton(
-                          padding: const EdgeInsets.only(left: 10),
-                          alignment: Alignment.centerLeft,
-                          onPressed: () {
-                            onTap();
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Expand',
-                                style: TextStyle(
-                                  fontSize: 14,
+                  if (index > fixedIndex - 1)
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CupertinoButton(
+                            padding: const EdgeInsets.only(left: 10),
+                            alignment: Alignment.centerLeft,
+                            onPressed: () {
+                              onTap();
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Expand',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Icon(
+                                  CupertinoIcons.add,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (numInfos > 1)
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: CupertinoButton(
+                                onPressed: () {
+                                  delete(index);
+                                },
+                                child: const Row(
+                                  children: [
+                                    Text(
+                                      'Delete',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                    Icon(
+                                      CupertinoIcons.trash,
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Icon(
-                                CupertinoIcons.add,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (numInfos > 1)
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: CupertinoButton(
-                              onPressed: () {
-                                delete(index);
-                              },
-                              child: const Row(
-                                children: [
-                                  Text(
-                                    'Delete',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  Icon(
-                                    CupertinoIcons.trash,
-                                    size: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                      ]),
+                            )
+                        ]),
                 ],
               ),
             ),

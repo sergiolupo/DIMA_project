@@ -47,23 +47,25 @@ class EventPageState extends State<EventPage> {
                 return CupertinoPageScaffold(
                   navigationBar: CupertinoNavigationBar(
                     backgroundColor: CupertinoColors.systemPink,
-                    trailing: CupertinoButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () => Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => EditEventPage(
-                                    event: event,
-                                    uuid: widget.uuid,
-                                  ))),
-                      child: const Text(
-                        'Edit',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoColors.white,
-                        ),
-                      ),
-                    ),
+                    trailing: widget.uuid == event.admin
+                        ? CupertinoButton(
+                            padding: const EdgeInsets.all(0),
+                            onPressed: () => Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => EditEventPage(
+                                          event: event,
+                                          uuid: widget.uuid,
+                                        ))),
+                            child: const Text(
+                              'Edit',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.white,
+                              ),
+                            ),
+                          )
+                        : null,
                     leading: Navigator.canPop(context)
                         ? CupertinoNavigationBarBackButton(
                             color: CupertinoColors.white,

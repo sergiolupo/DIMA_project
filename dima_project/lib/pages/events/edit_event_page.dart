@@ -56,7 +56,9 @@ class EditEventPageState extends State<EditEventPage> {
         details[i] = widget.event.details![i];
         map[i] = false;
       }
-      numInfos = widget.event.details!.length;
+      details[widget.event.details!.length] = Details();
+      map[widget.event.details!.length] = true;
+      numInfos = widget.event.details!.length + 1;
     });
     _fetchProfileImage();
     _fetchLocations();
@@ -111,11 +113,11 @@ class EditEventPageState extends State<EditEventPage> {
                   padding: const EdgeInsets.all(0),
                   onPressed: () async {
                     if (EventService.validateForm(
-                      context,
-                      _eventNameController.text,
-                      _eventDescriptionController.text,
-                      details.values.toList(),
-                    )) {
+                        context,
+                        _eventNameController.text,
+                        _eventDescriptionController.text,
+                        details.values.toList(),
+                        widget.event.details!)) {
                       await updateEvent();
                       if (context.mounted) Navigator.of(context).pop();
                     }
@@ -203,6 +205,7 @@ class EditEventPageState extends State<EditEventPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
                               child: CreateEventPageState.getEventInfo(
+                                fixedIndex: widget.event.details!.length,
                                 location: () => _selectLocation(context, index),
                                 startDate: (DateTime selectedDate, int index) {
                                   setState(() {
@@ -359,6 +362,7 @@ class EditEventPageState extends State<EditEventPage> {
       notify: notify,
       imagePath: widget.event.imagePath,
       details: details.values.toList(),
+      createdAt: widget.event.createdAt,
     );
 
     await DatabaseService.updateEvent(

@@ -61,8 +61,12 @@ class EventService {
     }
   }
 
-  static bool validateForm(BuildContext context, String name,
-      String description, List<Details> detailsList) {
+  static bool validateForm(
+      BuildContext context,
+      String name,
+      String description,
+      List<Details> detailsList,
+      List<Details>? oldDetailsList) {
     if (name.isEmpty) {
       _showErrorDialog(context, 'Event name is required');
       return false;
@@ -73,6 +77,9 @@ class EventService {
     }
     for (int i = 0; i < detailsList.length; i++) {
       final Details detail = detailsList[i];
+      if (oldDetailsList != null && oldDetailsList.length > i) {
+        continue;
+      }
       if (detail.startDate == null ||
           DateFormat('dd/MM/yyyy').format(detail.startDate!).isEmpty) {
         _showErrorDialog(
