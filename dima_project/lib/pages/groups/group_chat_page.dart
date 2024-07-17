@@ -38,8 +38,12 @@ class GroupChatPageState extends State<GroupChatPage> {
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
   OverlayEntry? _overlayEntry;
+  OverlayEntry? _copyOverlayEntry;
+
   final GlobalKey _navigationBarKey = GlobalKey();
   final GlobalKey _inputBarKey = GlobalKey();
+  final FocusNode _focusNode = FocusNode();
+
   @override
   void initState() {
     getChats();
@@ -87,83 +91,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                   ],
                 ),
               ),
-              trailing: GestureDetector(
-                child: const Icon(CupertinoIcons.ellipsis_vertical,
-                    size: 25, color: CupertinoColors.white),
-                onTap: () {
-                  final RenderBox renderBox =
-                      context.findRenderObject() as RenderBox;
-                  final Size size = renderBox.size;
-                  final RenderBox navBarRenderBox =
-                      _navigationBarKey.currentContext!.findRenderObject()
-                          as RenderBox;
-                  final double navBarHeight = navBarRenderBox.size.height;
-
-                  _overlayEntry = OverlayEntry(
-                    builder: (context) => Stack(
-                      children: [
-                        Positioned.fill(
-                          child: GestureDetector(
-                            onTap: () {
-                              _overlayEntry?.remove();
-                            },
-                            child: Container(
-                                color: const Color(
-                                    0x00000000) // ARGB value: A=00, R=00, G=00, B=00
-                                ),
-                          ),
-                        ),
-                        Positioned(
-                          top: navBarHeight,
-                          left: size.width - 160,
-                          width: 160,
-                          child: CupertinoPopupSurface(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CupertinoButton(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 20),
-                                  onPressed: () {
-                                    _overlayEntry?.remove();
-
-                                    Navigator.of(context).push(
-                                      CupertinoPageRoute(
-                                        builder: (context) => GroupInfoPage(
-                                          uuid: widget.uuid,
-                                          group: widget.group,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Group Info'),
-                                ),
-                                CupertinoButton(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 20),
-                                  onPressed: () {
-                                    _overlayEntry?.remove();
-
-                                    Navigator.of(context).push(
-                                      CupertinoPageRoute(
-                                          builder: (context) => CreateEventPage(
-                                                uuid: widget.uuid,
-                                                groupId: widget.group.id,
-                                              )),
-                                    );
-                                  },
-                                  child: const Text('Create Event'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                  Overlay.of(context).insert(_overlayEntry!);
-                },
-              ),
               backgroundColor: CupertinoTheme.of(context).primaryColor,
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
@@ -204,8 +131,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
-      debugPrint(size.toString());
-      _overlayEntry = OverlayEntry(
+      _copyOverlayEntry = OverlayEntry(
         builder: (context) => Positioned(
           bottom: size.height,
           left: 0,
@@ -218,11 +144,11 @@ class GroupChatPageState extends State<GroupChatPage> {
           ),
         ),
       );
-      Overlay.of(context).insert(_overlayEntry!);
+      Overlay.of(context).insert(_copyOverlayEntry!);
 
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          _overlayEntry?.remove();
+          _copyOverlayEntry?.remove();
         }
       });
     }
@@ -235,90 +161,52 @@ class GroupChatPageState extends State<GroupChatPage> {
       padding: const EdgeInsets.only(left: 15, right: 25, bottom: 25, top: 5),
       child: Row(
         children: [
-          CupertinoButton(
-              padding: const EdgeInsets.all(2),
-              onPressed: () {},
-              child: const Icon(CupertinoIcons.add,
-                  color: CupertinoColors.white, size: 30)),
+          Focus(
+            child: CupertinoButton(
+                padding: const EdgeInsets.all(2),
+                onPressed: () {
+                  _focusNode.unfocus();
+                  showOverlay(context);
+                },
+                child: const Icon(CupertinoIcons.add,
+                    color: CupertinoColors.white, size: 30)),
+          ),
           Expanded(
-            child: CupertinoTextField(
-              minLines: 1,
-              maxLines: 3,
-              controller: messageEditingController,
-              style: const TextStyle(color: CupertinoColors.white),
-              placeholder: "Type a message...",
-              placeholderStyle: const TextStyle(color: CupertinoColors.white),
-              decoration: BoxDecoration(
-                border: Border.all(color: CupertinoColors.white),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              suffix: Container(
-                padding: const EdgeInsets.only(right: 10),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        messageEditingController.clear();
-                      },
-                      child: const Icon(CupertinoIcons.clear_circled,
-                          color: CupertinoColors.white),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final List<XFile> images =
-                            await picker.pickMultiImage(imageQuality: 80);
-
-                        if (images.isNotEmpty) {
-                          for (var image in images) {
-                            setState(() {
-                              isUploading = true;
-                            });
-                            final bytes = await image.readAsBytes();
-                            await DatabaseService.sendChatImage(
-                              widget.uuid,
-                              widget.group.id,
-                              File(image.path),
-                              true,
-                              Uint8List.fromList(bytes),
-                            );
-                            setState(() {
-                              isUploading = false;
-                            });
-                          }
-                        }
-                      },
-                      child: const Icon(CupertinoIcons.photo_fill,
-                          color: CupertinoColors.white),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(
-                            source: ImageSource.camera, imageQuality: 80);
-                        if (image != null) {
-                          setState(() {
-                            isUploading = true;
-                          });
-                          final bytes = await image.readAsBytes();
-                          await DatabaseService.sendChatImage(
-                            widget.uuid,
-                            widget.group.id,
-                            File(image.path),
-                            true,
-                            Uint8List.fromList(bytes),
-                          );
-                          setState(() {
-                            isUploading = false;
-                          });
-                        }
-                      },
-                      child: const Icon(CupertinoIcons.camera_fill,
-                          color: CupertinoColors.white),
-                    ),
-                  ],
+            child: SizedBox(
+              height: 50,
+              child: CupertinoTextField(
+                focusNode: _focusNode,
+                minLines: 1,
+                maxLines: 3,
+                controller: messageEditingController,
+                style: const TextStyle(color: CupertinoColors.white),
+                placeholder: "Type a message...",
+                placeholderStyle: const TextStyle(color: CupertinoColors.white),
+                decoration: BoxDecoration(
+                  border: Border.all(color: CupertinoColors.white),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                suffix: Container(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          messageEditingController.clear();
+                        },
+                        child: const Icon(CupertinoIcons.clear_circled,
+                            color: CupertinoColors.white),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          onTapCamera();
+                        },
+                        child: const Icon(CupertinoIcons.camera_fill,
+                            color: CupertinoColors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -334,6 +222,66 @@ class GroupChatPageState extends State<GroupChatPage> {
         ],
       ),
     );
+  }
+
+  void onTapCreateEvent() async {
+    _overlayEntry?.remove();
+
+    await Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (context) => CreateEventPage(
+          uuid: widget.uuid,
+          groupId: widget.group.id,
+        ),
+      ),
+    );
+  }
+
+  void onTapCamera() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    if (image != null) {
+      setState(() {
+        isUploading = true;
+      });
+      final bytes = await image.readAsBytes();
+      await DatabaseService.sendChatImage(
+        widget.uuid,
+        widget.group.id,
+        File(image.path),
+        true,
+        Uint8List.fromList(bytes),
+      );
+      setState(() {
+        isUploading = false;
+      });
+    }
+  }
+
+  void onTapPhoto() async {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> images = await picker.pickMultiImage(imageQuality: 80);
+
+    if (images.isNotEmpty) {
+      for (var image in images) {
+        setState(() {
+          isUploading = true;
+        });
+        final bytes = await image.readAsBytes();
+        await DatabaseService.sendChatImage(
+          widget.uuid,
+          widget.group.id,
+          File(image.path),
+          true,
+          Uint8List.fromList(bytes),
+        );
+        setState(() {
+          isUploading = false;
+        });
+      }
+    }
+    _overlayEntry?.remove();
   }
 
   Widget chatMessages() {
@@ -464,5 +412,74 @@ class GroupChatPageState extends State<GroupChatPage> {
         messageEditingController.clear();
       });
     }
+  }
+
+  void showOverlay(BuildContext context) {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _overlayEntry?.remove();
+              },
+              child: Container(
+                  color: const Color(
+                      0x00000000) // ARGB value: A=00, R=00, G=00, B=00
+                  ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 100,
+              color: CupertinoColors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: onTapCreateEvent,
+                    child: const Column(
+                      children: [
+                        Icon(CupertinoIcons.calendar,
+                            color: CupertinoColors.systemBlue),
+                        Text("Create Event"),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      onTapCamera();
+                      _overlayEntry?.remove();
+                    },
+                    child: const Column(
+                      children: [
+                        Icon(CupertinoIcons.camera,
+                            color: CupertinoColors.systemBlue),
+                        Text("Camera"),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onTapPhoto,
+                    child: const Column(
+                      children: [
+                        Icon(CupertinoIcons.photo,
+                            color: CupertinoColors.systemBlue),
+                        Text("Photo"),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
   }
 }
