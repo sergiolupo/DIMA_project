@@ -9,6 +9,7 @@ import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
@@ -66,23 +67,23 @@ class EditGroupPageState extends State<EditGroupPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               leading: index == 0
                   ? CupertinoButton(
                       padding: const EdgeInsets.all(0),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text(
+                      child: Text(
                         'Cancel',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: CupertinoColors.white,
+                          color: CupertinoTheme.of(context).primaryColor,
                         ),
                       ),
                     )
                   : CupertinoNavigationBarBackButton(
-                      color: CupertinoColors.white,
+                      color: CupertinoTheme.of(context).primaryColor,
                       onPressed: () {
                         setState(() {
                           index = 0;
@@ -117,14 +118,15 @@ class EditGroupPageState extends State<EditGroupPage> {
                     }
                   },
                   child: Text(
-                    index == 0 ? 'Next' : 'Done',
-                    style: const TextStyle(
+                    index == 0 ? 'Done' : '',
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: CupertinoColors.white,
+                      color: CupertinoTheme.of(context).primaryColor,
                     ),
                   )),
-              middle: const Text('Edit Group',
-                  style: TextStyle(color: CupertinoColors.white)),
+              middle: Text('Edit Group',
+                  style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryColor)),
             ),
             child: index == 0
                 ? buildPage1(context)
@@ -228,6 +230,20 @@ class EditGroupPageState extends State<EditGroupPage> {
                                   isGroup: true,
                                   id: widget.group.id)),
                         );
+                      },
+                    ),
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.opaqueSeparator,
+                    ),
+                    CupertinoListTile(
+                      title: const Text('Categories'),
+                      leading: const Icon(FontAwesomeIcons.thList),
+                      trailing: const Icon(CupertinoIcons.forward),
+                      onTap: () {
+                        setState(() {
+                          index = 1;
+                        });
                       },
                     ),
                     Container(

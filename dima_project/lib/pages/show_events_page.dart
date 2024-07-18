@@ -94,80 +94,96 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                               itemCount: mediasForDate.length,
                               itemBuilder: (context, index) {
                                 final message = mediasForDate[index];
-                                return FutureBuilder(
-                                  future:
-                                      DatabaseService.getEvent(message.content),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const CupertinoActivityIndicator();
-                                    }
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-                                    final event = snapshot.data;
-                                    return GestureDetector(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Row(
-                                            children: [
-                                              CreateImageWidget.getEventImage(
-                                                  event!.imagePath!),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                return Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: PhysicalModel(
+                                    elevation: 3.0,
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: CupertinoColors.white,
+                                    child: FutureBuilder(
+                                      future: DatabaseService.getEvent(
+                                          message.content),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const CupertinoActivityIndicator();
+                                        }
+                                        if (snapshot.hasError) {
+                                          return Text(
+                                              'Error: ${snapshot.error}');
+                                        }
+                                        final event = snapshot.data;
+                                        return GestureDetector(
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Row(
                                                 children: [
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                        maxWidth: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.6),
-                                                    child: Text(
-                                                      event.name,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                  CreateImageWidget
+                                                      .getEventImage(
+                                                          event!.imagePath!),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        constraints: BoxConstraints(
+                                                            maxWidth: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.6),
+                                                        child: Text(
+                                                          maxLines: 1,
+                                                          event.name,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                        maxWidth: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.6),
-                                                    child: Text(
-                                                      event.description,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
+                                                      Container(
+                                                        constraints: BoxConstraints(
+                                                            maxWidth: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.6),
+                                                        child: Text(
+                                                          maxLines: 3,
+                                                          event.description,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
+                                                    ],
+                                                  )
                                                 ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            CupertinoPageRoute(
-                                              builder: (context) => EventPage(
-                                                uuid: FirebaseAuth
-                                                    .instance.currentUser!.uid,
-                                                eventId: event.id!,
                                               ),
                                             ),
-                                          );
-                                        });
-                                  },
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      EventPage(
+                                                    uuid: FirebaseAuth.instance
+                                                        .currentUser!.uid,
+                                                    eventId: event.id!,
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                      },
+                                    ),
+                                  ),
                                 );
                               },
                             ),

@@ -53,6 +53,7 @@ class HomePageState extends State<HomePage> {
         ? const CupertinoActivityIndicator()
         : CupertinoTabScaffold(
             tabBar: CupertinoTabBar(
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               currentIndex: _currentIndex!,
               onTap: (index) {
                 if (_currentIndex == index) {

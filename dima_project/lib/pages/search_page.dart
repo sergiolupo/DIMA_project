@@ -10,7 +10,6 @@ import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 
 class SearchPage extends StatefulWidget {
   final String uuid;

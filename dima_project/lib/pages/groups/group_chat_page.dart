@@ -82,16 +82,20 @@ class GroupChatPageState extends State<GroupChatPage> {
                       constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.6),
                       child: Text(widget.group.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
-                            color: CupertinoColors.white,
+                            color: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .color,
                           ),
                           overflow: TextOverflow.ellipsis),
                     ),
                   ],
                 ),
               ),
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              backgroundColor:
+                  CupertinoTheme.of(context).scaffoldBackgroundColor,
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
@@ -101,8 +105,8 @@ class GroupChatPageState extends State<GroupChatPage> {
                     context.go("/home", extra: 1);
                   }
                 },
-                child: const Icon(CupertinoIcons.back,
-                    color: CupertinoColors.white),
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
               ),
             ),
             child: Column(

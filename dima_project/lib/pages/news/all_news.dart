@@ -21,6 +21,14 @@ class _AllNewsState extends State<AllNews> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: Navigator.canPop(context)
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            : null,
         middle: Text("${widget.news} News",
             style: TextStyle(
                 color: CupertinoTheme.of(context).primaryColor,
