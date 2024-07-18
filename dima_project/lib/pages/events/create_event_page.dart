@@ -5,17 +5,19 @@ import 'package:dima_project/pages/events/share_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/events/date_picker.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
 import 'package:dima_project/widgets/events/time_picker.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 
-class CreateEventPage extends StatefulWidget {
+class CreateEventPage extends ConsumerStatefulWidget {
   final String uuid;
   final String? groupId;
   const CreateEventPage({super.key, required this.uuid, this.groupId});
@@ -24,7 +26,7 @@ class CreateEventPage extends StatefulWidget {
   CreateEventPageState createState() => CreateEventPageState();
 }
 
-class CreateEventPageState extends State<CreateEventPage>
+class CreateEventPageState extends ConsumerState<CreateEventPage>
     with TickerProviderStateMixin {
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _eventDescriptionController =
@@ -86,6 +88,7 @@ class CreateEventPageState extends State<CreateEventPage>
       await DatabaseService.createEvent(
           event, widget.uuid, selectedImagePath, uuids, groupIds);
     }
+    ref.invalidate(createdEventsProvider(widget.uuid));
   }
 
   @override

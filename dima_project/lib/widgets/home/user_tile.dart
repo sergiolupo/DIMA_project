@@ -36,6 +36,12 @@ class UserTileState extends ConsumerState<UserTile> {
           child: GestureDetector(
             onTap: () {
               ref.invalidate(userProvider(widget.user.uuid!));
+              ref.invalidate(followerProvider(widget.user.uuid!));
+              ref.invalidate(followingProvider(widget.user.uuid!));
+              ref.invalidate(groupsProvider(widget.user.uuid!));
+              ref.invalidate(joinedEventsProvider(widget.user.uuid!));
+              ref.invalidate(createdEventsProvider(widget.user.uuid!));
+
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return UserProfile(
                   user: widget.user.uuid!,
