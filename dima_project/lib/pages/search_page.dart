@@ -10,6 +10,7 @@ import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 
 class SearchPage extends StatefulWidget {
   final String uuid;
@@ -130,20 +131,32 @@ class SearchPageState extends State<SearchPage> {
                       ),
                     );
                   }
-                  return Center(
-                    child: Column(
-                      children: [
-                        searchIdx == 0
-                            ? Image.asset('assets/images/search_users.png')
-                            : searchIdx == 1
-                                ? Image.asset('assets/images/search_groups.png')
-                                : Image.asset(
-                                    'assets/images/search_events.png'),
-                        Text(
-                            "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}"),
-                      ],
+                  return Stack(children: [
+                    Positioned(
+                      top: 0,
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                      left: 0,
+                      right: 0,
+                      child: SingleChildScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        reverse: false,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            searchIdx == 0
+                                ? Image.asset('assets/images/search_users.png')
+                                : searchIdx == 1
+                                    ? Image.asset(
+                                        'assets/images/search_groups.png')
+                                    : Image.asset(
+                                        'assets/images/search_events.png'),
+                            Text(
+                                "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}"),
+                          ],
+                        ),
+                      ),
                     ),
-                  );
+                  ]);
                 }
 
                 return ListView.builder(

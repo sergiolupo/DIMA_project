@@ -48,43 +48,48 @@ class LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/logo.png',
-              height: 200,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(8),
+        reverse: false,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                'assets/logo.png',
+                height: 200,
+              ),
             ),
-          ),
-          _showLogin
-              ? LoginForm(_usernameController)
-              : ForgotPasswordForm(_usernameController),
-          CupertinoButton(
-            onPressed: () {
-              setState(() {
-                _showLogin = !_showLogin;
-              });
-            },
-            child: Text(
-              _showLogin ? 'Forgot Password?' : 'Back to Login',
-              style: const TextStyle(color: CupertinoColors.activeBlue),
+            _showLogin
+                ? LoginForm(_usernameController)
+                : ForgotPasswordForm(_usernameController),
+            CupertinoButton(
+              onPressed: () {
+                setState(() {
+                  _showLogin = !_showLogin;
+                });
+              },
+              child: Text(
+                _showLogin ? 'Forgot Password?' : 'Back to Login',
+                style: const TextStyle(color: CupertinoColors.activeBlue),
+              ),
             ),
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('Not a member?'),
-            const SizedBox(width: 4),
-            GestureDetector(
-                onTap: () {
-                  context.go('/register', extra: null);
-                },
-                child: const Text('Register now',
-                    style: TextStyle(
-                        color: CupertinoColors.activeBlue,
-                        fontWeight: FontWeight.bold))),
-          ]),
-        ],
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Text('Not a member?'),
+              const SizedBox(width: 4),
+              GestureDetector(
+                  onTap: () {
+                    context.go('/register', extra: null);
+                  },
+                  child: const Text('Register now',
+                      style: TextStyle(
+                          color: CupertinoColors.activeBlue,
+                          fontWeight: FontWeight.bold))),
+            ]),
+          ],
+        ),
       ),
     );
   }

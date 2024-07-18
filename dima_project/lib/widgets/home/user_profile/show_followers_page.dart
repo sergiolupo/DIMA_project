@@ -94,13 +94,17 @@ class ShowFollowersState extends State<ShowFollowers> {
                 }
                 if (!widget.followers &&
                     snapshot.data!.data()!["following"].length == 0) {
-                  return Column(
-                    children: [
-                      Image.asset('assets/images/no_following_found.png'),
-                      const Center(
-                        child: Text('Not following anyone'),
-                      ),
-                    ],
+                  return SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    reverse: false,
+                    child: Column(
+                      children: [
+                        Image.asset('assets/images/no_following_found.png'),
+                        const Center(
+                          child: Text('Not following anyone'),
+                        ),
+                      ],
+                    ),
                   );
                 }
                 int i = 0;

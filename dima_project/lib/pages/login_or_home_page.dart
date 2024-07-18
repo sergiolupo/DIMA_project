@@ -16,7 +16,7 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
   @override
   void initState() {
     super.initState();
-    //getUserStatuts();
+    getUserStatuts();
   }
 
   getUserStatuts() async {
