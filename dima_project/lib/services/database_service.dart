@@ -45,12 +45,12 @@ class DatabaseService {
       'events': [],
       'eventsRequests': [],
       'groupsRequests': [],
+      'requests': [],
     });
 
     await followersRef.doc(uuid).set({
       'followers': [],
       'following': [],
-      'requests': [],
     });
   }
 
@@ -93,6 +93,8 @@ class DatabaseService {
       followers.addAll(requests);
       await followersRef.doc(user.uuid).update({
         'followers': followers,
+      });
+      await usersRef.doc(user.uuid).update({
         'requests': [],
       });
     }
@@ -624,7 +626,7 @@ class DatabaseService {
     if (followDoc['followers'].contains(visitor)) {
       return 1;
     } else if (userDoc['isPublic'] == false &&
-        followDoc['requests'].contains(visitor)) {
+        userDoc['requests'].contains(visitor)) {
       return 2;
     } else {
       return 0;
@@ -697,12 +699,12 @@ class DatabaseService {
     } else {
       debugPrint(doc['isPublic'].toString());
       if (doc['isPublic'] == false) {
-        if (userDoc['requests'].contains(visitor)) {
-          followersRef.doc(user).update({
+        if (doc['requests'].contains(visitor)) {
+          usersRef.doc(user).update({
             'requests': FieldValue.arrayRemove([visitor])
           });
         } else {
-          followersRef.doc(user).update({
+          usersRef.doc(user).update({
             'requests': FieldValue.arrayUnion([visitor])
           });
         }
@@ -1028,7 +1030,7 @@ class DatabaseService {
   }
 
   static Stream<List<dynamic>> getFollowRequests(String id) {
-    return followersRef.doc(id).snapshots().map((snapshot) {
+    return usersRef.doc(id).snapshots().map((snapshot) {
       return snapshot['requests'];
     });
   }
@@ -1090,9 +1092,11 @@ class DatabaseService {
 
   static Future<void> acceptUserRequest(String user, String uuid) async {
     await Future.wait([
-      followersRef.doc(uuid).update({
-        'followers': FieldValue.arrayUnion([user]),
+      usersRef.doc(uuid).update({
         'requests': FieldValue.arrayRemove([user])
+      }),
+      followersRef.doc(uuid).update({
+        'followers': FieldValue.arrayUnion([user])
       }),
       followersRef.doc(user).update({
         'following': FieldValue.arrayUnion([uuid])
@@ -1101,7 +1105,7 @@ class DatabaseService {
   }
 
   static Future<void> denyUserRequest(String user, String uuid) async {
-    await followersRef.doc(uuid).update({
+    await usersRef.doc(uuid).update({
       'requests': FieldValue.arrayRemove([user])
     });
   }

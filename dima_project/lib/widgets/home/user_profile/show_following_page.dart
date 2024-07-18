@@ -4,10 +4,11 @@ import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShowFollowers extends ConsumerWidget {
+class ShowFollowing extends ConsumerWidget {
   final String user;
   final String uuid;
-  const ShowFollowers({
+
+  const ShowFollowing({
     super.key,
     required this.user,
     required this.uuid,
@@ -16,7 +17,7 @@ class ShowFollowers extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<List<UserData>> asyncUsers =
-        ref.watch(followerProvider(user));
+        ref.watch(followingProvider(user));
     final AsyncValue<List<UserData>> asyncFollowing =
         ref.watch(followingProvider(uuid));
     final TextEditingController searchController = TextEditingController();
@@ -31,7 +32,7 @@ class ShowFollowers extends ConsumerWidget {
             Navigator.of(context).pop();
           },
         ),
-        middle: const Text('Followers'),
+        middle: const Text('Following'),
       ),
       child: SafeArea(
         child: Column(
@@ -52,9 +53,9 @@ class ShowFollowers extends ConsumerWidget {
                 if (users.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/no_followers_found.png'),
+                      Image.asset('assets/images/no_following_found.png'),
                       const Center(
-                        child: Text('No followers'),
+                        child: Text('Not following anyone'),
                       ),
                     ],
                   );
@@ -68,9 +69,9 @@ class ShowFollowers extends ConsumerWidget {
                 if (filteredUsers.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/search_followers.png'),
+                      Image.asset('assets/images/search_following.png'),
                       const Center(
-                        child: Text('No followers'),
+                        child: Text('Not following anyone'),
                       ),
                     ],
                   );

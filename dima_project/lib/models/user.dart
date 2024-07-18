@@ -14,6 +14,7 @@ class UserData {
   final String? typingTo;
   final String? uuid;
   bool? isPublic;
+  List<String>? requests;
   UserData({
     required this.categories,
     this.imagePath,
@@ -28,6 +29,7 @@ class UserData {
     this.typingTo,
     this.uuid,
     this.isPublic,
+    this.requests,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -48,6 +50,10 @@ class UserData {
       typingTo: documentSnapshot['typingTo'],
       uuid: documentSnapshot.id,
       isPublic: documentSnapshot['isPublic'],
+      requests: (documentSnapshot['requests'] as List<dynamic>)
+          .map((request) => request.toString())
+          .toList()
+          .cast<String>(),
     );
   }
 }

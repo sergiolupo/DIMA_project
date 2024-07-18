@@ -5,6 +5,7 @@ import 'package:dima_project/pages/show_event.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
+import 'package:dima_project/widgets/home/user_profile/show_following_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -419,7 +420,9 @@ class UserProfileState extends ConsumerState<UserProfile> {
               context,
               CupertinoPageRoute(
                 builder: (context) => ShowFollowers(
-                    user: widget.user, uuid: widget.uuid, followers: true),
+                  user: widget.user,
+                  uuid: widget.uuid,
+                ),
               ),
             );
           },
@@ -469,8 +472,10 @@ class UserProfileState extends ConsumerState<UserProfile> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ShowFollowers(
-                    user: widget.user, uuid: widget.uuid, followers: false),
+                builder: (context) => ShowFollowing(
+                  user: widget.user,
+                  uuid: widget.uuid,
+                ),
               ),
             );
           },
