@@ -484,7 +484,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
             child: Column(
               children: [
                 Consumer(builder: (context, watch, _) {
-                  final following = ref.watch(followerProvider(widget.user));
+                  final following = ref.watch(followingProvider(widget.user));
                   return following.when(
                     data: (following) {
                       return Text(
