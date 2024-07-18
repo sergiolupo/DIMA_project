@@ -1,10 +1,12 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserTile extends StatefulWidget {
+class UserTile extends ConsumerStatefulWidget {
   final UserData user;
   final String uuid;
   final int isFollowing; // 0 is not following, 1 is following, 2 is requested
@@ -19,7 +21,13 @@ class UserTile extends StatefulWidget {
   UserTileState createState() => UserTileState();
 }
 
-class UserTileState extends State<UserTile> {
+class UserTileState extends ConsumerState<UserTile> {
+  @override
+  void initState() {
+    ref.read(userProvider(widget.user.uuid!));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -27,6 +35,7 @@ class UserTileState extends State<UserTile> {
         Expanded(
           child: GestureDetector(
             onTap: () {
+              ref.invalidate(userProvider(widget.user.uuid!));
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return UserProfile(
                   user: widget.user.uuid!,

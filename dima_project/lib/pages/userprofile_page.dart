@@ -1,11 +1,8 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/pages/show_event.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
@@ -16,35 +13,20 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserProfile extends StatefulWidget {
+class UserProfile extends ConsumerStatefulWidget {
   final String uuid;
   final String user;
-
+  @override
   const UserProfile({super.key, required this.user, required this.uuid});
 
   @override
-  State<UserProfile> createState() => UserProfileState();
+  UserProfileState createState() => UserProfileState();
 }
 
-class UserProfileState extends State<UserProfile> {
+class UserProfileState extends ConsumerState<UserProfile> {
   late final bool isMyProfile;
-
-  late final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      _groupsStreamController =
-      StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>();
-
-  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
-      _followersStreamController =
-      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
-  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
-      _followingStreamController =
-      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
-
-  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _followersStreamSubscription;
-  late StreamSubscription<List<QueryDocumentSnapshot<Map<String, dynamic>>>>?
-      _groupsStreamSubscription;
 
   int _isFollowing = 0; // 0 is not following, 1 is following, 2 is requested
 
@@ -53,350 +35,328 @@ class UserProfileState extends State<UserProfile> {
   void initState() {
     super.initState();
     isMyProfile = widget.uuid == widget.user;
-    _subscribeToStream();
     if (!isMyProfile) _checkFollow();
-  }
-
-  _subscribeToStream() {
-    _groupsStreamSubscription =
-        DatabaseService.getGroupsStreamUser(widget.user).listen((snapshot) {
-      final dataList =
-          snapshot.cast<QueryDocumentSnapshot<Map<String, dynamic>>>();
-      _groupsStreamController.add(dataList);
-    });
-
-    _followersStreamSubscription =
-        DatabaseService.getFollowersStreamUser(widget.user).listen((snapshot) {
-      _followersStreamController.add(snapshot);
-      _followingStreamController.add(snapshot);
-    });
+    ref.read(userProvider(widget.user));
+    ref.read(followerProvider(widget.user));
+    ref.read(followingProvider(widget.user));
+    ref.read(groupsProvider(widget.user));
+    ref.read(joinedEventsProvider(widget.user));
+    ref.read(createdEventsProvider(widget.user));
   }
 
   @override
   Widget build(BuildContext context) {
-    return _followersStreamSubscription == null ||
-            _groupsStreamSubscription == null
-        ? const CupertinoActivityIndicator()
-        : StreamBuilder(
-            stream: DatabaseService.getUserDataFromUUID(widget.user),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const CupertinoActivityIndicator();
-              }
-              final user = snapshot.data!;
-              return CupertinoPageScaffold(
-                navigationBar: CupertinoNavigationBar(
-                  backgroundColor: CupertinoColors.systemPink,
-                  leading: Navigator.of(context).canPop()
-                      ? CupertinoNavigationBarBackButton(
-                          color: CupertinoColors.white,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      : null,
-                  trailing: isMyProfile
-                      ? GestureDetector(
-                          onTap: () => Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      OptionsPage(uuid: widget.uuid))),
-                          child: const Icon(CupertinoIcons.bars,
-                              color: CupertinoColors.black),
-                        )
-                      : null,
-                ),
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-                    Column(
-                      children: [
-                        const SizedBox(height: 8),
-                        Container(
-                          color: CupertinoColors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 55),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    CreateImageWidget.getUserImage(
-                                        user.imagePath!),
-                                    const SizedBox(width: 20),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10.0),
-                                          child: Text(
-                                            user.username,
-                                            style: CupertinoTheme.of(context)
-                                                .textTheme
-                                                .textStyle,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10.0),
-                                          child: Text(
-                                            '${user.name} ${user.surname}',
-                                            style: CupertinoTheme.of(context)
-                                                .textTheme
-                                                .textStyle,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Column(
-                                  children: user.categories
-                                      .map((category) => Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 4, horizontal: 10),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  CategoryIconMapper
-                                                      .iconForCategory(
-                                                          category),
-                                                  size: 24,
-                                                  color:
-                                                      CupertinoTheme.of(context)
-                                                          .primaryColor,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  category,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: CupertinoTheme.of(
-                                                            context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ))
-                                      .toList(),
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    getGroup(),
-                                    const SizedBox(width: 20),
-                                    getFollowers(),
-                                    const SizedBox(width: 20),
-                                    getFollowings(),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                !isMyProfile
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          CupertinoButton.filled(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 40, vertical: 8),
-                                            onPressed: () async {
-                                              DatabaseService
-                                                  .toggleFollowUnfollow(
-                                                      widget.user, widget.uuid);
-                                            },
-                                            child: Text(
-                                              _isFollowing == 0
-                                                  ? "Follow"
-                                                  : _isFollowing == 1
-                                                      ? "Unfollow"
-                                                      : "Requested",
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          CupertinoButton.filled(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 8),
-                                            onPressed: () async {
-                                              var members = [
-                                                widget.uuid,
-                                                widget.user
-                                              ];
-                                              members.sort();
-                                              final chat = PrivateChat(
-                                                members: members,
-                                              );
-                                              if (context.mounted) {
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .push(
-                                                  CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        PrivateChatPage(
-                                                      uuid: widget.uuid,
-                                                      privateChat: chat,
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            child: const Icon(
-                                              FontAwesomeIcons.envelope,
-                                              color: CupertinoColors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : const SizedBox(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          color: CupertinoColors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
+    final user = ref.watch(userProvider(widget.user));
+
+    return Consumer(builder: (context, watch, _) {
+      return user.when(
+        data: (user) {
+          debugPrint('User: ${user.name}');
+          return _buildProfile(user);
+        },
+        loading: () => const CupertinoActivityIndicator(),
+        error: (error, stackTrace) {
+          return Center(
+            child: Text('Error: $error'),
+          );
+        },
+      );
+    });
+  }
+
+  Widget _buildProfile(UserData user) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        backgroundColor: CupertinoColors.systemPink,
+        leading: Navigator.of(context).canPop()
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoColors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            : null,
+        trailing: isMyProfile
+            ? GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) => OptionsPage(uuid: widget.uuid))),
+                child: const Icon(CupertinoIcons.bars,
+                    color: CupertinoColors.black),
+              )
+            : null,
+      ),
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          Column(
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                color: CupertinoColors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 55),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CreateImageWidget.getUserImage(user.imagePath!),
+                          const SizedBox(width: 20),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CustomSelectOption(
-                                textLeft: 'Events created',
-                                textRight: 'Events joined',
-                                onChanged: (value) {
-                                  setState(() {
-                                    index = value;
-                                  });
-                                },
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Text(
+                                  user.username,
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle,
+                                ),
                               ),
-                              getCreatedEvents(user),
-                              getJoinedEvents(user),
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Text(
+                                  '${user.name} ${user.surname}',
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle,
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: user.categories
+                            .map((category) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        CategoryIconMapper.iconForCategory(
+                                            category),
+                                        size: 24,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        category,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          getGroup(),
+                          const SizedBox(width: 20),
+                          getFollowers(),
+                          const SizedBox(width: 20),
+                          getFollowings(),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      !isMyProfile
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CupertinoButton.filled(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 40, vertical: 8),
+                                  onPressed: () async {
+                                    DatabaseService.toggleFollowUnfollow(
+                                        widget.user, widget.uuid);
+                                  },
+                                  child: Text(
+                                    _isFollowing == 0
+                                        ? "Follow"
+                                        : _isFollowing == 1
+                                            ? "Unfollow"
+                                            : "Requested",
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                CupertinoButton.filled(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  onPressed: () async {
+                                    var members = [widget.uuid, widget.user];
+                                    members.sort();
+                                    final chat = PrivateChat(
+                                      members: members,
+                                    );
+                                    if (context.mounted) {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(
+                                        CupertinoPageRoute(
+                                          builder: (context) => PrivateChatPage(
+                                            uuid: widget.uuid,
+                                            privateChat: chat,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Icon(
+                                    FontAwesomeIcons.envelope,
+                                    color: CupertinoColors.white,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                color: CupertinoColors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    CustomSelectOption(
+                      textLeft: 'Events created',
+                      textRight: 'Events joined',
+                      onChanged: (value) {
+                        setState(() {
+                          index = value;
+                        });
+                      },
                     ),
+                    getCreatedEvents(user),
+                    getJoinedEvents(user),
                   ],
                 ),
-              );
-            });
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget getJoinedEvents(UserData user) {
     return Visibility(
       visible: index == 1,
-      child: StreamBuilder<List<Event>>(
-        stream: DatabaseService.getJoinedEventStream(widget.user),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                  ),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final event = snapshot.data![index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => ShowEvent(
-                            uuid: widget.uuid,
-                            eventId: event.id!,
-                            events: snapshot.data!,
-                            userData: user,
+      child: Consumer(builder: (context, ref, _) {
+        final events = ref.watch(joinedEventsProvider(widget.user));
+        debugPrint('Events: $events');
+        return events.when(
+            data: (events) {
+              return Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ShowEvent(
+                              uuid: widget.uuid,
+                              eventId: event.id!,
+                              events: events,
+                              userData: user,
+                            ),
                           ),
                         ),
-                      ),
-                      child: EventGrid(
-                        uuid: widget.uuid,
-                        event: event,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-          } else {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
+                        child: EventGrid(
+                          uuid: widget.uuid,
+                          event: event,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
-            } else {
-              return const SizedBox();
-            }
-          }
-        },
-      ),
+            },
+            error: (error, stackTrace) {
+              return Center(
+                child: Text('Error: $error'),
+              );
+            },
+            loading: () => const CupertinoActivityIndicator());
+      }),
     );
   }
 
   Widget getCreatedEvents(UserData user) {
     return Visibility(
       visible: index == 0,
-      child: StreamBuilder<List<Event>>(
-        stream: DatabaseService.getCreatedEventStream(widget.user),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                  ),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final event = snapshot.data![index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => ShowEvent(
-                            uuid: widget.uuid,
-                            eventId: event.id!,
-                            events: snapshot.data!,
-                            userData: user,
+      child: Consumer(builder: (context, ref, _) {
+        final events = ref.watch(createdEventsProvider(widget.user));
+        return events.when(
+            data: (events) {
+              return Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ShowEvent(
+                              uuid: widget.uuid,
+                              eventId: event.id!,
+                              events: events,
+                              userData: user,
+                            ),
                           ),
                         ),
-                      ),
-                      child: EventGrid(
-                        uuid: widget.uuid,
-                        event: event,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-          } else {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
+                        child: EventGrid(
+                          uuid: widget.uuid,
+                          event: event,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
-            } else {
-              return const CupertinoActivityIndicator();
-            }
-          }
-        },
-      ),
+            },
+            error: (error, stackTrace) {
+              return Center(
+                child: Text('Error: $error'),
+              );
+            },
+            loading: () => const CupertinoActivityIndicator());
+      }),
     );
   }
 
@@ -415,20 +375,23 @@ class UserProfileState extends State<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                StreamBuilder<
-                    List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
-                  stream: _groupsStreamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                Consumer(builder: (context, watch, _) {
+                  final groups = ref.watch(groupsProvider(widget.user));
+                  return groups.when(
+                    data: (groups) {
                       return Text(
-                        snapshot.data!.length.toString(),
+                        groups.length.toString(),
                         style: CupertinoTheme.of(context).textTheme.textStyle,
                       );
-                    } else {
-                      return const CupertinoActivityIndicator();
-                    }
-                  },
-                ),
+                    },
+                    loading: () => const CupertinoActivityIndicator(),
+                    error: (error, stackTrace) {
+                      return Center(
+                        child: Text('Error: $error'),
+                      );
+                    },
+                  );
+                }),
                 const SizedBox(height: 10),
                 Text(
                   "Groups",
@@ -460,24 +423,23 @@ class UserProfileState extends State<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: _followersStreamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                Consumer(builder: (context, watch, _) {
+                  final followers = ref.watch(followerProvider(widget.user));
+                  return followers.when(
+                    data: (followers) {
                       return Text(
-                        snapshot.hasData && snapshot.data!.data() != null
-                            ? snapshot.data!
-                                .data()!["followers"]
-                                .length
-                                .toString()
-                            : '0',
+                        followers.length.toString(),
                         style: CupertinoTheme.of(context).textTheme.textStyle,
                       );
-                    } else {
-                      return const CupertinoActivityIndicator();
-                    }
-                  },
-                ),
+                    },
+                    loading: () => const CupertinoActivityIndicator(),
+                    error: (error, stackTrace) {
+                      return Center(
+                        child: Text('Error: $error'),
+                      );
+                    },
+                  );
+                }),
                 const SizedBox(height: 10),
                 Text(
                   "Followers",
@@ -509,24 +471,23 @@ class UserProfileState extends State<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: _followingStreamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                Consumer(builder: (context, watch, _) {
+                  final following = ref.watch(followerProvider(widget.user));
+                  return following.when(
+                    data: (following) {
                       return Text(
-                        snapshot.hasData && snapshot.data!.data() != null
-                            ? snapshot.data!
-                                .data()!["following"]
-                                .length
-                                .toString()
-                            : '0',
+                        following.length.toString(),
                         style: CupertinoTheme.of(context).textTheme.textStyle,
                       );
-                    } else {
-                      return const CupertinoActivityIndicator();
-                    }
-                  },
-                ),
+                    },
+                    loading: () => const CupertinoActivityIndicator(),
+                    error: (error, stackTrace) {
+                      return Center(
+                        child: Text('Error: $error'),
+                      );
+                    },
+                  );
+                }),
                 const SizedBox(height: 10),
                 Text(
                   "Following",
@@ -545,11 +506,6 @@ class UserProfileState extends State<UserProfile> {
 
   @override
   void dispose() {
-    _groupsStreamController.close();
-    _followersStreamController.close();
-    _followingStreamController.close();
-    _followersStreamSubscription?.cancel();
-    _groupsStreamSubscription?.cancel();
     super.dispose();
   }
 

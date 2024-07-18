@@ -1355,6 +1355,51 @@ class DatabaseService {
     }
   }
 
+  static Future<List<Event>> getCreatedEvents(String uuid) async {
+    final ids = await usersRef.doc(uuid).get().then((value) {
+      return value['events'];
+    });
+    final eventsIds = [];
+    ids.forEach((element) {
+      eventsIds.add(element.split(':')[0]);
+    });
+
+    final eventsList = <Event>[];
+
+    for (var eventId in eventsIds) {
+      final snapshot = await eventsRef.doc(eventId).get();
+      if (snapshot.exists) {
+        Event event = await Event.fromSnapshot(snapshot);
+        if (event.admin == uuid) {
+          eventsList.add(event);
+        }
+      }
+    }
+    return eventsList;
+  }
+
+  static Future<List<Event>> getJoinedEvents(String uuid) async {
+    final ids = await usersRef.doc(uuid).get().then((value) {
+      return value['events'];
+    });
+    final eventsIds = [];
+    ids.forEach((element) {
+      eventsIds.add(element.split(':')[0]);
+    });
+    final eventsList = <Event>[];
+
+    for (var eventId in eventsIds) {
+      final snapshot = await eventsRef.doc(eventId).get();
+      if (snapshot.exists) {
+        Event event = await Event.fromSnapshot(snapshot);
+        if (event.admin != uuid) {
+          eventsList.add(event);
+        }
+      }
+    }
+    return eventsList;
+  }
+
   static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
     final ids = await usersRef.doc(uuid).get().then((value) {
       return value['events'];
