@@ -58,3 +58,9 @@ final createdEventsProvider =
   final events = await DatabaseService.getCreatedEvents(uuid);
   return events;
 });
+
+final eventProvider =
+    FutureProvider.family<Event, String>((ref, eventId) async {
+  final event = await DatabaseService.getEvent(eventId);
+  return event;
+});

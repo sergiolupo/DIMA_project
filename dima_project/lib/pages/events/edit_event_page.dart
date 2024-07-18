@@ -5,14 +5,16 @@ import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-class EditEventPage extends StatefulWidget {
+class EditEventPage extends ConsumerStatefulWidget {
   final Event event;
   final String uuid;
 
@@ -22,7 +24,7 @@ class EditEventPage extends StatefulWidget {
   EditEventPageState createState() => EditEventPageState();
 }
 
-class EditEventPageState extends State<EditEventPage> {
+class EditEventPageState extends ConsumerState<EditEventPage> {
   Uint8List? selectedImagePath;
   Uint8List? _oldImage;
   final TextEditingController _eventNameController = TextEditingController();
@@ -413,6 +415,9 @@ class EditEventPageState extends State<EditEventPage> {
       widget.event.isPublic != isPublic,
       uuids,
     );
+    ref.invalidate(eventProvider(widget.event.id!));
+    ref.invalidate(joinedEventsProvider(widget.uuid));
+    ref.invalidate(createdEventsProvider(widget.uuid));
   }
 
   void delete(int index) {
