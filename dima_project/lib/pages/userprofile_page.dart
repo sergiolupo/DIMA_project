@@ -51,7 +51,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
     return Consumer(builder: (context, watch, _) {
       return user.when(
         data: (user) {
-          debugPrint('User: ${user.name}');
           return _buildProfile(user);
         },
         loading: () => const CupertinoActivityIndicator(),
@@ -166,7 +165,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          getGroup(),
+                          getGroups(),
                           const SizedBox(width: 20),
                           getFollowers(),
                           const SizedBox(width: 20),
@@ -258,7 +257,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
       visible: index == 1,
       child: Consumer(builder: (context, ref, _) {
         final events = ref.watch(joinedEventsProvider(widget.user));
-        debugPrint('Events: $events');
         return events.when(
             data: (events) {
               return Column(
@@ -360,17 +358,20 @@ class UserProfileState extends ConsumerState<UserProfile> {
     );
   }
 
-  Widget getGroup() {
+  Widget getGroups() {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) =>
-                  ShowGroupsPage(user: widget.user, uuid: widget.uuid),
-            ),
-          ),
+          onTap: () {
+            ref.invalidate(groupsProvider(widget.user));
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) =>
+                    ShowGroupsPage(user: widget.user, uuid: widget.uuid),
+              ),
+            );
+          },
           child: SizedBox(
             height: 50,
             child: Column(
@@ -412,13 +413,16 @@ class UserProfileState extends ConsumerState<UserProfile> {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => ShowFollowers(
-                  user: widget.user, uuid: widget.uuid, followers: true),
-            ),
-          ),
+          onTap: () {
+            ref.invalidate(followerProvider(widget.user));
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => ShowFollowers(
+                    user: widget.user, uuid: widget.uuid, followers: true),
+              ),
+            );
+          },
           child: SizedBox(
             height: 50,
             child: Column(
@@ -460,13 +464,16 @@ class UserProfileState extends ConsumerState<UserProfile> {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => ShowFollowers(
-                  user: widget.user, uuid: widget.uuid, followers: false),
-            ),
-          ),
+          onTap: () {
+            ref.invalidate(followingProvider(widget.user));
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => ShowFollowers(
+                    user: widget.user, uuid: widget.uuid, followers: false),
+              ),
+            );
+          },
           child: SizedBox(
             height: 50,
             child: Column(
