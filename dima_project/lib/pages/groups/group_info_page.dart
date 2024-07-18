@@ -7,13 +7,15 @@ import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/pages/show_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GroupInfoPage extends StatefulWidget {
+class GroupInfoPage extends ConsumerStatefulWidget {
   final String uuid;
   final Group group;
   const GroupInfoPage({
@@ -26,12 +28,13 @@ class GroupInfoPage extends StatefulWidget {
   GroupInfoPageState createState() => GroupInfoPageState();
 }
 
-class GroupInfoPageState extends State<GroupInfoPage> {
+class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
   Stream<int>? _numberOfRequestsStream;
   Stream<int>? _numberOfMediaStream;
   Stream<int>? _numberOfEventsStream;
   Stream<int>? _numberOfNewsStream;
   Group? group;
+  AsyncValue<List<UserData>>? asyncFollowing;
   @override
   void initState() {
     super.initState();
@@ -39,6 +42,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
       group = widget.group;
     });
     getMembers();
+    ref.read(followingProvider(widget.uuid));
   }
 
   void getMembers() {
@@ -68,6 +72,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    asyncFollowing = ref.watch(followingProvider(widget.uuid));
+
     return _numberOfRequestsStream == null ||
             _numberOfMediaStream == null ||
             _numberOfEventsStream == null ||
@@ -490,57 +496,61 @@ class GroupInfoPageState extends State<GroupInfoPage> {
             shrinkWrap: true,
             itemCount: group!.members!.length,
             itemBuilder: (context, index) {
-              return StreamBuilder(
-                stream:
-                    DatabaseService.getUserDataFromUUID(group!.members![index]),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CupertinoActivityIndicator(); // Or any loading indicator
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final UserData userData = snapshot.data!;
-                    return StreamBuilder(
-                        stream: DatabaseService.isFollowing(
-                            userData.uuid!, widget.uuid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CupertinoActivityIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            final isFollowing = snapshot.data!;
-                            if (userData.uuid == group!.admin) {
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: UserTile(
-                                      user: userData,
-                                      uuid: widget.uuid,
-                                      isFollowing: isFollowing,
-                                    ),
+              return FutureBuilder(
+                  future: DatabaseService.getUserData(group!.members![index]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CupertinoActivityIndicator(); // Or any loading indicator
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final UserData userData = snapshot.data!;
+                      return asyncFollowing!.when(
+                        loading: () => const CupertinoActivityIndicator(),
+                        error: (err, stack) => Text('Error: $err'),
+                        data: (following) {
+                          if (widget.group.admin == userData.uuid) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: UserTile(
+                                    user: userData,
+                                    uuid: widget.uuid,
+                                    isFollowing: following
+                                            .any((u) => u.uuid == userData.uuid)
+                                        ? 1
+                                        : userData.isPublic == false &&
+                                                userData.requests!
+                                                    .contains(widget.uuid)
+                                            ? 2
+                                            : 0,
                                   ),
-                                  const Text(
-                                    "Admin",
-                                    style: TextStyle(
-                                      color: CupertinoColors.systemGrey4,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                const Text(
+                                  "Admin",
+                                  style: TextStyle(
+                                    color: CupertinoColors.systemGrey4,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              );
-                            }
-                            return UserTile(
-                              user: userData,
-                              uuid: widget.uuid,
-                              isFollowing: isFollowing,
+                                ),
+                              ],
                             );
                           }
-                        });
-                  }
-                },
-              );
+                          return UserTile(
+                            user: userData,
+                            uuid: widget.uuid,
+                            isFollowing: following
+                                    .any((u) => u.uuid == userData.uuid)
+                                ? 1
+                                : userData.isPublic == false &&
+                                        userData.requests!.contains(widget.uuid)
+                                    ? 2
+                                    : 0,
+                          );
+                        },
+                      );
+                    }
+                  });
             },
           );
   }
