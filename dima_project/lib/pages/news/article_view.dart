@@ -22,6 +22,14 @@ class _ArticleViewState extends State<ArticleView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
+          leading: Navigator.canPop(context)
+              ? CupertinoNavigationBarBackButton(
+                  color: CupertinoTheme.of(context).primaryColor,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              : null,
           trailing: GestureDetector(
             child: const Icon(CupertinoIcons.share),
             onTap: () async {

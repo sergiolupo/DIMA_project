@@ -101,7 +101,13 @@ class MyApp extends StatelessWidget {
       theme: const CupertinoThemeData(
         primaryColor: Constants.primaryColor,
         primaryContrastingColor: Constants.primaryColorDark,
-        scaffoldBackgroundColor: CupertinoColors.white,
+        scaffoldBackgroundColor: Constants.scaffoldBackgroundColor,
+        barBackgroundColor: Constants.barBackgroundColor,
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(
+            color: Constants.textColor,
+          ),
+        ),
       ),
       routerConfig: _router,
       title: "AGORAPP",

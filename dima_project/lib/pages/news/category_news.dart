@@ -35,6 +35,14 @@ class _CategoryNewsState extends State<CategoryNews> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              leading: Navigator.canPop(context)
+                  ? CupertinoNavigationBarBackButton(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  : null,
               middle: Text(
                 widget.name,
                 style: TextStyle(

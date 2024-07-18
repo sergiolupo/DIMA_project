@@ -24,6 +24,14 @@ class SearchNewsPageState extends State<SearchNewsPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: Navigator.canPop(context)
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            : null,
         middle: Text(
           "Search News",
           style: TextStyle(color: CupertinoTheme.of(context).primaryColor),

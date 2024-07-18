@@ -48,11 +48,11 @@ class ListChatPageState extends State<ListChatPage> {
             data: MediaQuery.of(context),
             child: CupertinoPageScaffold(
               navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).primaryColor,
-                middle: const Text(
+                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+                middle: Text(
                   "Chat",
                   style: TextStyle(
-                    color: CupertinoColors.white,
+                    color: CupertinoTheme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 27,
                   ),

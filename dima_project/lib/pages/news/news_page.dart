@@ -68,20 +68,20 @@ class _NewsPageState extends State<NewsPage> {
                       CupertinoPageRoute(
                           builder: (context) => const SearchNewsPage()));
                 },
-                child: const Icon(
+                child: Icon(
                   CupertinoIcons.search,
-                  color: CupertinoColors.white,
+                  color: CupertinoTheme.of(context).primaryColor,
                 ),
               ),
-              middle: const Text(
+              middle: Text(
                 "News",
                 style: TextStyle(
                   fontSize: 27,
                   fontWeight: FontWeight.bold,
-                  color: CupertinoColors.white,
+                  color: CupertinoTheme.of(context).primaryColor,
                 ),
               ),
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
             ),
             child: SafeArea(
               child: SingleChildScrollView(
@@ -142,10 +142,10 @@ class _NewsPageState extends State<NewsPage> {
                                                 .sublist(0, numberOfNews),
                                           )));
                             },
-                            child: const Text(
+                            child: Text(
                               "View All",
                               style: TextStyle(
-                                color: CupertinoColors.activeBlue,
+                                color: CupertinoTheme.of(context).primaryColor,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 16.0,
                               ),
@@ -198,10 +198,11 @@ class _NewsPageState extends State<NewsPage> {
                                     builder: (context) => AllNews(
                                         news: "Trending",
                                         articles: articles!))),
-                            child: const Text(
+                            child: Text(
                               "View All",
                               style: TextStyle(
-                                  color: CupertinoColors.activeBlue,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16.0),
                             ),

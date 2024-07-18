@@ -33,7 +33,8 @@ class LoginForm extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 50),
             color: CupertinoColors.systemPink,
             borderRadius: BorderRadius.circular(20),
-            child: const Text('Login'),
+            child: const Text('Login',
+                style: TextStyle(color: CupertinoColors.white)),
           ),
           const SizedBox(height: 20),
           CupertinoButton(

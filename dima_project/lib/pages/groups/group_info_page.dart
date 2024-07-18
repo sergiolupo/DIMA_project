@@ -86,11 +86,16 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Icon(CupertinoIcons.back,
-                    color: CupertinoColors.white),
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
               ),
-              middle: const Text("Group Info"),
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              middle: Text(
+                "Group Info",
+                style:
+                    TextStyle(color: CupertinoTheme.of(context).primaryColor),
+              ),
+              backgroundColor:
+                  CupertinoTheme.of(context).scaffoldBackgroundColor,
               trailing: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () async {
@@ -107,11 +112,11 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                     });
                   }
                 },
-                child: const Text(
+                child: Text(
                   'Edit',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: CupertinoColors.white,
+                    color: CupertinoTheme.of(context).primaryColor,
                   ),
                 ),
               ),
