@@ -49,13 +49,24 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     if (_searchController.text.isNotEmpty) {
-                      return Center(
-                          child: Column(
-                        children: [
-                          Image.asset('assets/images/no_news_found.png'),
-                          const Text("No results found"),
-                        ],
-                      ));
+                      return Stack(children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                          child: SingleChildScrollView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            reverse: false,
+                            child: Column(
+                              children: [
+                                Image.asset('assets/images/no_news_found.png'),
+                                const Text("No results found"),
+                              ],
+                            ),
+                          ),
+                        )
+                      ]);
                     }
                     return Center(
                       child: Column(
