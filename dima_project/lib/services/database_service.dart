@@ -1501,19 +1501,17 @@ class DatabaseService {
     return events;
   }
 
-  static Stream<bool> checkIfJoined(bool isGroup, String? id, String uuid) {
-    if (id == null) return Stream.value(false);
+  static Future<bool> checkIfJoined(
+      bool isGroup, String? id, String uuid) async {
+    if (id == null) return false;
     if (isGroup) {
-      return groupsRef.doc(id).snapshots().map((snapshot) {
-        return snapshot['members']
-            .contains(uuid); // Check if the user is a member of the group
-      });
+      final doc = await groupsRef.doc(id).get();
+      return (doc['members'].contains(uuid));
     } else {
-      return eventsRef.doc(id).snapshots().asyncMap((snapshot) async {
-        return (await Event.fromSnapshot(snapshot))
-            .details!
-            .any((element) => element.members!.contains(uuid));
-      });
+      final doc = await eventsRef.doc(id).get();
+      return (await Event.fromSnapshot(doc))
+          .details!
+          .any((element) => element.members!.contains(uuid));
     }
   }
 

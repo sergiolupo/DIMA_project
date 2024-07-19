@@ -109,8 +109,8 @@ class InvitePageState extends ConsumerState<InvitePage> {
                   itemCount: filteredUsers.length,
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
-                    return StreamBuilder(
-                      stream: DatabaseService.checkIfJoined(
+                    return FutureBuilder(
+                      future: DatabaseService.checkIfJoined(
                           widget.isGroup, widget.id, userData.uuid!),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
