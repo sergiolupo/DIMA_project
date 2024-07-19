@@ -32,6 +32,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
   int _isFollowing = 0; // 0 is not following, 1 is following, 2 is requested
 
   int index = 0;
+  bool navigatorCanPop = false;
   @override
   void initState() {
     super.initState();
@@ -43,6 +44,9 @@ class UserProfileState extends ConsumerState<UserProfile> {
     ref.read(groupsProvider(widget.user));
     ref.read(joinedEventsProvider(widget.user));
     ref.read(createdEventsProvider(widget.user));
+    setState(() {
+      navigatorCanPop = canNavigatorPop(context);
+    });
   }
 
   @override
@@ -64,20 +68,21 @@ class UserProfileState extends ConsumerState<UserProfile> {
     });
   }
 
+  bool canNavigatorPop(BuildContext context) {
+    return Navigator.of(context).canPop();
+  }
+
   Widget _buildProfile(UserData user) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: (context.mounted && Navigator.of(context).canPop())
+        leading: (navigatorCanPop)
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   if (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
-                    debugPrint('Can pop');
-                  } else {
-                    debugPrint('Cannot pop');
-                  }
+                  } else {}
                 },
               )
             : Padding(
@@ -90,7 +95,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   ),
                 ),
               ),
-        middle: Navigator.of(context).canPop()
+        middle: navigatorCanPop
             ? Text(
                 user.username,
                 style: const TextStyle(
