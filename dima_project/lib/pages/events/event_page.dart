@@ -33,7 +33,7 @@ class EventPageState extends ConsumerState<EventPage> {
         data: (event) {
           return CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoColors.systemPink,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               trailing: widget.uuid == event.admin
                   ? CupertinoButton(
                       padding: const EdgeInsets.all(0),
@@ -46,26 +46,29 @@ class EventPageState extends ConsumerState<EventPage> {
                                       uuid: widget.uuid,
                                     )));
                       },
-                      child: const Text(
+                      child: Text(
                         'Edit',
                         style: TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: CupertinoColors.white,
+                          color: CupertinoTheme.of(context).primaryColor,
                         ),
                       ),
                     )
                   : null,
               leading: Navigator.canPop(context)
                   ? CupertinoNavigationBarBackButton(
-                      color: CupertinoColors.white,
+                      color: CupertinoTheme.of(context).primaryColor,
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                     )
                   : null,
-              middle: const Text(
+              middle: Text(
                 'Event',
-                style: TextStyle(color: CupertinoColors.white),
+                style: TextStyle(
+                    color: CupertinoTheme.of(context).primaryColor,
+                    fontSize: 18),
               ),
             ),
             child: SafeArea(
