@@ -29,7 +29,7 @@ class UserProfile extends ConsumerStatefulWidget {
 class UserProfileState extends ConsumerState<UserProfile> {
   late final bool isMyProfile;
 
-  int _isFollowing = 0; // 0 is not following, 1 is following, 2 is requested
+// 0 is not following, 1 is following, 2 is requested
 
   int index = 0;
   bool navigatorCanPop = false;
@@ -37,10 +37,10 @@ class UserProfileState extends ConsumerState<UserProfile> {
   void initState() {
     super.initState();
     isMyProfile = widget.uuid == widget.user;
-    if (!isMyProfile) _checkFollow();
     ref.read(userProvider(widget.user));
     ref.read(followerProvider(widget.user));
     ref.read(followingProvider(widget.user));
+    ref.read(followingProvider(widget.uuid));
     ref.read(groupsProvider(widget.user));
     ref.read(joinedEventsProvider(widget.user));
     ref.read(createdEventsProvider(widget.user));
@@ -53,19 +53,17 @@ class UserProfileState extends ConsumerState<UserProfile> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider(widget.user));
 
-    return Consumer(builder: (context, watch, _) {
-      return user.when(
-        data: (user) {
-          return _buildProfile(user);
-        },
-        loading: () => const CupertinoActivityIndicator(),
-        error: (error, stackTrace) {
-          return Center(
-            child: Text('Error: $error'),
-          );
-        },
-      );
-    });
+    return user.when(
+      data: (user) {
+        return _buildProfile(user);
+      },
+      loading: () => const CupertinoActivityIndicator(),
+      error: (error, stackTrace) {
+        return Center(
+          child: Text('Error: $error'),
+        );
+      },
+    );
   }
 
   bool canNavigatorPop(BuildContext context) {
@@ -73,6 +71,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget _buildProfile(UserData user) {
+    final followings = ref.watch(followingProvider(widget.uuid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -80,9 +79,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  } else {}
+                  Navigator.of(context).pop();
                 },
               )
             : Padding(
@@ -198,18 +195,31 @@ class UserProfileState extends ConsumerState<UserProfile> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 40, vertical: 8),
                               onPressed: () async {
-                                DatabaseService.toggleFollowUnfollow(
+                                await DatabaseService.toggleFollowUnfollow(
                                     widget.user, widget.uuid);
+                                ref.invalidate(followingProvider(widget.uuid));
+                                ref.invalidate(followerProvider(widget.user));
                               },
-                              child: Text(
-                                style: const TextStyle(
-                                  color: CupertinoColors.white,
-                                ),
-                                _isFollowing == 0
-                                    ? "Follow"
-                                    : _isFollowing == 1
-                                        ? "Unfollow"
-                                        : "Requested",
+                              child: followings.when(
+                                data: (followings) {
+                                  return Text(
+                                      style: const TextStyle(
+                                        color: CupertinoColors.white,
+                                      ),
+                                      followings.any((element) =>
+                                              element.uuid! == widget.user)
+                                          ? "Unfollow"
+                                          : user.requests!.contains(widget.user)
+                                              ? "Requested"
+                                              : "Follow");
+                                },
+                                loading: () =>
+                                    const CupertinoActivityIndicator(),
+                                error: (error, stackTrace) {
+                                  return Center(
+                                    child: Text('Error: $error'),
+                                  );
+                                },
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -271,112 +281,110 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget getJoinedEvents(UserData user) {
+    final events = ref.watch(joinedEventsProvider(widget.user));
+
     return Visibility(
       visible: index == 1,
-      child: Consumer(builder: (context, ref, _) {
-        final events = ref.watch(joinedEventsProvider(widget.user));
-        return events.when(
-            data: (events) {
-              return Column(
-                children: [
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5.0,
-                      mainAxisSpacing: 5.0,
-                    ),
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      final event = events[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => ShowEvent(
-                              uuid: widget.uuid,
-                              eventId: event.id!,
-                              events: events,
-                              userData: user,
-                            ),
+      child: events.when(
+          data: (events) {
+            return Column(
+              children: [
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
+                  ),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final event = events[index];
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => ShowEvent(
+                            uuid: widget.uuid,
+                            eventId: event.id!,
+                            events: events,
+                            userData: user,
                           ),
                         ),
-                        child: EventGrid(
-                          uuid: widget.uuid,
-                          event: event,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-            error: (error, stackTrace) {
-              return Center(
-                child: Text('Error: $error'),
-              );
-            },
-            loading: () => const CupertinoActivityIndicator());
-      }),
+                      ),
+                      child: EventGrid(
+                        uuid: widget.uuid,
+                        event: event,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+          error: (error, stackTrace) {
+            return Center(
+              child: Text('Error: $error'),
+            );
+          },
+          loading: () => const CupertinoActivityIndicator()),
     );
   }
 
   Widget getCreatedEvents(UserData user) {
+    final events = ref.watch(createdEventsProvider(widget.user));
+
     return Visibility(
       visible: index == 0,
-      child: Consumer(builder: (context, ref, _) {
-        final events = ref.watch(createdEventsProvider(widget.user));
-        return events.when(
-            data: (events) {
-              return Column(
-                children: [
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5.0,
-                      mainAxisSpacing: 5.0,
-                    ),
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      final event = events[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => ShowEvent(
-                              uuid: widget.uuid,
-                              eventId: event.id!,
-                              events: events,
-                              userData: user,
-                            ),
+      child: events.when(
+          data: (events) {
+            return Column(
+              children: [
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
+                  ),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final event = events[index];
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => ShowEvent(
+                            uuid: widget.uuid,
+                            eventId: event.id!,
+                            events: events,
+                            userData: user,
                           ),
                         ),
-                        child: EventGrid(
-                          uuid: widget.uuid,
-                          event: event,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-            error: (error, stackTrace) {
-              return Center(
-                child: Text('Error: $error'),
-              );
-            },
-            loading: () => const CupertinoActivityIndicator());
-      }),
+                      ),
+                      child: EventGrid(
+                        uuid: widget.uuid,
+                        event: event,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+          error: (error, stackTrace) {
+            return Center(
+              child: Text('Error: $error'),
+            );
+          },
+          loading: () => const CupertinoActivityIndicator()),
     );
   }
 
   Widget getGroups() {
+    final groups = ref.watch(groupsProvider(widget.user));
+
     return Column(
       children: [
         GestureDetector(
@@ -394,23 +402,20 @@ class UserProfileState extends ConsumerState<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                Consumer(builder: (context, watch, _) {
-                  final groups = ref.watch(groupsProvider(widget.user));
-                  return groups.when(
-                    data: (groups) {
-                      return Text(
-                        groups.length.toString(),
-                        style: CupertinoTheme.of(context).textTheme.textStyle,
-                      );
-                    },
-                    loading: () => const CupertinoActivityIndicator(),
-                    error: (error, stackTrace) {
-                      return Center(
-                        child: Text('Error: $error'),
-                      );
-                    },
-                  );
-                }),
+                groups.when(
+                  data: (groups) {
+                    return Text(
+                      groups.length.toString(),
+                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                    );
+                  },
+                  loading: () => const CupertinoActivityIndicator(),
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text('Error: $error'),
+                    );
+                  },
+                ),
                 const SizedBox(height: 10),
                 Text(
                   "Groups",
@@ -428,6 +433,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget getFollowers() {
+    final followers = ref.watch(followerProvider(widget.user));
+
     return Column(
       children: [
         GestureDetector(
@@ -447,23 +454,20 @@ class UserProfileState extends ConsumerState<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                Consumer(builder: (context, watch, _) {
-                  final followers = ref.watch(followerProvider(widget.user));
-                  return followers.when(
-                    data: (followers) {
-                      return Text(
-                        followers.length.toString(),
-                        style: CupertinoTheme.of(context).textTheme.textStyle,
-                      );
-                    },
-                    loading: () => const CupertinoActivityIndicator(),
-                    error: (error, stackTrace) {
-                      return Center(
-                        child: Text('Error: $error'),
-                      );
-                    },
-                  );
-                }),
+                followers.when(
+                  data: (followers) {
+                    return Text(
+                      followers.length.toString(),
+                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                    );
+                  },
+                  loading: () => const CupertinoActivityIndicator(),
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text('Error: $error'),
+                    );
+                  },
+                ),
                 const SizedBox(height: 10),
                 Text(
                   "Followers",
@@ -481,6 +485,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget getFollowings() {
+    final following = ref.watch(followingProvider(widget.user));
+
     return Column(
       children: [
         GestureDetector(
@@ -500,23 +506,20 @@ class UserProfileState extends ConsumerState<UserProfile> {
             height: 50,
             child: Column(
               children: [
-                Consumer(builder: (context, watch, _) {
-                  final following = ref.watch(followingProvider(widget.user));
-                  return following.when(
-                    data: (following) {
-                      return Text(
-                        following.length.toString(),
-                        style: CupertinoTheme.of(context).textTheme.textStyle,
-                      );
-                    },
-                    loading: () => const CupertinoActivityIndicator(),
-                    error: (error, stackTrace) {
-                      return Center(
-                        child: Text('Error: $error'),
-                      );
-                    },
-                  );
-                }),
+                following.when(
+                  data: (following) {
+                    return Text(
+                      following.length.toString(),
+                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                    );
+                  },
+                  loading: () => const CupertinoActivityIndicator(),
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text('Error: $error'),
+                    );
+                  },
+                ),
                 const SizedBox(height: 10),
                 Text(
                   "Following",
@@ -536,24 +539,5 @@ class UserProfileState extends ConsumerState<UserProfile> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  _checkFollow() async {
-    if (!isMyProfile) {
-      // Listen for updates on the isFollowing stream
-      final isFollowingStream = DatabaseService.isFollowing(
-        widget.user,
-        widget.uuid,
-      );
-
-      // Listen for updates and update _isFollowing accordingly
-      await for (final isFollowing in isFollowingStream) {
-        if (mounted) {
-          setState(() {
-            _isFollowing = isFollowing;
-          });
-        }
-      }
-    }
   }
 }

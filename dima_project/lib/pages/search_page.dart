@@ -5,13 +5,15 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_tile.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   final String uuid;
   const SearchPage({super.key, required this.uuid});
 
@@ -19,7 +21,7 @@ class SearchPage extends StatefulWidget {
   SearchPageState createState() => SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
+class SearchPageState extends ConsumerState<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       _searchStreamController =
@@ -29,8 +31,11 @@ class SearchPageState extends State<SearchPage> {
       _searchStreamSubscription;
 
   int searchIdx = 0;
+
   @override
   void initState() {
+    ref.read(followingProvider(widget.uuid));
+
     super.initState();
   }
 
@@ -65,6 +70,8 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final followings = ref.watch(followingProvider(widget.uuid));
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(
@@ -164,23 +171,23 @@ class SearchPageState extends State<SearchPage> {
                     if (searchIdx == 0 &&
                         (docs[index].data()).containsKey('email')) {
                       final userData = UserData.fromSnapshot(docs[index]);
-                      return StreamBuilder(
-                          stream: DatabaseService.isFollowing(
-                              userData.uuid!, widget.uuid),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CupertinoActivityIndicator();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              final isFollowing = snapshot.data as int;
-                              return UserTile(
-                                user: userData,
-                                uuid: widget.uuid,
-                                isFollowing: isFollowing,
-                              );
-                            }
+                      return followings.when(
+                          data: (followingData) {
+                            final int isFollowing = followingData.any(
+                                    (element) => element.uuid! == userData.uuid)
+                                ? 1
+                                : userData.requests!.contains(widget.uuid)
+                                    ? 2
+                                    : 0;
+                            return UserTile(
+                              user: userData,
+                              uuid: widget.uuid,
+                              isFollowing: isFollowing,
+                            );
+                          },
+                          loading: () => const CupertinoActivityIndicator(),
+                          error: (error, stackTrace) {
+                            return Text('Error: $error');
                           });
                     } else if (searchIdx == 1 &&
                         (docs[index].data()).containsKey('groupId')) {

@@ -587,22 +587,6 @@ class DatabaseService {
     }
   }
 
-  static Future<String> getUserImage(String uid) async {
-    return await usersRef.doc(uid).get().then((documentSnapshot) {
-      return documentSnapshot['imageUrl'];
-    });
-  }
-
-  static Stream<bool> isFollowingUser(String user, String visitor) async* {
-    DocumentSnapshot userDoc = await followersRef.doc(user).get();
-    yield userDoc['followers'].contains(visitor);
-
-    final snapshots = followersRef.doc(user).snapshots();
-    await for (var snapshot in snapshots) {
-      yield snapshot['followers'].contains(visitor);
-    }
-  }
-
   static Stream<int> isFollowing(String user, String visitor) async* {
     // 0 is not following, 1 is following, 2 is requested
 
