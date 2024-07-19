@@ -1,3 +1,4 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/group_request_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,15 +16,19 @@ class GroupRequestsPage extends StatefulWidget {
 }
 
 class GroupRequestsPageState extends State<GroupRequestsPage> {
-  Stream<List<dynamic>>? requests;
+  List<UserData>? users;
   @override
   void initState() {
     init();
     super.initState();
   }
 
-  init() {
-    requests = DatabaseService.getGroupRequestsStream(widget.groupId);
+  init() async {
+    final requests =
+        await DatabaseService.getGroupRequestsForGroup(widget.groupId);
+    setState(() {
+      users = requests;
+    });
   }
 
   @override
@@ -39,44 +44,12 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
         ),
         middle: const Text('Group Requests'),
       ),
-      child: StreamBuilder<List<dynamic>>(
-        stream: requests,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          }
-          if (snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No requests'),
-            );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              return StreamBuilder(
-                  stream: DatabaseService.getUserDataFromUUID(
-                      snapshot.data![index]),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CupertinoActivityIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      final userData = snapshot.data!;
-                      return GroupRequestTile(
-                        user: userData,
-                        groupId: widget.groupId,
-                      );
-                    }
-                  });
-            },
+      child: ListView.builder(
+        itemCount: users!.length,
+        itemBuilder: (context, index) {
+          return GroupRequestTile(
+            user: users![index],
+            groupId: widget.groupId,
           );
         },
       ),

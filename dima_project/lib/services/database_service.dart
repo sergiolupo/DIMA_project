@@ -1020,6 +1020,15 @@ class DatabaseService {
     });
   }
 
+  static Future<List<UserData>> getGroupRequestsForGroup(String id) async {
+    final docs = await groupsRef.doc(id).get();
+    List<UserData> users = [];
+    for (var user in docs['requests']) {
+      users.add(await getUserData(user));
+    }
+    return users;
+  }
+
   static Future<List<String>> getGroupRequests(String id) async {
     return (await groupsRef.doc(id).get())['requests'];
   }
