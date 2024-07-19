@@ -15,7 +15,6 @@ class TimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       padding: const EdgeInsets.all(12),
-      color: CupertinoColors.extraLightBackgroundGray,
       borderRadius: BorderRadius.circular(30),
       child: Icon(
         FontAwesomeIcons.clock,

@@ -72,8 +72,9 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                     return const SizedBox();
                   }
                   final UserData other = snapshot.data as UserData;
-                  return GestureDetector(
-                    onTap: () {
+                  return CupertinoButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
                       Navigator.of(context, rootNavigator: true).push(
                         CupertinoPageRoute(
                           builder: (context) => PrivateChatPage(

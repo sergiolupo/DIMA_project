@@ -25,83 +25,48 @@ class CustomSelectOptionState extends State<CustomSelectOption> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: CupertinoTheme(
-        data: const CupertinoThemeData(
-          primaryColor: CupertinoColors.activeBlue,
-        ),
-        child: Container(
-          color: CupertinoColors.white,
-          height: 50,
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      idx = 0;
-                      widget.onChanged(idx);
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.textLeft,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: idx == 0
-                              ? CupertinoTheme.of(context).primaryColor
-                              : CupertinoColors.inactiveGray,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Container(
-                        height: idx == 0 ? 3 : 1,
+      child: Container(
+        color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+        height: 50,
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    idx = 0;
+                    widget.onChanged(idx);
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.textLeft,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
                         color: idx == 0
                             ? CupertinoTheme.of(context).primaryColor
-                            : CupertinoColors.opaqueSeparator,
+                            : CupertinoColors.inactiveGray,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 5),
+                    Container(
+                      height: idx == 0 ? 3 : 1,
+                      color: idx == 0
+                          ? CupertinoTheme.of(context).primaryColor
+                          : CupertinoColors.opaqueSeparator,
+                    ),
+                  ],
                 ),
               ),
-              if (widget.textMiddle != null)
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        idx = 1;
-                        widget.onChanged(idx);
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.textMiddle!,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: idx == 1
-                                ? CupertinoTheme.of(context).primaryColor
-                                : CupertinoColors.inactiveGray,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Container(
-                          height: idx == 1 ? 3 : 1,
-                          color: idx == 1
-                              ? CupertinoTheme.of(context).primaryColor
-                              : CupertinoColors.opaqueSeparator,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+            ),
+            if (widget.textMiddle != null)
               Expanded(
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      idx = widget.textMiddle != null ? 2 : 1;
+                      idx = 1;
                       widget.onChanged(idx);
                     });
                   },
@@ -109,19 +74,18 @@ class CustomSelectOptionState extends State<CustomSelectOption> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.textRight,
+                        widget.textMiddle!,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: idx == (widget.textMiddle != null ? 2 : 1)
+                          color: idx == 1
                               ? CupertinoTheme.of(context).primaryColor
                               : CupertinoColors.inactiveGray,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Container(
-                        height:
-                            idx == (widget.textMiddle != null ? 2 : 1) ? 3 : 1,
-                        color: idx == (widget.textMiddle != null ? 2 : 1)
+                        height: idx == 1 ? 3 : 1,
+                        color: idx == 1
                             ? CupertinoTheme.of(context).primaryColor
                             : CupertinoColors.opaqueSeparator,
                       ),
@@ -129,8 +93,39 @@ class CustomSelectOptionState extends State<CustomSelectOption> {
                   ),
                 ),
               ),
-            ],
-          ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    idx = widget.textMiddle != null ? 2 : 1;
+                    widget.onChanged(idx);
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.textRight,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: idx == (widget.textMiddle != null ? 2 : 1)
+                            ? CupertinoTheme.of(context).primaryColor
+                            : CupertinoColors.inactiveGray,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Container(
+                      height:
+                          idx == (widget.textMiddle != null ? 2 : 1) ? 3 : 1,
+                      color: idx == (widget.textMiddle != null ? 2 : 1)
+                          ? CupertinoTheme.of(context).primaryColor
+                          : CupertinoColors.opaqueSeparator,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

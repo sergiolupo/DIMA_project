@@ -278,9 +278,20 @@ class CreateGroupPageState extends State<CreateGroupPage> {
           _groupDescriptionController.text)) {
         return;
       }
-      setState(() {
+      createGroup(
+        Group(
+            name: _groupNameController.text,
+            id: '',
+            admin: widget.uuid,
+            description: _groupDescriptionController.text,
+            categories: selectedCategories,
+            isPublic: isPublic,
+            notify: notify),
+        selectedImagePath,
+      );
+      /*setState(() {
         _currentPage = 2;
-      });
+      });*/
     } else {
       if (!GroupHelper.validateSecondPage(context, selectedCategories)) {
         return;

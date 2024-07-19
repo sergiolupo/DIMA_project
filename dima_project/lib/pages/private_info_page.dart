@@ -72,11 +72,13 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Icon(CupertinoIcons.back,
-                    color: CupertinoColors.white),
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
               ),
-              middle: const Text("Private Chat Info"),
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              middle: Text("Private Chat Info",
+                  style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryColor)),
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
             ),
             child: CupertinoScrollbar(
               child: SingleChildScrollView(

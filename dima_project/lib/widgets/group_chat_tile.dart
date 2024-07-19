@@ -87,8 +87,11 @@ class GroupChatTileState extends State<GroupChatTile> {
                       children: [
                         Text(
                           widget.group.name,
-                          style: const TextStyle(
-                              color: CupertinoColors.black,
+                          style: TextStyle(
+                              color: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .color,
                               fontWeight: FontWeight.bold,
                               fontSize: 16),
                         ),

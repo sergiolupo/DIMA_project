@@ -86,8 +86,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   user.username,
-                  style: const TextStyle(
-                    color: CupertinoColors.black,
+                  style: TextStyle(
+                    color: CupertinoTheme.of(context).textTheme.textStyle.color,
                     fontSize: 25,
                   ),
                 ),
@@ -95,8 +95,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
         middle: navigatorCanPop
             ? Text(
                 user.username,
-                style: const TextStyle(
-                  color: CupertinoColors.black,
+                style: TextStyle(
+                  color: CupertinoTheme.of(context).textTheme.textStyle.color,
                   fontSize: 20,
                 ),
               )
@@ -107,8 +107,9 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     context,
                     CupertinoPageRoute(
                         builder: (context) => OptionsPage(uuid: widget.uuid))),
-                child: const Icon(CupertinoIcons.bars,
-                    color: CupertinoColors.black),
+                child: Icon(CupertinoIcons.bars,
+                    color:
+                        CupertinoTheme.of(context).textTheme.textStyle.color),
               )
             : null,
       ),
@@ -257,7 +258,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
             ),
           ),
           Container(
-            color: CupertinoColors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [

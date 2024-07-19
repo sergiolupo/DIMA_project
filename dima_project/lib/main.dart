@@ -98,17 +98,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp.router(
-      theme: const CupertinoThemeData(
-        primaryColor: Constants.primaryColor,
-        primaryContrastingColor: Constants.primaryColorDark,
-        scaffoldBackgroundColor: Constants.scaffoldBackgroundColor,
-        barBackgroundColor: Constants.barBackgroundColor,
-        textTheme: CupertinoTextThemeData(
-          textStyle: TextStyle(
-            color: Constants.textColor,
-          ),
-        ),
-      ),
+      theme: MediaQuery.of(context).platformBrightness == Brightness.dark
+          ? const CupertinoThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Constants.primaryColorDark,
+              primaryContrastingColor: Constants.primaryContrastingColorDark,
+              scaffoldBackgroundColor: Constants.scaffoldBackgroundColorDark,
+              barBackgroundColor: Constants.barBackgroundColorDark,
+              textTheme: CupertinoTextThemeData(
+                textStyle: TextStyle(
+                  color: Constants.textColorDark,
+                ),
+              ),
+            )
+          : const CupertinoThemeData(
+              brightness: Brightness.light,
+              primaryColor: Constants.primaryColor,
+              primaryContrastingColor: Constants.primaryContrastingColor,
+              scaffoldBackgroundColor: Constants.scaffoldBackgroundColor,
+              barBackgroundColor: Constants.barBackgroundColor,
+              textTheme: CupertinoTextThemeData(
+                textStyle: TextStyle(
+                  color: Constants.textColor,
+                ),
+              ),
+            ),
       routerConfig: _router,
       title: "AGORAPP",
     );

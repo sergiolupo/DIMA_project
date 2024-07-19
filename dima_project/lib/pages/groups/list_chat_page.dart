@@ -47,6 +47,8 @@ class ListChatPageState extends State<ListChatPage> {
         : MediaQuery(
             data: MediaQuery.of(context),
             child: CupertinoPageScaffold(
+              backgroundColor:
+                  CupertinoTheme.of(context).scaffoldBackgroundColor,
               navigationBar: CupertinoNavigationBar(
                 backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
                 middle: Text(

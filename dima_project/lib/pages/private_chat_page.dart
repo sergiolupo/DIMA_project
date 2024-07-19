@@ -50,14 +50,15 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       navigationBar: CupertinoNavigationBar(
         middle: GestureDetector(
           onTap: () => {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => PrivateInfoPage(
-                  uuid: widget.uuid,
-                  privateChat: widget.privateChat,
-                ),
-              ),
-            )
+            if (widget.privateChat.id != null)
+              {
+                Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => PrivateInfoPage(
+                    uuid: widget.uuid,
+                    privateChat: widget.privateChat,
+                  ),
+                ))
+              }
           },
           child: SingleChildScrollView(
             child: StreamBuilder(
@@ -100,7 +101,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             ),
           ),
         ),
-        backgroundColor: CupertinoTheme.of(context).primaryColor,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CupertinoButton(
           padding: const EdgeInsets.all(0),
           onPressed: () {
@@ -111,7 +112,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
               Navigator.of(context).pop();
             }
           },
-          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
+          child: Icon(CupertinoIcons.back,
+              color: CupertinoTheme.of(context).primaryColor),
         ),
       ),
       child: Column(

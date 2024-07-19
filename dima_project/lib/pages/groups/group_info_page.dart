@@ -133,9 +133,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        decoration: const BoxDecoration(
-                          color: CupertinoColors.white,
-                        ),
+                        decoration: const BoxDecoration(),
                         child: Column(
                           children: [
                             Column(
@@ -174,9 +172,13 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             const SizedBox(width: 8),
                                             Text(
                                               category,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 16,
-                                                color: CupertinoColors.black,
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color,
                                               ),
                                             ),
                                           ],
@@ -189,7 +191,8 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                  color: CupertinoColors.lightBackgroundGray,
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor,
                                   borderRadius: BorderRadius.circular(10)),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -262,9 +265,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                               )
                                             : const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Icon(
+                                        Icon(
                                           CupertinoIcons.right_chevron,
-                                          color: CupertinoColors.black,
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
                                           size: 18,
                                         ),
                                       ],
@@ -320,9 +324,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             )
                                           : const SizedBox(),
                                       const SizedBox(width: 10),
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.right_chevron,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                         size: 18,
                                       ),
                                     ],
@@ -379,9 +384,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             )
                                           : const SizedBox(),
                                       const SizedBox(width: 10),
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.right_chevron,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                         size: 18,
                                       ),
                                     ],
@@ -438,9 +444,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             )
                                           : const SizedBox(),
                                       const SizedBox(width: 10),
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.right_chevron,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                         size: 18,
                                       ),
                                     ],

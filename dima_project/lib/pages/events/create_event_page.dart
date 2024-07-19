@@ -152,11 +152,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                         ),
                       ),
                       decoration: BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
-                        border: Border.all(
-                          color: CupertinoColors.systemGrey4,
-                          width: 2.0,
-                        ),
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -172,8 +169,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                         child: const Icon(CupertinoIcons.clear_circled_solid),
                       ),
                       decoration: BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
-                        border: Border.all(color: CupertinoColors.systemGrey4),
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -236,7 +233,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: CupertinoColors.extraLightBackgroundGray,
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                       ),
                       child: Column(
                         children: [
@@ -273,7 +271,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           ),
                           Container(
                             height: 1,
-                            color: CupertinoColors.opaqueSeparator,
+                            color: CupertinoColors.separator,
                           ),
                           CupertinoListTile(
                             title: const Row(
@@ -297,7 +295,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           ),
                           Container(
                             height: 1,
-                            color: CupertinoColors.opaqueSeparator,
+                            color: CupertinoColors.separator,
                           ),
                           CupertinoListTile(
                             title: Row(
@@ -327,7 +325,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           ),
                           Container(
                             height: 1,
-                            color: CupertinoColors.opaqueSeparator,
+                            color: CupertinoColors.separator,
                           ),
                           CupertinoListTile(
                             title: Row(
@@ -361,7 +359,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                         CupertinoButton(
                           onPressed: _createEvent,
                           padding: const EdgeInsets.symmetric(horizontal: 50),
-                          color: CupertinoColors.systemPink,
+                          color: CupertinoTheme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(20),
                           child: const Text(
                             'Create Event',
@@ -495,15 +493,16 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: CupertinoColors.extraLightBackgroundGray,
+                color: CupertinoTheme.of(context).primaryContrastingColor,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CupertinoListTile(
                     title: Container(
-                      decoration: const BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
+                      decoration: BoxDecoration(
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                       ),
                       child: Row(
                         children: [
@@ -533,12 +532,13 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.opaqueSeparator,
+                    color: CupertinoColors.separator,
                   ),
                   CupertinoListTile(
                     title: Container(
-                      decoration: const BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
+                      decoration: BoxDecoration(
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                       ),
                       child: Row(
                         children: [
@@ -568,12 +568,12 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.opaqueSeparator,
+                    color: CupertinoColors.separator,
                   ),
                   CupertinoListTile(
                       title: Container(
-                    decoration: const BoxDecoration(
-                      color: CupertinoColors.extraLightBackgroundGray,
+                    decoration: BoxDecoration(
+                      color: CupertinoTheme.of(context).primaryContrastingColor,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -603,12 +603,13 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                   )),
                   Container(
                     height: 1,
-                    color: CupertinoColors.opaqueSeparator,
+                    color: CupertinoColors.separator,
                   ),
                   CupertinoListTile(
                     title: Container(
-                      decoration: const BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
+                      decoration: BoxDecoration(
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -639,19 +640,19 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.opaqueSeparator,
+                    color: CupertinoColors.separator,
                   ),
                   CupertinoListTile(
                     title: Container(
-                      decoration: const BoxDecoration(
-                        color: CupertinoColors.extraLightBackgroundGray,
+                      decoration: BoxDecoration(
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CupertinoButton(
                             padding: const EdgeInsets.all(12),
-                            color: CupertinoColors.extraLightBackgroundGray,
                             borderRadius: BorderRadius.circular(30),
                             child: Icon(
                               CupertinoIcons.map_pin_ellipse,
@@ -761,7 +762,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: CupertinoColors.extraLightBackgroundGray,
+                color: CupertinoTheme.of(context).primaryContrastingColor,
               ),
               child: Column(
                 children: [

@@ -180,7 +180,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                   child: const Icon(CupertinoIcons.clear_circled_solid),
                 ),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.extraLightBackgroundGray,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -196,7 +196,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                   child: const Icon(CupertinoIcons.clear_circled_solid),
                 ),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.extraLightBackgroundGray,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -204,7 +204,7 @@ class EditGroupPageState extends State<EditGroupPage> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: CupertinoColors.extraLightBackgroundGray,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
                 ),
                 child: Column(
                   children: [
@@ -234,7 +234,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                     ),
                     Container(
                       height: 1,
-                      color: CupertinoColors.opaqueSeparator,
+                      color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
                       title: const Text('Categories'),
@@ -248,7 +248,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                     ),
                     Container(
                       height: 1,
-                      color: CupertinoColors.opaqueSeparator,
+                      color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
                       title: const Text('Notifications'),
@@ -266,7 +266,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                     ),
                     Container(
                       height: 1,
-                      color: CupertinoColors.opaqueSeparator,
+                      color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
                       leading: isPublic

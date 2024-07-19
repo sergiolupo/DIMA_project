@@ -31,7 +31,7 @@ class BlogTile extends StatelessWidget {
           child: PhysicalModel(
             elevation: 3.0,
             borderRadius: BorderRadius.circular(10),
-            color: CupertinoColors.white,
+            color: CupertinoTheme.of(context).primaryContrastingColor,
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -54,8 +54,11 @@ class BlogTile extends StatelessWidget {
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: CupertinoColors.black,
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .color,
                             fontWeight: FontWeight.w500,
                             fontSize: 17.0),
                       ),
@@ -69,8 +72,11 @@ class BlogTile extends StatelessWidget {
                         description,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: Color.fromRGBO(0, 0, 0, 0.54),
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .color,
                             fontWeight: FontWeight.w500,
                             fontSize: 15.0),
                       ),
