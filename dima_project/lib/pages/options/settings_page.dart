@@ -1,13 +1,15 @@
 import 'dart:typed_data';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   final String uuid;
   const SettingsPage({super.key, required this.uuid});
 
@@ -15,7 +17,7 @@ class SettingsPage extends StatefulWidget {
   SettingsPageState createState() => SettingsPageState();
 }
 
-class SettingsPageState extends State<SettingsPage> {
+class SettingsPageState extends ConsumerState<SettingsPage> {
   bool isObscure = true;
   Uint8List? selectedImagePath;
   int _currentPage = 1;
@@ -315,6 +317,7 @@ class SettingsPageState extends State<SettingsPage> {
       _oldImage != selectedImagePath,
       user!.isPublic != isPublic,
     );
+    ref.invalidate(userProvider);
   }
 
   void _showDialog(String title, String content) {
