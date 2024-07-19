@@ -1654,6 +1654,8 @@ class DatabaseService {
     });
 
     await eventsRef.doc(eventId).collection('details').doc(detailId).delete();
+
+    debugPrint('Detail deleted');
   }
 
   static Future<void> deleteEvent(String eventId) async {

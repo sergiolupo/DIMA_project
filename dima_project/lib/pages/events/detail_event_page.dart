@@ -1,12 +1,14 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/show_event_members.dart';
 import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DetailPage extends StatefulWidget {
+class DetailPage extends ConsumerStatefulWidget {
   final Event event;
   final String uuid;
   final Details detail;
@@ -19,7 +21,7 @@ class DetailPage extends StatefulWidget {
   DetailPageState createState() => DetailPageState();
 }
 
-class DetailPageState extends State<DetailPage> {
+class DetailPageState extends ConsumerState<DetailPage> {
   int _isJoining = 0;
   @override
   void initState() {
@@ -42,7 +44,7 @@ class DetailPageState extends State<DetailPage> {
                   // Show confirmation dialog
                   showCupertinoDialog(
                     context: context,
-                    builder: (context) => CupertinoAlertDialog(
+                    builder: (newContext) => CupertinoAlertDialog(
                       title: const Text('Delete Event'),
                       content: const Text(
                           'Are you sure you want to delete this event?'),
@@ -54,9 +56,12 @@ class DetailPageState extends State<DetailPage> {
                         CupertinoDialogAction(
                           child: const Text('Delete'),
                           onPressed: () async {
-                            Navigator.of(context).pop();
+                            Navigator.of(newContext).pop();
                             await DatabaseService.deleteDetail(
                                 widget.event.id!, widget.detail.id!);
+                            ref.invalidate(eventProvider(widget.event.id!));
+                            ref.invalidate(createdEventsProvider(widget.uuid));
+                            ref.invalidate(joinedEventsProvider(widget.uuid));
                             if (context.mounted) {
                               Navigator.of(context).pop();
                             }
