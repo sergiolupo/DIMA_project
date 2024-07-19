@@ -68,7 +68,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: Navigator.of(context).canPop()
+        leading: (context.mounted && Navigator.of(context).canPop())
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
