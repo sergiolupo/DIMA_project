@@ -1045,6 +1045,15 @@ class DatabaseService {
     });
   }
 
+  static Future<List<UserData>> getFollowRequestsForUser(String id) async {
+    final docs = await usersRef.doc(id).get();
+    List<UserData> users = [];
+    for (var user in docs['requests']) {
+      users.add(await getUserData(user));
+    }
+    return users;
+  }
+
   static Future<Map<String, List<String>>> getEventRequests(String id) async {
     Map<String, List<String>> requests = {};
     final det = await eventsRef.doc(id).collection('details').get();
@@ -1471,8 +1480,9 @@ class DatabaseService {
 
   static Future<List<Event>> getEventRequestsForUser(String uuid) async {
     final doc = await usersRef.doc(uuid).get();
-    final List<String> ids = doc['eventsRequests'];
+    final List<dynamic> ids = doc['eventsRequests'];
     final List<Event> events = [];
+    if (ids.isEmpty) return events;
     for (var id in ids) {
       final event = await eventsRef.doc(id).get();
       if (event.exists) {

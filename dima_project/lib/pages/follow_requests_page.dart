@@ -1,3 +1,4 @@
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/user_request_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,15 +11,19 @@ class FollowRequestsPage extends StatefulWidget {
 }
 
 class FollowRequestsPageState extends State<FollowRequestsPage> {
-  Stream<List<dynamic>>? userRequests;
+  List<UserData>? userRequests;
   @override
   void initState() {
     init();
     super.initState();
   }
 
-  init() {
-    userRequests = DatabaseService.getFollowRequests(widget.uuid);
+  init() async {
+    final requests =
+        await DatabaseService.getFollowRequestsForUser(widget.uuid);
+    setState(() {
+      userRequests = requests;
+    });
   }
 
   @override
@@ -35,37 +40,11 @@ class FollowRequestsPageState extends State<FollowRequestsPage> {
               ),
             ),
             child: SafeArea(
-              child: StreamBuilder<List<dynamic>>(
-                stream: userRequests,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List requests =
-                        snapshot.data!.map((doc) => doc).toList();
-                    return ListView.builder(
-                        itemCount: requests.length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder(
-                            stream: DatabaseService.getUserDataFromUUID(
-                              requests[index],
-                            ),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final user = snapshot.data!;
-                                return UserRequestTile(
-                                    user: user, uuid: widget.uuid);
-                              } else {
-                                return const Center(
-                                  child: CupertinoActivityIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        });
-                  } else {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
+              child: ListView.builder(
+                itemCount: userRequests!.length,
+                itemBuilder: (context, index) {
+                  return UserRequestTile(
+                      user: userRequests![index], uuid: widget.uuid);
                 },
               ),
             ),

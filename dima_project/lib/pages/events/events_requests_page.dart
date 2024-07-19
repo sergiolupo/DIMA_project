@@ -33,7 +33,9 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
             navigationBar: CupertinoNavigationBar(
               middle: const Text('Event Requests'),
               leading: CupertinoButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 padding: const EdgeInsets.only(left: 10),
                 child: const Icon(CupertinoIcons.back),
               ),
