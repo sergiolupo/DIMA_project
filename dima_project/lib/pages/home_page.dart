@@ -4,11 +4,13 @@ import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   final int? index;
   const HomePage({super.key, this.index});
 
@@ -16,7 +18,7 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   late int? _currentIndex;
   String? uuid;
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
@@ -56,6 +58,13 @@ class HomePageState extends State<HomePage> {
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               currentIndex: _currentIndex!,
               onTap: (index) {
+                ref.invalidate(userProvider);
+                ref.invalidate(followerProvider);
+                ref.invalidate(followingProvider);
+                ref.invalidate(groupsProvider);
+                ref.invalidate(joinedEventsProvider);
+                ref.invalidate(createdEventsProvider);
+                ref.invalidate(eventProvider);
                 if (_currentIndex == index) {
                   // Get the current tab's navigator key
                   final navigatorKey = _navigatorKeys[index];

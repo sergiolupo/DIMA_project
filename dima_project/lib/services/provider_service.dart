@@ -1,15 +1,11 @@
-// providers.dart
-
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dima_project/models/user.dart'; // Assuming UserData is defined here
-import 'package:dima_project/services/database_service.dart'; // Import your DatabaseService
+import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/database_service.dart';
 
 final userProvider = FutureProvider.family<UserData, String>((ref, uuid) async {
   final userData = await DatabaseService.getUserData(uuid);
-  debugPrint('User data: $userData');
   return userData;
 });
 
