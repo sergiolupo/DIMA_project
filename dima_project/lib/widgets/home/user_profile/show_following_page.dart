@@ -53,7 +53,11 @@ class ShowFollowing extends ConsumerWidget {
                 if (users.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/no_following_found.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset(
+                              'assets/darkMode/no_following_found.png')
+                          : Image.asset('assets/images/no_following_found.png'),
                       const Center(
                         child: Text('Not following anyone'),
                       ),
@@ -69,7 +73,10 @@ class ShowFollowing extends ConsumerWidget {
                 if (filteredUsers.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/search_following.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset('assets/darkMode/search_following.png')
+                          : Image.asset('assets/images/search_following.png'),
                       const Center(
                         child: Text('Not following anyone'),
                       ),

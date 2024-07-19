@@ -325,16 +325,21 @@ class GroupChatPageState extends State<GroupChatPage> {
                     newDate.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: ClipOval(
-                              child: Container(
-                                color: CupertinoColors.systemGrey3,
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  newDate,
-                                  style: const TextStyle(
-                                    color: CupertinoColors.white,
-                                    fontSize: 12,
-                                  ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                newDate,
+                                style: TextStyle(
+                                  color: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .color,
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -438,18 +443,24 @@ class GroupChatPageState extends State<GroupChatPage> {
             left: 0,
             right: 0,
             child: Container(
+              padding: const EdgeInsets.only(top: 10),
               height: 100,
-              color: CupertinoColors.white,
+              color: CupertinoColors.inactiveGray,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
                     onTap: onTapCreateEvent,
-                    child: const Column(
+                    child: Column(
                       children: [
                         Icon(CupertinoIcons.calendar,
-                            color: CupertinoColors.systemBlue),
-                        Text("Create Event"),
+                            color: CupertinoTheme.of(context).primaryColor),
+                        Text("Create Event",
+                            style: TextStyle(
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color)),
                       ],
                     ),
                   ),
@@ -458,21 +469,31 @@ class GroupChatPageState extends State<GroupChatPage> {
                       onTapCamera();
                       _overlayEntry?.remove();
                     },
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Icon(CupertinoIcons.camera,
-                            color: CupertinoColors.systemBlue),
-                        Text("Camera"),
+                        Icon(CupertinoIcons.camera_fill,
+                            color: CupertinoTheme.of(context).primaryColor),
+                        Text("Camera",
+                            style: TextStyle(
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color)),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: onTapPhoto,
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Icon(CupertinoIcons.photo,
-                            color: CupertinoColors.systemBlue),
-                        Text("Photo"),
+                        Icon(CupertinoIcons.photo_fill,
+                            color: CupertinoTheme.of(context).primaryColor),
+                        Text("Photo",
+                            style: TextStyle(
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color)),
                       ],
                     ),
                   ),

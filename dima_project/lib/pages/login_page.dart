@@ -74,7 +74,8 @@ class LoginPageState extends State<LoginPage> {
               },
               child: Text(
                 _showLogin ? 'Forgot Password?' : 'Back to Login',
-                style: const TextStyle(color: CupertinoColors.activeBlue),
+                style:
+                    TextStyle(color: CupertinoTheme.of(context).primaryColor),
               ),
             ),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -84,9 +85,9 @@ class LoginPageState extends State<LoginPage> {
                   onTap: () {
                     context.go('/register', extra: null);
                   },
-                  child: const Text('Register now',
+                  child: Text('Register now',
                       style: TextStyle(
-                          color: CupertinoColors.activeBlue,
+                          color: CupertinoTheme.of(context).primaryColor,
                           fontWeight: FontWeight.bold))),
             ]),
           ],

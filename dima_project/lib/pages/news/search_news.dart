@@ -68,7 +68,13 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                             reverse: false,
                             child: Column(
                               children: [
-                                Image.asset('assets/images/no_news_found.png'),
+                                MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/no_news_found.png',
+                                      )
+                                    : Image.asset(
+                                        'assets/images/no_news_found.png'),
                                 const Text("No results found"),
                               ],
                             ),
@@ -79,7 +85,10 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                     return Center(
                       child: Column(
                         children: [
-                          Image.asset('assets/images/search_news.png'),
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset('assets/darkMode/search_news.png')
+                              : Image.asset('assets/images/search_news.png'),
                           const Text("Search for news"),
                         ],
                       ),

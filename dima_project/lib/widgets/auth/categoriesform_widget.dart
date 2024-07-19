@@ -22,6 +22,7 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
     return Column(
       children: CategoryIconMapper.categories.map((category) {
         return CategoryIconMapper.buildCategoryItem(
+          context: context,
           title: category,
           icon: CategoryIconMapper.iconForCategory(category),
           onTap: () {

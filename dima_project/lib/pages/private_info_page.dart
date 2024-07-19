@@ -89,21 +89,19 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        decoration: const BoxDecoration(
-                          color: CupertinoColors.white,
-                        ),
+                        decoration: const BoxDecoration(),
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CreateImageWidget.getUserImage(
-                                    _user!.imagePath!,
-                                    small: true),
-                                const SizedBox(width: 20),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+                                    CreateImageWidget.getUserImage(
+                                        _user!.imagePath!,
+                                        small: false),
+                                    const SizedBox(width: 20),
                                     Text(
                                       _user!.username,
                                       style: const TextStyle(
@@ -161,9 +159,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                             )
                                           : const SizedBox(),
                                       const SizedBox(width: 10),
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.right_chevron,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                         size: 18,
                                       ),
                                     ],
@@ -220,9 +219,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                             )
                                           : const SizedBox(),
                                       const SizedBox(width: 10),
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.right_chevron,
-                                        color: CupertinoColors.black,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
                                         size: 18,
                                       ),
                                     ],

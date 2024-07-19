@@ -37,7 +37,7 @@ class ShareEventPageState extends State<ShareEventPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoNavigationBarBackButton(
-          color: CupertinoColors.systemPink,
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             Navigator.of(context).pop(groupsIds);
           },

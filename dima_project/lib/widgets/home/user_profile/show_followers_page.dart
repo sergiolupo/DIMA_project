@@ -52,7 +52,11 @@ class ShowFollowers extends ConsumerWidget {
                 if (users.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/no_followers_found.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset(
+                              'assets/darkMode/no_followers_found.png')
+                          : Image.asset('assets/images/no_followers_found.png'),
                       const Center(
                         child: Text('No followers'),
                       ),
@@ -68,7 +72,10 @@ class ShowFollowers extends ConsumerWidget {
                 if (filteredUsers.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/search_followers.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset('assets/darkMode/search_followers.png')
+                          : Image.asset('assets/images/search_followers.png'),
                       const Center(
                         child: Text('No followers'),
                       ),

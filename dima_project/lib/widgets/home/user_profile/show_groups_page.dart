@@ -55,7 +55,10 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                 if (groups.isEmpty) {
                   return Column(
                     children: [
-                      Image.asset('assets/images/search_groups.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset('assets/darkMode/search_groups.png')
+                          : Image.asset('assets/images/search_groups.png'),
                       const Center(
                         child: Text('No groups'),
                       ),
@@ -75,7 +78,12 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                         if (i == groups.length) {
                           return Column(
                             children: [
-                              Image.asset('assets/images/no_groups_found.png'),
+                              MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
+                                  ? Image.asset(
+                                      'assets/darkMode/no_groups_found.png')
+                                  : Image.asset(
+                                      'assets/images/no_groups_found.png'),
                               const Center(
                                 child: Text('No groups found'),
                               ),

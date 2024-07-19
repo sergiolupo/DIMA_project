@@ -225,7 +225,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         CupertinoButton(
           onPressed: _handleActionButtonPress,
           padding: const EdgeInsets.symmetric(horizontal: 50),
-          color: CupertinoColors.systemPink,
+          color: CupertinoTheme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(20),
           child: Text(
             _currentPage == 1 ? 'NEXT' : 'SAVE',

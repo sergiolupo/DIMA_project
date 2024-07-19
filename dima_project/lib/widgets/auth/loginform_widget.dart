@@ -1,6 +1,5 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,7 +30,7 @@ class LoginForm extends StatelessWidget {
               }
             },
             padding: const EdgeInsets.symmetric(horizontal: 50),
-            color: CupertinoColors.systemPink,
+            color: CupertinoTheme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(20),
             child: const Text('Login',
                 style: TextStyle(color: CupertinoColors.white)),

@@ -116,145 +116,139 @@ class UserProfileState extends ConsumerState<UserProfile> {
       child: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
-          Container(
-            color: CupertinoColors.white,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20, top: 20, right: 2),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              CreateImageWidget.getUserImage(user.imagePath!),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: Text(
-                                  '${user.name} ${user.surname}',
-                                  style: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 35),
-                          getGroups(),
-                          const SizedBox(width: 20),
-                          getFollowers(),
-                          const SizedBox(width: 20),
-                          getFollowings(),
-                        ],
-                      ),
-                      const SizedBox(width: 40),
-                      const SizedBox(width: 20),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Column(
-                    children: user.categories
-                        .map((category) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4, horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    CategoryIconMapper.iconForCategory(
-                                        category),
-                                    size: 24,
-                                    color:
-                                        CupertinoTheme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    category,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  const SizedBox(height: 20),
-                  !isMyProfile
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 2),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
                           children: [
-                            CupertinoButton.filled(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 8),
-                              onPressed: () async {
-                                await DatabaseService.toggleFollowUnfollow(
-                                    widget.user, widget.uuid);
-                                ref.invalidate(followingProvider(widget.uuid));
-                                ref.invalidate(followerProvider(widget.user));
-                              },
-                              child: followings.when(
-                                data: (followings) {
-                                  return Text(
-                                      style: const TextStyle(
-                                        color: CupertinoColors.white,
-                                      ),
-                                      followings.any((element) =>
-                                              element.uuid! == widget.user)
-                                          ? "Unfollow"
-                                          : user.requests!.contains(widget.user)
-                                              ? "Requested"
-                                              : "Follow");
-                                },
-                                loading: () =>
-                                    const CupertinoActivityIndicator(),
-                                error: (error, stackTrace) {
-                                  return Center(
-                                    child: Text('Error: $error'),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            CupertinoButton.filled(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 8),
-                              onPressed: () async {
-                                var members = [widget.uuid, widget.user];
-                                members.sort();
-                                final chat = PrivateChat(
-                                  members: members,
-                                );
-                                if (context.mounted) {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .push(
-                                    CupertinoPageRoute(
-                                      builder: (context) => PrivateChatPage(
-                                        uuid: widget.uuid,
-                                        privateChat: chat,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: const Icon(
-                                FontAwesomeIcons.envelope,
-                                color: CupertinoColors.white,
+                            CreateImageWidget.getUserImage(user.imagePath!),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                '${user.name} ${user.surname}',
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle,
                               ),
                             ),
                           ],
-                        )
-                      : const SizedBox(),
-                ],
-              ),
+                        ),
+                        const SizedBox(width: 35),
+                        getGroups(),
+                        const SizedBox(width: 20),
+                        getFollowers(),
+                        const SizedBox(width: 20),
+                        getFollowings(),
+                      ],
+                    ),
+                    const SizedBox(width: 40),
+                    const SizedBox(width: 20),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  children: user.categories
+                      .map((category) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  CategoryIconMapper.iconForCategory(category),
+                                  size: 24,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  category,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                      .toList(),
+                ),
+                const SizedBox(height: 20),
+                const SizedBox(height: 20),
+                !isMyProfile
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CupertinoButton.filled(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 8),
+                            onPressed: () async {
+                              await DatabaseService.toggleFollowUnfollow(
+                                  widget.user, widget.uuid);
+                              ref.invalidate(followingProvider(widget.uuid));
+                              ref.invalidate(followerProvider(widget.user));
+                            },
+                            child: followings.when(
+                              data: (followings) {
+                                return Text(
+                                    style: const TextStyle(
+                                      color: CupertinoColors.white,
+                                    ),
+                                    followings.any((element) =>
+                                            element.uuid! == widget.user)
+                                        ? "Unfollow"
+                                        : user.requests!.contains(widget.user)
+                                            ? "Requested"
+                                            : "Follow");
+                              },
+                              loading: () => const CupertinoActivityIndicator(),
+                              error: (error, stackTrace) {
+                                return Center(
+                                  child: Text('Error: $error'),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          CupertinoButton.filled(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            onPressed: () async {
+                              var members = [widget.uuid, widget.user];
+                              members.sort();
+                              final chat = PrivateChat(
+                                members: members,
+                              );
+                              if (context.mounted) {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => PrivateChatPage(
+                                      uuid: widget.uuid,
+                                      privateChat: chat,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Icon(
+                              FontAwesomeIcons.envelope,
+                              color: CupertinoColors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox(),
+              ],
             ),
           ),
           Container(

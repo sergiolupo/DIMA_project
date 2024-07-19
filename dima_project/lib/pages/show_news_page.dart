@@ -75,17 +75,21 @@ class ShowNewsPageState extends State<ShowNewsPage> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(10),
-                              color: CupertinoColors.black.withOpacity(0.1),
+                              color: CupertinoTheme.of(context)
+                                  .primaryContrastingColor,
                               child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
                                       dateKey,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: CupertinoColors.systemPink,
+                                        color: CupertinoTheme.of(context)
+                                            .textTheme
+                                            .textStyle
+                                            .color,
                                       ),
                                     ),
                                   ]),

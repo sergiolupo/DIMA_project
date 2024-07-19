@@ -145,8 +145,12 @@ class ListChatPageState extends State<ListChatPage> {
                         return Center(
                             child: Column(
                           children: [
-                            Image.asset(
-                                'assets/images/no_groups_chat_found.png'),
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/no_chat_found.png')
+                                : Image.asset(
+                                    'assets/images/no_groups_chat_found.png'),
                             const Text('No groups'),
                           ],
                         ));
@@ -215,12 +219,20 @@ class ListChatPageState extends State<ListChatPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           idx == 0
-              ? Image.asset(
-                  'assets/images/search_groups_chat.png',
-                )
-              : Image.asset(
-                  'assets/images/search_chat.png',
-                ),
+              ? MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Image.asset(
+                      'assets/darkMode/search_groups_chat.png',
+                    )
+                  : Image.asset(
+                      'assets/images/search_groups_chat.png',
+                    )
+              : MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Image.asset(
+                      'assets/darkMode/search_chat.png',
+                    )
+                  : Image.asset(
+                      'assets/images/search_chat.png',
+                    ),
           Text(
             "No ${idx == 0 ? "groups" : "chats"} yet",
             style: const TextStyle(
@@ -300,8 +312,13 @@ class ListChatPageState extends State<ListChatPage> {
                                     return Center(
                                         child: Column(
                                       children: [
-                                        Image.asset(
-                                            'assets/images/no_chat_found.png'),
+                                        MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Image.asset(
+                                                'assets/darkMode/no_chat_found.png')
+                                            : Image.asset(
+                                                'assets/images/no_chat_found.png'),
                                         const Text('No private chats'),
                                       ],
                                     ));

@@ -118,12 +118,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 padding: const EdgeInsets.all(16),
                 placeholder: 'Group Name',
                 decoration: BoxDecoration(
-                  color: CupertinoColors.extraLightBackgroundGray,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
                   borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(
-                    color: CupertinoColors.systemGrey4,
-                    width: 2.0,
-                  ),
                 ),
                 prefix: GestureDetector(
                   onTap: () => {
@@ -154,12 +150,8 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 maxLines: 5,
                 maxLength: 200,
                 decoration: BoxDecoration(
-                  color: CupertinoColors.extraLightBackgroundGray,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
                   borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(
-                    color: CupertinoColors.systemGrey4,
-                    width: 2.0,
-                  ),
                 ),
                 padding: const EdgeInsets.all(16.0),
                 suffix: CupertinoButton(
@@ -174,7 +166,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: CupertinoColors.extraLightBackgroundGray,
+            color: CupertinoTheme.of(context).primaryContrastingColor,
           ),
           child: Column(
             children: [
@@ -204,7 +196,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               ),
               Container(
                 height: 1,
-                color: CupertinoColors.opaqueSeparator,
+                color: CupertinoColors.separator,
               ),
               CupertinoListTile(
                 title: const Text('Categories'),
@@ -218,7 +210,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               ),
               Container(
                 height: 1,
-                color: CupertinoColors.opaqueSeparator,
+                color: CupertinoColors.separator,
               ),
               CupertinoListTile(
                 title: const Text('Notifications'),
@@ -239,7 +231,7 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               ),
               Container(
                 height: 1,
-                color: CupertinoColors.opaqueSeparator,
+                color: CupertinoColors.separator,
               ),
               CupertinoListTile(
                 leading: isPublic

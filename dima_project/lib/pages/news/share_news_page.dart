@@ -256,14 +256,14 @@ class ShareGroupTileState extends State<ShareGroupTile> {
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: CupertinoColors.extraLightBackgroundGray),
+            color: CupertinoTheme.of(context).primaryContrastingColor),
         child: CupertinoListTile(
           trailing: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isActive
                     ? CupertinoTheme.of(context).primaryColor
-                    : CupertinoColors.white,
+                    : CupertinoTheme.of(context).scaffoldBackgroundColor,
                 shape: BoxShape.circle,
               ),
               child: isActive
@@ -272,9 +272,9 @@ class ShareGroupTileState extends State<ShareGroupTile> {
                       color: CupertinoColors.white,
                       size: 15,
                     )
-                  : const Icon(
+                  : Icon(
                       CupertinoIcons.circle,
-                      color: CupertinoColors.white,
+                      color: CupertinoTheme.of(context).scaffoldBackgroundColor,
                       size: 15,
                     )),
           leading: Stack(
@@ -292,9 +292,16 @@ class ShareGroupTileState extends State<ShareGroupTile> {
           ),
           title: Text(
             widget.group.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(widget.group.description!),
+          subtitle: Text(
+            widget.group.description!,
+            style: TextStyle(
+              color: CupertinoTheme.of(context).textTheme.textStyle.color,
+            ),
+          ),
         ),
       ),
       onTap: () {
@@ -341,14 +348,14 @@ class ShareUserTileState extends State<ShareUserTile> {
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: CupertinoColors.extraLightBackgroundGray),
+            color: CupertinoTheme.of(context).primaryContrastingColor),
         child: CupertinoListTile(
           trailing: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isActive
                     ? CupertinoTheme.of(context).primaryColor
-                    : CupertinoColors.white,
+                    : CupertinoTheme.of(context).scaffoldBackgroundColor,
                 shape: BoxShape.circle,
               ),
               child: isActive
@@ -357,9 +364,9 @@ class ShareUserTileState extends State<ShareUserTile> {
                       color: CupertinoColors.white,
                       size: 15,
                     )
-                  : const Icon(
+                  : Icon(
                       CupertinoIcons.circle,
-                      color: CupertinoColors.white,
+                      color: CupertinoTheme.of(context).scaffoldBackgroundColor,
                       size: 15,
                     )),
           leading: Stack(
@@ -376,7 +383,9 @@ class ShareUserTileState extends State<ShareUserTile> {
           ),
           title: Text(
             widget.user.username,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                fontWeight: FontWeight.bold),
           ),
           subtitle: Text("${widget.user.name} ${widget.user.surname}"),
         ),

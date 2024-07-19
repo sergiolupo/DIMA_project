@@ -62,7 +62,6 @@ class ShowEventState extends State<ShowEvent> {
             physics: const BouncingScrollPhysics(),
             children: [
               Container(
-                color: CupertinoColors.white,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 10.0),
                 child: Column(
@@ -152,18 +151,24 @@ class ShowEventState extends State<ShowEvent> {
                     Text(
                       event.name,
                       textAlign: TextAlign.start,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: CupertinoColors.black,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
                       ),
                     ),
                     const SizedBox(height: 10.0),
                     Text(
                       event.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
-                        color: CupertinoColors.black,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
                       ),
                     ),
                     ListView.builder(

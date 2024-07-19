@@ -125,12 +125,25 @@ class SearchPageState extends ConsumerState<SearchPage> {
                       child: Column(
                         children: [
                           searchIdx == 0
-                              ? Image.asset('assets/images/no_users_found.png')
-                              : searchIdx == 1
+                              ? MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
                                   ? Image.asset(
-                                      'assets/images/no_groups_found.png')
+                                      'assets/darkMode/no_users_found.png')
                                   : Image.asset(
-                                      'assets/images/no_events_found.png'),
+                                      'assets/images/no_users_found.png')
+                              : searchIdx == 1
+                                  ? MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_groups_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_groups_found.png')
+                                  : MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_events_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_events_found.png'),
                           Text(
                               "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
                         ],
@@ -150,12 +163,27 @@ class SearchPageState extends ConsumerState<SearchPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             searchIdx == 0
-                                ? Image.asset('assets/images/search_users.png')
-                                : searchIdx == 1
+                                ? MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
                                     ? Image.asset(
-                                        'assets/images/search_groups.png')
+                                        'assets/darkMode/search_users.png')
                                     : Image.asset(
-                                        'assets/images/search_events.png'),
+                                        'assets/images/search_users.png')
+                                : searchIdx == 1
+                                    ? MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Image.asset(
+                                            'assets/darkMode/search_groups.png')
+                                        : Image.asset(
+                                            'assets/images/search_groups.png')
+                                    : MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Image.asset(
+                                            'assets/darkMode/search_events.png')
+                                        : Image.asset(
+                                            'assets/images/search_events.png'),
                             Text(
                                 "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}"),
                           ],

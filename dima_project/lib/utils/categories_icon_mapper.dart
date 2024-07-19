@@ -119,7 +119,8 @@ class CategoryIconMapper {
       {required String title,
       required IconData icon,
       required onTap,
-      required selectedCategories}) {
+      required selectedCategories,
+      required context}) {
     final isSelected = selectedCategories.contains(title);
 
     return GestureDetector(
@@ -129,7 +130,7 @@ class CategoryIconMapper {
         decoration: const BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: CupertinoColors.systemGrey4,
+              color: CupertinoColors.separator,
               width: 0.5,
             ),
           ),
@@ -145,9 +146,9 @@ class CategoryIconMapper {
               ],
             ),
             isSelected
-                ? const Icon(
+                ? Icon(
                     CupertinoIcons.check_mark_circled_solid,
-                    color: CupertinoColors.activeBlue,
+                    color: CupertinoTheme.of(context).primaryColor,
                   )
                 : const SizedBox(),
           ],

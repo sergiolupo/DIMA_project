@@ -55,10 +55,11 @@ class ImageCropPageState extends State<ImageCropPage> {
         trailing: CupertinoButton(
           padding: const EdgeInsets.all(0),
           onPressed: () => showSheet(),
-          child: const Text(
+          child: Text(
             'Edit',
             style: TextStyle(
-                color: CupertinoColors.black, fontWeight: FontWeight.bold),
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                fontWeight: FontWeight.bold),
           ),
         ),
         leading: CupertinoButton(
@@ -66,24 +67,26 @@ class ImageCropPageState extends State<ImageCropPage> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Row(
+          child: Row(
             children: [
               Icon(
                 CupertinoIcons.back,
-                color: CupertinoColors.black,
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
                 size: 30.0,
               ),
               Padding(
-                padding: EdgeInsets.only(bottom: 2.0),
+                padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(
                   'Back',
-                  style: TextStyle(color: CupertinoColors.black),
+                  style: TextStyle(
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color),
                 ),
               ),
             ],
           ),
         ),
-        backgroundColor: CupertinoColors.white,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       ),
       child: SafeArea(
         child: Column(
@@ -115,11 +118,14 @@ class ImageCropPageState extends State<ImageCropPage> {
                       widget.imageInsertPageKey(_selectedImagePath);
                     });
                   },
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(
                         CupertinoIcons.delete,
-                        color: CupertinoColors.black,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
                         size: 30,
                       ),
                     ],

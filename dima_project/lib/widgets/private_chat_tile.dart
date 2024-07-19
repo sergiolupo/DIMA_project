@@ -106,7 +106,11 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                   children: [
                                     Text(
                                       other.username,
-                                      style: const TextStyle(
+                                      style: TextStyle(
+                                          color: CupertinoTheme.of(context)
+                                              .textTheme
+                                              .textStyle
+                                              .color,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
