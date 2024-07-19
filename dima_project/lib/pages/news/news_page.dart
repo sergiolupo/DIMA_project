@@ -2,25 +2,25 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/news/article_model.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class NewsPage extends StatefulWidget {
+class NewsPage extends ConsumerStatefulWidget {
   final String uuid;
   const NewsPage({super.key, required this.uuid});
 
   @override
-  State<NewsPage> createState() => _NewsPageState();
+  NewsPageState createState() => NewsPageState();
 }
 
-class _NewsPageState extends State<NewsPage> {
-  Stream<List<String>>? categories;
+class NewsPageState extends ConsumerState<NewsPage> {
   List<ArticleModel>? sliders;
   List<ArticleModel>? articles;
   News news = News();
@@ -31,14 +31,10 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void initState() {
-    getCategories();
+    ref.read(userProvider(widget.uuid));
     getSliders();
     getNews();
     super.initState();
-  }
-
-  getCategories() async {
-    categories = DatabaseService.getCategories(widget.uuid);
   }
 
   getNews() async {
@@ -57,7 +53,9 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return categories == null || sliders == null || articles == null
+    final user = ref.watch(userProvider(widget.uuid));
+
+    return sliders == null || articles == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -92,17 +90,15 @@ class _NewsPageState extends State<NewsPage> {
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
                       height: 70,
-                      child: StreamBuilder<List<String>>(
-                        stream: categories,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final List<String> categories = snapshot.data!;
+                      child: user.when(
+                          data: (user) {
+                            final List<String> categories = user.categories;
                             final newsCategories =
                                 News.getCategories(categories);
                             return ListView.builder(
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
-                                itemCount: snapshot.data!.length,
+                                itemCount: categories.length,
                                 itemBuilder: (context, index) {
                                   return CategoryTile(
                                     image: newsCategories[index].image,
@@ -110,11 +106,9 @@ class _NewsPageState extends State<NewsPage> {
                                         newsCategories[index].categoryName,
                                   );
                                 });
-                          } else {
-                            return const CupertinoActivityIndicator();
-                          }
-                        },
-                      ),
+                          },
+                          loading: () => const CupertinoActivityIndicator(),
+                          error: (error, _) => Text('Error: $error')),
                     ),
                     const SizedBox(
                       height: 30.0,

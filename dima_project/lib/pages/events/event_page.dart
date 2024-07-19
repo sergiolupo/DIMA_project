@@ -15,7 +15,7 @@ class EventPage extends ConsumerStatefulWidget {
   const EventPage({super.key, required this.eventId, required this.uuid});
 
   @override
-  ConsumerState<EventPage> createState() => EventPageState();
+  EventPageState createState() => EventPageState();
 }
 
 class EventPageState extends ConsumerState<EventPage> {
