@@ -137,8 +137,10 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         _buildPublicProfileSwitch(),
         const SizedBox(height: 20),
         _buildTextField('Email', user!.email, false, _emailController),
-        _buildTextField(
-            'Password', user!.password, isObscure, _passwordController),
+        !user!.isSignedInWithGoogle!
+            ? _buildTextField(
+                'Password', user!.password, isObscure, _passwordController)
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -259,7 +261,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     if (_nameController.text.isEmpty ||
         _surnameController.text.isEmpty ||
         _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty ||
+        (_passwordController.text.isEmpty && !user!.isSignedInWithGoogle!) ||
         _usernameController.text.isEmpty) {
       _showDialog('Invalid choice', 'Please fill all the fields');
       return false;
@@ -274,7 +276,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _showDialog('Invalid choice', 'Username is already taken.');
       return false;
     }
-    if (_passwordController.text.length < 6) {
+    if (_passwordController.text.length < 6 && !user!.isSignedInWithGoogle!) {
       _showDialog(
           'Invalid choice', 'Password must be at least 6 characters long.');
       return false;
