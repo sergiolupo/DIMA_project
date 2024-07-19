@@ -186,29 +186,15 @@ class SearchPageState extends State<SearchPage> {
                         (docs[index].data()).containsKey('groupId')) {
                       final group = Group.fromSnapshot(docs[index]);
 
-                      return StreamBuilder<UserData>(
-                          stream:
-                              DatabaseService.getUserDataFromUUID(group.admin!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CupertinoActivityIndicator();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              final admin = snapshot.data!.username;
-                              group.admin = admin;
-                              return GroupTile(
-                                uuid: widget.uuid,
-                                group: group,
-                                isJoined: group.members!.contains(widget.uuid)
-                                    ? 1
-                                    : group.requests!.contains(widget.uuid)
-                                        ? 2
-                                        : 0,
-                              );
-                            }
-                          });
+                      return GroupTile(
+                        uuid: widget.uuid,
+                        group: group,
+                        isJoined: group.members!.contains(widget.uuid)
+                            ? 1
+                            : group.requests!.contains(widget.uuid)
+                                ? 2
+                                : 0,
+                      );
                     } else if (searchIdx == 2 &&
                         (docs[index].data()).containsKey('eventId')) {
                       return FutureBuilder(

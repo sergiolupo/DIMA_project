@@ -45,7 +45,6 @@ class GroupTileState extends State<GroupTile> {
                 widget.group.name,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: Text("Admin: ${widget.group.admin}"),
             ),
           ),
         ),
