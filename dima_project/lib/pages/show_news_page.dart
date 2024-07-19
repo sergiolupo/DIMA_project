@@ -39,13 +39,18 @@ class ShowNewsPageState extends State<ShowNewsPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoColors.systemPink,
-                middle: const Text('News'),
+                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+                middle: Text(
+                  'News',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: CupertinoTheme.of(context).primaryColor),
+                ),
                 leading: CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(),
                   padding: const EdgeInsets.only(left: 10),
-                  color: CupertinoColors.systemPink,
-                  child: const Icon(CupertinoIcons.back),
+                  child: Icon(CupertinoIcons.back,
+                      color: CupertinoTheme.of(context).primaryColor),
                 )),
             child: SafeArea(
               child: StreamBuilder<List<dynamic>>(

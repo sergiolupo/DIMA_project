@@ -9,6 +9,7 @@ import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CreateGroupPage extends StatefulWidget {
   final String uuid;
@@ -48,7 +49,19 @@ class CreateGroupPageState extends State<CreateGroupPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
+        trailing: _currentPage == 1
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(3),
+                onPressed: () => {managePage()},
+                child: Text(
+                  'Create',
+                  style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : null,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CupertinoButton(
           onPressed: () {
             if (_currentPage == 1) {
@@ -59,38 +72,22 @@ class CreateGroupPageState extends State<CreateGroupPage> {
               });
             }
           },
-          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
+          child: Icon(CupertinoIcons.back,
+              color: CupertinoTheme.of(context).primaryColor),
         ),
-        middle: const Text(
+        middle: Text(
           'Create Group',
-          style: TextStyle(color: CupertinoColors.white),
+          style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
         ),
       ),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                page,
-                const SizedBox(height: 10.0),
-                SafeArea(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CupertinoButton(
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          color: CupertinoColors.systemPink,
-                          borderRadius: BorderRadius.circular(20),
-                          onPressed: () => {managePage()},
-                          child:
-                              Text(_currentPage == 1 ? 'Next' : 'Create Group'),
-                        ),
-                      ]),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              page,
+            ],
           ),
         ),
       ),
@@ -210,8 +207,24 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 color: CupertinoColors.opaqueSeparator,
               ),
               CupertinoListTile(
+                title: const Text('Categories'),
+                leading: const Icon(FontAwesomeIcons.thList),
+                trailing: const Icon(CupertinoIcons.forward),
+                onTap: () {
+                  setState(() {
+                    _currentPage = 2;
+                  });
+                },
+              ),
+              Container(
+                height: 1,
+                color: CupertinoColors.opaqueSeparator,
+              ),
+              CupertinoListTile(
                 title: const Text('Notifications'),
-                leading: const Icon(CupertinoIcons.bell_fill),
+                leading: notify
+                    ? const Icon(CupertinoIcons.bell_fill)
+                    : const Icon(CupertinoIcons.bell_slash_fill),
                 trailing: Transform.scale(
                   scale: 0.75,
                   child: CupertinoSwitch(
@@ -229,7 +242,9 @@ class CreateGroupPageState extends State<CreateGroupPage> {
                 color: CupertinoColors.opaqueSeparator,
               ),
               CupertinoListTile(
-                leading: const Icon(CupertinoIcons.lock_open_fill),
+                leading: isPublic
+                    ? const Icon(CupertinoIcons.lock_open_fill)
+                    : const Icon(CupertinoIcons.lock_fill),
                 title: const Text('Public Group'),
                 trailing: Transform.scale(
                   scale: 0.75,

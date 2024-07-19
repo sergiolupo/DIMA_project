@@ -87,7 +87,10 @@ class LocationPageState extends State<LocationPage> {
                         onPressed: () {
                           Navigator.of(context).pop(selectedLocation);
                         },
-                        child: const Text('Select location'),
+                        child: const Text(
+                          'Select location',
+                          style: TextStyle(color: CupertinoColors.white),
+                        ),
                       ),
                     ),
                   ),

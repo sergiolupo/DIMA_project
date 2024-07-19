@@ -54,7 +54,7 @@ class ListChatPageState extends State<ListChatPage> {
                   style: TextStyle(
                     color: CupertinoTheme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: 27,
+                    fontSize: 25,
                   ),
                 ),
               ),

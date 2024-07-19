@@ -76,15 +76,17 @@ class SettingsPageState extends State<SettingsPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoColors.systemPink,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               middle: const Text('Settings'),
               leading: CupertinoButton(
                 onPressed: () => _currentPage == 1
                     ? Navigator.of(context).pop()
                     : setState(() => _currentPage = 1),
                 padding: const EdgeInsets.only(left: 10),
-                color: CupertinoColors.systemPink,
-                child: const Icon(CupertinoIcons.back),
+                child: Icon(
+                  CupertinoIcons.back,
+                  color: CupertinoTheme.of(context).primaryColor,
+                ),
               ),
             ),
             child: GestureDetector(

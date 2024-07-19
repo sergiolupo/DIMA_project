@@ -41,13 +41,18 @@ class ShowMediasPageState extends State<ShowMediasPage> {
         ? const Center(child: CupertinoActivityIndicator())
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoColors.systemPink,
-                middle: const Text('Medias'),
+                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+                middle: Text(
+                  'Medias',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: CupertinoTheme.of(context).primaryColor),
+                ),
                 leading: CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(),
                   padding: const EdgeInsets.only(left: 10),
-                  color: CupertinoColors.systemPink,
-                  child: const Icon(CupertinoIcons.back),
+                  child: Icon(CupertinoIcons.back,
+                      color: CupertinoTheme.of(context).primaryColor),
                 )),
             child: SafeArea(
               child: StreamBuilder<List<dynamic>>(

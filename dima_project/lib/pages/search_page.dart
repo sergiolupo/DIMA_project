@@ -67,15 +67,15 @@ class SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text(
+        middle: Text(
           "Search",
           style: TextStyle(
-            fontSize: 27,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
-            color: CupertinoColors.white,
+            color: CupertinoTheme.of(context).primaryColor,
           ),
         ),
-        backgroundColor: CupertinoTheme.of(context).primaryColor,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       ),
       child: Column(
         children: [

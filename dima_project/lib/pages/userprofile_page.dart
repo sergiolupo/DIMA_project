@@ -67,13 +67,35 @@ class UserProfileState extends ConsumerState<UserProfile> {
   Widget _buildProfile(UserData user) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: Navigator.of(context).canPop()
             ? CupertinoNavigationBarBackButton(
-                color: CupertinoColors.white,
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  if (Navigator.of(context).canPop()) {
+                    debugPrint('Can pop');
+                  } else {
+                    debugPrint('Cannot pop');
+                  }
                 },
+              )
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  user.username,
+                  style: const TextStyle(
+                    color: CupertinoColors.black,
+                    fontSize: 25,
+                  ),
+                ),
+              ),
+        middle: Navigator.of(context).canPop()
+            ? Text(
+                user.username,
+                style: const TextStyle(
+                  color: CupertinoColors.black,
+                  fontSize: 20,
+                ),
               )
             : null,
         trailing: isMyProfile
@@ -90,35 +112,23 @@ class UserProfileState extends ConsumerState<UserProfile> {
       child: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 8),
-              Container(
-                color: CupertinoColors.white,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 55),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+          Container(
+            color: CupertinoColors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, top: 20, right: 2),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CreateImageWidget.getUserImage(user.imagePath!),
-                          const SizedBox(width: 20),
                           Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: Text(
-                                  user.username,
-                                  style: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
+                              CreateImageWidget.getUserImage(user.imagePath!),
                               Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: Text(
@@ -130,42 +140,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Column(
-                        children: user.categories
-                            .map((category) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 4, horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(
-                                        CategoryIconMapper.iconForCategory(
-                                            category),
-                                        size: 24,
-                                        color: CupertinoTheme.of(context)
-                                            .primaryColor,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        category,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: CupertinoTheme.of(context)
-                                              .primaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                          const SizedBox(width: 35),
                           getGroups(),
                           const SizedBox(width: 20),
                           getFollowers(),
@@ -173,80 +148,116 @@ class UserProfileState extends ConsumerState<UserProfile> {
                           getFollowings(),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      !isMyProfile
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CupertinoButton.filled(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40, vertical: 8),
-                                  onPressed: () async {
-                                    DatabaseService.toggleFollowUnfollow(
-                                        widget.user, widget.uuid);
-                                  },
-                                  child: Text(
-                                    _isFollowing == 0
-                                        ? "Follow"
-                                        : _isFollowing == 1
-                                            ? "Unfollow"
-                                            : "Requested",
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                CupertinoButton.filled(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 8),
-                                  onPressed: () async {
-                                    var members = [widget.uuid, widget.user];
-                                    members.sort();
-                                    final chat = PrivateChat(
-                                      members: members,
-                                    );
-                                    if (context.mounted) {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .push(
-                                        CupertinoPageRoute(
-                                          builder: (context) => PrivateChatPage(
-                                            uuid: widget.uuid,
-                                            privateChat: chat,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: const Icon(
-                                    FontAwesomeIcons.envelope,
-                                    color: CupertinoColors.white,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : const SizedBox(),
+                      const SizedBox(width: 40),
+                      const SizedBox(width: 20),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: user.categories
+                        .map((category) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4, horizontal: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    CategoryIconMapper.iconForCategory(
+                                        category),
+                                    size: 24,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    category,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                  !isMyProfile
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CupertinoButton.filled(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 8),
+                              onPressed: () async {
+                                DatabaseService.toggleFollowUnfollow(
+                                    widget.user, widget.uuid);
+                              },
+                              child: Text(
+                                style: const TextStyle(
+                                  color: CupertinoColors.white,
+                                ),
+                                _isFollowing == 0
+                                    ? "Follow"
+                                    : _isFollowing == 1
+                                        ? "Unfollow"
+                                        : "Requested",
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            CupertinoButton.filled(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              onPressed: () async {
+                                var members = [widget.uuid, widget.user];
+                                members.sort();
+                                final chat = PrivateChat(
+                                  members: members,
+                                );
+                                if (context.mounted) {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(
+                                    CupertinoPageRoute(
+                                      builder: (context) => PrivateChatPage(
+                                        uuid: widget.uuid,
+                                        privateChat: chat,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: const Icon(
+                                FontAwesomeIcons.envelope,
+                                color: CupertinoColors.white,
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox(),
+                ],
               ),
-              Container(
-                color: CupertinoColors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    CustomSelectOption(
-                      textLeft: 'Events created',
-                      textRight: 'Events joined',
-                      onChanged: (value) {
-                        setState(() {
-                          index = value;
-                        });
-                      },
-                    ),
-                    getCreatedEvents(user),
-                    getJoinedEvents(user),
-                  ],
+            ),
+          ),
+          Container(
+            color: CupertinoColors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                CustomSelectOption(
+                  textLeft: 'Events created',
+                  textRight: 'Events joined',
+                  onChanged: (value) {
+                    setState(() {
+                      index = value;
+                    });
+                  },
                 ),
-              ),
-            ],
+                getCreatedEvents(user),
+                getJoinedEvents(user),
+              ],
+            ),
           ),
         ],
       ),

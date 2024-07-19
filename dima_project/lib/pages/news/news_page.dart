@@ -76,7 +76,7 @@ class _NewsPageState extends State<NewsPage> {
               middle: Text(
                 "News",
                 style: TextStyle(
-                  fontSize: 27,
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                   color: CupertinoTheme.of(context).primaryColor,
                 ),

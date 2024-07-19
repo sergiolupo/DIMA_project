@@ -95,18 +95,19 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoTheme.of(context).primaryColor,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(
-                color: CupertinoColors.white,
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               )
             : null,
-        middle: const Text(
+        middle: Text(
           'Create Event',
-          style: TextStyle(color: CupertinoColors.white),
+          style: TextStyle(
+              fontSize: 25, color: CupertinoTheme.of(context).primaryColor),
         ),
       ),
       child: ListView(

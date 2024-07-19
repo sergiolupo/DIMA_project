@@ -83,6 +83,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               leading: CupertinoButton(
+                padding: const EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -91,8 +92,9 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
               ),
               middle: Text(
                 "Group Info",
-                style:
-                    TextStyle(color: CupertinoTheme.of(context).primaryColor),
+                style: TextStyle(
+                    color: CupertinoTheme.of(context).primaryColor,
+                    fontSize: 18.0),
               ),
               backgroundColor:
                   CupertinoTheme.of(context).scaffoldBackgroundColor,
@@ -115,6 +117,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                 child: Text(
                   'Edit',
                   style: TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: CupertinoTheme.of(context).primaryColor,
                   ),
