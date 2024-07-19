@@ -1460,6 +1460,19 @@ class DatabaseService {
     });
   }
 
+  static Future<List<Event>> getEventRequestsForUser(String uuid) async {
+    final doc = await usersRef.doc(uuid).get();
+    final List<String> ids = doc['eventsRequests'];
+    final List<Event> events = [];
+    for (var id in ids) {
+      final event = await eventsRef.doc(id).get();
+      if (event.exists) {
+        events.add(await Event.fromSnapshot(event));
+      }
+    }
+    return events;
+  }
+
   static Stream<bool> checkIfJoined(bool isGroup, String? id, String uuid) {
     if (id == null) return Stream.value(false);
     if (isGroup) {

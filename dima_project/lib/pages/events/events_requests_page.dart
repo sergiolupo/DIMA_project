@@ -11,15 +11,18 @@ class EventsRequestsPage extends StatefulWidget {
 }
 
 class EventsRequestsPageState extends State<EventsRequestsPage> {
-  Stream<List<dynamic>>? eventRequests;
+  List<Event>? eventRequests;
   @override
   void initState() {
     init();
     super.initState();
   }
 
-  init() {
-    eventRequests = DatabaseService.getEventRequestsStream(widget.uuid);
+  init() async {
+    final requests = await DatabaseService.getEventRequestsForUser(widget.uuid);
+    setState(() {
+      eventRequests = requests;
+    });
   }
 
   @override
@@ -36,37 +39,11 @@ class EventsRequestsPageState extends State<EventsRequestsPage> {
               ),
             ),
             child: SafeArea(
-              child: StreamBuilder<List<dynamic>>(
-                stream: eventRequests,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List requests =
-                        snapshot.data!.map((doc) => doc).toList();
-                    return ListView.builder(
-                        itemCount: requests.length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder<Event>(
-                            stream: DatabaseService.getEventStream(
-                              requests[index],
-                            ),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final event = snapshot.data!;
-                                return EventRequestTile(
-                                    event: event, uuid: widget.uuid);
-                              } else {
-                                return const Center(
-                                  child: CupertinoActivityIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        });
-                  } else {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
+              child: ListView.builder(
+                itemCount: eventRequests!.length,
+                itemBuilder: (context, index) {
+                  return EventRequestTile(
+                      event: eventRequests![index], uuid: widget.uuid);
                 },
               ),
             ),
