@@ -17,34 +17,35 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.white,
+      backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
       navigationBar: !_showLogin
           ? CupertinoNavigationBar(
               leading: CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   setState(() {
                     _showLogin = !_showLogin;
                   });
                 },
               ),
-              backgroundColor: CupertinoColors.white,
-              middle: const Text(
-                'AGORAPP',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: CupertinoColors.systemPink,
-                ),
-              ),
-            )
-          : const CupertinoNavigationBar(
-              backgroundColor: CupertinoColors.white,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               middle: Text(
                 'AGORAPP',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: CupertinoColors.systemPink,
+                  color: CupertinoTheme.of(context).primaryColor,
+                ),
+              ),
+            )
+          : CupertinoNavigationBar(
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+              middle: Text(
+                'AGORAPP',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: CupertinoTheme.of(context).primaryColor,
                 ),
               ),
             ),

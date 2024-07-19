@@ -45,9 +45,9 @@ class ShowEventState extends State<ShowEvent> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CupertinoNavigationBarBackButton(
-          color: CupertinoColors.white,
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -139,7 +139,8 @@ class ShowEventState extends State<ShowEvent> {
                                       ],
                                     ),
                                   ),
-                                  Icon(CupertinoIcons.forward)
+                                  Icon(CupertinoIcons.forward,
+                                      color: CupertinoColors.white),
                                 ],
                               ),
                             ),

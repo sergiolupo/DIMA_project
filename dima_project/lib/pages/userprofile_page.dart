@@ -73,6 +73,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
                     debugPrint('Can pop');
                   } else {
                     debugPrint('Cannot pop');

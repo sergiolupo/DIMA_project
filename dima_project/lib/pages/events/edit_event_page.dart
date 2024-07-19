@@ -103,17 +103,17 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoTheme.of(context).primaryColor,
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text(
+                child: Text(
                   'Cancel',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: CupertinoColors.white,
+                    fontSize: 18,
+                    color: CupertinoTheme.of(context).primaryColor,
                   ),
                 ),
               ),
@@ -130,14 +130,20 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       if (context.mounted) Navigator.of(context).pop();
                     }
                   },
-                  child: const Text(
+                  child: Text(
                     'Done',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: CupertinoColors.white,
+                      fontSize: 18,
+                      color: CupertinoTheme.of(context).primaryColor,
                     ),
                   )),
-              middle: const Text('Edit Event'),
+              middle: Text(
+                'Edit Event',
+                style: TextStyle(
+                    color: CupertinoTheme.of(context).primaryColor,
+                    fontSize: 18),
+              ),
             ),
             child: ListView(physics: const BouncingScrollPhysics(), children: [
               SafeArea(

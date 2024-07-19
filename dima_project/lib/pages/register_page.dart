@@ -96,6 +96,7 @@ class RegisterPageState extends State<RegisterPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             if (_currentPage == 1 && !_isEnteredWithGoogle) {
               context.go('/');
@@ -110,10 +111,10 @@ class RegisterPageState extends State<RegisterPage> {
         ),
         middle: Text(
           pageName,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: CupertinoColors.systemPink,
+            color: CupertinoTheme.of(context).primaryColor,
           ),
         ),
       ),
@@ -132,13 +133,20 @@ class RegisterPageState extends State<RegisterPage> {
                       onPressed: () =>
                           {if (_formKey.currentState!.validate()) managePage()},
                       padding: const EdgeInsets.symmetric(horizontal: 50),
-                      color: CupertinoColors.systemPink,
+                      color: CupertinoTheme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(20),
                       child: _currentPage < 4
-                          ? const Text('Next')
+                          ? const Text(
+                              'Next',
+                              style: TextStyle(color: CupertinoColors.white),
+                            )
                           : _isEnteredWithGoogle
-                              ? const Text("Confirm")
-                              : const Text('Register'),
+                              ? const Text("Confirm",
+                                  style:
+                                      TextStyle(color: CupertinoColors.white))
+                              : const Text('Register',
+                                  style:
+                                      TextStyle(color: CupertinoColors.white)),
                     ),
                     const SizedBox(
                         height: 20), // Added spacing between button and text
