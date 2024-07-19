@@ -339,10 +339,10 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                           onPressed: () {
                             showCupertinoDialog(
                               context: context,
-                              builder: (context) => CupertinoAlertDialog(
+                              builder: (newContext) => CupertinoAlertDialog(
                                 title: const Text('Delete Event'),
                                 content: const Text(
-                                    'Are you sure you want to delete this event?'),
+                                    'Are you sure you want to delete this date?'),
                                 actions: <Widget>[
                                   CupertinoDialogAction(
                                     child: const Text('Cancel'),
@@ -352,12 +352,18 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                                   CupertinoDialogAction(
                                     child: const Text('Delete'),
                                     onPressed: () async {
-                                      Navigator.of(context).pop();
+                                      Navigator.of(newContext).pop();
                                       await DatabaseService.deleteEvent(
                                           widget.event.id!);
+                                      ref.invalidate(
+                                          createdEventsProvider(widget.uuid));
+                                      ref.invalidate(
+                                          joinedEventsProvider(widget.uuid));
+                                      ref.invalidate(
+                                          eventProvider(widget.event.id!));
                                       if (context.mounted) {
-                                        Navigator.of(context)
-                                            .popUntil((route) => route.isFirst);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
                                       }
                                     },
                                   ),
