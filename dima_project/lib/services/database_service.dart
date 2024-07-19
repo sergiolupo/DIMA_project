@@ -1039,6 +1039,15 @@ class DatabaseService {
     });
   }
 
+  static Future<List<Group>> getUserGroupRequestsForUser(String id) async {
+    final doc = await usersRef.doc(id).get();
+    List<Group> groups = [];
+    for (var group in doc['groupsRequests']) {
+      groups.add(await getGroupFromId(group));
+    }
+    return groups;
+  }
+
   static Stream<List<dynamic>> getFollowRequests(String id) {
     return usersRef.doc(id).snapshots().map((snapshot) {
       return snapshot['requests'];

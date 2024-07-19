@@ -11,15 +11,19 @@ class GroupsRequestsPage extends StatefulWidget {
 }
 
 class GroupsRequestsPageState extends State<GroupsRequestsPage> {
-  Stream<List<dynamic>>? groupsRequests;
+  List<Group>? groupsRequests;
   @override
   void initState() {
     init();
     super.initState();
   }
 
-  init() {
-    groupsRequests = DatabaseService.getUserGroupRequests(widget.uuid);
+  init() async {
+    final requests =
+        await DatabaseService.getUserGroupRequestsForUser(widget.uuid);
+    setState(() {
+      groupsRequests = requests;
+    });
   }
 
   @override
@@ -36,40 +40,12 @@ class GroupsRequestsPageState extends State<GroupsRequestsPage> {
               ),
             ),
             child: SafeArea(
-              child: StreamBuilder<List<dynamic>>(
-                stream: groupsRequests,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List requests =
-                        snapshot.data!.map((doc) => doc).toList();
-                    return ListView.builder(
-                        itemCount: requests.length,
-                        itemBuilder: (context, index) {
-                          return StreamBuilder<Group>(
-                            stream: DatabaseService.getGroupFromIdStream(
-                              requests[index],
-                            ),
-                            builder: (context, snapshot) {
-                              debugPrint("Snapshot: $snapshot");
-                              if (snapshot.hasData) {
-                                final group = snapshot.data!;
-                                return UserGroupRequestTile(
-                                    group: group, uuid: widget.uuid);
-                              } else {
-                                return const Center(
-                                  child: CupertinoActivityIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        });
-                  } else {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
-                },
-              ),
+              child: ListView.builder(
+                  itemCount: groupsRequests!.length,
+                  itemBuilder: (context, index) {
+                    return UserGroupRequestTile(
+                        group: groupsRequests![index], uuid: widget.uuid);
+                  }),
             ),
           );
   }
