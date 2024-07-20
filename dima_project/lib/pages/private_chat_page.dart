@@ -16,6 +16,7 @@ import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
@@ -278,11 +279,14 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             ),
           ),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
+          CupertinoButton(
+            borderRadius: BorderRadius.circular(20),
+            padding: const EdgeInsets.all(2),
+            color: CupertinoTheme.of(context).primaryColor,
+            onPressed: () {
               sendMessage();
             },
-            child: const Icon(CupertinoIcons.paperplane_fill,
+            child: const Icon(LineAwesomeIcons.paper_plane,
                 color: CupertinoColors.white),
           ),
         ],
@@ -391,10 +395,29 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           bottom: size.height,
           left: 0,
           right: 0,
-          child: const Center(
-            child: Text(
-              "Copied to clipboard",
-              style: TextStyle(color: CupertinoColors.systemPink),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Container(
+              padding: const EdgeInsets.only(
+                  right: 80, left: 10, bottom: 10, top: 10),
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: CupertinoTheme.of(context).primaryContrastingColor,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(CupertinoIcons.rectangle_fill_on_rectangle_fill,
+                      color: CupertinoTheme.of(context).primaryColor),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Copied to clipboard",
+                    style: TextStyle(
+                        color: CupertinoTheme.of(context).primaryColor),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
