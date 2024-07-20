@@ -115,7 +115,7 @@ class GroupChatTileState extends State<GroupChatTile> {
                                     constraints: BoxConstraints(
                                         maxWidth:
                                             MediaQuery.of(context).size.width *
-                                                0.5),
+                                                0.4),
                                     child: Text(
                                       maxLines: 2,
                                       widget.lastMessage!.recentMessage,

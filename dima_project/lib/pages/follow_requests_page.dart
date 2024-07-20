@@ -76,7 +76,6 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                       decoration: BoxDecoration(
                         color: CupertinoTheme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: CupertinoColors.white),
                       ),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
@@ -105,7 +104,6 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                       decoration: BoxDecoration(
                         color: CupertinoTheme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: CupertinoColors.white),
                       ),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),

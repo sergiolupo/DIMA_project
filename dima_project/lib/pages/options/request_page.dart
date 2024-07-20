@@ -70,10 +70,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                           ? const SizedBox()
                           : _followRequests!.isNotEmpty
                               ? Container(
-                                  padding: const EdgeInsets.all(4),
+                                  padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: CupertinoColors.systemRed,
-                                    borderRadius: BorderRadius.circular(10),
+                                    shape: BoxShape.circle,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
                                   ),
                                   child: Text(
                                     _followRequests!.length.toString(),
@@ -96,10 +97,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                           ? const SizedBox()
                           : _groupRequests!.isNotEmpty
                               ? Container(
-                                  padding: const EdgeInsets.all(4),
+                                  padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: CupertinoColors.systemRed,
-                                    borderRadius: BorderRadius.circular(10),
+                                    shape: BoxShape.circle,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
                                   ),
                                   child: Text(
                                     _groupRequests!.length.toString(),
