@@ -90,46 +90,34 @@ class EditGroupPageState extends State<EditGroupPage> {
                         });
                       },
                     ),
-              trailing: CupertinoButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () async {
-                    if (index == 0) {
-                      if (!GroupHelper.validateFirstPage(
-                        context,
-                        _groupNameController.text,
-                        _groupDescriptionController.text,
-                      )) {
-                        return;
-                      }
-                      await updateGroup();
-                      if (context.mounted) {
-                        Navigator.of(context).pop(
-                            await DatabaseService.getGroupFromId(
-                                widget.group.id));
-                      }
-                      /*setState(() {
-                        index = 1;
-                      });*/
-                    } else {
-                      if (!GroupHelper.validateSecondPage(
-                          context, selectedCategories)) {
-                        return;
-                      }
-                      await updateGroup();
-                      if (context.mounted) {
-                        Navigator.of(context).pop(
-                            await DatabaseService.getGroupFromId(
-                                widget.group.id));
-                      }
-                    }
-                  },
-                  child: Text(
-                    index == 0 ? 'Done' : '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: CupertinoTheme.of(context).primaryColor,
-                    ),
-                  )),
+              trailing: index == 0
+                  ? CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () async {
+                        if (index == 0) {
+                          if (!GroupHelper.validateFirstPage(
+                            context,
+                            _groupNameController.text,
+                            _groupDescriptionController.text,
+                          )) {
+                            return;
+                          }
+                          await updateGroup();
+                          if (context.mounted) {
+                            Navigator.of(context).pop(
+                                await DatabaseService.getGroupFromId(
+                                    widget.group.id));
+                          }
+                        }
+                      },
+                      child: Text(
+                        'Done',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoTheme.of(context).primaryColor,
+                        ),
+                      ))
+                  : null,
               middle: Text('Edit Group',
                   style: TextStyle(
                       color: CupertinoTheme.of(context).primaryColor)),

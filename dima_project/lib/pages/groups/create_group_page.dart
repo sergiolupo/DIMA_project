@@ -4,14 +4,16 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CreateGroupPage extends StatefulWidget {
+class CreateGroupPage extends ConsumerStatefulWidget {
   final String uuid;
 
   const CreateGroupPage({super.key, required this.uuid});
@@ -20,7 +22,7 @@ class CreateGroupPage extends StatefulWidget {
   CreateGroupPageState createState() => CreateGroupPageState();
 }
 
-class CreateGroupPageState extends State<CreateGroupPage> {
+class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   int _currentPage = 1;
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupDescriptionController =
@@ -265,41 +267,21 @@ class CreateGroupPageState extends State<CreateGroupPage> {
   }
 
   void managePage() {
-    if (_currentPage == 1) {
-      if (!GroupHelper.validateFirstPage(context, _groupNameController.text,
-          _groupDescriptionController.text)) {
-        return;
-      }
-      createGroup(
-        Group(
-            name: _groupNameController.text,
-            id: '',
-            admin: widget.uuid,
-            description: _groupDescriptionController.text,
-            categories: selectedCategories,
-            isPublic: isPublic,
-            notify: notify),
-        selectedImagePath,
-      );
-      /*setState(() {
-        _currentPage = 2;
-      });*/
-    } else {
-      if (!GroupHelper.validateSecondPage(context, selectedCategories)) {
-        return;
-      } else {
-        createGroup(
-          Group(
-              name: _groupNameController.text,
-              id: '',
-              admin: widget.uuid,
-              description: _groupDescriptionController.text,
-              categories: selectedCategories,
-              isPublic: isPublic,
-              notify: notify),
-          selectedImagePath,
-        );
-      }
+    if (!GroupHelper.validateFirstPage(
+        context, _groupNameController.text, _groupDescriptionController.text)) {
+      return;
     }
+    createGroup(
+      Group(
+          name: _groupNameController.text,
+          id: '',
+          admin: widget.uuid,
+          description: _groupDescriptionController.text,
+          categories: selectedCategories,
+          isPublic: isPublic,
+          notify: notify),
+      selectedImagePath,
+    );
+    ref.invalidate(groupsProvider(FirebaseAuth.instance.currentUser!.uid));
   }
 }

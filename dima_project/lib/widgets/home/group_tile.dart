@@ -1,11 +1,13 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GroupTile extends StatefulWidget {
+class GroupTile extends ConsumerStatefulWidget {
   final String uuid;
   final Group group;
   final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
@@ -20,7 +22,7 @@ class GroupTile extends StatefulWidget {
   GroupTileState createState() => GroupTileState();
 }
 
-class GroupTileState extends State<GroupTile> {
+class GroupTileState extends ConsumerState<GroupTile> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -55,6 +57,8 @@ class GroupTileState extends State<GroupTile> {
                 widget.group.id,
                 FirebaseAuth.instance.currentUser!.uid,
               );
+              ref.invalidate(
+                  groupsProvider(FirebaseAuth.instance.currentUser!.uid));
             } catch (error) {
               debugPrint("Error occurred: $error");
             }
