@@ -57,6 +57,9 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                       try {
                         await DatabaseService.acceptUserGroupRequest(
                             group.id, widget.uuid);
+                        setState(() {
+                          groupsRequests.removeAt(index);
+                        });
                         ref.invalidate(groupsProvider(widget.uuid));
                       } catch (error) {
                         debugPrint("Error occurred: $error");
@@ -83,6 +86,9 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                       try {
                         await DatabaseService.denyUserGroupRequest(
                             group.id, widget.uuid);
+                        setState(() {
+                          groupsRequests.removeAt(index);
+                        });
                       } catch (error) {
                         debugPrint("Error occurred: $error");
                       }
