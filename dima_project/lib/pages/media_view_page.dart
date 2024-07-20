@@ -47,8 +47,8 @@ class MediaViewPageState extends State<MediaViewPage> {
           itemBuilder: (context, index) {
             final message = widget.messages[index];
             return SafeArea(
-              child: StreamBuilder<UserData>(
-                stream: DatabaseService.getUserDataFromUUID(message.sender),
+              child: FutureBuilder<UserData>(
+                future: DatabaseService.getUserData(message.sender),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Container(
