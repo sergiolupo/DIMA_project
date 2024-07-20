@@ -77,6 +77,7 @@ class UserTileState extends ConsumerState<UserTile> {
                     ref.invalidate(followingProvider(widget.uuid));
                     ref.invalidate(followerProvider(widget.user.uuid!));
                     ref.invalidate(followerProvider(widget.uuid));
+                    ref.invalidate(userProvider(widget.user.uuid!));
                   } catch (error) {
                     debugPrint("Error occurred: $error");
                   }

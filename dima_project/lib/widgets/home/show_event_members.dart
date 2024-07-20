@@ -1,12 +1,9 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/user.dart';
-import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShowEventMembersPage extends StatefulWidget {
+class ShowEventMembersPage extends ConsumerStatefulWidget {
   final String eventId;
   final String uuid;
   final String detailId;
@@ -23,28 +20,19 @@ class ShowEventMembersPage extends StatefulWidget {
   ShowEventMembersPageState createState() => ShowEventMembersPageState();
 }
 
-class ShowEventMembersPageState extends State<ShowEventMembersPage> {
-  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _membersStreamSubscription;
-  late final StreamController<DocumentSnapshot<Map<String, dynamic>>>
-      _membersStreamController =
-      StreamController<DocumentSnapshot<Map<String, dynamic>>>();
+class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
   @override
   void initState() {
+    ref.read(followingProvider(widget.uuid));
+    ref.read(eventProvider(widget.eventId));
+    ref.read(userProvider(widget.uuid));
     super.initState();
-    init();
-  }
-
-  init() {
-    _membersStreamSubscription =
-        DatabaseService.getMembersStreamUser(widget.eventId, widget.detailId)
-            .listen((snapshot) {
-      _membersStreamController.add(snapshot);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final event = ref.watch(eventProvider(widget.eventId));
+    final followings = ref.watch(followingProvider(widget.uuid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
@@ -57,102 +45,76 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
         middle: Text('Partecipants',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
       ),
-      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: _membersStreamController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.data() == null) {
-            return const CupertinoActivityIndicator();
-          }
-          if (snapshot.data!.data()!["members"].length == 0) {
-            return const Center(
-              child: Text('No partecipants'),
-            );
-          }
+      child: event.when(
+        data: (event) {
+          final detail = event.details!.firstWhere(
+            (element) => element.id == widget.detailId,
+            orElse: () => throw Exception('Detail not found'),
+          );
           return ListView.builder(
-            itemCount: snapshot.data!.data()!["members"].length,
+            itemCount: detail.members!.length,
             itemBuilder: (context, index) {
-              final members = snapshot.data!.data()!["members"];
+              final user = ref.watch(userProvider(detail.members![index]));
 
-              if (members.isEmpty) {
-                return const Center(
-                  child: Text('No partecipants'),
-                );
-              }
+              return user.when(
+                data: (userData) {
+                  return followings.when(
+                      data: (followings) {
+                        final isFollowing = followings
+                                .any((element) => element.uuid! == widget.uuid)
+                            ? 1
+                            : userData.requests!.contains(widget.uuid)
+                                ? 2
+                                : 0;
 
-              final String uid = members[index].toString();
-
-              return StreamBuilder<UserData>(
-                stream: DatabaseService.getUserDataFromUUID(uid.toString()),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CupertinoActivityIndicator(); // Or any loading indicator
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final UserData userData = snapshot.data!;
-                    return StreamBuilder(
-                        stream: DatabaseService.isFollowing(
-                            userData.uuid!, widget.uuid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CupertinoActivityIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            final isFollowing = snapshot.data as int;
-
-                            if (userData.uuid == widget.admin) {
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: UserTile(
-                                      user: userData,
-                                      uuid: widget.uuid,
-                                      isFollowing: isFollowing,
-                                    ),
+                        if (userData.uuid == widget.admin) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: UserTile(
+                                  user: userData,
+                                  uuid: widget.uuid,
+                                  isFollowing: isFollowing,
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  "Host",
+                                  style: TextStyle(
+                                    color: CupertinoColors.systemGrey4,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const Padding(
-                                    padding: EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      "Host",
-                                      style: TextStyle(
-                                        color: CupertinoColors.systemGrey4,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
+                                ),
+                              ),
+                            ],
+                          );
+                        }
 
-                            return UserTile(
-                              user: userData,
-                              uuid: widget.uuid,
-                              isFollowing: isFollowing,
-                            );
-                          }
-                        });
-                  }
+                        return UserTile(
+                          user: userData,
+                          uuid: widget.uuid,
+                          isFollowing: isFollowing,
+                        );
+                      },
+                      loading: () => const CupertinoActivityIndicator(),
+                      error: (error, stack) => Text('Error: $error'));
                 },
+                loading: () => const CupertinoActivityIndicator(),
+                error: (error, stack) => Text('Error: $error'),
               );
             },
           );
         },
+        loading: () => const CupertinoActivityIndicator(),
+        error: (error, stack) => Text('Error: $error'),
       ),
     );
   }
 
   @override
   void dispose() {
-    _membersStreamSubscription?.cancel();
-    _membersStreamController.close();
     super.dispose();
   }
 }
