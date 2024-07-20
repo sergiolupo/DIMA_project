@@ -83,7 +83,11 @@ class InvitePageState extends ConsumerState<InvitePage> {
                   return Center(
                     child: Column(
                       children: [
-                        Image.asset('assets/images/search_followers.png'),
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Image.asset(
+                                'assets/darkMode/search_followers.png')
+                            : Image.asset('assets/images/search_followers.png'),
                         const Text('No followers'),
                       ],
                     ),
@@ -97,8 +101,13 @@ class InvitePageState extends ConsumerState<InvitePage> {
 
                 if (filteredUsers.isEmpty) {
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/no_followers_found.png'),
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset(
+                              'assets/darkMode/no_followers_found.png')
+                          : Image.asset('assets/images/no_followers_found.png'),
                       const Center(
                         child: Text('Not results found'),
                       ),

@@ -18,6 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group group;
@@ -216,11 +217,14 @@ class GroupChatPageState extends State<GroupChatPage> {
             ),
           ),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
+          CupertinoButton(
+            borderRadius: BorderRadius.circular(20),
+            padding: const EdgeInsets.all(2),
+            color: CupertinoTheme.of(context).primaryColor,
+            onPressed: () {
               sendMessage();
             },
-            child: const Icon(CupertinoIcons.paperplane_fill,
+            child: const Icon(LineAwesomeIcons.paper_plane,
                 color: CupertinoColors.white),
           ),
         ],

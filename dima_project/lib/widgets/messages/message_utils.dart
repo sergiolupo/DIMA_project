@@ -7,6 +7,7 @@ import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -50,7 +51,7 @@ class MessageUtils {
         ),
       if (message.sentByMe!)
         _buildOptionItem(
-          icon: CupertinoIcons.eye,
+          icon: CupertinoIcons.eye_fill,
           color: CupertinoColors.systemBlue,
           text: 'Read By',
           onPressed: () => _showReaders(context, message, uuid),
@@ -97,10 +98,10 @@ class MessageUtils {
     return message.sentByMe == true
         ? message.readBy!.isNotEmpty &&
                 !message.readBy!.every((element) => element.username == uuid)
-            ? const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemBlue, size: 10)
-            : const Icon(CupertinoIcons.check_mark_circled,
-                color: CupertinoColors.systemGreen, size: 10)
+            ? const Icon(LineAwesomeIcons.check_double_solid,
+                color: CupertinoColors.white, size: 15)
+            : const Icon(LineAwesomeIcons.check_solid,
+                color: CupertinoColors.white, size: 15)
         : const SizedBox();
   }
 
@@ -220,9 +221,9 @@ class MessageUtils {
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.6,
                 ),
-                decoration: const BoxDecoration(
-                  color: CupertinoColors.white,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
                   ),
@@ -230,11 +231,15 @@ class MessageUtils {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'Read By',
                         style: TextStyle(
+                          color: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .color,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

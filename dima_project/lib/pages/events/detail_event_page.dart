@@ -33,13 +33,14 @@ class DetailPageState extends ConsumerState<DetailPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
-        middle: const Text('Detail Page'),
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        middle: Text('Detail Page',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
         trailing: widget.event.admin == widget.uuid
             ? CupertinoButton(
                 padding: EdgeInsets.zero,
-                child: const Icon(CupertinoIcons.trash,
-                    color: CupertinoColors.white),
+                child: Icon(CupertinoIcons.trash,
+                    color: CupertinoTheme.of(context).primaryColor),
                 onPressed: () async {
                   // Show confirmation dialog
                   showCupertinoDialog(
@@ -77,7 +78,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
             : null,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(
-                color: CupertinoColors.white,
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

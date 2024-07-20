@@ -150,8 +150,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                         getFollowings(),
                       ],
                     ),
-                    const SizedBox(width: 40),
-                    const SizedBox(width: 20),
                   ],
                 ),
                 const SizedBox(height: 10),

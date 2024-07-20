@@ -186,7 +186,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                           child: const Icon(CupertinoIcons.clear_circled_solid),
                         ),
                         decoration: BoxDecoration(
-                          color: CupertinoColors.extraLightBackgroundGray,
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -202,7 +203,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                           child: const Icon(CupertinoIcons.clear_circled_solid),
                         ),
                         decoration: BoxDecoration(
-                          color: CupertinoColors.extraLightBackgroundGray,
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -268,7 +270,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: CupertinoColors.extraLightBackgroundGray,
+                            color: CupertinoTheme.of(context)
+                                .primaryContrastingColor,
                           ),
                           child: Column(
                             children: [
@@ -299,7 +302,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                               ),
                               Container(
                                 height: 1,
-                                color: CupertinoColors.opaqueSeparator,
+                                color: CupertinoColors.separator,
                               ),
                               CupertinoListTile(
                                 title: const Text('Notifications'),
@@ -318,7 +321,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                               ),
                               Container(
                                 height: 1,
-                                color: CupertinoColors.opaqueSeparator,
+                                color: CupertinoColors.separator,
                               ),
                               CupertinoListTile(
                                 leading: isPublic
