@@ -299,8 +299,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                           builder: (context) => ShowEvent(
                             uuid: widget.uuid,
                             eventId: event.id!,
-                            events: events,
                             userData: user,
+                            createdEvents: false,
                           ),
                         ),
                       ),
@@ -350,7 +350,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                           builder: (context) => ShowEvent(
                             uuid: widget.uuid,
                             eventId: event.id!,
-                            events: events,
+                            createdEvents: true,
                             userData: user,
                           ),
                         ),
