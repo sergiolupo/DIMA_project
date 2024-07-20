@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -148,7 +147,10 @@ class MessageUtils {
             onChanged: (value) {
               updatedMessage = value;
             },
-            decoration: Constants.inputDecoration,
+            decoration: BoxDecoration(
+              color: CupertinoTheme.of(context).primaryContrastingColor,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
           ),
           actions: [
             CupertinoDialogAction(
