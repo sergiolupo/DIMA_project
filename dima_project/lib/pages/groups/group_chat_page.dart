@@ -40,7 +40,6 @@ class GroupChatPageState extends State<GroupChatPage> {
   bool isUploading = false;
   OverlayEntry? _overlayEntry;
   OverlayEntry? _copyOverlayEntry;
-
   final GlobalKey _navigationBarKey = GlobalKey();
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
@@ -529,5 +528,12 @@ class GroupChatPageState extends State<GroupChatPage> {
     );
 
     Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _copyOverlayEntry?.remove();
+    super.dispose();
   }
 }
