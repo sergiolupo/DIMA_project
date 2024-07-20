@@ -1,4 +1,3 @@
-import 'package:dima_project/models/event.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -9,216 +8,211 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
-  final Event event;
   final String uuid;
-  final Details detail;
-  const DetailPage(
-      {super.key,
-      required this.event,
-      required this.detail,
-      required this.uuid});
+  final String eventId;
+  final String detailId;
+
+  const DetailPage({
+    super.key,
+    required this.uuid,
+    required this.eventId,
+    required this.detailId,
+  });
   @override
   DetailPageState createState() => DetailPageState();
 }
 
 class DetailPageState extends ConsumerState<DetailPage> {
-  int _isJoining = 0;
   @override
   void initState() {
-    _checkJoin();
+    ref.read(eventProvider(widget.eventId));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        middle: Text('Detail Page',
-            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-        trailing: widget.event.admin == widget.uuid
-            ? CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: Icon(CupertinoIcons.trash,
-                    color: CupertinoTheme.of(context).primaryColor),
-                onPressed: () async {
-                  // Show confirmation dialog
-                  showCupertinoDialog(
-                    context: context,
-                    builder: (newContext) => CupertinoAlertDialog(
-                      title: const Text('Delete Event'),
-                      content: const Text(
-                          'Are you sure you want to delete this event?'),
-                      actions: <Widget>[
-                        CupertinoDialogAction(
-                          child: const Text('Cancel'),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        CupertinoDialogAction(
-                          child: const Text('Delete'),
-                          onPressed: () async {
-                            Navigator.of(newContext).pop();
-                            await DatabaseService.deleteDetail(
-                                widget.event.id!, widget.detail.id!);
-                            ref.invalidate(eventProvider(widget.event.id!));
-                            ref.invalidate(createdEventsProvider(widget.uuid));
-                            ref.invalidate(joinedEventsProvider(widget.uuid));
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          },
+    final event = ref.watch(eventProvider(widget.eventId));
+    return event.when(data: (event) {
+      final detail = event.details!.firstWhere(
+        (element) => element.id == widget.detailId,
+        orElse: () => throw Exception('Detail not found'),
+      );
+      return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: Text('Detail Page',
+              style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
+          trailing: event.admin == widget.uuid
+              ? CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Icon(CupertinoIcons.trash,
+                      color: CupertinoTheme.of(context).primaryColor),
+                  onPressed: () async {
+                    // Show confirmation dialog
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (newContext) => CupertinoAlertDialog(
+                        title: const Text('Delete Event'),
+                        content: const Text(
+                            'Are you sure you want to delete this event?'),
+                        actions: <Widget>[
+                          CupertinoDialogAction(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          CupertinoDialogAction(
+                            child: const Text('Delete'),
+                            onPressed: () async {
+                              Navigator.of(newContext).pop();
+                              await DatabaseService.deleteDetail(
+                                  event.id!, widget.detailId);
+                              ref.invalidate(eventProvider(event.id!));
+                              ref.invalidate(
+                                  createdEventsProvider(widget.uuid));
+                              ref.invalidate(joinedEventsProvider(widget.uuid));
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              : null,
+          leading: Navigator.canPop(context)
+              ? CupertinoNavigationBarBackButton(
+                  color: CupertinoTheme.of(context).primaryColor,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShowDate(date: detail.startDate!, time: detail.startTime!),
+                const Text(
+                  ' - ',
+                ),
+                ShowDate(date: detail.endDate!, time: detail.endTime!)
+              ],
+            ),
+            FutureBuilder(
+                future: EventService.getAddressFromLatLng(detail.latlng!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final address = snapshot.data as String;
+                    return Text(
+                      'Location: $address',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: CupertinoActivityIndicator(),
+                    );
+                  }
+                }),
+            SizedBox(
+              height: 200,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: detail.latlng!,
+                    initialZoom: 11,
+                    interactionOptions:
+                        const InteractionOptions(flags: InteractiveFlag.all),
+                  ),
+                  children: [
+                    openStreetMapTileLayer,
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          width: 80.0,
+                          height: 80.0,
+                          point: detail.latlng!,
+                          child: Icon(
+                            CupertinoIcons.location_solid,
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
                         ),
                       ],
                     ),
-                  );
-
-                  // If the user confirmed, proceed with deletion
-                },
-              )
-            : null,
-        leading: Navigator.canPop(context)
-            ? CupertinoNavigationBarBackButton(
-                color: CupertinoTheme.of(context).primaryColor,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            : null,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ShowDate(
-                  date: widget.detail.startDate!,
-                  time: widget.detail.startTime!),
-              const Text(
-                ' - ',
-              ),
-              ShowDate(
-                  date: widget.detail.endDate!, time: widget.detail.endTime!)
-            ],
-          ),
-          FutureBuilder(
-              future: EventService.getAddressFromLatLng(widget.detail.latlng!),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  final address = snapshot.data as String;
-                  return Text(
-                    'Location: $address',
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  );
-                } else {
-                  return const Center(
-                    child: CupertinoActivityIndicator(),
-                  );
-                }
-              }),
-          SizedBox(
-            height: 200,
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: FlutterMap(
-                options: MapOptions(
-                  initialCenter: widget.detail.latlng!,
-                  initialZoom: 11,
-                  interactionOptions:
-                      const InteractionOptions(flags: InteractiveFlag.all),
-                ),
-                children: [
-                  openStreetMapTileLayer,
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        width: 80.0,
-                        height: 80.0,
-                        point: widget.detail.latlng!,
-                        child: Icon(
-                          CupertinoIcons.location_solid,
-                          color: CupertinoTheme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            widget.detail.members!.length.toString(),
-            style: CupertinoTheme.of(context).textTheme.textStyle,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => ShowEventMembersPage(
-                    uuid: widget.uuid,
-                    eventId: widget.event.id!,
-                    detailId: widget.detail.id!,
-                    admin: widget.event.admin,
-                  ),
-                ),
-              );
-            },
-            child: Text(
-              widget.detail.members!.length > 1
-                  ? " Participants"
-                  : " Participant",
-              style: CupertinoTheme.of(context)
-                  .textTheme
-                  .textStyle
-                  .copyWith(color: CupertinoColors.systemGrey),
+                  ]),
             ),
-          ),
-          const SizedBox(height: 20),
-          if (widget.event.admin != widget.uuid &&
-              DateTime.now().isBefore(DateTime(
-                widget.detail.startDate!.year,
-                widget.detail.startDate!.month,
-                widget.detail.startDate!.day,
-                widget.detail.startTime!.hour,
-                widget.detail.startTime!.minute,
-              )))
-            CupertinoButton.filled(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-              onPressed: () async {
-                debugPrint('Joining event');
-                await DatabaseService.toggleEventJoin(
-                    widget.event.id!, widget.detail.id!, widget.uuid);
+            const SizedBox(height: 20),
+            Text(
+              detail.members!.length.toString(),
+              style: CupertinoTheme.of(context).textTheme.textStyle,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => ShowEventMembersPage(
+                      uuid: widget.uuid,
+                      eventId: widget.eventId,
+                      detailId: widget.detailId,
+                      admin: event.admin,
+                    ),
+                  ),
+                );
               },
               child: Text(
-                _isJoining == 0
-                    ? "Subscribe"
-                    : _isJoining == 1
-                        ? "Unsubscribe"
-                        : "Requested",
+                detail.members!.length > 1 ? " Participants" : " Participant",
+                style: CupertinoTheme.of(context)
+                    .textTheme
+                    .textStyle
+                    .copyWith(color: CupertinoColors.systemGrey),
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  _checkJoin() async {
-    // Listen for updates on the isFollowing stream
-    final isJoiningStream = DatabaseService.isJoining(
-      widget.uuid,
-      widget.event.id!,
-      widget.detail.id!,
-    );
-
-    // Listen for updates and update _isFollowing accordingly
-    await for (final isJoining in isJoiningStream) {
-      if (mounted) {
-        setState(() {
-          _isJoining = isJoining;
-        });
-      }
-    }
+            const SizedBox(height: 20),
+            if (event.admin != widget.uuid &&
+                DateTime.now().isBefore(DateTime(
+                  detail.startDate!.year,
+                  detail.startDate!.month,
+                  detail.startDate!.day,
+                  detail.startTime!.hour,
+                  detail.startTime!.minute,
+                )))
+              CupertinoButton.filled(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                onPressed: () async {
+                  debugPrint('Joining event');
+                  await DatabaseService.toggleEventJoin(
+                      event.id!, detail.id!, widget.uuid);
+                  ref.invalidate(eventProvider(event.id!));
+                  ref.invalidate(joinedEventsProvider(widget.uuid));
+                },
+                child: Text(
+                  detail.members!.contains(widget.uuid)
+                      ? "Unsubscribe"
+                      : detail.requests!.contains(widget.uuid)
+                          ? "Requested"
+                          : "Subscribe",
+                ),
+              ),
+          ],
+        ),
+      );
+    }, loading: () {
+      return const Center(
+        child: CupertinoActivityIndicator(),
+      );
+    }, error: (error, stackTrace) {
+      return Center(
+        child: Text('Error: $error'),
+      );
+    });
   }
 
   TileLayer get openStreetMapTileLayer => TileLayer(

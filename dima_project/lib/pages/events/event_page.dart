@@ -173,8 +173,8 @@ class EventPageState extends ConsumerState<EventPage> {
                                   Navigator.of(context).push(
                                     CupertinoPageRoute(
                                       builder: (context) => DetailPage(
-                                        event: event,
-                                        detail: detail,
+                                        eventId: event.id!,
+                                        detailId: detail.id!,
                                         uuid: widget.uuid,
                                       ),
                                     ),
