@@ -1,4 +1,5 @@
 import 'package:dima_project/pages/news/category_news.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class CategoryTile extends StatelessWidget {
@@ -24,8 +25,14 @@ class CategoryTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 child: Image.asset(
                   image,
-                  width: 120,
-                  height: 70,
+                  width:
+                      MediaQuery.of(context).size.width > Constants.limitWidth
+                          ? 240
+                          : 120,
+                  height:
+                      MediaQuery.of(context).size.width > Constants.limitWidth
+                          ? 140
+                          : 70,
                   fit: BoxFit.cover,
                 )),
             Container(

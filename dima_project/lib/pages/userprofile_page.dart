@@ -3,6 +3,7 @@ import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/pages/show_event.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_following_page.dart';
@@ -130,23 +131,38 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       children: [
                         Column(
                           children: [
-                            CreateImageWidget.getUserImage(user.imagePath!),
+                            CreateImageWidget.getUserImage(user.imagePath!,
+                                isTablet: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth),
                             Padding(
                               padding: const EdgeInsets.only(top: 10.0),
                               child: Text(
                                 '${user.name} ${user.surname}',
-                                style: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle,
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? 18
+                                      : 14,
+                                  color: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .color,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(width: 35),
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? const SizedBox(width: 50)
+                            : const SizedBox(width: 35),
                         getGroups(),
-                        const SizedBox(width: 20),
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? const SizedBox(width: 40)
+                            : const SizedBox(width: 20),
                         getFollowers(),
-                        const SizedBox(width: 20),
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? const SizedBox(width: 40)
+                            : const SizedBox(width: 20),
                         getFollowings(),
                       ],
                     ),
@@ -181,7 +197,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                           ))
                       .toList(),
                 ),
-                const SizedBox(height: 20),
                 const SizedBox(height: 20),
                 !isMyProfile
                     ? Row(
@@ -391,14 +406,23 @@ class UserProfileState extends ConsumerState<UserProfile> {
             );
           },
           child: SizedBox(
-            height: 50,
+            height: 60,
             child: Column(
               children: [
                 groups.when(
                   data: (groups) {
                     return Text(
                       groups.length.toString(),
-                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 18
+                            : 14,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
+                      ),
                     );
                   },
                   loading: () => const CupertinoActivityIndicator(),
@@ -409,13 +433,15 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   },
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  "Groups",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(color: CupertinoColors.systemGrey),
-                ),
+                Text("Groups",
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 18
+                          : 14,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
+                    )),
               ],
             ),
           ),
@@ -443,14 +469,23 @@ class UserProfileState extends ConsumerState<UserProfile> {
             );
           },
           child: SizedBox(
-            height: 50,
+            height: 60,
             child: Column(
               children: [
                 followers.when(
                   data: (followers) {
                     return Text(
                       followers.length.toString(),
-                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 18
+                            : 14,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
+                      ),
                     );
                   },
                   loading: () => const CupertinoActivityIndicator(),
@@ -463,10 +498,13 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 const SizedBox(height: 10),
                 Text(
                   "Followers",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(color: CupertinoColors.systemGrey),
+                  style: TextStyle(
+                    fontSize:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 18
+                            : 14,
+                    color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                  ),
                 ),
               ],
             ),
@@ -495,14 +533,23 @@ class UserProfileState extends ConsumerState<UserProfile> {
             );
           },
           child: SizedBox(
-            height: 50,
+            height: 60,
             child: Column(
               children: [
                 following.when(
                   data: (following) {
                     return Text(
                       following.length.toString(),
-                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 18
+                            : 14,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
+                      ),
                     );
                   },
                   loading: () => const CupertinoActivityIndicator(),
@@ -515,10 +562,13 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 const SizedBox(height: 10),
                 Text(
                   "Following",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(color: CupertinoColors.systemGrey),
+                  style: TextStyle(
+                    fontSize:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 18
+                            : 14,
+                    color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                  ),
                 ),
               ],
             ),

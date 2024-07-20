@@ -157,40 +157,36 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                             ),
                             const SizedBox(height: 10),
                             Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: group!.categories!
                                   .map((category) => Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 4),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 140),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                CategoryIconMapper
-                                                    .iconForCategory(category),
-                                                size: 24,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Icon(
+                                              CategoryIconMapper
+                                                  .iconForCategory(category),
+                                              size: 24,
+                                              color: CupertinoTheme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              category,
+                                              style: TextStyle(
+                                                fontSize: 16,
                                                 color:
                                                     CupertinoTheme.of(context)
-                                                        .primaryColor,
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color,
                                               ),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                category,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color:
-                                                      CupertinoTheme.of(context)
-                                                          .textTheme
-                                                          .textStyle
-                                                          .color,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ))
                                   .toList(),

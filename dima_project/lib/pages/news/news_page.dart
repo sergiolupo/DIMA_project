@@ -4,6 +4,7 @@ import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/news/article_model.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
@@ -118,10 +119,13 @@ class NewsPageState extends ConsumerState<NewsPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Breaking News",
                             style: TextStyle(
-                                color: CupertinoColors.black,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18.0),
                           ),
@@ -157,7 +161,10 @@ class NewsPageState extends ConsumerState<NewsPage> {
                           return buildNews(image, index, title);
                         },
                         options: CarouselOptions(
-                            height: 200,
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? 400
+                                : 200,
                             autoPlay: true,
                             enlargeCenterPage: false,
                             enlargeStrategy: CenterPageEnlargeStrategy.height,
@@ -178,10 +185,13 @@ class NewsPageState extends ConsumerState<NewsPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Trending News",
                             style: TextStyle(
-                                color: CupertinoColors.black,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18.0),
                           ),
@@ -242,16 +252,25 @@ class NewsPageState extends ConsumerState<NewsPage> {
               borderRadius: BorderRadius.circular((10)),
               child: CachedNetworkImage(
                 imageUrl: image,
-                height: 250.0,
+                height: MediaQuery.of(context).size.width,
+                /*MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 300
+                    : 250.0,*/
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
                 alignment: Alignment.topCenter,
               ),
             ),
             Container(
-              height: 250,
+              height: MediaQuery.of(context).size.width,
+              /*MediaQuery.of(context).size.width > Constants.limitWidth
+                  ? 300
+                  : 250,*/
               padding: const EdgeInsets.only(left: 10.0),
-              margin: const EdgeInsets.only(top: 150),
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.width > Constants.limitWidth
+                      ? 350
+                      : 150),
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   color: CupertinoColors.black.withOpacity(0.5),

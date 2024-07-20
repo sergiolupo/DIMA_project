@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 
@@ -41,7 +42,14 @@ class BlogTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                       imageUrl: imageUrl,
-                      width: MediaQuery.of(context).size.width / 3,
+                      height: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 230
+                          : 100,
+                      width: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? MediaQuery.of(context).size.width / 3
+                          : MediaQuery.of(context).size.width / 2.5,
                       fit: BoxFit.cover,
                       alignment: Alignment.topCenter,
                     )),

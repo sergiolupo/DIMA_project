@@ -14,4 +14,6 @@ class Constants {
 
   static const textColor = CupertinoColors.black;
   static const textColorDark = CupertinoColors.white;
+
+  static const limitWidth = 800;
 }

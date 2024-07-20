@@ -85,15 +85,22 @@ class GroupChatTileState extends State<GroupChatTile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.group.name,
-                          style: TextStyle(
-                              color: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
+                        Container(
+                          constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.4),
+                          child: Text(
+                            maxLines: 2,
+                            widget.group.name,
+                            style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         (widget.lastMessage != null)

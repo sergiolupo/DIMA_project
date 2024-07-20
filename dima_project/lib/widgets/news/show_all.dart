@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/pages/news/article_view.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowAll extends StatelessWidget {
@@ -25,12 +26,15 @@ class ShowAll extends StatelessWidget {
                     title: title)));
       },
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
               imageUrl: image,
-              height: 200,
+              height: MediaQuery.of(context).size.width > Constants.limitWidth
+                  ? MediaQuery.of(context).size.height * 0.6
+                  : 200,
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
@@ -41,8 +45,8 @@ class ShowAll extends StatelessWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                color: CupertinoColors.black,
+            style: TextStyle(
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold),
           ),
