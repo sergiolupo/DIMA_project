@@ -19,8 +19,7 @@ class FollowRequestsPageState extends State<FollowRequestsPage> {
   }
 
   init() async {
-    final requests =
-        await DatabaseService.getFollowRequestsForUser(widget.uuid);
+    final requests = await DatabaseService.getFollowRequests(widget.uuid);
     setState(() {
       userRequests = requests;
     });

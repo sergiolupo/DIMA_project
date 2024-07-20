@@ -19,8 +19,7 @@ class GroupsRequestsPageState extends State<GroupsRequestsPage> {
   }
 
   init() async {
-    final requests =
-        await DatabaseService.getUserGroupRequestsForUser(widget.uuid);
+    final requests = await DatabaseService.getUserGroupRequests(widget.uuid);
     setState(() {
       groupsRequests = requests;
     });

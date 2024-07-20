@@ -12,179 +12,154 @@ class ShowRequestPage extends StatefulWidget {
 }
 
 class ShowRequestPageState extends State<ShowRequestPage> {
-  Stream<int>? _numFollowRequests;
-  Stream<int>? _numGroupRequests;
-  Stream<int>? _numEventRequests;
+  int? _numFollowRequests;
+  int? _numGroupRequests;
+  int? _numEventRequests;
   @override
   void initState() {
     init();
     super.initState();
   }
 
-  init() {
-    _numFollowRequests = DatabaseService.getFollowRequests(widget.uuid).map(
-      (follow) {
-        return follow.length;
-      },
-    );
-    _numGroupRequests = DatabaseService.getUserGroupRequests(widget.uuid).map(
-      (group) {
-        return group.length;
-      },
-    );
-    _numEventRequests = DatabaseService.getEventRequestsStream(widget.uuid).map(
-      (event) {
-        return event.length;
-      },
-    );
+  init() async {
+    int? number;
+    number = (await DatabaseService.getFollowRequests(widget.uuid)).length;
+    setState(() {
+      _numFollowRequests = number;
+    });
+    number = (await DatabaseService.getUserGroupRequests(widget.uuid)).length;
+    setState(() {
+      _numGroupRequests = number;
+    });
+    number =
+        (await DatabaseService.getEventRequestsForUser(widget.uuid)).length;
+    setState(() {
+      _numEventRequests = number;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _numFollowRequests == null || _numEventRequests == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-                middle: const Text('Requests'),
-                leading: CupertinoButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Icon(CupertinoIcons.back,
-                      color: CupertinoTheme.of(context).primaryColor),
-                )),
-            child: SafeArea(
-              child: ListView(
-                children: [
-                  CupertinoListSection(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: const Text('Requests'),
+          leading: CupertinoButton(
+            onPressed: () => Navigator.of(context).pop(),
+            padding: const EdgeInsets.only(left: 10),
+            child: Icon(CupertinoIcons.back,
+                color: CupertinoTheme.of(context).primaryColor),
+          )),
+      child: SafeArea(
+        child: ListView(
+          children: [
+            CupertinoListSection(
+              children: [
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.person),
+                  onTap: () => {
+                    Navigator.of(context, rootNavigator: true)
+                        .push(CupertinoPageRoute(
+                            builder: (context) =>
+                                FollowRequestsPage(uuid: widget.uuid)))
+                        .then((value) => init())
+                  },
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CupertinoListTile(
-                        leading: const Icon(CupertinoIcons.person),
-                        onTap: () => {
-                          Navigator.of(context, rootNavigator: true).push(
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      FollowRequestsPage(uuid: widget.uuid)))
-                        },
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Follow Requests'),
-                            StreamBuilder<int>(
-                              stream: _numFollowRequests,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return snapshot.data! > 0
-                                      ? Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: CupertinoColors.systemRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            snapshot.data.toString(),
-                                            style: const TextStyle(
-                                              color: CupertinoColors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox();
-                                } else {
-                                  return const SizedBox();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      CupertinoListTile(
-                        leading:
-                            const Icon(CupertinoIcons.person_2_square_stack),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Group Requests'),
-                            StreamBuilder<int>(
-                              stream: _numGroupRequests,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return snapshot.data! > 0
-                                      ? Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: CupertinoColors.systemRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            snapshot.data.toString(),
-                                            style: const TextStyle(
-                                              color: CupertinoColors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox();
-                                } else {
-                                  return const SizedBox();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        onTap: () => {
-                          Navigator.of(context, rootNavigator: true).push(
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      GroupsRequestsPage(uuid: widget.uuid)))
-                        },
-                      ),
-                      CupertinoListTile(
-                        leading: const Icon(CupertinoIcons.calendar_badge_plus),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Event Requests'),
-                            StreamBuilder<int>(
-                              stream: _numEventRequests,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return snapshot.data! > 0
-                                      ? Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: CupertinoColors.systemRed,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            snapshot.data.toString(),
-                                            style: const TextStyle(
-                                              color: CupertinoColors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox();
-                                } else {
-                                  return const SizedBox();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        onTap: () => {
-                          Navigator.of(context, rootNavigator: true).push(
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      EventsRequestsPage(uuid: widget.uuid)))
-                        },
-                      ),
+                      const Text('Follow Requests'),
+                      _numFollowRequests == null
+                          ? const SizedBox()
+                          : _numFollowRequests! > 0
+                              ? Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.systemRed,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    _numFollowRequests.toString(),
+                                    style: const TextStyle(
+                                      color: CupertinoColors.white,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox()
                     ],
                   ),
-                ],
-              ),
+                ),
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.person_2_square_stack),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Group Requests'),
+                      _numGroupRequests == null
+                          ? const SizedBox()
+                          : _numGroupRequests! > 0
+                              ? Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.systemRed,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    _numGroupRequests.toString(),
+                                    style: const TextStyle(
+                                      color: CupertinoColors.white,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox()
+                    ],
+                  ),
+                  onTap: () => {
+                    Navigator.of(context, rootNavigator: true)
+                        .push(CupertinoPageRoute(
+                            builder: (context) =>
+                                GroupsRequestsPage(uuid: widget.uuid)))
+                        .then((value) => init())
+                  },
+                ),
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.calendar_badge_plus),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Event Requests'),
+                      _numEventRequests == null
+                          ? const SizedBox()
+                          : _numEventRequests! > 0
+                              ? Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.systemRed,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    _numEventRequests.toString(),
+                                    style: const TextStyle(
+                                      color: CupertinoColors.white,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox()
+                    ],
+                  ),
+                  onTap: () => {
+                    Navigator.of(context, rootNavigator: true)
+                        .push(CupertinoPageRoute(
+                            builder: (context) =>
+                                EventsRequestsPage(uuid: widget.uuid)))
+                        .then((value) => init())
+                  },
+                ),
+              ],
             ),
-          );
+          ],
+        ),
+      ),
+    );
   }
 }
 

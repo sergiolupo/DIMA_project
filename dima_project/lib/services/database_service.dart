@@ -1017,13 +1017,7 @@ class DatabaseService {
     return (await groupsRef.doc(id).get())['requests'];
   }
 
-  static Stream<List<dynamic>> getUserGroupRequests(String id) {
-    return usersRef.doc(id).snapshots().map((snapshot) {
-      return snapshot['groupsRequests'];
-    });
-  }
-
-  static Future<List<Group>> getUserGroupRequestsForUser(String id) async {
+  static Future<List<Group>> getUserGroupRequests(String id) async {
     final doc = await usersRef.doc(id).get();
     List<Group> groups = [];
     for (var group in doc['groupsRequests']) {
@@ -1032,13 +1026,7 @@ class DatabaseService {
     return groups;
   }
 
-  static Stream<List<dynamic>> getFollowRequests(String id) {
-    return usersRef.doc(id).snapshots().map((snapshot) {
-      return snapshot['requests'];
-    });
-  }
-
-  static Future<List<UserData>> getFollowRequestsForUser(String id) async {
+  static Future<List<UserData>> getFollowRequests(String id) async {
     final docs = await usersRef.doc(id).get();
     List<UserData> users = [];
     for (var user in docs['requests']) {
@@ -1483,12 +1471,6 @@ class DatabaseService {
         }
       }
     }
-  }
-
-  static Stream<List<dynamic>> getEventRequestsStream(String uuid) {
-    return usersRef.doc(uuid).snapshots().map((snapshot) {
-      return snapshot['eventsRequests'];
-    });
   }
 
   static Future<List<Event>> getEventRequestsForUser(String uuid) async {
