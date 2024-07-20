@@ -101,9 +101,15 @@ class EditGroupPageState extends State<EditGroupPage> {
                       )) {
                         return;
                       }
-                      setState(() {
+                      await updateGroup();
+                      if (context.mounted) {
+                        Navigator.of(context).pop(
+                            await DatabaseService.getGroupFromId(
+                                widget.group.id));
+                      }
+                      /*setState(() {
                         index = 1;
-                      });
+                      });*/
                     } else {
                       if (!GroupHelper.validateSecondPage(
                           context, selectedCategories)) {

@@ -54,7 +54,8 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
             Navigator.of(context).pop();
           },
         ),
-        middle: const Text('Members'),
+        middle: Text('Partecipants',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
       ),
       child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: _membersStreamController.stream,
@@ -69,7 +70,7 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
           }
           if (snapshot.data!.data()!["members"].length == 0) {
             return const Center(
-              child: Text('No members'),
+              child: Text('No partecipants'),
             );
           }
           return ListView.builder(
@@ -79,7 +80,7 @@ class ShowEventMembersPageState extends State<ShowEventMembersPage> {
 
               if (members.isEmpty) {
                 return const Center(
-                  child: Text('No members'),
+                  child: Text('No partecipants'),
                 );
               }
 

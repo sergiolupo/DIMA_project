@@ -46,6 +46,7 @@ class TextMessageTileState extends State<TextMessageTile> {
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: widget.message.sentByMe!
                   ? MainAxisAlignment.end
@@ -55,14 +56,13 @@ class TextMessageTileState extends State<TextMessageTile> {
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
                     child: Column(
-                      children: [
-                        const SizedBox(height: 45),
-                        CreateImageWidget.getUserImage(
-                          widget.message.senderImage!,
-                          small: true,
-                        ),
-                      ],
-                    ),
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CreateImageWidget.getUserImage(
+                            widget.message.senderImage!,
+                            small: true,
+                          ),
+                        ]),
                   ),
                 Flexible(
                   child: Stack(
@@ -129,29 +129,32 @@ class TextMessageTileState extends State<TextMessageTile> {
                       Positioned(
                         bottom: 0,
                         right: 3,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              DateUtil.getFormattedTime(
-                                  context: context,
-                                  time: widget
-                                      .message.time.microsecondsSinceEpoch
-                                      .toString()),
-                              style: TextStyle(
-                                color: widget.message.sentByMe!
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                fontSize: 9,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 2.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                DateUtil.getFormattedTime(
+                                    context: context,
+                                    time: widget
+                                        .message.time.microsecondsSinceEpoch
+                                        .toString()),
+                                style: TextStyle(
+                                  color: widget.message.sentByMe!
+                                      ? CupertinoColors.white
+                                      : CupertinoColors.black,
+                                  fontSize: 9,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            MessageUtils.buildReadByIcon(
-                              widget.message,
-                              widget.uuid,
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              MessageUtils.buildReadByIcon(
+                                widget.message,
+                                widget.uuid,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

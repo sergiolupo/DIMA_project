@@ -135,14 +135,24 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                                   Type.text)
                                                 map[widget.lastMessage!
                                                     .recentMessageType]!,
-                                              Text(
-                                                widget
-                                                    .lastMessage!.recentMessage,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontSize: 14,
-                                                    color: CupertinoColors
-                                                        .inactiveGray),
+                                              Container(
+                                                constraints: BoxConstraints(
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.4),
+                                                child: Text(
+                                                  maxLines: 2,
+                                                  widget.lastMessage!
+                                                      .recentMessage,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: CupertinoColors
+                                                          .inactiveGray),
+                                                ),
                                               ),
                                             ],
                                           )

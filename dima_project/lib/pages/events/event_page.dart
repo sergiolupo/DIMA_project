@@ -76,15 +76,9 @@ class EventPageState extends ConsumerState<EventPage> {
                 height: MediaQuery.of(context).size.height * 0.7,
                 padding: const EdgeInsets.all(30),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CreateImageWidget.getEventImage(event.imagePath!),
-                        const SizedBox(width: 50),
-                      ],
-                    ),
+                    CreateImageWidget.getEventImage(event.imagePath!),
                     const SizedBox(height: 10),
                     Text(
                       textAlign: TextAlign.start,
@@ -100,7 +94,8 @@ class EventPageState extends ConsumerState<EventPage> {
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                            color: CupertinoColors.lightBackgroundGray,
+                            color: CupertinoTheme.of(context)
+                                .primaryContrastingColor,
                             borderRadius: BorderRadius.circular(10)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,12 +129,14 @@ class EventPageState extends ConsumerState<EventPage> {
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: CupertinoColors.extraLightBackgroundGray,
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
                               ),
                               child: CupertinoListTile(
-                                leading: const Icon(
+                                leading: Icon(
                                   CupertinoIcons.calendar,
-                                  color: CupertinoColors.systemPink,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
                                 ),
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
