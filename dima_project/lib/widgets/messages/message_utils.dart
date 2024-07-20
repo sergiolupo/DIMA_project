@@ -143,6 +143,8 @@ class MessageUtils {
             ],
           ),
           content: CupertinoTextField(
+            minLines: 1,
+            maxLines: 2,
             controller: TextEditingController(text: updatedMessage),
             onChanged: (value) {
               updatedMessage = value;
