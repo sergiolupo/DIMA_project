@@ -51,19 +51,22 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
       return event.length;
     });
     _numberOfMediaStream =
-        DatabaseService.getGroupMessagesType(widget.group.id, Type.image).map(
+        DatabaseService.getGroupMessagesTypeStream(widget.group.id, Type.image)
+            .map(
       (event) {
         return event.length;
       },
     );
     _numberOfEventsStream =
-        DatabaseService.getGroupMessagesType(widget.group.id, Type.event).map(
+        DatabaseService.getGroupMessagesTypeStream(widget.group.id, Type.event)
+            .map(
       (event) {
         return event.length;
       },
     );
     _numberOfNewsStream =
-        DatabaseService.getGroupMessagesType(widget.group.id, Type.news).map(
+        DatabaseService.getGroupMessagesTypeStream(widget.group.id, Type.news)
+            .map(
       (event) {
         return event.length;
       },

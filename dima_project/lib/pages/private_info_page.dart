@@ -34,14 +34,14 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
   }
 
   void getMembers() {
-    _numberOfMediaStream = DatabaseService.getPrivateMessagesType(
+    _numberOfMediaStream = DatabaseService.getPrivateMessagesTypeStream(
             widget.privateChat.id!, Type.image)
         .map(
       (event) {
         return event.length;
       },
     );
-    _numberOfNewsStream = DatabaseService.getPrivateMessagesType(
+    _numberOfNewsStream = DatabaseService.getPrivateMessagesTypeStream(
             widget.privateChat.id!, Type.news)
         .map(
       (event) {

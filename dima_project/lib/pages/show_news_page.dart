@@ -16,7 +16,7 @@ class ShowNewsPage extends StatefulWidget {
 }
 
 class ShowNewsPageState extends State<ShowNewsPage> {
-  Stream<List<dynamic>>? _mediaStream;
+  List<dynamic>? _medias;
 
   @override
   void initState() {
@@ -24,105 +24,102 @@ class ShowNewsPageState extends State<ShowNewsPage> {
     super.initState();
   }
 
-  init() {
+  init() async {
+    final List<dynamic>? medias;
     if (widget.isGroup) {
-      _mediaStream = DatabaseService.getGroupMessagesType(widget.id, Type.news);
+      medias = await DatabaseService.getGroupMessagesType(widget.id, Type.news);
     } else {
-      _mediaStream =
-          DatabaseService.getPrivateMessagesType(widget.id, Type.news);
+      medias =
+          await DatabaseService.getPrivateMessagesType(widget.id, Type.news);
     }
+    setState(() {
+      _medias = medias;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _mediaStream == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-                middle: Text(
-                  'News',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: CupertinoTheme.of(context).primaryColor),
-                ),
-                leading: CupertinoButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Icon(CupertinoIcons.back,
-                      color: CupertinoTheme.of(context).primaryColor),
-                )),
-            child: SafeArea(
-              child: StreamBuilder<List<dynamic>>(
-                stream: _mediaStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List medias = snapshot.data!
-                        .map((doc) => Message.fromSnapshot(doc, widget.id,
-                            FirebaseAuth.instance.currentUser!.uid))
-                        .toList();
-                    final groupedMedias = _groupMediasByDate(medias);
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: Text(
+            'News',
+            style: TextStyle(
+                fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
+          ),
+          leading: CupertinoButton(
+            onPressed: () => Navigator.of(context).pop(),
+            padding: const EdgeInsets.only(left: 10),
+            child: Icon(CupertinoIcons.back,
+                color: CupertinoTheme.of(context).primaryColor),
+          )),
+      child: SafeArea(
+        child: _medias == null
+            ? const Center(child: CupertinoActivityIndicator())
+            : Builder(
+                builder: (context) {
+                  final List medias = _medias!
+                      .map((doc) => Message.fromSnapshot(doc, widget.id,
+                          FirebaseAuth.instance.currentUser!.uid))
+                      .toList();
+                  final groupedMedias = _groupMediasByDate(medias);
 
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: groupedMedias.keys.length,
-                      itemBuilder: (context, index) {
-                        String dateKey = groupedMedias.keys.elementAt(index);
-                        List<Message> mediasForDate = groupedMedias[dateKey]!;
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: groupedMedias.keys.length,
+                    itemBuilder: (context, index) {
+                      String dateKey = groupedMedias.keys.elementAt(index);
+                      List<Message> mediasForDate = groupedMedias[dateKey]!;
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              color: CupertinoTheme.of(context)
-                                  .primaryContrastingColor,
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      dateKey,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: CupertinoTheme.of(context)
-                                            .textTheme
-                                            .textStyle
-                                            .color,
-                                      ),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            color: CupertinoTheme.of(context)
+                                .primaryContrastingColor,
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    dateKey,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoTheme.of(context)
+                                          .textTheme
+                                          .textStyle
+                                          .color,
                                     ),
-                                  ]),
-                            ),
-                            const SizedBox(height: 10),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: mediasForDate.length,
-                              itemBuilder: (context, index) {
-                                final message = mediasForDate[index];
-                                final List<String> news =
-                                    message.content.split('\n');
-                                return BlogTile(
-                                  url: news[2],
-                                  description: news[1],
-                                  imageUrl: news[3],
-                                  title: news[0],
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                  return const Center(
-                    child: CupertinoActivityIndicator(),
+                                  ),
+                                ]),
+                          ),
+                          const SizedBox(height: 10),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: mediasForDate.length,
+                            itemBuilder: (context, index) {
+                              final message = mediasForDate[index];
+                              final List<String> news =
+                                  message.content.split('\n');
+                              return BlogTile(
+                                url: news[2],
+                                description: news[1],
+                                imageUrl: news[3],
+                                title: news[0],
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
-            ),
-          );
+      ),
+    );
   }
 
   Map<String, List<Message>> _groupMediasByDate(List<dynamic> medias) {

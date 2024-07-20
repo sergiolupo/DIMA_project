@@ -17,7 +17,7 @@ class ShowEventsPage extends StatefulWidget {
 }
 
 class ShowEventsPageState extends State<ShowEventsPage> {
-  Stream<List<dynamic>>? _mediaStream;
+  List<dynamic>? _medias;
 
   @override
   void initState() {
@@ -25,185 +25,178 @@ class ShowEventsPageState extends State<ShowEventsPage> {
     super.initState();
   }
 
-  init() {
+  init() async {
+    final List<dynamic>? medias;
+
     if (widget.isGroup) {
-      _mediaStream =
-          DatabaseService.getGroupMessagesType(widget.id, Type.event);
+      medias =
+          await DatabaseService.getGroupMessagesType(widget.id, Type.event);
     } else {
-      _mediaStream =
-          DatabaseService.getPrivateMessagesType(widget.id, Type.event);
+      medias =
+          await DatabaseService.getPrivateMessagesType(widget.id, Type.event);
     }
+    setState(() {
+      _medias = medias;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _mediaStream == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-                middle: Text(
-                  'Events',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: CupertinoTheme.of(context).primaryColor),
-                ),
-                leading: CupertinoButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Icon(CupertinoIcons.back,
-                      color: CupertinoTheme.of(context).primaryColor),
-                )),
-            child: SafeArea(
-              child: StreamBuilder<List<dynamic>>(
-                stream: _mediaStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final List medias = snapshot.data!
-                        .map((doc) => Message.fromSnapshot(doc, widget.id,
-                            FirebaseAuth.instance.currentUser!.uid))
-                        .toList();
-                    final groupedMedias = _groupMediasByDate(medias);
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: Text(
+            'Events',
+            style: TextStyle(
+                fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
+          ),
+          leading: CupertinoButton(
+            onPressed: () => Navigator.of(context).pop(),
+            padding: const EdgeInsets.only(left: 10),
+            child: Icon(CupertinoIcons.back,
+                color: CupertinoTheme.of(context).primaryColor),
+          )),
+      child: SafeArea(
+        child: _medias == null
+            ? const Center(child: CupertinoActivityIndicator())
+            : Builder(
+                builder: (context) {
+                  final List medias = _medias!
+                      .map((doc) => Message.fromSnapshot(doc, widget.id,
+                          FirebaseAuth.instance.currentUser!.uid))
+                      .toList();
 
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: groupedMedias.keys.length,
-                      itemBuilder: (context, index) {
-                        String dateKey = groupedMedias.keys.elementAt(index);
-                        List<Message> mediasForDate = groupedMedias[dateKey]!;
+                  final groupedMedias = _groupMediasByDate(medias);
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              color: CupertinoColors.black.withOpacity(0.1),
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      dateKey,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: CupertinoColors.systemPink,
-                                      ),
-                                    ),
-                                  ]),
-                            ),
-                            const SizedBox(height: 10),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: mediasForDate.length,
-                              itemBuilder: (context, index) {
-                                final message = mediasForDate[index];
-                                return Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: PhysicalModel(
-                                    elevation: 3.0,
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: CupertinoColors.white,
-                                    child: FutureBuilder(
-                                      future: DatabaseService.getEvent(
-                                          message.content),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const CupertinoActivityIndicator();
-                                        }
-                                        if (snapshot.hasError) {
-                                          return Text(
-                                              'Error: ${snapshot.error}');
-                                        }
-                                        final event = snapshot.data;
-                                        return GestureDetector(
-                                            child: Container(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Row(
-                                                children: [
-                                                  CreateImageWidget
-                                                      .getEventImage(
-                                                          event!.imagePath!),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Container(
-                                                        constraints: BoxConstraints(
-                                                            maxWidth: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.6),
-                                                        child: Text(
-                                                          maxLines: 1,
-                                                          event.name,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        constraints: BoxConstraints(
-                                                            maxWidth: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.6),
-                                                        child: Text(
-                                                          maxLines: 3,
-                                                          event.description,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      EventPage(
-                                                    uuid: FirebaseAuth.instance
-                                                        .currentUser!.uid,
-                                                    eventId: event.id!,
-                                                  ),
-                                                ),
-                                              );
-                                            });
-                                      },
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: groupedMedias.keys.length,
+                    itemBuilder: (context, index) {
+                      String dateKey = groupedMedias.keys.elementAt(index);
+                      List<Message> mediasForDate = groupedMedias[dateKey]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            color: CupertinoColors.black.withOpacity(0.1),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    dateKey,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.systemPink,
                                     ),
                                   ),
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                  return const Center(
-                    child: CupertinoActivityIndicator(),
+                                ]),
+                          ),
+                          const SizedBox(height: 10),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: mediasForDate.length,
+                            itemBuilder: (context, index) {
+                              final message = mediasForDate[index];
+                              return Container(
+                                padding: const EdgeInsets.all(10),
+                                child: PhysicalModel(
+                                  elevation: 3.0,
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: CupertinoColors.white,
+                                  child: FutureBuilder(
+                                    future: DatabaseService.getEvent(
+                                        message.content),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CupertinoActivityIndicator();
+                                      }
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      }
+                                      final event = snapshot.data;
+                                      return GestureDetector(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                CreateImageWidget.getEventImage(
+                                                    event!.imagePath!),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      constraints: BoxConstraints(
+                                                          maxWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.6),
+                                                      child: Text(
+                                                        maxLines: 1,
+                                                        event.name,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      constraints: BoxConstraints(
+                                                          maxWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.6),
+                                                      child: Text(
+                                                        maxLines: 3,
+                                                        event.description,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              CupertinoPageRoute(
+                                                builder: (context) => EventPage(
+                                                  uuid: FirebaseAuth.instance
+                                                      .currentUser!.uid,
+                                                  eventId: event.id!,
+                                                ),
+                                              ),
+                                            );
+                                          });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
-            ),
-          );
+      ),
+    );
   }
 
   Map<String, List<Message>> _groupMediasByDate(List<dynamic> medias) {

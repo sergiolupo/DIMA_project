@@ -1078,28 +1078,48 @@ class DatabaseService {
     ]);
   }
 
-  static Stream<List<dynamic>> getGroupMessagesType(String id, Type type) {
+  static Stream<List<dynamic>> getGroupMessagesTypeStream(
+      String id, Type type) {
     return groupsRef
         .doc(id)
         .collection('messages')
         .where("type", isEqualTo: type.toString())
         .orderBy('time', descending: true)
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs;
-    });
+        .map((s) => s.docs);
   }
 
-  static Stream<List<dynamic>> getPrivateMessagesType(String id, Type type) {
+  static Stream<List<dynamic>> getPrivateMessagesTypeStream(
+      String id, Type type) {
     return privateChatRef
         .doc(id)
         .collection('messages')
         .where("type", isEqualTo: type.toString())
         .orderBy('time', descending: true)
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs;
-    });
+        .map((s) => s.docs);
+  }
+
+  static Future<List<dynamic>> getGroupMessagesType(
+      String id, Type type) async {
+    return (await groupsRef
+            .doc(id)
+            .collection('messages')
+            .where("type", isEqualTo: type.toString())
+            .orderBy('time', descending: true)
+            .get())
+        .docs;
+  }
+
+  static Future<List<dynamic>> getPrivateMessagesType(
+      String id, Type type) async {
+    return (await privateChatRef
+            .doc(id)
+            .collection('messages')
+            .where("type", isEqualTo: type.toString())
+            .orderBy('time', descending: true)
+            .get())
+        .docs;
   }
 
   static Future<void> acceptUserRequest(String user, String uuid) async {
