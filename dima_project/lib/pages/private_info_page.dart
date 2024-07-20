@@ -1,6 +1,7 @@
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/pages/show_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -24,6 +25,7 @@ class PrivateInfoPage extends StatefulWidget {
 class PrivateInfoPageState extends State<PrivateInfoPage> {
   Stream<int>? _numberOfMediaStream;
   Stream<int>? _numberOfNewsStream;
+  Stream<int>? _numberOfEventsStream;
 
   UserData? _user;
   @override
@@ -48,6 +50,13 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
         return event.length;
       },
     );
+    _numberOfEventsStream = DatabaseService.getPrivateMessagesTypeStream(
+            widget.privateChat.id!, Type.event)
+        .map(
+      (event) {
+        return event.length;
+      },
+    );
   }
 
   void init() async {
@@ -64,7 +73,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
   Widget build(BuildContext context) {
     return _user == null ||
             _numberOfMediaStream == null ||
-            _numberOfNewsStream == null
+            _numberOfNewsStream == null ||
+            _numberOfEventsStream == null
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -171,6 +181,66 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     Navigator.of(context).push(
                                       CupertinoPageRoute(
                                         builder: (context) => ShowMediasPage(
+                                          id: widget.privateChat.id!,
+                                          isGroup: false,
+                                        ),
+                                      ),
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            StreamBuilder<int>(
+                              stream: _numberOfEventsStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CupertinoActivityIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final events = snapshot.data;
+                                return CupertinoListTile(
+                                  padding: const EdgeInsets.all(0),
+                                  title: Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.calendar,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      const Text("Events"),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    children: [
+                                      int.parse(events.toString()) > 0
+                                          ? Text(
+                                              events.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal,
+                                                color: CupertinoColors
+                                                    .opaqueSeparator,
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                      const SizedBox(width: 10),
+                                      Icon(
+                                        CupertinoIcons.right_chevron,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryColor,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () => {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowEventsPage(
                                           id: widget.privateChat.id!,
                                           isGroup: false,
                                         ),

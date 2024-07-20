@@ -43,7 +43,6 @@ class DatabaseService {
       'typingTo': '',
       'isPublic': true,
       'events': [],
-      'eventsRequests': [],
       'groupsRequests': [],
       'requests': [],
       'isSignedInWithGoogle': user.isSignedInWithGoogle!,
@@ -1136,9 +1135,6 @@ class DatabaseService {
       eventsRef.doc(eventId).collection('details').doc(detailId).update({
         'members': FieldValue.arrayUnion([uuid]),
       }),
-      usersRef.doc(uuid).update({
-        'eventsRequests': FieldValue.arrayRemove(["$eventId:$detailId"])
-      }),
       if ((await eventsRef
               .doc(eventId)
               .collection('details')
@@ -1203,40 +1199,76 @@ class DatabaseService {
           ])
         });
       }
+      await sendEventsOnGroups(docRef.id, groupIds);
+      await sendEventsOnPrivateChat(docRef.id, uuids);
+    } catch (e) {
+      debugPrint("Error while creating the event: $e");
+    }
+  }
 
-      for (var id in uuids) {
-        await usersRef.doc(id).update({
-          'eventsRequests': FieldValue.arrayUnion([
-            docRef.id,
-          ])
-        });
+  static Future<void> sendEventsOnGroups(
+      String eventId, List<String> groupIds) async {
+    Message message = Message(
+      content: eventId,
+      sender: FirebaseAuth.instance.currentUser!.uid,
+      isGroupMessage: true,
+      time: Timestamp.now(),
+      type: Type.event,
+      readBy: [
+        ReadBy(
+          readAt: Timestamp.now(),
+          username: FirebaseAuth.instance.currentUser!.uid,
+        ),
+      ],
+    );
+
+    for (var id in groupIds) {
+      await groupsRef.doc(id).collection('messages').add(
+            message.toMap(),
+          );
+      await groupsRef.doc(id).update({
+        'recentMessage': 'Event',
+        'recentMessageSender': message.sender,
+        'recentMessageTime': message.time,
+        'recentMessageType': message.type.toString(),
+      });
+    }
+  }
+
+  static Future<void> sendEventsOnPrivateChat(
+      String eventId, List<String> uuids) async {
+    Message message = Message(
+      content: eventId,
+      sender: FirebaseAuth.instance.currentUser!.uid,
+      isGroupMessage: false,
+      time: Timestamp.now(),
+      type: Type.event,
+      readBy: [
+        ReadBy(
+          readAt: Timestamp.now(),
+          username: FirebaseAuth.instance.currentUser!.uid,
+        ),
+      ],
+    );
+
+    for (var uuid in uuids) {
+      final PrivateChat privateChat = await getPrivateChatsFromMember(
+          [uuid, FirebaseAuth.instance.currentUser!.uid]);
+      if (privateChat.id == null) {
+        final id = await createPrivateChat(privateChat);
+        privateChat.id = id;
       }
-      Message message = Message(
-        content: docRef.id,
-        sender: FirebaseAuth.instance.currentUser!.uid,
-        isGroupMessage: true,
-        time: Timestamp.now(),
-        type: Type.event,
-        readBy: [
-          ReadBy(
-            readAt: Timestamp.now(),
-            username: FirebaseAuth.instance.currentUser!.uid,
-          ),
-        ],
-      );
-      for (var id in groupIds) {
-        await groupsRef.doc(id).collection('messages').add(
+      await Future.wait([
+        privateChatRef.doc(privateChat.id).collection('messages').add(
               message.toMap(),
-            );
-        await groupsRef.doc(id).update({
+            ),
+        privateChatRef.doc(privateChat.id).update({
           'recentMessage': 'Event',
           'recentMessageSender': message.sender,
           'recentMessageTime': message.time,
           'recentMessageType': message.type.toString(),
-        });
-      }
-    } catch (e) {
-      debugPrint("Error while creating the event: $e");
+        }),
+      ]);
     }
   }
 
@@ -1549,19 +1581,8 @@ class DatabaseService {
 
     if (privateChat.id == null) {
       final id = await createPrivateChat(privateChat);
-      return await Future.wait([
-        privateChatRef.doc(id).collection('messages').add(
-              message.toMap(),
-            ),
-        privateChatRef.doc(id).update({
-          'recentMessage': 'News',
-          'recentMessageSender': message.sender,
-          'recentMessageTime': message.time,
-          'recentMessageType': message.type.toString(),
-        }),
-      ]);
+      privateChat.id = id;
     }
-
     return await Future.wait([
       privateChatRef.doc(privateChat.id).collection('messages').add(
             message.toMap(),

@@ -1,4 +1,5 @@
-import 'package:dima_project/pages/events/events_requests_page.dart';
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/follow_requests_page.dart';
 import 'package:dima_project/pages/groups_requests_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -12,9 +13,8 @@ class ShowRequestPage extends StatefulWidget {
 }
 
 class ShowRequestPageState extends State<ShowRequestPage> {
-  int? _numFollowRequests;
-  int? _numGroupRequests;
-  int? _numEventRequests;
+  List<UserData>? _followRequests;
+  List<Group>? _groupRequests;
   @override
   void initState() {
     init();
@@ -22,19 +22,15 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   }
 
   init() async {
-    int? number;
-    number = (await DatabaseService.getFollowRequests(widget.uuid)).length;
+    List<UserData>? followRequests;
+    List<Group>? groupRequests;
+    followRequests = (await DatabaseService.getFollowRequests(widget.uuid));
     setState(() {
-      _numFollowRequests = number;
+      _followRequests = followRequests;
     });
-    number = (await DatabaseService.getUserGroupRequests(widget.uuid)).length;
+    groupRequests = (await DatabaseService.getUserGroupRequests(widget.uuid));
     setState(() {
-      _numGroupRequests = number;
-    });
-    number =
-        (await DatabaseService.getEventRequestsForUser(widget.uuid)).length;
-    setState(() {
-      _numEventRequests = number;
+      _groupRequests = groupRequests;
     });
   }
 
@@ -60,17 +56,19 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
-                            builder: (context) =>
-                                FollowRequestsPage(uuid: widget.uuid)))
+                            builder: (context) => FollowRequestsPage(
+                                  uuid: widget.uuid,
+                                  followRequests: _followRequests!,
+                                )))
                         .then((value) => init())
                   },
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Follow Requests'),
-                      _numFollowRequests == null
+                      _followRequests == null
                           ? const SizedBox()
-                          : _numFollowRequests! > 0
+                          : _followRequests!.isNotEmpty
                               ? Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
@@ -78,7 +76,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    _numFollowRequests.toString(),
+                                    _followRequests!.length.toString(),
                                     style: const TextStyle(
                                       color: CupertinoColors.white,
                                     ),
@@ -94,9 +92,9 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Group Requests'),
-                      _numGroupRequests == null
+                      _groupRequests == null
                           ? const SizedBox()
-                          : _numGroupRequests! > 0
+                          : _groupRequests!.isNotEmpty
                               ? Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
@@ -104,7 +102,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    _numGroupRequests.toString(),
+                                    _groupRequests!.length.toString(),
                                     style: const TextStyle(
                                       color: CupertinoColors.white,
                                     ),
@@ -116,41 +114,9 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
-                            builder: (context) =>
-                                GroupsRequestsPage(uuid: widget.uuid)))
-                        .then((value) => init())
-                  },
-                ),
-                CupertinoListTile(
-                  leading: const Icon(CupertinoIcons.calendar_badge_plus),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Event Requests'),
-                      _numEventRequests == null
-                          ? const SizedBox()
-                          : _numEventRequests! > 0
-                              ? Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: CupertinoColors.systemRed,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    _numEventRequests.toString(),
-                                    style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox()
-                    ],
-                  ),
-                  onTap: () => {
-                    Navigator.of(context, rootNavigator: true)
-                        .push(CupertinoPageRoute(
-                            builder: (context) =>
-                                EventsRequestsPage(uuid: widget.uuid)))
+                            builder: (context) => GroupsRequestsPage(
+                                uuid: widget.uuid,
+                                groupRequests: _groupRequests!)))
                         .then((value) => init())
                   },
                 ),

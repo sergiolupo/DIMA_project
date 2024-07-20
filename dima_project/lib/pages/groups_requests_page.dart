@@ -1,51 +1,114 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/user_group_request_tile.dart';
+import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GroupsRequestsPage extends StatefulWidget {
+class GroupsRequestsPage extends ConsumerStatefulWidget {
   final String uuid;
-  const GroupsRequestsPage({super.key, required this.uuid});
+  final List<Group> groupRequests;
+  const GroupsRequestsPage(
+      {super.key, required this.uuid, required this.groupRequests});
   @override
   GroupsRequestsPageState createState() => GroupsRequestsPageState();
 }
 
-class GroupsRequestsPageState extends State<GroupsRequestsPage> {
-  List<Group>? groupsRequests;
+class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
+  late List<Group> groupsRequests;
   @override
   void initState() {
-    init();
+    groupsRequests = widget.groupRequests;
     super.initState();
-  }
-
-  init() async {
-    final requests = await DatabaseService.getUserGroupRequests(widget.uuid);
-    setState(() {
-      groupsRequests = requests;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return groupsRequests == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              middle: const Text('Group Requests'),
-              leading: CupertinoButton(
-                onPressed: () => Navigator.of(context).pop(),
-                padding: const EdgeInsets.only(left: 10),
-                child: const Icon(CupertinoIcons.back),
-              ),
-            ),
-            child: SafeArea(
-              child: ListView.builder(
-                  itemCount: groupsRequests!.length,
-                  itemBuilder: (context, index) {
-                    return UserGroupRequestTile(
-                        group: groupsRequests![index], uuid: widget.uuid);
-                  }),
-            ),
-          );
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('Group Requests'),
+        leading: CupertinoButton(
+          onPressed: () => Navigator.of(context).pop(),
+          padding: const EdgeInsets.only(left: 10),
+          child: const Icon(CupertinoIcons.back),
+        ),
+      ),
+      child: SafeArea(
+        child: ListView.builder(
+            itemCount: groupsRequests.length,
+            itemBuilder: (context, index) {
+              final group = groupsRequests[index];
+              return Row(
+                children: [
+                  Expanded(
+                    child: CupertinoListTile(
+                      leading:
+                          CreateImageWidget.getGroupImage(group.imagePath!),
+                      title: Text(
+                        group.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text("Description: ${group.description}",
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        await DatabaseService.acceptUserGroupRequest(
+                            group.id, widget.uuid);
+                        ref.invalidate(groupsProvider(widget.uuid));
+                      } catch (error) {
+                        debugPrint("Error occurred: $error");
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: CupertinoColors.white),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: const Text(
+                          "Accept",
+                          style: TextStyle(color: CupertinoColors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        await DatabaseService.denyUserGroupRequest(
+                            group.id, widget.uuid);
+                      } catch (error) {
+                        debugPrint("Error occurred: $error");
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: CupertinoColors.white),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: const Text(
+                          "Deny",
+                          style: TextStyle(color: CupertinoColors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+      ),
+    );
   }
 }
