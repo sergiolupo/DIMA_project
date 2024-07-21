@@ -1,4 +1,5 @@
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/responsive_userprofile.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -196,7 +197,7 @@ class InvitationTileState extends State<InvitationTile> {
           child: GestureDetector(
             onTap: () {
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
-                return UserProfile(
+                return ResponsiveUserprofile(
                   user: widget.user.uuid!,
                   uuid: widget.uuid,
                 );

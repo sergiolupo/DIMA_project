@@ -39,77 +39,86 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
         middle: const Text('Groups'),
       ),
       child: SafeArea(
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: CupertinoSearchTextField(
-                controller: _searchController,
-                onChanged: (_) => (setState(() {
-                      _searchText = _searchController.text;
-                    }))),
-          ),
-          Consumer(builder: (context, ref, _) {
-            final groups = ref.watch(groupsProvider(widget.user));
-            return groups.when(
-              data: (groups) {
-                if (groups.isEmpty) {
-                  return Column(
-                    children: [
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
-                          ? Image.asset('assets/darkMode/search_groups.png')
-                          : Image.asset('assets/images/search_groups.png'),
-                      const Center(
-                        child: Text('No groups'),
+        child: SingleChildScrollView(
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: CupertinoSearchTextField(
+                  controller: _searchController,
+                  onChanged: (_) => (setState(() {
+                        _searchText = _searchController.text;
+                      }))),
+            ),
+            Consumer(builder: (context, ref, _) {
+              final groups = ref.watch(groupsProvider(widget.user));
+              return groups.when(
+                data: (groups) {
+                  if (groups.isEmpty) {
+                    return SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset('assets/darkMode/search_groups.png')
+                              : Image.asset('assets/images/search_groups.png'),
+                          const Center(
+                            child: Text('No groups'),
+                          ),
+                        ],
                       ),
-                    ],
-                  );
-                }
-                int i = 0;
-                return ListView.builder(
-                    itemCount: groups.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final group = groups[index];
-                      if (!group.name
-                          .toLowerCase()
-                          .contains(_searchText.toLowerCase())) {
-                        i += 1;
-                        if (i == groups.length) {
-                          return Column(
-                            children: [
-                              MediaQuery.of(context).platformBrightness ==
-                                      Brightness.dark
-                                  ? Image.asset(
-                                      'assets/darkMode/no_groups_found.png')
-                                  : Image.asset(
-                                      'assets/images/no_groups_found.png'),
-                              const Center(
-                                child: Text('No groups found'),
+                    );
+                  }
+                  int i = 0;
+                  return ListView.builder(
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: groups.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final group = groups[index];
+                        if (!group.name
+                            .toLowerCase()
+                            .contains(_searchText.toLowerCase())) {
+                          i += 1;
+                          if (i == groups.length) {
+                            return SingleChildScrollView(
+                              physics: const NeverScrollableScrollPhysics(),
+                              child: Column(
+                                children: [
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_groups_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_groups_found.png'),
+                                  const Center(
+                                    child: Text('No groups found'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          );
+                            );
+                          }
+                          return const SizedBox.shrink();
                         }
-                        return const SizedBox.shrink();
-                      }
-                      return GroupTile(
-                          uuid: widget.uuid,
-                          group: group,
-                          isJoined: group.members!.contains(widget.uuid)
-                              ? 1
-                              : group.requests!.contains(widget.uuid)
-                                  ? 2
-                                  : 0);
-                    });
-              },
-              loading: () => const CupertinoActivityIndicator(),
-              error: (error, stackTrace) {
-                debugPrint('Error: $error');
-                return const Text('Error');
-              },
-            );
-          }),
-        ]),
+                        return GroupTile(
+                            uuid: widget.uuid,
+                            group: group,
+                            isJoined: group.members!.contains(widget.uuid)
+                                ? 1
+                                : group.requests!.contains(widget.uuid)
+                                    ? 2
+                                    : 0);
+                      });
+                },
+                loading: () => const CupertinoActivityIndicator(),
+                error: (error, stackTrace) {
+                  debugPrint('Error: $error');
+                  return const Text('Error');
+                },
+              );
+            }),
+          ]),
+        ),
       ),
     );
   }

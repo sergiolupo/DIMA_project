@@ -1,5 +1,6 @@
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/groups/list_chat_page.dart';
+import 'package:dima_project/pages/responsive_userprofile.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';
@@ -122,7 +123,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   );
                   break;
                 case 4:
-                  page = UserProfile(
+                  page = ResponsiveUserprofile(
                     uuid: uuid!,
                     user: uuid!,
                   );

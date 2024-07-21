@@ -51,9 +51,9 @@ class LocationPageState extends State<LocationPage> {
                     options: MapOptions(
                       initialCenter: selectedLocation!,
                       initialZoom: 11,
-                      interactionOptions:
-                          const InteractionOptions(flags: InteractiveFlag.all),
-                      onLongPress: (tapPosition, point) {
+                      interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
+                      onTap: (tapPosition, point) {
                         debugPrint('Tapped on $point');
                         setState(() {
                           selectedLocation = point;

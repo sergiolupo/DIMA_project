@@ -16,17 +16,17 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserProfile extends ConsumerStatefulWidget {
+class UserProfileTablet extends ConsumerStatefulWidget {
   final String uuid;
   final String user;
   @override
-  const UserProfile({super.key, required this.user, required this.uuid});
+  const UserProfileTablet({super.key, required this.user, required this.uuid});
 
   @override
-  UserProfileState createState() => UserProfileState();
+  UserProfileTabletState createState() => UserProfileTabletState();
 }
 
-class UserProfileState extends ConsumerState<UserProfile> {
+class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
   late final bool isMyProfile;
 
 // 0 is not following, 1 is following, 2 is requested
@@ -117,86 +117,72 @@ class UserProfileState extends ConsumerState<UserProfile> {
         physics: const BouncingScrollPhysics(),
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20, right: 2),
+            padding: const EdgeInsets.only(top: 20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            CreateImageWidget.getUserImage(
-                              user.imagePath!,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                '${user.name} ${user.surname}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle
-                                      .color,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 35),
-                        getGroups(),
-                        const SizedBox(width: 20),
-                        getFollowers(),
-                        const SizedBox(width: 20),
-                        getFollowings(),
-                      ],
+                CreateImageWidget.getUserImage(user.imagePath!, isTablet: true),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+                  child: Text(
+                    '${user.name} ${user.surname}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
                     ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    getGroups(),
+                    const SizedBox(width: 40),
+                    getFollowers(),
+                    const SizedBox(width: 40),
+                    getFollowings(),
                   ],
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 23 *
-                      (user.categories.length.toDouble() / 2).ceil().toDouble(),
+                  height: 100,
                   width: MediaQuery.of(context).size.width,
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 0.0, // Spaziatura orizzontale
-                      mainAxisSpacing: 0.0, // Spaziatura verticale
-                      childAspectRatio: 9,
-                    ),
-                    itemCount: user.categories.length,
-                    itemBuilder: (context, index) {
-                      final category = user.categories[index];
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(
-                            CategoryIconMapper.iconForCategory(category),
-                            size: 18,
-                            color: CupertinoTheme.of(context).primaryColor,
-                          ),
-                          Text(
-                            category,
-                            style: TextStyle(
-                              fontSize: 16,
+                  child: Center(
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 0.0,
+                        mainAxisSpacing: 0.0,
+                        childAspectRatio: 0.2,
+                      ),
+                      itemCount: user.categories.length,
+                      itemBuilder: (context, index) {
+                        final category = user.categories[index];
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              CategoryIconMapper.iconForCategory(category),
+                              size: 18,
                               color: CupertinoTheme.of(context).primaryColor,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      );
-                    },
+                            Text(
+                              category,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: CupertinoTheme.of(context).primaryColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -303,7 +289,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
+                    crossAxisCount: 5,
                     crossAxisSpacing: 5.0,
                     mainAxisSpacing: 5.0,
                   ),
@@ -354,7 +340,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
+                    crossAxisCount: 5,
                     crossAxisSpacing: 5.0,
                     mainAxisSpacing: 5.0,
                   ),
@@ -417,7 +403,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     return Text(
                       groups.length.toString(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 18,
                         color: CupertinoTheme.of(context)
                             .textTheme
                             .textStyle
@@ -435,7 +421,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 const SizedBox(height: 10),
                 Text("Groups",
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 18,
                       color:
                           CupertinoTheme.of(context).textTheme.textStyle.color,
                     )),
@@ -474,7 +460,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     return Text(
                       followers.length.toString(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 18,
                         color: CupertinoTheme.of(context)
                             .textTheme
                             .textStyle
@@ -493,7 +479,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 Text(
                   "Followers",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     color: CupertinoTheme.of(context).textTheme.textStyle.color,
                   ),
                 ),
@@ -532,7 +518,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     return Text(
                       following.length.toString(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 18,
                         color: CupertinoTheme.of(context)
                             .textTheme
                             .textStyle
@@ -551,7 +537,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 Text(
                   "Following",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     color: CupertinoTheme.of(context).textTheme.textStyle.color,
                   ),
                 ),
