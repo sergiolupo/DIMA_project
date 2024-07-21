@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UserTile extends ConsumerStatefulWidget {
   final UserData user;
   final String uuid;
-  final int isFollowing; // 0 is not following, 1 is following, 2 is requested
+  final int? isFollowing; // 0 is not following, 1 is following, 2 is requested
   const UserTile({
     super.key,
     required this.user,
@@ -66,7 +66,7 @@ class UserTileState extends ConsumerState<UserTile> {
             ),
           ),
         ),
-        widget.user.uuid != widget.uuid
+        widget.user.uuid != widget.uuid && widget.isFollowing != null
             ? GestureDetector(
                 onTap: () async {
                   try {

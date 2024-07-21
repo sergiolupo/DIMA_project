@@ -7,15 +7,13 @@ import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/pages/show_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GroupInfoPage extends ConsumerStatefulWidget {
+class GroupInfoPage extends StatefulWidget {
   final String uuid;
   final Group group;
   const GroupInfoPage({
@@ -28,13 +26,12 @@ class GroupInfoPage extends ConsumerStatefulWidget {
   GroupInfoPageState createState() => GroupInfoPageState();
 }
 
-class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
+class GroupInfoPageState extends State<GroupInfoPage> {
   List<UserData>? _requests;
   List<Message>? _media;
   List<Message>? _events;
   List<Message>? _news;
   Group? group;
-  AsyncValue<List<UserData>>? asyncFollowing;
   @override
   void initState() {
     super.initState();
@@ -42,7 +39,6 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
       group = widget.group;
     });
     init();
-    ref.read(followingProvider(widget.uuid));
   }
 
   void init() async {
@@ -75,8 +71,6 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    asyncFollowing = ref.watch(followingProvider(widget.uuid));
-
     return _requests == null ||
             _media == null ||
             _events == null ||
@@ -479,49 +473,31 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       final UserData userData = snapshot.data!;
-                      return asyncFollowing!.when(
-                        loading: () => const CupertinoActivityIndicator(),
-                        error: (err, stack) => Text('Error: $err'),
-                        data: (following) {
-                          if (widget.group.admin == userData.uuid) {
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: UserTile(
-                                    user: userData,
-                                    uuid: widget.uuid,
-                                    isFollowing: following
-                                            .any((u) => u.uuid == userData.uuid)
-                                        ? 1
-                                        : userData.isPublic == false &&
-                                                userData.requests!
-                                                    .contains(widget.uuid)
-                                            ? 2
-                                            : 0,
-                                  ),
-                                ),
-                                const Text(
-                                  "Admin",
-                                  style: TextStyle(
-                                    color: CupertinoColors.systemGrey4,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          return UserTile(
-                            user: userData,
-                            uuid: widget.uuid,
-                            isFollowing: following
-                                    .any((u) => u.uuid == userData.uuid)
-                                ? 1
-                                : userData.isPublic == false &&
-                                        userData.requests!.contains(widget.uuid)
-                                    ? 2
-                                    : 0,
-                          );
-                        },
+
+                      if (widget.group.admin == userData.uuid) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: UserTile(
+                                user: userData,
+                                uuid: widget.uuid,
+                                isFollowing: null,
+                              ),
+                            ),
+                            const Text(
+                              "Admin",
+                              style: TextStyle(
+                                color: CupertinoColors.systemGrey4,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return UserTile(
+                        user: userData,
+                        uuid: widget.uuid,
+                        isFollowing: null,
                       );
                     }
                   });
