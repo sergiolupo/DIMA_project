@@ -1,14 +1,16 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/group_request_tile.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupRequestsPage extends StatefulWidget {
   final String groupId;
+  final List<UserData> requests;
 
   const GroupRequestsPage({
     super.key,
     required this.groupId,
+    required this.requests,
   });
 
   @override
@@ -16,19 +18,11 @@ class GroupRequestsPage extends StatefulWidget {
 }
 
 class GroupRequestsPageState extends State<GroupRequestsPage> {
-  List<UserData>? users;
+  late List<UserData> users;
   @override
   void initState() {
-    init();
+    users = widget.requests;
     super.initState();
-  }
-
-  init() async {
-    final requests =
-        await DatabaseService.getGroupRequestsForGroup(widget.groupId);
-    setState(() {
-      users = requests;
-    });
   }
 
   @override
@@ -45,11 +39,87 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
         middle: const Text('Group Requests'),
       ),
       child: ListView.builder(
-        itemCount: users!.length,
+        itemCount: users.length,
         itemBuilder: (context, index) {
-          return GroupRequestTile(
-            user: users![index],
-            groupId: widget.groupId,
+          final UserData user = users[index];
+          return Row(
+            children: [
+              Expanded(
+                child: CupertinoListTile(
+                  leading: ClipOval(
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      color: CupertinoColors.lightBackgroundGray,
+                      child: CreateImageWidget.getUserImage(user.imagePath!),
+                    ),
+                  ),
+                  title: Text(
+                    user.username,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text("${user.name} ${user.surname}"),
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    await DatabaseService.acceptGroupRequest(
+                        widget.groupId, user.uuid!);
+                    setState(() {
+                      users.removeAt(index);
+                    });
+                  } catch (error) {
+                    debugPrint("Error occurred: $error");
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: CupertinoColors.white),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: const Text(
+                      "Accept",
+                      style: TextStyle(color: CupertinoColors.white),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    await DatabaseService.denyGroupRequest(
+                        widget.groupId, user.uuid!);
+                    setState(() {
+                      users.removeAt(index);
+                    });
+                  } catch (error) {
+                    debugPrint("Error occurred: $error");
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: CupertinoColors.white),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: const Text(
+                      "Deny",
+                      style: TextStyle(color: CupertinoColors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),

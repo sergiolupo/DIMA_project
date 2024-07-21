@@ -1087,26 +1087,38 @@ class DatabaseService {
         .map((s) => s.docs);
   }
 
-  static Future<List<dynamic>> getGroupMessagesType(
+  static Future<List<Message>> getGroupMessagesType(
       String id, Type type) async {
-    return (await groupsRef
+    final docs = (await groupsRef
             .doc(id)
             .collection('messages')
             .where("type", isEqualTo: type.toString())
             .orderBy('time', descending: true)
             .get())
         .docs;
+    List<Message> messages = [];
+    for (var doc in docs) {
+      messages.add(Message.fromSnapshot(
+          doc, id, FirebaseAuth.instance.currentUser!.uid));
+    }
+    return messages;
   }
 
-  static Future<List<dynamic>> getPrivateMessagesType(
+  static Future<List<Message>> getPrivateMessagesType(
       String id, Type type) async {
-    return (await privateChatRef
+    final docs = (await privateChatRef
             .doc(id)
             .collection('messages')
             .where("type", isEqualTo: type.toString())
             .orderBy('time', descending: true)
             .get())
         .docs;
+    List<Message> messages = [];
+    for (var doc in docs) {
+      messages.add(Message.fromSnapshot(
+          doc, id, FirebaseAuth.instance.currentUser!.uid));
+    }
+    return messages;
   }
 
   static Future<void> acceptUserRequest(String user, String uuid) async {
