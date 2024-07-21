@@ -44,14 +44,17 @@ class GroupChatPageState extends State<GroupChatPage> {
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
 
+  late Group group;
+
   @override
   void initState() {
+    group = widget.group;
     getChats();
     super.initState();
   }
 
   void getChats() {
-    chats = DatabaseService.getChats(widget.group.id);
+    chats = DatabaseService.getChats(group.id);
   }
 
   @override
@@ -63,25 +66,30 @@ class GroupChatPageState extends State<GroupChatPage> {
               key: _navigationBarKey,
               middle: CupertinoButton(
                 padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  final Group? newGroup = await Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => GroupInfoPage(
                         uuid: widget.uuid,
-                        group: widget.group,
+                        group: group,
                       ),
                     ),
                   );
+                  if (newGroup != null) {
+                    setState(() {
+                      group = newGroup;
+                    });
+                  }
                 },
                 child: Row(
                   children: [
-                    CreateImageWidget.getGroupImage(widget.group.imagePath!,
+                    CreateImageWidget.getGroupImage(group.imagePath!,
                         small: true),
                     const SizedBox(width: 10),
                     Container(
                       constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.6),
-                      child: Text(widget.group.name,
+                      child: Text(group.name,
                           style: TextStyle(
                             fontSize: 16,
                             color: CupertinoTheme.of(context)
@@ -257,7 +265,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       CupertinoPageRoute(
         builder: (context) => CreateEventPage(
           uuid: widget.uuid,
-          groupId: widget.group.id,
+          groupId: group.id,
         ),
       ),
     );
@@ -274,7 +282,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       final bytes = await image.readAsBytes();
       await DatabaseService.sendChatImage(
         widget.uuid,
-        widget.group.id,
+        group.id,
         File(image.path),
         true,
         Uint8List.fromList(bytes),
@@ -297,7 +305,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         final bytes = await image.readAsBytes();
         await DatabaseService.sendChatImage(
           widget.uuid,
-          widget.group.id,
+          group.id,
           File(image.path),
           true,
           Uint8List.fromList(bytes),
@@ -437,7 +445,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         type: Type.text,
       );
 
-      DatabaseService.sendMessage(widget.group.id, message);
+      DatabaseService.sendMessage(group.id, message);
 
       setState(() {
         messageEditingController.clear();

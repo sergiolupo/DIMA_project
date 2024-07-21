@@ -88,7 +88,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(group);
                 },
                 child: Icon(CupertinoIcons.back,
                     color: CupertinoTheme.of(context).primaryColor),
