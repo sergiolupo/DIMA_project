@@ -4,6 +4,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ShareNewsPage extends StatefulWidget {
   final String uuid;
@@ -60,8 +61,25 @@ class ShareNewsPageState extends State<ShareNewsPage> {
             Navigator.of(context).pop();
           },
         ),
+        trailing: Visibility(
+          visible: uuids.isNotEmpty || groupsIds.isNotEmpty,
+          child: CupertinoButton(
+            padding: const EdgeInsets.all(0),
+            color: CupertinoTheme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(40),
+            child: const Icon(LineAwesomeIcons.paper_plane),
+            onPressed: () {
+              dynamic map = {
+                "users": uuids,
+                "groups": groupsIds,
+              };
+              Navigator.of(context).pop(map);
+            },
+          ),
+        ),
       ),
-      child: SafeArea(
+      child: SingleChildScrollView(
+        reverse: false,
         child: Stack(
           children: [
             Column(
@@ -91,24 +109,6 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                 if (index == 1) getUsers(),
               ],
             ),
-            Visibility(
-              visible: uuids.isNotEmpty || groupsIds.isNotEmpty,
-              child: SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: CupertinoButton(
-                    child: const Icon(CupertinoIcons.paperplane_fill),
-                    onPressed: () {
-                      dynamic map = {
-                        "users": uuids,
-                        "groups": groupsIds,
-                      };
-                      Navigator.of(context).pop(map);
-                    },
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -124,13 +124,16 @@ class ShareNewsPageState extends State<ShareNewsPage> {
       return Center(
         child: Column(
           children: [
-            Image.asset('assets/images/search_followers.png'),
+            MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Image.asset('assets/darkMode/search_followers.png')
+                : Image.asset('assets/images/search_followers.png'),
             const Text("No followers"),
           ],
         ),
       );
     }
     return ListView.builder(
+      physics: const ClampingScrollPhysics(),
       itemCount: users!.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
@@ -143,7 +146,9 @@ class ShareNewsPageState extends State<ShareNewsPage> {
             return Center(
               child: Column(
                 children: [
-                  Image.asset('assets/images/search_followers.png'),
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset('assets/darkMode/no_followers_found.png')
+                      : Image.asset('assets/images/no_followers_found.png'),
                   const Text("No followers"),
                 ],
               ),
@@ -177,13 +182,16 @@ class ShareNewsPageState extends State<ShareNewsPage> {
       return Center(
         child: Column(
           children: [
-            Image.asset('assets/images/no_groups_found.png'),
+            MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Image.asset('assets/darkMode/search_groups.png')
+                : Image.asset('assets/images/search_groups.png'),
             const Text("No groups"),
           ],
         ),
       );
     }
     return ListView.builder(
+      physics: const ClampingScrollPhysics(),
       itemCount: groups!.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
@@ -196,8 +204,10 @@ class ShareNewsPageState extends State<ShareNewsPage> {
             return Center(
               child: Column(
                 children: [
-                  Image.asset('assets/images/no_groups_found.png'),
-                  const Text("No groups"),
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset('assets/darkMode/no_groups_found.png')
+                      : Image.asset('assets/images/no_groups_found.png'),
+                  const Text("No groups found"),
                 ],
               ),
             );

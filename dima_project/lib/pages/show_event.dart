@@ -95,69 +95,67 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                             ),
                           ],
                         ),
-                        Center(
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              Container(
-                                width: 400,
-                                height: 400,
-                                color: CupertinoColors.white,
-                                child: (event.imagePath != null &&
-                                        event.imagePath!.isNotEmpty)
-                                    ? Image.network(
-                                        event.imagePath!,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        'assets/default_event_image.png',
-                                        fit: BoxFit.cover,
+                        Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Container(
+                              width: 400,
+                              height: 400,
+                              color: CupertinoColors.white,
+                              child: (event.imagePath != null &&
+                                      event.imagePath!.isNotEmpty)
+                                  ? Image.network(
+                                      event.imagePath!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/default_event_image.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 370),
+                              width: 400,
+                              child: CupertinoButton.filled(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                                borderRadius: BorderRadius.zero,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) => EventPage(
+                                        uuid: widget.uuid,
+                                        eventId: event.id!,
                                       ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(top: 370),
-                                width: 400,
-                                child: CupertinoButton.filled(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 24),
-                                  borderRadius: BorderRadius.zero,
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) => EventPage(
-                                          uuid: widget.uuid,
-                                          eventId: event.id!,
-                                        ),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Go to Event',
+                                      style: TextStyle(
+                                        color: CupertinoColors.white,
+                                        fontSize: 18,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: CupertinoColors.black,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  },
-                                  child: const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Go to Event',
-                                        style: TextStyle(
-                                          color: CupertinoColors.white,
-                                          fontSize: 18,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 10.0,
-                                              color: CupertinoColors.black,
-                                              offset: Offset(2.0, 2.0),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Icon(CupertinoIcons.forward,
-                                          color: CupertinoColors.white),
-                                    ],
-                                  ),
+                                    ),
+                                    Icon(CupertinoIcons.forward,
+                                        color: CupertinoColors.white),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20.0),
                         Text(

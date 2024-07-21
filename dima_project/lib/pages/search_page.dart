@@ -121,32 +121,38 @@ class SearchPageState extends ConsumerState<SearchPage> {
                 final docs = snapshot.data ?? [];
                 if (docs.isEmpty) {
                   if (_searchController.text.isNotEmpty) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          searchIdx == 0
-                              ? MediaQuery.of(context).platformBrightness ==
-                                      Brightness.dark
-                                  ? Image.asset(
-                                      'assets/darkMode/no_users_found.png')
-                                  : Image.asset(
-                                      'assets/images/no_users_found.png')
-                              : searchIdx == 1
-                                  ? MediaQuery.of(context).platformBrightness ==
-                                          Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_groups_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_groups_found.png')
-                                  : MediaQuery.of(context).platformBrightness ==
-                                          Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_events_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_events_found.png'),
-                          Text(
-                              "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
-                        ],
+                    return SingleChildScrollView(
+                      reverse: false,
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            searchIdx == 0
+                                ? MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/no_users_found.png')
+                                    : Image.asset(
+                                        'assets/images/no_users_found.png')
+                                : searchIdx == 1
+                                    ? MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Image.asset(
+                                            'assets/darkMode/no_groups_found.png')
+                                        : Image.asset(
+                                            'assets/images/no_groups_found.png')
+                                    : MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Image.asset(
+                                            'assets/darkMode/no_events_found.png')
+                                        : Image.asset(
+                                            'assets/images/no_events_found.png'),
+                            Text(
+                                "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
+                          ],
+                        ),
                       ),
                     );
                   }

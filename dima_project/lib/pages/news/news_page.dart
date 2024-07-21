@@ -60,6 +60,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              transitionBetweenRoutes: false,
               trailing: GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -90,7 +91,10 @@ class NewsPageState extends ConsumerState<NewsPage> {
                     const SizedBox(height: 20.0),
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
-                      height: 70,
+                      height: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 140
+                          : 70,
                       child: user.when(
                           data: (user) {
                             final List<String> categories = user.categories;

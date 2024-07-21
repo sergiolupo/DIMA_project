@@ -82,15 +82,19 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                         )
                       ]);
                     }
-                    return Center(
-                      child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset('assets/darkMode/search_news.png')
-                              : Image.asset('assets/images/search_news.png'),
-                          const Text("Search for news"),
-                        ],
+                    return SingleChildScrollView(
+                      reverse: false,
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset('assets/darkMode/search_news.png')
+                                : Image.asset('assets/images/search_news.png'),
+                            const Text("Search for news"),
+                          ],
+                        ),
                       ),
                     );
                   } else {

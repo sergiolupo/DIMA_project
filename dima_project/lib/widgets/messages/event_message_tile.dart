@@ -2,6 +2,7 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
@@ -186,16 +187,17 @@ class EventMessageTileState extends State<EventMessageTile> {
                   ),
                 ),
                 Positioned(
-                  bottom: widget.message.sentByMe! ? 10 : 30,
-                  right: widget.message.sentByMe! ? 10 : null,
+                  bottom: widget.message.sentByMe! ? 7 : 25,
+                  right: widget.message.sentByMe! ? 2 : null,
                   left: widget.message.sentByMe!
-                      ? 0
-                      : MediaQuery.of(context).size.width / 2 - 74,
+                      ? 20
+                      : MediaQuery.of(context).size.width > Constants.limitWidth
+                          ? 140
+                          : MediaQuery.of(context).size.width / 2 - 50,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(width: 8),
                       Text(
                         DateUtil.getFormattedTime(
                             context: context,

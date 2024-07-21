@@ -18,6 +18,11 @@ class CategoryTile extends StatelessWidget {
                 builder: (context) => CategoryNews(name: categoryName)));
       },
       child: Container(
+        width: MediaQuery.of(context).size.width > Constants.limitWidth
+            ? 240
+            : 120,
+        height:
+            MediaQuery.of(context).size.width > Constants.limitWidth ? 140 : 70,
         margin: const EdgeInsets.only(right: 16),
         child: Stack(
           children: [
@@ -36,8 +41,8 @@ class CategoryTile extends StatelessWidget {
                   fit: BoxFit.cover,
                 )),
             Container(
-                width: 120,
-                height: 70,
+                width: 240,
+                height: 140,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
                   color: const Color.fromRGBO(0, 0, 0, 0.34),

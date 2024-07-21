@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/media_view_page.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
@@ -138,11 +139,13 @@ class ImageMessageTileState extends State<ImageMessageTile> {
             ),
           ),
           Positioned(
-            bottom: widget.message.sentByMe! ? 15 : 25,
+            bottom: 10,
             right: widget.message.sentByMe! ? 2 : null,
             left: widget.message.sentByMe!
                 ? null
-                : MediaQuery.of(context).size.width / 2 - 34,
+                : MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 150
+                    : MediaQuery.of(context).size.width / 2 - 45,
             child: Row(
               children: [
                 Text(

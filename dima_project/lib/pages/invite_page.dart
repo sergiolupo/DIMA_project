@@ -80,16 +80,21 @@ class InvitePageState extends ConsumerState<InvitePage> {
               error: (err, stack) => Text('Error: $err'),
               data: (followers) {
                 if (followers.isEmpty) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Image.asset(
-                                'assets/darkMode/search_followers.png')
-                            : Image.asset('assets/images/search_followers.png'),
-                        const Text('No followers'),
-                      ],
+                  return SingleChildScrollView(
+                    reverse: false,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset(
+                                  'assets/darkMode/search_followers.png')
+                              : Image.asset(
+                                  'assets/images/search_followers.png'),
+                          const Text('No followers'),
+                        ],
+                      ),
                     ),
                   );
                 }

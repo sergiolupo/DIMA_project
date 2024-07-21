@@ -44,72 +44,64 @@ class ListChatPageState extends State<ListChatPage> {
               child: CupertinoActivityIndicator(),
             ),
           )
-        : MediaQuery(
-            data: MediaQuery.of(context),
-            child: CupertinoPageScaffold(
-              backgroundColor:
-                  CupertinoTheme.of(context).scaffoldBackgroundColor,
-              navigationBar: CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-                middle: Text(
-                  "Chat",
-                  style: TextStyle(
-                    color: CupertinoTheme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                  ),
+        : CupertinoPageScaffold(
+            backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
+            navigationBar: CupertinoNavigationBar(
+              transitionBetweenRoutes: false,
+              trailing: CupertinoButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) =>
+                              CreateGroupPage(uuid: widget.uuid)));
+                },
+                child: const Icon(
+                  CupertinoIcons.add_circled_solid,
+                  size: 30,
                 ),
               ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CupertinoSearchTextField(
-                        onChanged: (value) {
-                          setState(() {
-                            searchedText = value;
-                          });
-                        },
-                      ),
-                    ),
-                    CustomSelectOption(
-                      textLeft: "Groups",
-                      textRight: "Private",
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+              middle: Text(
+                "Chat",
+                style: TextStyle(
+                  color: CupertinoTheme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CupertinoSearchTextField(
                       onChanged: (value) {
                         setState(() {
-                          idx = value;
-                          _subscribe();
+                          searchedText = value;
                         });
                       },
                     ),
-                    Stack(
-                      children: [
-                        groupList(),
-                        privateChatList(),
-                        if (idx == 0)
-                          Positioned(
-                            bottom: 100,
-                            right: 20,
-                            child: CupertinoButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                        builder: (context) => CreateGroupPage(
-                                            uuid: widget.uuid)));
-                              },
-                              child: const Icon(
-                                CupertinoIcons.add,
-                                size: 30,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                  CustomSelectOption(
+                    textLeft: "Groups",
+                    textRight: "Private",
+                    onChanged: (value) {
+                      setState(() {
+                        idx = value;
+                        _subscribe();
+                      });
+                    },
+                  ),
+                  Stack(
+                    children: [
+                      groupList(),
+                      privateChatList(),
+                    ],
+                  ),
+                ],
               ),
             ),
           );
@@ -119,7 +111,6 @@ class ListChatPageState extends State<ListChatPage> {
     return Visibility(
       visible: idx == 0,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height - 200,
         child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
@@ -134,6 +125,8 @@ class ListChatPageState extends State<ListChatPage> {
               var data = snapshot.data!;
               if (data.isNotEmpty) {
                 return ListView.builder(
+                  physics: const ClampingScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final group = data[index];
@@ -221,7 +214,7 @@ class ListChatPageState extends State<ListChatPage> {
           idx == 0
               ? MediaQuery.of(context).platformBrightness == Brightness.dark
                   ? Image.asset(
-                      'assets/darkMode/search_groups_chat.png',
+                      'assets/darkMode/search_chat.png',
                     )
                   : Image.asset(
                       'assets/images/search_groups_chat.png',
@@ -258,7 +251,6 @@ class ListChatPageState extends State<ListChatPage> {
     return Visibility(
       visible: idx == 1,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height - 200,
         child: StreamBuilder<List<PrivateChat>>(
           stream: _privateChatsStream,
           builder: (context, snapshot) {
@@ -268,6 +260,8 @@ class ListChatPageState extends State<ListChatPage> {
 
               if (data.isNotEmpty) {
                 return ListView.builder(
+                  physics: const ClampingScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final privateChat = data[index];
