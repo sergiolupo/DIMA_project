@@ -210,6 +210,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                   widget.user, widget.uuid);
                               ref.invalidate(followingProvider(widget.uuid));
                               ref.invalidate(followerProvider(widget.user));
+                              ref.invalidate(userProvider(widget.user));
                             },
                             child: followings.when(
                               data: (followings) {
@@ -220,7 +221,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                     followings.any((element) =>
                                             element.uuid! == widget.user)
                                         ? "Unfollow"
-                                        : user.requests!.contains(widget.user)
+                                        : user.requests!.contains(widget.uuid)
                                             ? "Requested"
                                             : "Follow");
                               },
