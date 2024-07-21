@@ -52,7 +52,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     showCupertinoDialog(
                       context: context,
                       builder: (newContext) => CupertinoAlertDialog(
-                        title: const Text('Delete Event'),
+                        title: const Text('Date cancellation'),
                         content: const Text(
                             'Are you sure you want to delete this event?'),
                         actions: <Widget>[
@@ -69,7 +69,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                               ref.invalidate(eventProvider(event.id!));
                               ref.invalidate(
                                   createdEventsProvider(widget.uuid));
-                              ref.invalidate(joinedEventsProvider(widget.uuid));
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                               }
@@ -85,6 +84,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
               ? CupertinoNavigationBarBackButton(
                   color: CupertinoTheme.of(context).primaryColor,
                   onPressed: () {
+                    ref.invalidate(eventProvider(event.id!));
+                    ref.invalidate(joinedEventsProvider(widget.uuid));
+                    ref.invalidate(createdEventsProvider(widget.uuid));
                     Navigator.of(context).pop();
                   },
                 )
@@ -187,11 +189,40 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 onPressed: () async {
-                  debugPrint('Joining event');
-                  await DatabaseService.toggleEventJoin(
-                      event.id!, detail.id!, widget.uuid);
-                  ref.invalidate(eventProvider(event.id!));
-                  ref.invalidate(joinedEventsProvider(widget.uuid));
+                  try {
+                    debugPrint('Joining event');
+                    await DatabaseService.toggleEventJoin(
+                        event.id!, detail.id!, widget.uuid);
+                    ref.invalidate(eventProvider(event.id!));
+                    ref.invalidate(joinedEventsProvider(widget.uuid));
+                  } catch (e) {
+                    debugPrint("Event has been deleted");
+                    if (!context.mounted) return;
+
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (BuildContext newContext) {
+                        return CupertinoAlertDialog(
+                          title: const Text('Event has been deleted'),
+                          content: const Text('This date has been deleted.'),
+                          actions: <Widget>[
+                            CupertinoDialogAction(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                ref.invalidate(eventProvider(event.id!));
+                                ref.invalidate(
+                                    joinedEventsProvider(widget.uuid));
+                                ref.invalidate(
+                                    createdEventsProvider(widget.uuid));
+                                Navigator.of(context).pop();
+                                Navigator.of(newContext).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 child: Text(
                   detail.members!.contains(widget.uuid)

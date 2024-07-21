@@ -1704,8 +1704,6 @@ class DatabaseService {
     final details =
         await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
-    debugPrint(details['members'].toString());
-
     details['members'].forEach((element) async {
       await usersRef.doc(element).update({
         'events': FieldValue.arrayRemove(["$eventId:$detailId"])
@@ -1715,6 +1713,12 @@ class DatabaseService {
     await eventsRef.doc(eventId).collection('details').doc(detailId).delete();
 
     debugPrint('Detail deleted');
+
+    if ((await eventsRef.doc(eventId).collection('details').get())
+        .docs
+        .isEmpty) {
+      await eventsRef.doc(eventId).delete();
+    }
   }
 
   static Future<void> deleteEvent(String eventId) async {

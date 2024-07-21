@@ -197,8 +197,8 @@ class EventPageState extends ConsumerState<EventPage> {
           child: CupertinoActivityIndicator(),
         ),
         error: (error, stackTrace) {
-          return Center(
-            child: Text('Error: $error'),
+          return const Center(
+            child: Text('Event deleted or not found'),
           );
         },
       );

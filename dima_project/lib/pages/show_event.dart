@@ -25,7 +25,7 @@ class ShowEvent extends ConsumerStatefulWidget {
 }
 
 class ShowEventState extends ConsumerState<ShowEvent> {
-  late final PageController _pageController;
+  PageController? _pageController;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class ShowEventState extends ConsumerState<ShowEvent> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _pageController?.dispose();
     super.dispose();
   }
 
