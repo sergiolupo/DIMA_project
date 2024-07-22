@@ -30,8 +30,8 @@ class ShowEventState extends ConsumerState<ShowEvent> {
   @override
   void initState() {
     super.initState();
-    ref.read(joinedEventsProvider(widget.uuid));
-    ref.read(createdEventsProvider(widget.uuid));
+    ref.read(joinedEventsProvider(widget.userData.uuid!));
+    ref.read(createdEventsProvider(widget.userData.uuid!));
   }
 
   @override
@@ -43,8 +43,8 @@ class ShowEventState extends ConsumerState<ShowEvent> {
   @override
   Widget build(BuildContext context) {
     final events = widget.createdEvents
-        ? ref.watch(createdEventsProvider(widget.uuid))
-        : ref.watch(joinedEventsProvider(widget.uuid));
+        ? ref.watch(createdEventsProvider(widget.userData.uuid!))
+        : ref.watch(joinedEventsProvider(widget.userData.uuid!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
