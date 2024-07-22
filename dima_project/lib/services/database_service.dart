@@ -115,14 +115,6 @@ class DatabaseService {
   static Stream<UserData> getUserDataFromUUID(String uuid) {
     return usersRef.doc(uuid).snapshots().map((snapshot) {
       return UserData.fromSnapshot(snapshot);
-    }).handleError((error) {
-      return UserData(
-        categories: [],
-        email: '',
-        name: '',
-        surname: '',
-        username: 'Account deleted',
-      );
     });
   }
 
@@ -1778,12 +1770,13 @@ class DatabaseService {
         }
       }
     }
+    final followerDoc = await followersRef.doc(uuid).get();
     //exit all following
-    for (var following in doc['following']) {
+    for (var following in followerDoc['following']) {
       toggleFollowUnfollow(uuid, following);
     }
     //exit all followers
-    for (var follower in doc['followers']) {
+    for (var follower in followerDoc['followers']) {
       toggleFollowUnfollow(follower, uuid);
     }
     //delete user

@@ -110,7 +110,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
             CupertinoDialogAction(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(newContext).pop();
               },
             ),
             CupertinoDialogAction(
