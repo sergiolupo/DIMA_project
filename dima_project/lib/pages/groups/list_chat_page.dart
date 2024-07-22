@@ -49,6 +49,7 @@ class ListChatPageState extends State<ListChatPage> {
             navigationBar: CupertinoNavigationBar(
               transitionBetweenRoutes: false,
               trailing: CupertinoButton(
+                padding: const EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.push(
                       context,

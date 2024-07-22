@@ -1,6 +1,5 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/responsive_userprofile.dart';
-import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
