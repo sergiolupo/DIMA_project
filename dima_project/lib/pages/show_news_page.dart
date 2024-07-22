@@ -65,10 +65,7 @@ class ShowNewsPageState extends State<ShowNewsPage> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color,
+                                color: CupertinoTheme.of(context).primaryColor,
                               ),
                             ),
                           ]),
