@@ -540,8 +540,12 @@ class GroupChatPageState extends State<GroupChatPage> {
 
   @override
   void dispose() {
-    _overlayEntry?.remove();
-    _copyOverlayEntry?.remove();
+    if (_overlayEntry != null) {
+      _overlayEntry?.remove();
+    }
+    if (_copyOverlayEntry != null) {
+      _copyOverlayEntry?.remove();
+    }
     super.dispose();
   }
 }
