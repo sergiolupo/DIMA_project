@@ -38,7 +38,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   bool isTyping = false;
   bool isUploading = false;
   final GlobalKey _inputBarKey = GlobalKey();
+  OverlayEntry? _copyOverlayEntry;
   OverlayEntry? _overlayEntry;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -173,8 +175,19 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       child: Row(
         children: [
+          Focus(
+            child: CupertinoButton(
+                padding: const EdgeInsets.all(2),
+                onPressed: () {
+                  _focusNode.unfocus();
+                  showOverlay(context);
+                },
+                child: const Icon(CupertinoIcons.add,
+                    color: CupertinoColors.white, size: 30)),
+          ),
           Expanded(
             child: CupertinoTextField(
+              focusNode: _focusNode,
               minLines: 1,
               maxLines: 3,
               controller: messageEditingController,
@@ -211,65 +224,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     ),
                     const SizedBox(width: 10),
                     GestureDetector(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final List<XFile> images =
-                            await picker.pickMultiImage(imageQuality: 80);
-
-                        if (images.isNotEmpty) {
-                          for (var image in images) {
-                            setState(() {
-                              isUploading = true;
-                            });
-                            final bytes = await image.readAsBytes();
-                            widget.privateChat.id ??=
-                                await DatabaseService.createPrivateChat(
-                                    widget.privateChat);
-
-                            await DatabaseService.sendChatImage(
-                              widget.uuid,
-                              widget.privateChat.id!,
-                              File(image.path),
-                              false,
-                              Uint8List.fromList(bytes),
-                            );
-                            setState(() {
-                              isUploading = false;
-                            });
-                          }
-                        }
-                      },
-                      child: const Icon(CupertinoIcons.photo_fill,
-                          color: CupertinoColors.white),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(
-                            source: ImageSource.camera, imageQuality: 80);
-                        if (image != null) {
-                          setState(() {
-                            isUploading = true;
-                          });
-                          final bytes = await image.readAsBytes();
-
-                          widget.privateChat.id ??=
-                              await DatabaseService.createPrivateChat(
-                                  widget.privateChat);
-
-                          await DatabaseService.sendChatImage(
-                            widget.uuid,
-                            widget.privateChat.id!,
-                            File(image.path),
-                            false,
-                            Uint8List.fromList(bytes),
-                          );
-                          setState(() {
-                            isUploading = false;
-                          });
-                        }
-                      },
+                      onTap: onTapCamera,
                       child: const Icon(CupertinoIcons.camera_fill,
                           color: CupertinoColors.white),
                     ),
@@ -292,6 +247,60 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         ],
       ),
     );
+  }
+
+  void onTapCamera() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    if (image != null) {
+      setState(() {
+        isUploading = true;
+      });
+      final bytes = await image.readAsBytes();
+
+      widget.privateChat.id ??=
+          await DatabaseService.createPrivateChat(widget.privateChat);
+
+      await DatabaseService.sendChatImage(
+        widget.uuid,
+        widget.privateChat.id!,
+        File(image.path),
+        false,
+        Uint8List.fromList(bytes),
+      );
+      setState(() {
+        isUploading = false;
+      });
+    }
+  }
+
+  void onTapPhoto() async {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> images = await picker.pickMultiImage(imageQuality: 80);
+
+    if (images.isNotEmpty) {
+      for (var image in images) {
+        setState(() {
+          isUploading = true;
+        });
+        final bytes = await image.readAsBytes();
+        widget.privateChat.id ??=
+            await DatabaseService.createPrivateChat(widget.privateChat);
+
+        await DatabaseService.sendChatImage(
+          widget.uuid,
+          widget.privateChat.id!,
+          File(image.path),
+          false,
+          Uint8List.fromList(bytes),
+        );
+        setState(() {
+          isUploading = false;
+        });
+      }
+    }
+    _overlayEntry?.remove();
   }
 
   Widget chatMessages() {
@@ -390,7 +399,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
       debugPrint(size.toString());
-      _overlayEntry = OverlayEntry(
+      _copyOverlayEntry = OverlayEntry(
         builder: (context) => Positioned(
           bottom: size.height,
           left: 0,
@@ -422,11 +431,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           ),
         ),
       );
-      Overlay.of(context).insert(_overlayEntry!);
+      Overlay.of(context).insert(_copyOverlayEntry!);
 
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          _overlayEntry?.remove();
+          _copyOverlayEntry?.remove();
         }
       });
     }
@@ -474,5 +483,75 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         });
       }
     }
+  }
+
+  void showOverlay(BuildContext context) {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _overlayEntry?.remove();
+              },
+              child: Container(
+                  color: const Color(
+                      0x00000000) // ARGB value: A=00, R=00, G=00, B=00
+                  ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.only(top: 10),
+              height: 100,
+              color: CupertinoColors.inactiveGray,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      onTapCamera();
+                      _overlayEntry?.remove();
+                    },
+                    child: Column(
+                      children: [
+                        Icon(CupertinoIcons.camera_fill,
+                            color: CupertinoTheme.of(context).primaryColor),
+                        Text("Camera",
+                            style: TextStyle(
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color)),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onTapPhoto,
+                    child: Column(
+                      children: [
+                        Icon(CupertinoIcons.photo_fill,
+                            color: CupertinoTheme.of(context).primaryColor),
+                        Text("Photo",
+                            style: TextStyle(
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
   }
 }
