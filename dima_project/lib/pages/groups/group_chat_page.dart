@@ -379,41 +379,17 @@ class GroupChatPageState extends State<GroupChatPage> {
                       stream:
                           DatabaseService.getUserDataFromUUID(message.sender),
                       builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          message.senderImage = '';
+                          return _buildMessageTile(message, 'Account Deleted');
+                        }
+
                         if (snapshot.hasData) {
                           final user = snapshot.data as UserData;
-
                           message.senderImage = user.imagePath;
-                          if (message.type == Type.text) {
-                            return TextMessageTile(
-                                showCustomSnackbar: () {
-                                  showCustomSnackbar();
-                                },
-                                message: message,
-                                uuid: widget.uuid,
-                                senderUsername: user.username);
-                          }
-                          if (message.type == Type.image) {
-                            return ImageMessageTile(
-                              message: message,
-                              uuid: widget.uuid,
-                              senderUsername: user.username,
-                            );
-                          }
-                          if (message.type == Type.news) {
-                            return NewsMessageTile(
-                              message: message,
-                              uuid: widget.uuid,
-                              senderUsername: user.username,
-                            );
-                          }
-                          return EventMessageTile(
-                            message: message,
-                            uuid: widget.uuid,
-                            senderUsername: user.username,
-                          );
-                        } else {
-                          return Container();
+                          return _buildMessageTile(message, user.username);
                         }
+                        return Container();
                       },
                     )
                   ],
@@ -547,5 +523,36 @@ class GroupChatPageState extends State<GroupChatPage> {
       _copyOverlayEntry?.remove();
     }
     super.dispose();
+  }
+
+  Widget _buildMessageTile(Message message, String senderUsername) {
+    switch (message.type) {
+      case Type.text:
+        return TextMessageTile(
+          showCustomSnackbar: showCustomSnackbar,
+          message: message,
+          uuid: widget.uuid,
+          senderUsername: senderUsername,
+        );
+      case Type.image:
+        return ImageMessageTile(
+          message: message,
+          uuid: widget.uuid,
+          senderUsername: senderUsername,
+        );
+      case Type.news:
+        return NewsMessageTile(
+          message: message,
+          uuid: widget.uuid,
+          senderUsername: senderUsername,
+        );
+      case Type.event:
+      default:
+        return EventMessageTile(
+          message: message,
+          uuid: widget.uuid,
+          senderUsername: senderUsername,
+        );
+    }
   }
 }

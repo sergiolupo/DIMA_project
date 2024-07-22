@@ -168,6 +168,21 @@ class ListChatPageState extends State<ListChatPage> {
                             child: CupertinoActivityIndicator(),
                           );
                         }
+                        if (snapshot.hasError) {
+                          return GroupChatTile(
+                            uuid: widget.uuid,
+                            group: group,
+                            lastMessage: LastMessage(
+                              recentMessageType:
+                                  group.lastMessage!.recentMessageType,
+                              recentMessage: group.lastMessage!.recentMessage,
+                              recentMessageSender: 'Account deleted',
+                              recentMessageTimestamp:
+                                  group.lastMessage!.recentMessageTimestamp,
+                              sentByMe: false,
+                            ),
+                          );
+                        }
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           bool sentByMe = user.uuid == widget.uuid;

@@ -1771,14 +1771,16 @@ class DatabaseService {
       }
     }
     final followerDoc = await followersRef.doc(uuid).get();
+
     //exit all following
     for (var following in followerDoc['following']) {
-      toggleFollowUnfollow(uuid, following);
+      await toggleFollowUnfollow(following, uuid);
     }
     //exit all followers
     for (var follower in followerDoc['followers']) {
-      toggleFollowUnfollow(follower, uuid);
+      await toggleFollowUnfollow(uuid, follower);
     }
+    await followersRef.doc(uuid).delete();
     //delete user
     await usersRef.doc(uuid).delete();
   }
