@@ -115,6 +115,14 @@ class DatabaseService {
   static Stream<UserData> getUserDataFromUUID(String uuid) {
     return usersRef.doc(uuid).snapshots().map((snapshot) {
       return UserData.fromSnapshot(snapshot);
+    }).handleError((error) {
+      return UserData(
+        categories: [],
+        email: '',
+        name: '',
+        surname: '',
+        username: 'Account deleted',
+      );
     });
   }
 
@@ -1736,5 +1744,49 @@ class DatabaseService {
       await deleteDetail(eventId, detail.id);
     }
     await eventsRef.doc(eventId).delete();
+  }
+
+  static Future<void> deleteUser(String uuid) async {
+    final doc = await usersRef.doc(uuid).get();
+    //exit all groups
+    for (var group in doc['groups']) {
+      toggleGroupJoin(group, uuid);
+    }
+    //exit all events
+    for (var event in doc['events']) {
+      final eventId = event.split(':')[0];
+      final detailId = event.split(':')[1];
+
+      final docEvent = await eventsRef.doc(eventId).get();
+      if (docEvent.exists && docEvent['admin'] == uuid) {
+        await deleteEvent(eventId);
+      } else {
+        final doc = await eventsRef
+            .doc(eventId)
+            .collection('details')
+            .doc(detailId)
+            .get();
+
+        if (doc.exists) {
+          await eventsRef
+              .doc(eventId)
+              .collection('details')
+              .doc(detailId)
+              .update({
+            'members': FieldValue.arrayRemove([uuid])
+          });
+        }
+      }
+    }
+    //exit all following
+    for (var following in doc['following']) {
+      toggleFollowUnfollow(uuid, following);
+    }
+    //exit all followers
+    for (var follower in doc['followers']) {
+      toggleFollowUnfollow(follower, uuid);
+    }
+    //delete user
+    await usersRef.doc(uuid).delete();
   }
 }

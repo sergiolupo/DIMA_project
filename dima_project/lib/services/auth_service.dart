@@ -64,4 +64,8 @@ class AuthService {
     await DatabaseService.registerUserWithUUID(
         user, userCredential.user!.uid, imagePath);
   }
+
+  static Future<void> deleteUser() {
+    return _firebaseAuth.currentUser!.delete();
+  }
 }

@@ -2,17 +2,19 @@ import 'package:dima_project/pages/options/request_page.dart';
 import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class OptionsPage extends StatefulWidget {
+class OptionsPage extends ConsumerStatefulWidget {
   final String uuid;
   const OptionsPage({super.key, required this.uuid});
   @override
   OptionsPageState createState() => OptionsPageState();
 }
 
-class OptionsPageState extends State<OptionsPage> {
+class OptionsPageState extends ConsumerState<OptionsPage> {
   @override
   void initState() {
     super.initState();
@@ -84,11 +86,55 @@ class OptionsPageState extends State<OptionsPage> {
                   title: const Text('Exit'),
                   onTap: () => _signOut(context),
                 ),
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.arrow_right_to_line),
+                  title: const Text('Delete Account'),
+                  onTap: () => deleteAccount(),
+                ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void deleteAccount() {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext newContext) {
+        return CupertinoAlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text('Are you sure you want to delete your account?'),
+          actions: <CupertinoDialogAction>[
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('Delete'),
+              onPressed: () async {
+                await DatabaseService.deleteUser(widget.uuid);
+                ref.invalidate(userProvider);
+                ref.invalidate(followerProvider);
+                ref.invalidate(followingProvider);
+                ref.invalidate(groupsProvider);
+                ref.invalidate(joinedEventsProvider);
+                ref.invalidate(createdEventsProvider);
+                ref.invalidate(eventProvider);
+                AuthService.signOut();
+                AuthService.deleteUser();
+                if (!mounted) return;
+                Navigator.of(context).pop();
+                if (!mounted) return;
+                context.go('/login');
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
