@@ -63,7 +63,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
               ),
             ),
             onDismissed: (direction) async {
-              await DatabaseService.deletePrivateChat(widget.privateChat.id!);
+              await DatabaseService.deletePrivateChat(widget.privateChat);
             },
             child: StreamBuilder(
                 stream: streamUserData,

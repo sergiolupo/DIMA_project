@@ -176,7 +176,7 @@ class ListChatPageState extends State<ListChatPage> {
                               recentMessageType:
                                   group.lastMessage!.recentMessageType,
                               recentMessage: group.lastMessage!.recentMessage,
-                              recentMessageSender: 'Account deleted',
+                              recentMessageSender: 'Deleted Account',
                               recentMessageTimestamp:
                                   group.lastMessage!.recentMessageTimestamp,
                               sentByMe: false,

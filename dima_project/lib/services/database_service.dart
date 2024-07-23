@@ -1705,8 +1705,14 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deletePrivateChat(String id) async {
-    return await privateChatRef.doc(id).delete();
+  static Future<void> deletePrivateChat(PrivateChat chat) async {
+    await usersRef.doc(chat.members[0]).update({
+      'privateChats': FieldValue.arrayRemove([chat.id])
+    });
+    await usersRef.doc(chat.members[1]).update({
+      'privateChats': FieldValue.arrayRemove([chat.id])
+    });
+    return await privateChatRef.doc(chat.id!).delete();
   }
 
   static Future<void> deleteDetail(String eventId, String detailId) async {

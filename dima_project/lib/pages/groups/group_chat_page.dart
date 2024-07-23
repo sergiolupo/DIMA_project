@@ -381,7 +381,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           message.senderImage = '';
-                          return _buildMessageTile(message, 'Account Deleted');
+                          return _buildMessageTile(message, 'Deleted Account');
                         }
 
                         if (snapshot.hasData) {

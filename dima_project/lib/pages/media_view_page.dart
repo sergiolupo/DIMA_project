@@ -51,7 +51,7 @@ class MediaViewPageState extends State<MediaViewPage> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CupertinoActivityIndicator());
                 } else if (snapshot.hasError) {
-                  return _buildMediaView(message, 'Deleted Account', '', '');
+                  return _buildMediaView(message, 'Account Deleted', '', '');
                 } else if (snapshot.hasData) {
                   final user = snapshot.data!;
                   return _buildMediaView(
