@@ -8,12 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-class ShowEvent extends ConsumerStatefulWidget {
+class ShowEventTablet extends ConsumerStatefulWidget {
   final String uuid;
   final String eventId;
   final UserData userData;
   final bool createdEvents;
-  const ShowEvent({
+  const ShowEventTablet({
     super.key,
     required this.uuid,
     required this.eventId,
@@ -25,7 +25,7 @@ class ShowEvent extends ConsumerStatefulWidget {
   ShowEventState createState() => ShowEventState();
 }
 
-class ShowEventState extends ConsumerState<ShowEvent> {
+class ShowEventState extends ConsumerState<ShowEventTablet> {
   PageController? _pageController;
 
   @override
@@ -71,13 +71,12 @@ class ShowEventState extends ConsumerState<ShowEvent> {
             itemCount: events.length,
             itemBuilder: (context, index) {
               final event = events[index];
-              return ListView(
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 10.0),
-                    child: Column(
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
+                child: Row(
+                  children: [
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -182,93 +181,108 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                 .color,
                           ),
                         ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: event.details!.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20.0),
-                                Row(
+                      ],
+                    ),
+                    const SizedBox(width: 20.0),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 2.3,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: event.details!.length,
+                              itemBuilder: (context, index) {
+                                return Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      FontAwesomeIcons.calendar,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    Text(
-                                      DateFormat('d/M/y').format(
-                                          event.details![index].startDate!),
-                                      style: TextStyle(
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          FontAwesomeIcons.calendar,
                                           color: CupertinoTheme.of(context)
-                                              .textTheme
-                                              .textStyle
-                                              .color),
+                                              .primaryColor,
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        Text(
+                                          DateFormat('d/M/y').format(
+                                              event.details![index].startDate!),
+                                          style: TextStyle(
+                                              color: CupertinoTheme.of(context)
+                                                  .textTheme
+                                                  .textStyle
+                                                  .color),
+                                        ),
+                                        const Text(' - '),
+                                        Text(
+                                          DateFormat('d/M/y').format(
+                                              event.details![index].endDate!),
+                                          style: TextStyle(
+                                              color: CupertinoTheme.of(context)
+                                                  .textTheme
+                                                  .textStyle
+                                                  .color),
+                                        ),
+                                      ],
                                     ),
-                                    const Text(' - '),
-                                    Text(
-                                      DateFormat('d/M/y').format(
-                                          event.details![index].endDate!),
-                                      style: TextStyle(
+                                    const SizedBox(height: 10.0),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.map_pin_ellipse,
                                           color: CupertinoTheme.of(context)
-                                              .textTheme
-                                              .textStyle
-                                              .color),
+                                              .primaryColor,
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        FutureBuilder(
+                                            future:
+                                                EventService.getAddressFromLatLng(
+                                                    event
+                                                        .details![index].latlng!),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData &&
+                                                  snapshot.data != null) {
+                                                final address =
+                                                    snapshot.data as String;
+                                                return Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            2.5,
+                                                  ),
+                                                  child: Text(
+                                                    address,
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                return const Center(
+                                                  child:
+                                                      CupertinoActivityIndicator(),
+                                                );
+                                              }
+                                            }),
+                                      ],
                                     ),
-                                    /*Transform.scale(
-                                        scale: 0.4,
-                                        child: ShowDate(
-                                            date: event
-                                                .details![index].startDate!,
-                                            time: event
-                                                .details![index].startTime!))*/
+                                    const SizedBox(height: 20.0),
                                   ],
-                                ),
-                                const SizedBox(height: 10.0),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.map_pin_ellipse,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    FutureBuilder(
-                                        future:
-                                            EventService.getAddressFromLatLng(
-                                                event.details![index].latlng!),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData &&
-                                              snapshot.data != null) {
-                                            final address =
-                                                snapshot.data as String;
-                                            return Text(
-                                              address,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            );
-                                          } else {
-                                            return const Center(
-                                              child:
-                                                  CupertinoActivityIndicator(),
-                                            );
-                                          }
-                                        }),
-                                  ],
-                                )
-                              ],
-                            );
-                          },
+                                );
+                              },
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           );

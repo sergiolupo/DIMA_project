@@ -1,7 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
-import 'package:dima_project/pages/show_event.dart';
+import 'package:dima_project/pages/responsive_show_event.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
@@ -314,7 +314,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       onTap: () => Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => ShowEvent(
+                          builder: (context) => ResponsiveShowEvent(
                             uuid: widget.uuid,
                             eventId: event.id!,
                             userData: user,
@@ -365,7 +365,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       onTap: () => Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => ShowEvent(
+                          builder: (context) => ResponsiveShowEvent(
                             uuid: widget.uuid,
                             eventId: event.id!,
                             createdEvents: true,

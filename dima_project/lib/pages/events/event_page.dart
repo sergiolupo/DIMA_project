@@ -73,7 +73,7 @@ class EventPageState extends ConsumerState<EventPage> {
             ),
             child: SafeArea(
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.7,
+                height: MediaQuery.of(context).size.height,
                 padding: const EdgeInsets.all(30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,73 +119,76 @@ class EventPageState extends ConsumerState<EventPage> {
                           ],
                         )),
                     const SizedBox(height: 20),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: event.details!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final detail = event.details![index];
-                        return Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: CupertinoTheme.of(context)
-                                    .primaryContrastingColor,
-                              ),
-                              child: CupertinoListTile(
-                                leading: Icon(
-                                  CupertinoIcons.calendar,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: event.details!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final detail = event.details![index];
+                          return Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor,
                                 ),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                    ),
-                                    FutureBuilder(
-                                        future:
-                                            EventService.getAddressFromLatLng(
-                                                detail.latlng!),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData &&
-                                              snapshot.data != null) {
-                                            final address =
-                                                snapshot.data as String;
-                                            return Text(
-                                              address,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            );
-                                          } else {
-                                            return const Center(
-                                              child:
-                                                  CupertinoActivityIndicator(),
-                                            );
-                                          }
-                                        }),
-                                  ],
-                                ),
-                                trailing: const Icon(CupertinoIcons.forward),
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    CupertinoPageRoute(
-                                      builder: (context) => DetailPage(
-                                        eventId: event.id!,
-                                        detailId: detail.id!,
-                                        uuid: widget.uuid,
+                                child: CupertinoListTile(
+                                  leading: Icon(
+                                    CupertinoIcons.calendar,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                  ),
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
                                       ),
-                                    ),
-                                  );
-                                },
+                                      FutureBuilder(
+                                          future:
+                                              EventService.getAddressFromLatLng(
+                                                  detail.latlng!),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData &&
+                                                snapshot.data != null) {
+                                              final address =
+                                                  snapshot.data as String;
+                                              return Text(
+                                                address,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              );
+                                            } else {
+                                              return const Center(
+                                                child:
+                                                    CupertinoActivityIndicator(),
+                                              );
+                                            }
+                                          }),
+                                    ],
+                                  ),
+                                  trailing: const Icon(CupertinoIcons.forward),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => DetailPage(
+                                          eventId: event.id!,
+                                          detailId: detail.id!,
+                                          uuid: widget.uuid,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        );
-                      },
+                              const SizedBox(height: 10),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

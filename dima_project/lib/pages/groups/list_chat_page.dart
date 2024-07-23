@@ -72,38 +72,37 @@ class ListChatPageState extends State<ListChatPage> {
                 ),
               ),
             ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CupertinoSearchTextField(
-                      onChanged: (value) {
-                        setState(() {
-                          searchedText = value;
-                        });
-                      },
-                    ),
-                  ),
-                  CustomSelectOption(
-                    textLeft: "Groups",
-                    textRight: "Private",
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CupertinoSearchTextField(
                     onChanged: (value) {
                       setState(() {
-                        idx = value;
-                        _subscribe();
+                        searchedText = value;
                       });
                     },
                   ),
-                  Stack(
+                ),
+                CustomSelectOption(
+                  textLeft: "Groups",
+                  textRight: "Private",
+                  onChanged: (value) {
+                    setState(() {
+                      idx = value;
+                      _subscribe();
+                    });
+                  },
+                ),
+                Expanded(
+                  child: Stack(
                     children: [
                       groupList(),
                       privateChatList(),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
   }
@@ -126,7 +125,6 @@ class ListChatPageState extends State<ListChatPage> {
               var data = snapshot.data!;
               if (data.isNotEmpty) {
                 return ListView.builder(
-                  physics: const ClampingScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: data.length,
                   itemBuilder: (context, index) {
@@ -276,7 +274,6 @@ class ListChatPageState extends State<ListChatPage> {
 
               if (data.isNotEmpty) {
                 return ListView.builder(
-                  physics: const ClampingScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: data.length,
                   itemBuilder: (context, index) {
