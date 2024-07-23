@@ -1395,8 +1395,17 @@ class DatabaseService {
   }
 
   static Stream<Event> getEventStream(String eventId) {
-    return eventsRef.doc(eventId).snapshots().asyncMap((snapshot) async {
-      return await Event.fromSnapshot(snapshot);
+    // Assuming you're using Firestore or any other database service
+    return FirebaseFirestore.instance
+        .collection('events')
+        .doc(eventId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      if (snapshot.exists) {
+        return await Event.fromSnapshot(snapshot);
+      } else {
+        throw Exception('Event not found');
+      }
     });
   }
 

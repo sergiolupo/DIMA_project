@@ -111,6 +111,7 @@ class ListChatPageState extends State<ListChatPage> {
     return Visibility(
       visible: idx == 0,
       child: SizedBox(
+        height: MediaQuery.of(context).size.height,
         child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
@@ -265,6 +266,7 @@ class ListChatPageState extends State<ListChatPage> {
     return Visibility(
       visible: idx == 1,
       child: SizedBox(
+        height: MediaQuery.of(context).size.height,
         child: StreamBuilder<List<PrivateChat>>(
           stream: _privateChatsStream,
           builder: (context, snapshot) {

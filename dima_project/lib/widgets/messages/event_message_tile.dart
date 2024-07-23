@@ -5,6 +5,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/messages/deleted_message_tile.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -31,14 +32,17 @@ class EventMessageTileState extends State<EventMessageTile> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Object>(
+    return StreamBuilder<Event>(
         stream: DatabaseService.getEventStream(widget.message.content),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CupertinoActivityIndicator();
           }
-          if (snapshot.hasError) {
-            return const Text('Error fetching event');
+          if (snapshot.hasError ||
+              (snapshot.hasData && snapshot.data == null)) {
+            return DeletedMessageTile(
+              message: widget.message,
+            );
           }
           final event = snapshot.data as Event;
           return GestureDetector(

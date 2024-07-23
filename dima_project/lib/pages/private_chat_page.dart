@@ -342,7 +342,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           return ListView.builder(
             shrinkWrap: true,
             reverse: true,
-            physics: const BouncingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
