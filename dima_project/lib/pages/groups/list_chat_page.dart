@@ -288,7 +288,9 @@ class ListChatPageState extends State<ListChatPage> {
 
                     return StreamBuilder<UserData>(
                       stream: DatabaseService.getUserDataFromUUID(
-                          privateChat.lastMessage!.recentMessageSender),
+                          privateChat.members[0] == widget.uuid
+                              ? privateChat.members[1]
+                              : privateChat.members[0]),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -298,63 +300,46 @@ class ListChatPageState extends State<ListChatPage> {
                         }
 
                         if (snapshot.hasData) {
-                          final user = snapshot.data!;
-                          return FutureBuilder(
-                            future: DatabaseService.getUserData(
-                                privateChat.members[0] == widget.uuid
-                                    ? privateChat.members[1]
-                                    : privateChat.members[0]),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CupertinoActivityIndicator(),
-                                );
-                              }
-                              if (snapshot.hasData) {
-                                final other = snapshot.data!;
+                          final other = snapshot.data!;
 
-                                if (!other.username
-                                    .toLowerCase()
-                                    .contains(searchedText.toLowerCase())) {
-                                  i += 1;
-                                  if (i == data.length) {
-                                    return Center(
-                                        child: Column(
-                                      children: [
-                                        MediaQuery.of(context)
-                                                    .platformBrightness ==
-                                                Brightness.dark
-                                            ? Image.asset(
-                                                'assets/darkMode/no_chat_found.png')
-                                            : Image.asset(
-                                                'assets/images/no_chat_found.png'),
-                                        const Text('No private chats'),
-                                      ],
-                                    ));
-                                  }
-                                  return const SizedBox.shrink();
-                                }
+                          if (!other.username
+                              .toLowerCase()
+                              .contains(searchedText.toLowerCase())) {
+                            i += 1;
+                            if (i == data.length) {
+                              return Center(
+                                  child: Column(
+                                children: [
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_chat_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_chat_found.png'),
+                                  const Text('No private chats'),
+                                ],
+                              ));
+                            }
+                            return const SizedBox.shrink();
+                          }
 
-                                bool sentByMe = user.uuid == widget.uuid;
-                                return PrivateChatTile(
-                                  uuid: widget.uuid,
-                                  privateChat: privateChat,
-                                  lastMessage: LastMessage(
-                                    recentMessageType: privateChat
-                                        .lastMessage!.recentMessageType,
-                                    recentMessage:
-                                        privateChat.lastMessage!.recentMessage,
-                                    recentMessageSender: user.username,
-                                    recentMessageTimestamp: privateChat
-                                        .lastMessage!.recentMessageTimestamp,
-                                    sentByMe: sentByMe,
-                                  ),
-                                );
-                              } else {
-                                return Container(); // Return an empty container or handle other cases as needed
-                              }
-                            },
+                          bool sentByMe =
+                              privateChat.lastMessage!.recentMessageSender ==
+                                  widget.uuid;
+                          return PrivateChatTile(
+                            uuid: widget.uuid,
+                            privateChat: privateChat,
+                            lastMessage: LastMessage(
+                              recentMessageType:
+                                  privateChat.lastMessage!.recentMessageType,
+                              recentMessage:
+                                  privateChat.lastMessage!.recentMessage,
+                              recentMessageSender:
+                                  sentByMe ? '' : other.username,
+                              recentMessageTimestamp: privateChat
+                                  .lastMessage!.recentMessageTimestamp,
+                              sentByMe: sentByMe,
+                            ),
                           );
                         } else {
                           return Container(); // Return an empty container or handle other cases as needed
