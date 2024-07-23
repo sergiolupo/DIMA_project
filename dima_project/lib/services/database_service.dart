@@ -107,9 +107,19 @@ class DatabaseService {
   }
 
   static Future<UserData> getUserData(String uid) async {
-    DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
-    UserData user = UserData.fromSnapshot(documentSnapshot);
-    return user;
+    try {
+      DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
+      UserData user = UserData.fromSnapshot(documentSnapshot);
+      return user;
+    } catch (e) {
+      return UserData(
+          categories: [],
+          email: '',
+          name: '',
+          surname: '',
+          username: 'Deleted Account',
+          imagePath: '');
+    }
   }
 
   static Stream<UserData> getUserDataFromUUID(String uuid) {
@@ -945,7 +955,12 @@ class DatabaseService {
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getUserInfo(
       String uuid) {
-    return usersRef.doc(uuid).snapshots();
+    try {
+      return usersRef.doc(uuid).snapshots();
+    } catch (e) {
+      debugPrint(e.toString());
+      return const Stream.empty();
+    }
   }
 
   static Future<void> updateActiveStatus(bool isOnline) async {
@@ -1706,12 +1721,20 @@ class DatabaseService {
   }
 
   static Future<void> deletePrivateChat(PrivateChat chat) async {
-    await usersRef.doc(chat.members[0]).update({
-      'privateChats': FieldValue.arrayRemove([chat.id])
-    });
-    await usersRef.doc(chat.members[1]).update({
-      'privateChats': FieldValue.arrayRemove([chat.id])
-    });
+    try {
+      await usersRef.doc(chat.members[0]).update({
+        'privateChats': FieldValue.arrayRemove([chat.id])
+      });
+    } catch (e) {
+      debugPrint("User doesn't exists: ${chat.members[0]}");
+    }
+    try {
+      await usersRef.doc(chat.members[1]).update({
+        'privateChats': FieldValue.arrayRemove([chat.id])
+      });
+    } catch (e) {
+      debugPrint("User doesn't exists:${chat.members[1]}");
+    }
     return await privateChatRef.doc(chat.id!).delete();
   }
 

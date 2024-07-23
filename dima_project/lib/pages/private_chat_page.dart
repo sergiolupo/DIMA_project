@@ -41,11 +41,18 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   OverlayEntry? _copyOverlayEntry;
   OverlayEntry? _overlayEntry;
   final FocusNode _focusNode = FocusNode();
-
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? userInfo;
   @override
   void initState() {
     _checkPrivateChatId();
+    _getUserInfo();
     super.initState();
+  }
+
+  _getUserInfo() {
+    userInfo = widget.privateChat.members[0] != widget.uuid
+        ? DatabaseService.getUserInfo(widget.privateChat.members[0])
+        : DatabaseService.getUserInfo(widget.privateChat.members[1]);
   }
 
   @override
@@ -65,11 +72,35 @@ class PrivateChatPageState extends State<PrivateChatPage> {
               }
           },
           child: SingleChildScrollView(
-            child: StreamBuilder(
-              stream: widget.privateChat.members[0] != widget.uuid
-                  ? DatabaseService.getUserInfo(widget.privateChat.members[0])
-                  : DatabaseService.getUserInfo(widget.privateChat.members[1]),
+            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: userInfo!,
               builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.data() == null) {
+                  return Row(
+                    children: [
+                      CreateImageWidget.getUserImage(
+                        '',
+                        small: true,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.6,
+                              ),
+                              child: const Text(
+                                'Deleted Account',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ]),
+                    ],
+                  );
+                }
+
                 if (snapshot.hasData) {
                   final user =
                       UserData.fromSnapshot(snapshot.data as DocumentSnapshot);

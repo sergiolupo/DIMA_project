@@ -329,6 +329,7 @@ class ListChatPageState extends State<ListChatPage> {
                           return PrivateChatTile(
                             uuid: widget.uuid,
                             privateChat: privateChat,
+                            other: other,
                             lastMessage: LastMessage(
                               recentMessageType:
                                   privateChat.lastMessage!.recentMessageType,
@@ -342,6 +343,38 @@ class ListChatPageState extends State<ListChatPage> {
                             ),
                           );
                         } else {
+                          if (snapshot.hasError) {
+                            return PrivateChatTile(
+                              uuid: widget.uuid,
+                              privateChat: privateChat,
+                              other: UserData(
+                                imagePath: '',
+                                username: 'Deleted Account',
+                                categories: [],
+                                email: '',
+                                name: '',
+                                surname: '',
+                              ),
+                              lastMessage: LastMessage(
+                                recentMessageType:
+                                    privateChat.lastMessage!.recentMessageType,
+                                recentMessage:
+                                    privateChat.lastMessage!.recentMessage,
+                                recentMessageSender: privateChat
+                                            .lastMessage!.recentMessageSender ==
+                                        widget.uuid
+                                    ? ''
+                                    : 'Deleted Account',
+                                recentMessageTimestamp: privateChat
+                                    .lastMessage!.recentMessageTimestamp,
+                                sentByMe: privateChat
+                                            .lastMessage!.recentMessageSender ==
+                                        widget.uuid
+                                    ? true
+                                    : false,
+                              ),
+                            );
+                          }
                           return Container(); // Return an empty container or handle other cases as needed
                         }
                       },
