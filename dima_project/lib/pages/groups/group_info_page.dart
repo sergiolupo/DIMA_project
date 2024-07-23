@@ -79,6 +79,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              transitionBetweenRoutes: false,
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
