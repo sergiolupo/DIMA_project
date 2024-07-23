@@ -33,6 +33,7 @@ class EventPageState extends ConsumerState<EventPage> {
         data: (event) {
           return CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              transitionBetweenRoutes: false,
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               trailing: widget.uuid == event.admin
                   ? CupertinoButton(

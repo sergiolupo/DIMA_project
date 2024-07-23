@@ -8,6 +8,7 @@ import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   final String uuid;
@@ -83,31 +84,44 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
               leading: CupertinoButton(
                 onPressed: () => _currentPage == 1
                     ? Navigator.of(context).pop()
-                    : setState(() => _currentPage = 1),
+                    : selectedCategories.isEmpty
+                        ? _showDialog('Invalid choice',
+                            'Please select at least one category')
+                        : setState(() {
+                            _saveUserData();
+                            _currentPage = 1;
+                          }),
                 padding: const EdgeInsets.only(left: 10),
                 child: Icon(
                   CupertinoIcons.back,
                   color: CupertinoTheme.of(context).primaryColor,
                 ),
               ),
+              trailing: _currentPage == 1
+                  ? CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () async {
+                        if (await _validatePage()) {
+                          if (context.mounted) Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(
+                        'Done',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoTheme.of(context).primaryColor,
+                        ),
+                      ))
+                  : null,
             ),
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: ListView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                children: [
-                  _currentPage == 1 ? _buildFirstPage() : _buildSecondPage(),
-                  const SizedBox(height: 20),
-                  _buildActionButton(),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          );
+            child: _currentPage == 1
+                ? _buildMainPage()
+                : CategorySelectionForm(
+                    selectedCategories: selectedCategories,
+                  ));
   }
 
-  Widget _buildFirstPage() {
+  Widget _buildMainPage() {
     return Column(
       children: [
         GestureDetector(
@@ -134,9 +148,51 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         _buildTextField('Name', user!.name, false, _nameController),
         _buildTextField('Surname', user!.surname, false, _surnameController),
         _buildTextField('Username', user!.username, false, _usernameController),
-        _buildPublicProfileSwitch(),
-        const SizedBox(height: 20),
         _buildTextField('Email', user!.email, false, _emailController),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(right: 10.0, left: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: CupertinoTheme.of(context).primaryContrastingColor,
+            ),
+            child: Column(children: [
+              CupertinoListTile(
+                title: const Text('Categories'),
+                leading: const Icon(FontAwesomeIcons.thList),
+                trailing: const Icon(CupertinoIcons.forward),
+                onTap: () {
+                  setState(() {
+                    _currentPage = 2;
+                  });
+                },
+              ),
+              Container(
+                height: 1,
+                color: CupertinoColors.separator,
+              ),
+              CupertinoListTile(
+                title: const Text('Public Profile'),
+                leading: isPublic
+                    ? const Icon(CupertinoIcons.lock_open_fill)
+                    : const Icon(CupertinoIcons.lock_fill),
+                trailing: Transform.scale(
+                  scale: 0.75,
+                  child: CupertinoSwitch(
+                    value: isPublic,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isPublic = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ),
+        const SizedBox(height: 20),
         !user!.isSignedInWithGoogle!
             ? _buildTextField(
                 'Password', user!.password, isObscure, _passwordController)
@@ -145,16 +201,10 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildSecondPage() {
-    return CategorySelectionForm(
-      selectedCategories: selectedCategories,
-    );
-  }
-
   Widget _buildTextField(String labelText, String? placeholder, bool isObscure,
       TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
+      padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -182,8 +232,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   )
                 : null,
             decoration: BoxDecoration(
-              border: Border.all(color: CupertinoColors.systemGrey),
-              borderRadius: BorderRadius.circular(8.0),
+              color: CupertinoTheme.of(context).primaryContrastingColor,
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ],
@@ -191,73 +241,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildPublicProfileSwitch() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Text(
-          'Public Profile',
-          style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: CupertinoColors.systemGrey),
-        ),
-        const SizedBox(width: 10),
-        Transform.scale(
-          scale: 0.75,
-          child: CupertinoSwitch(
-            value: isPublic,
-            onChanged: (bool value) {
-              setState(() {
-                isPublic = value;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CupertinoButton(
-          onPressed: _handleActionButtonPress,
-          padding: const EdgeInsets.symmetric(horizontal: 50),
-          color: CupertinoTheme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(20),
-          child: Text(
-            _currentPage == 1 ? 'NEXT' : 'SAVE',
-            style: const TextStyle(
-                fontSize: 15,
-                letterSpacing: 2,
-                color: CupertinoColors.white,
-                fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _handleActionButtonPress() async {
-    if (_currentPage == 1) {
-      if (await _validateFirstPage()) {
-        setState(() {
-          _currentPage = 2;
-        });
-      }
-    } else {
-      if (selectedCategories.isEmpty) {
-        _showDialog('Invalid choice', 'Please select at least one category');
-      } else {
-        await _saveUserData();
-        if (mounted) Navigator.of(context).pop();
-      }
-    }
-  }
-
-  Future<bool> _validateFirstPage() async {
+  Future<bool> _validatePage() async {
     if (_nameController.text.isEmpty ||
         _surnameController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -266,6 +250,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _showDialog('Invalid choice', 'Please fill all the fields');
       return false;
     }
+    debugPrint('Validating first page');
     if (_oldEmail != _emailController.text &&
         !_validateEmail(_emailController.text)) {
       _showDialog('Invalid choice', 'Invalid email.');
