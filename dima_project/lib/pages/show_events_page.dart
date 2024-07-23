@@ -93,11 +93,8 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                           child: PhysicalModel(
                             elevation: 3.0,
                             borderRadius: BorderRadius.circular(10),
-                            color: MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? CupertinoTheme.of(context)
-                                    .primaryContrastingColor
-                                : CupertinoColors.white,
+                            color: CupertinoTheme.of(context)
+                                .primaryContrastingColor,
                             child: FutureBuilder(
                               future: DatabaseService.getEvent(message.content),
                               builder: (context, snapshot) {
