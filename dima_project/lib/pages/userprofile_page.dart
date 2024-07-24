@@ -16,6 +16,7 @@ import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class UserProfile extends ConsumerStatefulWidget {
   final String user;
@@ -292,20 +293,38 @@ class UserProfileState extends ConsumerState<UserProfile> {
                           getJoinedEvents(user),
                         ],
                       )
-                    : const Center(
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 50),
                         child: Column(
                           children: [
                             Icon(
-                              CupertinoIcons.lock,
+                              LineAwesomeIcons.user_lock_solid,
                               size: 100,
-                              color: CupertinoColors.systemGrey,
+                              color: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .color,
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
-                              "Private Profile",
+                              "This Account is private",
                               style: TextStyle(
+                                fontWeight: FontWeight.bold,
                                 fontSize: 20,
-                                color: CupertinoColors.systemGrey,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
+                              ),
+                            ),
+                            Text(
+                              "Follow this account to see its events",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
                               ),
                             ),
                           ],
