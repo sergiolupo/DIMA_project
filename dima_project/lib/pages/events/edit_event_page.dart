@@ -339,45 +339,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                             ],
                           )),
                       const SizedBox(height: 20),
-                      CupertinoButton.filled(
-                          child: const Text(
-                            'Delete Event',
-                            style: TextStyle(color: CupertinoColors.white),
-                          ),
-                          onPressed: () {
-                            showCupertinoDialog(
-                              context: context,
-                              builder: (newContext) => CupertinoAlertDialog(
-                                title: const Text('Delete Event'),
-                                content: const Text(
-                                    'Are you sure you want to delete this date?'),
-                                actions: <Widget>[
-                                  CupertinoDialogAction(
-                                    child: const Text('Cancel'),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                  ),
-                                  CupertinoDialogAction(
-                                    child: const Text('Delete'),
-                                    onPressed: () async {
-                                      Navigator.of(newContext).pop();
-                                      await DatabaseService.deleteEvent(
-                                          widget.event.id!);
-                                      ref.invalidate(
-                                          createdEventsProvider(uid));
-                                      ref.invalidate(joinedEventsProvider(uid));
-                                      ref.invalidate(
-                                          eventProvider(widget.event.id!));
-                                      if (context.mounted) {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
                     ]),
               )),
             ]),
