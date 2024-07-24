@@ -1,8 +1,12 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/messages/message_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class DeletedMessageTile extends StatefulWidget {
   final Message message;
@@ -17,6 +21,8 @@ class DeletedMessageTile extends StatefulWidget {
 }
 
 class DeletedMessageTileState extends State<DeletedMessageTile> {
+  final String uuid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   void initState() {
     super.initState();
@@ -129,6 +135,10 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                         ],
                       ),
                     ),
+                  ),
+                  Visibility(
+                    visible: false,
+                    child: MessageUtils.buildReadByIcon(widget.message, uuid),
                   ),
                 ],
               ),
