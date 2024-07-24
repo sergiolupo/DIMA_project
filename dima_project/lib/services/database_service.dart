@@ -846,8 +846,8 @@ class DatabaseService {
 
   static void updateTyping(String id, bool isTyping) {
     usersRef.doc(AuthService.uid).update({
-      'isTyping': id,
-      'typingTo': isTyping,
+      'isTyping': isTyping,
+      'typingTo': id,
     });
   }
 
