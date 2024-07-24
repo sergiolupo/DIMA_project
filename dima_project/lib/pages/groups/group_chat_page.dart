@@ -9,6 +9,8 @@ import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
+import 'package:dima_project/widgets/chats/clipboard_banner.dart';
+import 'package:dima_project/widgets/chats/options_menu.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
@@ -36,8 +38,8 @@ class GroupChatPageState extends State<GroupChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
-  OverlayEntry? _overlayEntry;
-  OverlayEntry? _copyOverlayEntry;
+  OverlayEntry? _optionsMenuOverlay;
+  OverlayEntry? _clipboardOverlay;
   final GlobalKey _navigationBarKey = GlobalKey();
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
@@ -140,43 +142,14 @@ class GroupChatPageState extends State<GroupChatPage> {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
-      _copyOverlayEntry = OverlayEntry(
-        builder: (context) => Positioned(
-          bottom: size.height,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Container(
-              padding: const EdgeInsets.only(
-                  right: 80, left: 10, bottom: 10, top: 10),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: CupertinoTheme.of(context).primaryContrastingColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(CupertinoIcons.rectangle_fill_on_rectangle_fill,
-                      color: CupertinoTheme.of(context).primaryColor),
-                  const SizedBox(width: 10),
-                  Text(
-                    "Copied to clipboard",
-                    style: TextStyle(
-                        color: CupertinoTheme.of(context).primaryColor),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      _clipboardOverlay = OverlayEntry(
+        builder: (context) => ClipboardBanner(size: size),
       );
-      Overlay.of(context).insert(_copyOverlayEntry!);
+      Overlay.of(context).insert(_clipboardOverlay!);
 
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          _copyOverlayEntry?.remove();
+          _clipboardOverlay?.remove();
         }
       });
     }
@@ -256,7 +229,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void onTapCreateEvent() async {
-    _overlayEntry?.remove();
+    _optionsMenuOverlay?.remove();
 
     await Navigator.of(context).push(
       CupertinoPageRoute(
@@ -309,7 +282,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
     }
-    _overlayEntry?.remove();
+    _optionsMenuOverlay?.remove();
   }
 
   Widget chatMessages() {
@@ -424,97 +397,25 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void showOverlay(BuildContext context) {
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () {
-                _overlayEntry?.remove();
-              },
-              child: Container(
-                  color: const Color(
-                      0x00000000) // ARGB value: A=00, R=00, G=00, B=00
-                  ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.only(top: 10),
-              height: 100,
-              color: CupertinoColors.inactiveGray,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: onTapCreateEvent,
-                    child: Column(
-                      children: [
-                        Icon(CupertinoIcons.calendar,
-                            color: CupertinoTheme.of(context).primaryColor),
-                        Text("Create Event",
-                            style: TextStyle(
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color)),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      onTapCamera();
-                      _overlayEntry?.remove();
-                    },
-                    child: Column(
-                      children: [
-                        Icon(CupertinoIcons.camera_fill,
-                            color: CupertinoTheme.of(context).primaryColor),
-                        Text("Camera",
-                            style: TextStyle(
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color)),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onTapPhoto,
-                    child: Column(
-                      children: [
-                        Icon(CupertinoIcons.photo_fill,
-                            color: CupertinoTheme.of(context).primaryColor),
-                        Text("Photo",
-                            style: TextStyle(
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+    _optionsMenuOverlay = OverlayEntry(
+      builder: (context) => OptionsMenu(
+        onTapCreateEvent: onTapCreateEvent,
+        onTapCamera: onTapCamera,
+        onTapPhoto: onTapPhoto,
+        overlayEntry: _optionsMenuOverlay,
       ),
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
+    Overlay.of(context).insert(_optionsMenuOverlay!);
   }
 
   @override
   void dispose() {
-    if (_overlayEntry != null) {
-      _overlayEntry?.remove();
+    if (_optionsMenuOverlay?.mounted ?? false) {
+      _optionsMenuOverlay?.remove();
     }
-    if (_copyOverlayEntry != null) {
-      _copyOverlayEntry?.remove();
+    if (_clipboardOverlay?.mounted ?? false) {
+      _clipboardOverlay?.remove();
     }
     super.dispose();
   }
