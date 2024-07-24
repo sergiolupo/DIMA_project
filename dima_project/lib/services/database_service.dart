@@ -87,17 +87,15 @@ class DatabaseService {
       });
     }
     if (visibilityHasChange && user.isPublic!) {
-      DocumentSnapshot<Map<String, dynamic>> userDoc =
-          await followersRef.doc(user.uid).get();
-      List<dynamic> followers = userDoc['followers'];
-      List<dynamic> requests = userDoc['requests'];
-      followers.addAll(requests);
-      await followersRef.doc(user.uid).update({
-        'followers': followers,
-      });
-      await usersRef.doc(user.uid).update({
-        'requests': [],
-      });
+      List<dynamic> requests = (await usersRef.doc(user.uid).get())['requests'];
+      if (requests.isNotEmpty) {
+        for (var request in requests) {
+          await toggleFollowUnfollow(user.uid!, request);
+        }
+        await usersRef.doc(user.uid).update({
+          'requests': [],
+        });
+      }
     }
   }
 

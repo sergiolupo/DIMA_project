@@ -260,10 +260,10 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: followings.when(
               data: (followings) {
-                return (followings
-                            .any((element) => element.uid! == widget.user) ||
-                        isMyProfile ||
-                        user.isPublic!)
+                return (isMyProfile ||
+                        user.isPublic! ||
+                        followings
+                            .any((element) => element.uid! == widget.user))
                     ? Column(
                         children: [
                           CustomSelectOption(

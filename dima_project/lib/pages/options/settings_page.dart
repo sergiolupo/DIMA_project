@@ -90,7 +90,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         ? _showDialog('Invalid choice',
                             'Please select at least one category')
                         : setState(() {
-                            _saveUserData();
                             _currentPage = 1;
                           }),
                 padding: const EdgeInsets.only(left: 10),
@@ -104,6 +103,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                       padding: const EdgeInsets.all(0),
                       onPressed: () async {
                         if (await _validatePage()) {
+                          _saveUserData();
+
                           if (context.mounted) Navigator.of(context).pop();
                         }
                       },
@@ -306,7 +307,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _oldImage != selectedImagePath,
       user!.isPublic != isPublic,
     );
-    ref.invalidate(userProvider);
+    debugPrint('User data updated');
+    ref.invalidate(userProvider(user!.uid!));
   }
 
   void _showDialog(String title, String content) {
