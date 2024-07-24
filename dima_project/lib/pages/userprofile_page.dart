@@ -2,6 +2,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/pages/responsive_show_event.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
@@ -17,10 +18,12 @@ import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserProfile extends ConsumerStatefulWidget {
-  final String uuid;
   final String user;
   @override
-  const UserProfile({super.key, required this.user, required this.uuid});
+  const UserProfile({
+    super.key,
+    required this.user,
+  });
 
   @override
   UserProfileState createState() => UserProfileState();
@@ -28,7 +31,7 @@ class UserProfile extends ConsumerStatefulWidget {
 
 class UserProfileState extends ConsumerState<UserProfile> {
   late final bool isMyProfile;
-
+  final String uid = AuthService.uid;
 // 0 is not following, 1 is following, 2 is requested
 
   int index = 0;
@@ -36,11 +39,11 @@ class UserProfileState extends ConsumerState<UserProfile> {
   @override
   void initState() {
     super.initState();
-    isMyProfile = widget.uuid == widget.user;
+    isMyProfile = uid == widget.user;
     ref.read(userProvider(widget.user));
     ref.read(followerProvider(widget.user));
     ref.read(followingProvider(widget.user));
-    ref.read(followingProvider(widget.uuid));
+    ref.read(followingProvider(uid));
     ref.read(groupsProvider(widget.user));
     ref.read(joinedEventsProvider(widget.user));
     ref.read(createdEventsProvider(widget.user));
@@ -71,7 +74,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget _buildProfile(UserData user) {
-    final followings = ref.watch(followingProvider(widget.uuid));
+    final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -106,7 +109,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                 onTap: () => Navigator.push(
                     context,
                     CupertinoPageRoute(
-                        builder: (context) => OptionsPage(uuid: widget.uuid))),
+                        builder: (context) => const OptionsPage())),
                 child: Icon(CupertinoIcons.bars,
                     color:
                         CupertinoTheme.of(context).textTheme.textStyle.color),
@@ -209,8 +212,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                 horizontal: 40, vertical: 8),
                             onPressed: () async {
                               await DatabaseService.toggleFollowUnfollow(
-                                  widget.user, widget.uuid);
-                              ref.invalidate(followingProvider(widget.uuid));
+                                  widget.user, uid);
+                              ref.invalidate(followingProvider(uid));
                               ref.invalidate(followerProvider(widget.user));
                               ref.invalidate(userProvider(widget.user));
                             },
@@ -221,9 +224,9 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                       color: CupertinoColors.white,
                                     ),
                                     followings.any((element) =>
-                                            element.uuid! == widget.user)
+                                            element.uid! == widget.user)
                                         ? "Unfollow"
-                                        : user.requests!.contains(widget.uuid)
+                                        : user.requests!.contains(uid)
                                             ? "Requested"
                                             : "Follow");
                               },
@@ -240,7 +243,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 8),
                             onPressed: () async {
-                              var members = [widget.uuid, widget.user];
+                              var members = [uid, widget.user];
                               members.sort();
                               final chat = PrivateChat(
                                 members: members,
@@ -249,7 +252,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                 Navigator.of(context, rootNavigator: true).push(
                                   CupertinoPageRoute(
                                     builder: (context) => PrivateChatPage(
-                                      uuid: widget.uuid,
                                       privateChat: chat,
                                     ),
                                   ),
@@ -315,7 +317,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                         context,
                         CupertinoPageRoute(
                           builder: (context) => ResponsiveShowEvent(
-                            uuid: widget.uuid,
                             eventId: event.id!,
                             userData: user,
                             createdEvents: false,
@@ -323,7 +324,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                         ),
                       ),
                       child: EventGrid(
-                        uuid: widget.uuid,
                         event: event,
                       ),
                     );
@@ -366,7 +366,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                         context,
                         CupertinoPageRoute(
                           builder: (context) => ResponsiveShowEvent(
-                            uuid: widget.uuid,
                             eventId: event.id!,
                             createdEvents: true,
                             userData: user,
@@ -374,7 +373,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                         ),
                       ),
                       child: EventGrid(
-                        uuid: widget.uuid,
                         event: event,
                       ),
                     );
@@ -403,8 +401,9 @@ class UserProfileState extends ConsumerState<UserProfile> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) =>
-                    ShowGroupsPage(user: widget.user, uuid: widget.uuid),
+                builder: (context) => ShowGroupsPage(
+                  user: widget.user,
+                ),
               ),
             );
           },
@@ -460,7 +459,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
               CupertinoPageRoute(
                 builder: (context) => ShowFollowers(
                   user: widget.user,
-                  uuid: widget.uuid,
                 ),
               ),
             );
@@ -518,7 +516,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
               CupertinoPageRoute(
                 builder: (context) => ShowFollowing(
                   user: widget.user,
-                  uuid: widget.uuid,
                 ),
               ),
             );

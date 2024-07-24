@@ -1,3 +1,4 @@
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,11 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ShowGroupsPage extends ConsumerStatefulWidget {
   final String user;
-  final String uuid;
   const ShowGroupsPage({
     super.key,
     required this.user,
-    required this.uuid,
   });
 
   @override
@@ -19,6 +18,7 @@ class ShowGroupsPage extends ConsumerStatefulWidget {
 class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
@@ -101,11 +101,10 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                           return const SizedBox.shrink();
                         }
                         return GroupTile(
-                            uuid: widget.uuid,
                             group: group,
-                            isJoined: group.members!.contains(widget.uuid)
+                            isJoined: group.members!.contains(uid)
                                 ? 1
-                                : group.requests!.contains(widget.uuid)
+                                : group.requests!.contains(uid)
                                     ? 2
                                     : 0);
                       });

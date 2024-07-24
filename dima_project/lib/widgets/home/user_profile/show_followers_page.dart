@@ -1,4 +1,5 @@
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,19 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ShowFollowers extends ConsumerWidget {
   final String user;
-  final String uuid;
   const ShowFollowers({
     super.key,
     required this.user,
-    required this.uuid,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final String uid = AuthService.uid;
     final AsyncValue<List<UserData>> asyncUsers =
         ref.watch(followerProvider(user));
     final AsyncValue<List<UserData>> asyncFollowing =
-        ref.watch(followingProvider(uuid));
+        ref.watch(followingProvider(uid));
     final TextEditingController searchController = TextEditingController();
     String searchText = '';
 
@@ -95,12 +95,11 @@ class ShowFollowers extends ConsumerWidget {
                         data: (following) {
                           return UserTile(
                             user: userData,
-                            uuid: uuid,
                             isFollowing:
-                                following.any((u) => u.uuid == userData.uuid)
+                                following.any((u) => u.uid == userData.uid)
                                     ? 1
                                     : userData.isPublic == false &&
-                                            userData.requests!.contains(uuid)
+                                            userData.requests!.contains(uid)
                                         ? 2
                                         : 0,
                           );

@@ -6,6 +6,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/private_info_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -20,12 +21,10 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
-  final String uuid;
 
   const PrivateChatPage({
     super.key,
     required this.privateChat,
-    required this.uuid,
   });
 
   @override
@@ -35,6 +34,7 @@ class PrivateChatPage extends StatefulWidget {
 class PrivateChatPageState extends State<PrivateChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
+  final String uid = AuthService.uid;
   bool isTyping = false;
   bool isUploading = false;
   final GlobalKey _inputBarKey = GlobalKey();
@@ -50,7 +50,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   _getUserInfo() {
-    userInfo = widget.privateChat.members[0] != widget.uuid
+    userInfo = widget.privateChat.members[0] != uid
         ? DatabaseService.getUserInfo(widget.privateChat.members[0])
         : DatabaseService.getUserInfo(widget.privateChat.members[1]);
   }
@@ -65,7 +65,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
               {
                 Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => PrivateInfoPage(
-                    uuid: widget.uuid,
                     privateChat: widget.privateChat,
                   ),
                 ))
@@ -294,7 +293,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           await DatabaseService.createPrivateChat(widget.privateChat);
 
       await DatabaseService.sendChatImage(
-        widget.uuid,
         widget.privateChat.id!,
         File(image.path),
         false,
@@ -320,7 +318,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             await DatabaseService.createPrivateChat(widget.privateChat);
 
         await DatabaseService.sendChatImage(
-          widget.uuid,
           widget.privateChat.id!,
           File(image.path),
           false,
@@ -395,7 +392,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     (message.type == Type.text)
                         ? TextMessageTile(
                             message: message,
-                            uuid: widget.uuid,
                             showCustomSnackbar: () {
                               showCustomSnackbar();
                             },
@@ -403,15 +399,14 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                         : (message.type == Type.image)
                             ? ImageMessageTile(
                                 message: message,
-                                uuid: widget.uuid,
                               )
                             : message.type == Type.news
                                 ? NewsMessageTile(
                                     message: message,
-                                    uuid: widget.uuid,
                                   )
                                 : EventMessageTile(
-                                    message: message, uuid: widget.uuid),
+                                    message: message,
+                                  ),
                   ],
                 ),
               );

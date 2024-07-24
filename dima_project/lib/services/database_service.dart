@@ -6,6 +6,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -60,11 +61,11 @@ class DatabaseService {
       String imageUrl = imagePath.toString() == '[]' || imagePath.isEmpty
           ? ''
           : await StorageService.uploadImageToStorage(
-              'profile_images/${user.uuid!}.jpg', imagePath);
+              'profile_images/${user.uid!}.jpg', imagePath);
       List<Map<String, dynamic>> serializedList =
           user.categories.map((item) => {'value': item}).toList();
 
-      await usersRef.doc(user.uuid).update({
+      await usersRef.doc(user.uid).update({
         'name': user.name,
         'surname': user.surname,
         'username': user.username,
@@ -76,7 +77,7 @@ class DatabaseService {
     } else {
       List<Map<String, dynamic>> serializedList =
           user.categories.map((item) => {'value': item}).toList();
-      await usersRef.doc(user.uuid).update({
+      await usersRef.doc(user.uid).update({
         'name': user.name,
         'surname': user.surname,
         'username': user.username,
@@ -87,23 +88,17 @@ class DatabaseService {
     }
     if (visibilityHasChange && user.isPublic!) {
       DocumentSnapshot<Map<String, dynamic>> userDoc =
-          await followersRef.doc(user.uuid).get();
+          await followersRef.doc(user.uid).get();
       List<dynamic> followers = userDoc['followers'];
       List<dynamic> requests = userDoc['requests'];
       followers.addAll(requests);
-      await followersRef.doc(user.uuid).update({
+      await followersRef.doc(user.uid).update({
         'followers': followers,
       });
-      await usersRef.doc(user.uuid).update({
+      await usersRef.doc(user.uid).update({
         'requests': [],
       });
     }
-  }
-
-  static Stream<List<String>> getCategories(String uuid) {
-    return usersRef.doc(uuid).snapshots().map((snapshot) {
-      return UserData.fromSnapshot(snapshot).categories;
-    });
   }
 
   static Future<UserData> getUserData(String uid) async {
@@ -122,8 +117,8 @@ class DatabaseService {
     }
   }
 
-  static Stream<UserData> getUserDataFromUUID(String uuid) {
-    return usersRef.doc(uuid).snapshots().map((snapshot) {
+  static Stream<UserData> getUserDataFromUID(String uid) {
+    return usersRef.doc(uid).snapshots().map((snapshot) {
       return UserData.fromSnapshot(snapshot);
     });
   }
@@ -150,28 +145,6 @@ class DatabaseService {
     return user;
   }
 
-  static Future<String> findUUID(String email) async {
-    final QuerySnapshot result =
-        await usersRef.where('email', isEqualTo: email).get();
-    final List<DocumentSnapshot> documents = result.docs;
-    if (documents.isNotEmpty) {
-      return documents[0].id;
-    } else {
-      return '';
-    }
-  }
-
-  static Future<String> getUUIDFromUsername(String username) async {
-    final QuerySnapshot result =
-        await usersRef.where('username', isEqualTo: username).get();
-    final List<DocumentSnapshot> documents = result.docs;
-    if (documents.isNotEmpty) {
-      return documents[0].id;
-    } else {
-      return '';
-    }
-  }
-
   static Future<bool> checkUserExist(String email) async {
     debugPrint('Checking if user exists... $email');
     final QuerySnapshot result =
@@ -187,7 +160,6 @@ class DatabaseService {
   //create a group
   static Future<void> createGroup(
     Group group,
-    String uid,
     Uint8List imagePath,
     List<String> uuids,
   ) async {
@@ -221,7 +193,7 @@ class DatabaseService {
         'groupId': docRef.id,
         'groupImage': imageUrl,
       });
-      await usersRef.doc(uid).update({
+      await usersRef.doc(AuthService.uid).update({
         'groups': FieldValue.arrayUnion([
           docRef.id,
         ])
@@ -247,8 +219,7 @@ class DatabaseService {
 
     final chatList = <Message>[];
     for (var chat in chats.docs) {
-      chatList.add(Message.fromSnapshot(
-          chat, groupId, FirebaseAuth.instance.currentUser!.uid));
+      chatList.add(Message.fromSnapshot(chat, groupId, AuthService.uid));
     }
     yield chatList; // Yield the initial list of messages
 
@@ -260,8 +231,7 @@ class DatabaseService {
 
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
-        final chat = Message.fromSnapshot(
-            change.doc, groupId, FirebaseAuth.instance.currentUser!.uid);
+        final chat = Message.fromSnapshot(change.doc, groupId, AuthService.uid);
         if (change.type == DocumentChangeType.removed) {
           chatList.removeWhere((c) => c.id == chat.id);
           yield chatList;
@@ -329,17 +299,17 @@ class DatabaseService {
     });
   }
 
-  static Future<void> toggleGroupJoin(String groupId, String uuid) async {
+  static Future<void> toggleGroupJoin(String groupId) async {
     DocumentSnapshot<Map<String, dynamic>> groupDoc =
         await groupsRef.doc(groupId).get();
-    bool isJoined = groupDoc['members'].contains(uuid);
+    bool isJoined = groupDoc['members'].contains(AuthService.uid);
 
     if (isJoined) {
       await Future.wait([
         groupsRef.doc(groupId).update({
-          'members': FieldValue.arrayRemove([uuid])
+          'members': FieldValue.arrayRemove([AuthService.uid])
         }),
-        usersRef.doc(uuid).update({
+        usersRef.doc(AuthService.uid).update({
           'groups': FieldValue.arrayRemove([groupId])
         }),
       ]);
@@ -348,32 +318,32 @@ class DatabaseService {
           await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
         await groupsRef.doc(groupId).delete();
-      } else if (groupDoc['admin'] == uuid) {
+      } else if (groupDoc['admin'] == AuthService.uid) {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
       }
     } else {
       if (groupDoc['isPublic']) {
         await Future.wait([
           groupsRef.doc(groupId).update({
-            'members': FieldValue.arrayUnion([uuid])
+            'members': FieldValue.arrayUnion([AuthService.uid])
           }),
-          usersRef.doc(uuid).update({
+          usersRef.doc(AuthService.uid).update({
             'groups': FieldValue.arrayUnion([groupId])
           }),
-          if ((await usersRef.doc(uuid).get())['groupsRequests']
+          if ((await usersRef.doc(AuthService.uid).get())['groupsRequests']
               .contains(groupId))
-            usersRef.doc(uuid).update({
+            usersRef.doc(AuthService.uid).update({
               'groupsRequests': FieldValue.arrayRemove([groupId])
             }),
         ]);
       } else {
-        if (!groupDoc['requests'].contains(uuid)) {
+        if (!groupDoc['requests'].contains(AuthService.uid)) {
           await groupsRef.doc(groupId).update({
-            'requests': FieldValue.arrayUnion([uuid])
+            'requests': FieldValue.arrayUnion([AuthService.uid])
           });
         } else {
           await groupsRef.doc(groupId).update({
-            'requests': FieldValue.arrayRemove([uuid])
+            'requests': FieldValue.arrayRemove([AuthService.uid])
           });
         }
       }
@@ -467,8 +437,8 @@ class DatabaseService {
     return groupsList;
   }
 
-  static Stream<List<Group>> getGroupsStream(String uuid) async* {
-    final groupIds = await usersRef.doc(uuid).get().then((value) {
+  static Stream<List<Group>> getGroupsStream() async* {
+    final groupIds = await usersRef.doc(AuthService.uid).get().then((value) {
       return value['groups'];
     });
 
@@ -493,7 +463,7 @@ class DatabaseService {
           groupsList.removeWhere((g) => g.id == groupId);
           yield groupsList;
         } else {
-          if (members!.contains(uuid) && group.id != '') {
+          if (members!.contains(AuthService.uid) && group.id != '') {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
                 groupsList.indexWhere((g) => g.id == groupId);
@@ -513,10 +483,8 @@ class DatabaseService {
   }
 
   static Stream<List<PrivateChat>> getPrivateChatsStream() async* {
-    final privateChats = await usersRef
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) {
+    final privateChats =
+        await usersRef.doc(AuthService.uid).get().then((value) {
       return value['privateChats'];
     });
 
@@ -535,9 +503,7 @@ class DatabaseService {
     await for (var snapshot in snapshots) {
       for (var change in snapshot.docChanges) {
         final id = change.doc.id;
-        if (!change.doc
-            .data()!['members']
-            .contains(FirebaseAuth.instance.currentUser!.uid)) {
+        if (!change.doc.data()!['members'].contains(AuthService.uid)) {
           continue;
         }
         final privateChat = PrivateChat.fromSnapshot(change.doc);
@@ -545,8 +511,7 @@ class DatabaseService {
           chatsList.removeWhere((g) => g.id == id);
           yield chatsList;
         } else {
-          if (privateChat.members
-              .contains(FirebaseAuth.instance.currentUser!.uid)) {
+          if (privateChat.members.contains(AuthService.uid)) {
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
             if (existingGroupIndex != -1) {
@@ -560,15 +525,6 @@ class DatabaseService {
         yield chatsList;
       }
     }
-  }
-
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getFollowersStreamUser(
-      String uuid) {
-    final stream = followersRef.doc(uuid).snapshots();
-
-    return stream.map((snapshot) {
-      return snapshot;
-    });
   }
 
   static Future<DocumentSnapshot<Map<String, dynamic>>> getFollowersUser(
@@ -594,79 +550,6 @@ class DatabaseService {
       return true;
     } else {
       return false;
-    }
-  }
-
-  static Stream<int> isFollowing(String user, String visitor) async* {
-    // 0 is not following, 1 is following, 2 is requested
-
-    // Initial check
-    DocumentSnapshot followDoc = await followersRef.doc(user).get();
-    DocumentSnapshot userDoc = await usersRef.doc(user).get();
-
-    yield _getFollowStatus(followDoc, userDoc, visitor);
-
-    // Listen for real-time updates
-    await for (var snapshot in followersRef.doc(user).snapshots()) {
-      followDoc = snapshot;
-      userDoc = await usersRef.doc(user).get();
-
-      yield _getFollowStatus(followDoc, userDoc, visitor);
-    }
-  }
-
-  // Helper method to determine follow status
-  static int _getFollowStatus(
-      DocumentSnapshot followDoc, DocumentSnapshot userDoc, String visitor) {
-    if (followDoc['followers'].contains(visitor)) {
-      return 1;
-    } else if (userDoc['isPublic'] == false &&
-        userDoc['requests'].contains(visitor)) {
-      return 2;
-    } else {
-      return 0;
-    }
-  }
-
-  static Stream<int> isJoining(
-      String uuid, String eventId, String detailId) async* {
-    // 0 is not joining, 1 is joining, 2 is requested
-
-    // Initial check
-    DocumentSnapshot eventDoc = await eventsRef.doc(eventId).get();
-    DocumentSnapshot detailDoc =
-        await eventsRef.doc(eventId).collection('details').doc(detailId).get();
-
-    yield _getEventStatus(eventDoc, detailDoc, uuid);
-
-    try {
-      // Listen for real-time updates
-      await for (var snapshot in eventsRef
-          .doc(eventId)
-          .collection('details')
-          .doc(detailId)
-          .snapshots()) {
-        yield _getEventStatus(
-            await eventsRef.doc(eventId).get(), snapshot, uuid);
-      }
-    } catch (e) {
-      return;
-    }
-  }
-
-  // Helper method to determine follow status
-  static int _getEventStatus(
-    DocumentSnapshot eventDoc,
-    DocumentSnapshot detailDoc,
-    String uuid,
-  ) {
-    if (detailDoc['members'].contains(uuid)) {
-      return 1;
-    } else if (eventDoc['isPublic'] == false &&
-        detailDoc['requests'].contains(uuid)) {
-      return 2;
-    } else {
-      return 0;
     }
   }
 
@@ -729,8 +612,8 @@ class DatabaseService {
 
       final chatList = <Message>[];
       for (var chat in chats.docs) {
-        chatList.add(Message.fromSnapshot(
-            chat, privateChatId, FirebaseAuth.instance.currentUser!.uid));
+        chatList
+            .add(Message.fromSnapshot(chat, privateChatId, AuthService.uid));
       }
       yield chatList; // Yield the initial list of messages
 
@@ -742,8 +625,8 @@ class DatabaseService {
 
       await for (var snapshot in snapshots) {
         for (var change in snapshot.docChanges) {
-          final chat = Message.fromSnapshot(change.doc, privateChatId,
-              FirebaseAuth.instance.currentUser!.uid);
+          final chat =
+              Message.fromSnapshot(change.doc, privateChatId, AuthService.uid);
           if (change.type == DocumentChangeType.removed) {
             chatList.removeWhere((c) => c.id == chat.id);
             yield chatList;
@@ -766,7 +649,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<int> getUnreadMessages(bool isGroup, String id, String uuid) {
+  static Stream<int> getUnreadMessages(bool isGroup, String id) {
     if (!isGroup) {
       return privateChatRef
           .doc(id)
@@ -779,7 +662,7 @@ class DatabaseService {
           // Check if the message hasn't been read by the user
           var read = false;
           for (var value in readBy) {
-            if ((uuid == value['username'])) {
+            if ((AuthService.uid == value['username'])) {
               read = true;
               break;
             }
@@ -802,7 +685,7 @@ class DatabaseService {
           // Check if the message hasn't been read by the user
           var read = false;
           for (var value in readBy) {
-            if ((uuid == value['username'])) {
+            if ((AuthService.uid == value['username'])) {
               read = true;
               break;
             }
@@ -816,18 +699,8 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getGroupsStreamUser(String uuid) {
-    // Fetch all documents from Firestore collection
-    final query = groupsRef.where('members', arrayContains: uuid).snapshots();
-    return query.map((snapshot) {
-      return snapshot.docs;
-    });
-  }
-
-  static Future<void> updateMessageReadStatus(
-      String uuid, Message message) async {
-    ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: uuid);
+  static Future<void> updateMessageReadStatus(Message message) async {
+    ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: AuthService.uid);
 
     if (message.isGroupMessage) {
       await groupsRef
@@ -965,32 +838,33 @@ class DatabaseService {
   }
 
   static Future<void> updateActiveStatus(bool isOnline) async {
-    await usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
+    await usersRef.doc(AuthService.uid).update({
       'isOnline': isOnline,
       'lastSeen': Timestamp.now(),
     });
   }
 
-  static void updateTyping(String s, bool bool) {
-    usersRef.doc(FirebaseAuth.instance.currentUser!.uid).update({
-      'isTyping': bool,
-      'typingTo': s,
+  static void updateTyping(String id, bool isTyping) {
+    usersRef.doc(AuthService.uid).update({
+      'isTyping': id,
+      'typingTo': isTyping,
     });
   }
 
-  static Future<void> sendChatImage(String uuid, String chatID, File file,
+  static Future<void> sendChatImage(String chatID, File file,
       bool isGroupMessage, Uint8List imagePath) async {
     final String imageUrl = await StorageService.uploadImageToStorage(
-        'chat_images/$chatID/$uuid/${Timestamp.now()}.jpg', imagePath);
+        'chat_images/$chatID/${AuthService.uid}/${Timestamp.now()}.jpg',
+        imagePath);
 
     ReadBy readBy = ReadBy(
       readAt: Timestamp.now(),
-      username: uuid,
+      username: AuthService.uid,
     );
 
     final Message message = Message(
       content: imageUrl,
-      sender: uuid,
+      sender: AuthService.uid,
       isGroupMessage: isGroupMessage,
       time: Timestamp.now(),
       readBy: [
@@ -1115,8 +989,7 @@ class DatabaseService {
 
     List<Message> messages = [];
     for (var doc in docs) {
-      messages.add(Message.fromSnapshot(
-          doc, id, FirebaseAuth.instance.currentUser!.uid));
+      messages.add(Message.fromSnapshot(doc, id, AuthService.uid));
       if (type == Type.event) {
         //check if the event is still valid
         final event = await eventsRef.doc(doc['content']).get();
@@ -1140,28 +1013,31 @@ class DatabaseService {
         .docs;
     List<Message> messages = [];
     for (var doc in docs) {
-      messages.add(Message.fromSnapshot(
-          doc, id, FirebaseAuth.instance.currentUser!.uid));
+      messages.add(Message.fromSnapshot(doc, id, AuthService.uid));
     }
     return messages;
   }
 
-  static Future<void> acceptUserRequest(String user, String uuid) async {
+  static Future<void> acceptUserRequest(
+    String user,
+  ) async {
     await Future.wait([
-      usersRef.doc(uuid).update({
+      usersRef.doc(AuthService.uid).update({
         'requests': FieldValue.arrayRemove([user])
       }),
-      followersRef.doc(uuid).update({
+      followersRef.doc(AuthService.uid).update({
         'followers': FieldValue.arrayUnion([user])
       }),
       followersRef.doc(user).update({
-        'following': FieldValue.arrayUnion([uuid])
+        'following': FieldValue.arrayUnion([AuthService.uid])
       }),
     ]);
   }
 
-  static Future<void> denyUserRequest(String user, String uuid) async {
-    await usersRef.doc(uuid).update({
+  static Future<void> denyUserRequest(
+    String user,
+  ) async {
+    await usersRef.doc(AuthService.uid).update({
       'requests': FieldValue.arrayRemove([user])
     });
   }
@@ -1191,22 +1067,24 @@ class DatabaseService {
   }
 
   static Future<void> acceptUserGroupRequest(
-      String groupId, String uuid) async {
+    String groupId,
+  ) async {
     await Future.wait([
       groupsRef.doc(groupId).update({
-        'members': FieldValue.arrayUnion([uuid]),
+        'members': FieldValue.arrayUnion([AuthService.uid]),
       }),
-      usersRef.doc(uuid).update({
+      usersRef.doc(AuthService.uid).update({
         'groupsRequests': FieldValue.arrayRemove([groupId])
       }),
-      if ((await groupsRef.doc(groupId).get())['requests'].contains(uuid))
+      if ((await groupsRef.doc(groupId).get())['requests']
+          .contains(AuthService.uid))
         groupsRef.doc(groupId).update({
           'requests': FieldValue.arrayRemove([groupId])
         }),
     ]);
   }
 
-  static Future<void> createEvent(Event event, String uuid, Uint8List imagePath,
+  static Future<void> createEvent(Event event, Uint8List imagePath,
       List<String> uuids, List<String> groupIds) async {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
@@ -1230,7 +1108,7 @@ class DatabaseService {
       });
 
       for (var doc in docs.docs) {
-        await usersRef.doc(uuid).update({
+        await usersRef.doc(AuthService.uid).update({
           'events': FieldValue.arrayUnion([
             '${docRef.id}:${doc.id}',
           ])
@@ -1247,14 +1125,14 @@ class DatabaseService {
       String eventId, List<String> groupIds) async {
     Message message = Message(
       content: eventId,
-      sender: FirebaseAuth.instance.currentUser!.uid,
+      sender: AuthService.uid,
       isGroupMessage: true,
       time: Timestamp.now(),
       type: Type.event,
       readBy: [
         ReadBy(
           readAt: Timestamp.now(),
-          username: FirebaseAuth.instance.currentUser!.uid,
+          username: AuthService.uid,
         ),
       ],
     );
@@ -1276,21 +1154,21 @@ class DatabaseService {
       String eventId, List<String> uuids) async {
     Message message = Message(
       content: eventId,
-      sender: FirebaseAuth.instance.currentUser!.uid,
+      sender: AuthService.uid,
       isGroupMessage: false,
       time: Timestamp.now(),
       type: Type.event,
       readBy: [
         ReadBy(
           readAt: Timestamp.now(),
-          username: FirebaseAuth.instance.currentUser!.uid,
+          username: AuthService.uid,
         ),
       ],
     );
 
     for (var uuid in uuids) {
-      final PrivateChat privateChat = await getPrivateChatsFromMember(
-          [uuid, FirebaseAuth.instance.currentUser!.uid]);
+      final PrivateChat privateChat =
+          await getPrivateChatsFromMember([uuid, AuthService.uid]);
       if (privateChat.id == null) {
         final id = await createPrivateChat(privateChat);
         privateChat.id = id;
@@ -1331,7 +1209,9 @@ class DatabaseService {
   }
 
   static Future<void> toggleEventJoin(
-      String eventId, String detailId, String uuid) async {
+    String eventId,
+    String detailId,
+  ) async {
     DocumentSnapshot<Map<String, dynamic>> eventDoc =
         await eventsRef.doc(eventId).get();
     DocumentSnapshot<Map<String, dynamic>> detailDoc =
@@ -1347,14 +1227,14 @@ class DatabaseService {
       return;
     }
     debugPrint('Event ID: $eventId');
-    bool isJoined = detailDoc['members'].contains(uuid);
+    bool isJoined = detailDoc['members'].contains(AuthService.uid);
     debugPrint('Is joined: $isJoined');
     if (isJoined) {
       await Future.wait([
         eventsRef.doc(eventId).collection('details').doc(detailId).update({
-          'members': FieldValue.arrayRemove([uuid])
+          'members': FieldValue.arrayRemove([AuthService.uid])
         }),
-        usersRef.doc(uuid).update({
+        usersRef.doc(AuthService.uid).update({
           'events': FieldValue.arrayRemove(["$eventId:$detailId"])
         }),
       ]);
@@ -1362,25 +1242,25 @@ class DatabaseService {
       if (eventDoc['isPublic']) {
         await Future.wait([
           eventsRef.doc(eventId).collection('details').doc(detailId).update({
-            'members': FieldValue.arrayUnion([uuid])
+            'members': FieldValue.arrayUnion([AuthService.uid])
           }),
-          usersRef.doc(uuid).update({
+          usersRef.doc(AuthService.uid).update({
             'events': FieldValue.arrayUnion(["$eventId:$detailId"])
           }),
-          if ((await usersRef.doc(uuid).get())['eventsRequests']
+          if ((await usersRef.doc(AuthService.uid).get())['eventsRequests']
               .contains("$eventId:$detailId"))
-            usersRef.doc(uuid).update({
+            usersRef.doc(AuthService.uid).update({
               'eventsRequests': FieldValue.arrayRemove(["$eventId:$detailId"])
             }),
         ]);
       } else {
-        if (!detailDoc['requests'].contains(uuid)) {
+        if (!detailDoc['requests'].contains(AuthService.uid)) {
           await eventsRef
               .doc(eventId)
               .collection('details')
               .doc(detailId)
               .update({
-            'requests': FieldValue.arrayUnion([uuid])
+            'requests': FieldValue.arrayUnion([AuthService.uid])
           });
         } else {
           await eventsRef
@@ -1388,7 +1268,7 @@ class DatabaseService {
               .collection('details')
               .doc(detailId)
               .update({
-            'requests': FieldValue.arrayRemove([uuid])
+            'requests': FieldValue.arrayRemove([AuthService.uid])
           });
         }
       }
@@ -1408,53 +1288,6 @@ class DatabaseService {
         throw Exception('Event not found');
       }
     });
-  }
-
-  static Stream<List<Event>> getCreatedEventStream(String uuid) async* {
-    final ids = await usersRef.doc(uuid).get().then((value) {
-      return value['events'];
-    });
-    final eventsIds = [];
-    ids.forEach((element) {
-      eventsIds.add(element.split(':')[0]);
-    });
-
-    final eventsList = <Event>[];
-
-    for (var eventId in eventsIds) {
-      final snapshot = await eventsRef.doc(eventId).get();
-      if (snapshot.exists) {
-        Event event = await Event.fromSnapshot(snapshot);
-        if (event.admin == uuid) {
-          eventsList.add(event);
-        }
-      }
-    }
-    yield eventsList;
-    final snapshots = eventsRef.snapshots();
-    await for (var snapshot in snapshots) {
-      for (var change in snapshot.docChanges) {
-        final event = await Event.fromSnapshot(change.doc);
-        if (change.type == DocumentChangeType.removed) {
-          eventsList.removeWhere((e) => e.id == event.id);
-          yield eventsList;
-        } else {
-          if (event.admin == uuid) {
-            final existingEventIndex =
-                eventsList.indexWhere((e) => e.id == event.id);
-            if (existingEventIndex != -1) {
-              eventsList[existingEventIndex] = event;
-            } else {
-              eventsList.insert(0, event);
-            }
-            yield eventsList;
-          } else {
-            eventsList.removeWhere((e) => e.id == event.id);
-            yield eventsList;
-          }
-        }
-      }
-    }
   }
 
   static Future<List<Event>> getCreatedEvents(String uuid) async {
@@ -1502,69 +1335,6 @@ class DatabaseService {
     return eventsList;
   }
 
-  static Stream<List<Event>> getJoinedEventStream(String uuid) async* {
-    final ids = await usersRef.doc(uuid).get().then((value) {
-      return value['events'];
-    });
-    final eventsIds = [];
-    ids.forEach((element) {
-      eventsIds.add(element.split(':')[0]);
-    });
-    final eventsList = <Event>[];
-
-    for (var eventId in eventsIds) {
-      final snapshot = await eventsRef.doc(eventId).get();
-      if (snapshot.exists) {
-        Event event = await Event.fromSnapshot(snapshot);
-        if (event.admin != uuid) {
-          eventsList.add(event);
-        }
-      }
-    }
-    yield eventsList;
-
-    final snapshots = eventsRef.snapshots();
-    await for (var snapshot in snapshots) {
-      for (var change in snapshot.docChanges) {
-        final event = await Event.fromSnapshot(change.doc);
-        if (change.type == DocumentChangeType.removed) {
-          eventsList.removeWhere((e) => e.id == event.id);
-          yield eventsList;
-        } else {
-          if (event.admin != uuid &&
-              event.details!
-                  .any((element) => element.members!.contains(uuid))) {
-            final existingEventIndex =
-                eventsList.indexWhere((e) => e.id == event.id);
-            if (existingEventIndex != -1) {
-              eventsList[existingEventIndex] = event;
-            } else {
-              eventsList.insert(0, event);
-            }
-            yield eventsList;
-          } else {
-            eventsList.removeWhere((e) => e.id == event.id);
-            yield eventsList;
-          }
-        }
-      }
-    }
-  }
-
-  static Future<List<Event>> getEventRequestsForUser(String uuid) async {
-    final doc = await usersRef.doc(uuid).get();
-    final List<dynamic> ids = doc['eventsRequests'];
-    final List<Event> events = [];
-    if (ids.isEmpty) return events;
-    for (var id in ids) {
-      final event = await eventsRef.doc(id).get();
-      if (event.exists) {
-        events.add(await Event.fromSnapshot(event));
-      }
-    }
-    return events;
-  }
-
   static Future<bool> checkIfJoined(
       bool isGroup, String? id, String uuid) async {
     if (id == null) return false;
@@ -1583,14 +1353,14 @@ class DatabaseService {
       String blogUrl, String id) async {
     Message message = Message(
       content: '$title\n$description\n$blogUrl\n$imageUrl',
-      sender: FirebaseAuth.instance.currentUser!.uid,
+      sender: AuthService.uid,
       isGroupMessage: true,
       time: Timestamp.now(),
       type: Type.news,
       readBy: [
         ReadBy(
           readAt: Timestamp.now(),
-          username: FirebaseAuth.instance.currentUser!.uid,
+          username: AuthService.uid,
         ),
       ],
     );
@@ -1607,23 +1377,28 @@ class DatabaseService {
     ]);
   }
 
-  static shareNewsOnFollower(String title, String description, String imageUrl,
-      String blogUrl, String uuid) async {
+  static shareNewsOnFollower(
+    String title,
+    String description,
+    String imageUrl,
+    String blogUrl,
+    String uid,
+  ) async {
     Message message = Message(
       content: '$title\n$description\n$blogUrl\n$imageUrl',
-      sender: FirebaseAuth.instance.currentUser!.uid,
+      sender: AuthService.uid,
       isGroupMessage: false,
       time: Timestamp.now(),
       type: Type.news,
       readBy: [
         ReadBy(
           readAt: Timestamp.now(),
-          username: FirebaseAuth.instance.currentUser!.uid,
+          username: AuthService.uid,
         ),
       ],
     );
     final PrivateChat privateChat = await getPrivateChatsFromMember(
-        [uuid, FirebaseAuth.instance.currentUser!.uid]);
+        [uid, FirebaseAuth.instance.currentUser!.uid]);
 
     if (privateChat.id == null) {
       final id = await createPrivateChat(privateChat);
@@ -1777,11 +1552,13 @@ class DatabaseService {
     await eventsRef.doc(eventId).delete();
   }
 
-  static Future<void> deleteUser(String uuid) async {
-    final doc = await usersRef.doc(uuid).get();
+  static Future<void> deleteUser() async {
+    final doc = await usersRef.doc(AuthService.uid).get();
     //exit all groups
     for (var group in doc['groups']) {
-      toggleGroupJoin(group, uuid);
+      toggleGroupJoin(
+        group,
+      );
     }
     //exit all events
     for (var event in doc['events']) {
@@ -1789,7 +1566,7 @@ class DatabaseService {
       final detailId = event.split(':')[1];
 
       final docEvent = await eventsRef.doc(eventId).get();
-      if (docEvent.exists && docEvent['admin'] == uuid) {
+      if (docEvent.exists && docEvent['admin'] == AuthService.uid) {
         await deleteEvent(eventId);
       } else {
         final doc = await eventsRef
@@ -1804,23 +1581,23 @@ class DatabaseService {
               .collection('details')
               .doc(detailId)
               .update({
-            'members': FieldValue.arrayRemove([uuid])
+            'members': FieldValue.arrayRemove([AuthService.uid])
           });
         }
       }
     }
-    final followerDoc = await followersRef.doc(uuid).get();
+    final followerDoc = await followersRef.doc(AuthService.uid).get();
 
     //exit all following
     for (var following in followerDoc['following']) {
-      await toggleFollowUnfollow(following, uuid);
+      await toggleFollowUnfollow(following, AuthService.uid);
     }
     //exit all followers
     for (var follower in followerDoc['followers']) {
-      await toggleFollowUnfollow(uuid, follower);
+      await toggleFollowUnfollow(AuthService.uid, follower);
     }
-    await followersRef.doc(uuid).delete();
+    await followersRef.doc(AuthService.uid).delete();
     //delete user
-    await usersRef.doc(uuid).delete();
+    await usersRef.doc(AuthService.uid).delete();
   }
 }

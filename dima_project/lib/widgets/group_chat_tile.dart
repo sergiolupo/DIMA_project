@@ -8,12 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 
 class GroupChatTile extends StatefulWidget {
-  final String uuid;
   final Group group;
   final LastMessage? lastMessage;
   const GroupChatTile({
     super.key,
-    required this.uuid,
     required this.group,
     required this.lastMessage,
   });
@@ -35,8 +33,10 @@ class GroupChatTileState extends State<GroupChatTile> {
   @override
   void initState() {
     super.initState();
-    unreadMessagesStream =
-        DatabaseService.getUnreadMessages(true, widget.group.id, widget.uuid);
+    unreadMessagesStream = DatabaseService.getUnreadMessages(
+      true,
+      widget.group.id,
+    );
   }
 
   @override
@@ -54,7 +54,9 @@ class GroupChatTileState extends State<GroupChatTile> {
         ),
       ),
       onDismissed: (direction) async {
-        await DatabaseService.toggleGroupJoin(widget.group.id, widget.uuid);
+        await DatabaseService.toggleGroupJoin(
+          widget.group.id,
+        );
       },
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
@@ -62,7 +64,6 @@ class GroupChatTileState extends State<GroupChatTile> {
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
-                uuid: widget.uuid,
                 group: widget.group,
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/group_chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
@@ -12,8 +13,9 @@ import 'package:dima_project/widgets/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ListChatPage extends StatefulWidget {
-  final String uuid;
-  const ListChatPage({super.key, required this.uuid});
+  const ListChatPage({
+    super.key,
+  });
 
   @override
   ListChatPageState createState() => ListChatPageState();
@@ -22,7 +24,7 @@ class ListChatPage extends StatefulWidget {
 class ListChatPageState extends State<ListChatPage> {
   Stream<List<PrivateChat>>? _privateChatsStream;
   Stream<List<Group>>? _groupsStream;
-
+  final String uid = AuthService.uid;
   String searchedText = "";
   int idx = 0;
   @override
@@ -33,7 +35,7 @@ class ListChatPageState extends State<ListChatPage> {
 
   void _subscribe() {
     _privateChatsStream = DatabaseService.getPrivateChatsStream();
-    _groupsStream = DatabaseService.getGroupsStream(widget.uuid);
+    _groupsStream = DatabaseService.getGroupsStream();
   }
 
   @override
@@ -54,8 +56,7 @@ class ListChatPageState extends State<ListChatPage> {
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
-                          builder: (context) =>
-                              CreateGroupPage(uuid: widget.uuid)));
+                          builder: (context) => const CreateGroupPage()));
                 },
                 child: const Icon(
                   CupertinoIcons.add_circled_solid,
@@ -152,13 +153,12 @@ class ListChatPageState extends State<ListChatPage> {
                     }
                     if (group.lastMessage == null) {
                       return GroupChatTile(
-                        uuid: widget.uuid,
                         group: group,
                         lastMessage: null,
                       );
                     }
                     return StreamBuilder<UserData>(
-                      stream: DatabaseService.getUserDataFromUUID(
+                      stream: DatabaseService.getUserDataFromUID(
                           group.lastMessage!.recentMessageSender),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -169,7 +169,6 @@ class ListChatPageState extends State<ListChatPage> {
                         }
                         if (snapshot.hasError) {
                           return GroupChatTile(
-                            uuid: widget.uuid,
                             group: group,
                             lastMessage: LastMessage(
                               recentMessageType:
@@ -184,9 +183,8 @@ class ListChatPageState extends State<ListChatPage> {
                         }
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
-                          bool sentByMe = user.uuid == widget.uuid;
+                          bool sentByMe = user.uid == uid;
                           return GroupChatTile(
-                            uuid: widget.uuid,
                             group: group,
                             lastMessage: LastMessage(
                               recentMessageType:
@@ -286,8 +284,8 @@ class ListChatPageState extends State<ListChatPage> {
                     }
 
                     return StreamBuilder<UserData>(
-                      stream: DatabaseService.getUserDataFromUUID(
-                          privateChat.members[0] == widget.uuid
+                      stream: DatabaseService.getUserDataFromUID(
+                          privateChat.members[0] == uid
                               ? privateChat.members[1]
                               : privateChat.members[0]),
                       builder: (context, snapshot) {
@@ -324,9 +322,8 @@ class ListChatPageState extends State<ListChatPage> {
 
                           bool sentByMe =
                               privateChat.lastMessage!.recentMessageSender ==
-                                  widget.uuid;
+                                  uid;
                           return PrivateChatTile(
-                            uuid: widget.uuid,
                             privateChat: privateChat,
                             other: other,
                             lastMessage: LastMessage(
@@ -344,7 +341,6 @@ class ListChatPageState extends State<ListChatPage> {
                         } else {
                           if (snapshot.hasError) {
                             return PrivateChatTile(
-                              uuid: widget.uuid,
                               privateChat: privateChat,
                               other: UserData(
                                 imagePath: '',
@@ -361,14 +357,14 @@ class ListChatPageState extends State<ListChatPage> {
                                     privateChat.lastMessage!.recentMessage,
                                 recentMessageSender: privateChat
                                             .lastMessage!.recentMessageSender ==
-                                        widget.uuid
+                                        uid
                                     ? ''
                                     : 'Deleted Account',
                                 recentMessageTimestamp: privateChat
                                     .lastMessage!.recentMessageTimestamp,
                                 sentByMe: privateChat
                                             .lastMessage!.recentMessageSender ==
-                                        widget.uuid
+                                        uid
                                     ? true
                                     : false,
                               ),

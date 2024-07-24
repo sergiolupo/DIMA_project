@@ -57,10 +57,8 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group? group = data['group'] as Group;
-        String uuid = data['uuid'] as String;
         return GroupChatPage(
           group: group,
-          uuid: uuid,
         );
       },
     ),
@@ -69,24 +67,21 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         Map<String, dynamic> data = state.extra as Map<String, dynamic>;
         Group group = data['group'] as Group;
-        String uuid = data['uuid'] as String;
-        return GroupInfoPage(group: group, uuid: uuid);
+        return GroupInfoPage(
+          group: group,
+        );
       },
     ),
     GoRoute(
       path: '/groups',
       builder: (BuildContext context, GoRouterState state) {
-        String uuid = state.extra as String;
-        return ListChatPage(
-          uuid: uuid,
-        );
+        return const ListChatPage();
       },
     ),
     GoRoute(
       path: '/creategroup',
       builder: (BuildContext context, GoRouterState state) {
-        String uuid = state.extra as String;
-        return CreateGroupPage(uuid: uuid);
+        return const CreateGroupPage();
       },
     ),
   ],

@@ -9,11 +9,9 @@ import 'package:flutter/cupertino.dart';
 class NewsMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
-  final String uuid;
   const NewsMessageTile({
     required this.message,
     this.senderUsername,
-    required this.uuid,
     super.key,
   });
 
@@ -33,7 +31,6 @@ class NewsMessageTileState extends State<NewsMessageTile> {
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
         widget.message,
-        widget.uuid,
         showCustomSnackbar: null,
       ),
       child: Stack(
@@ -205,7 +202,6 @@ class NewsMessageTileState extends State<NewsMessageTile> {
                 const SizedBox(width: 8),
                 MessageUtils.buildReadByIcon(
                   widget.message,
-                  widget.uuid,
                 ),
               ],
             ),

@@ -14,9 +14,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CreateGroupPage extends ConsumerStatefulWidget {
-  final String uuid;
-
-  const CreateGroupPage({super.key, required this.uuid});
+  const CreateGroupPage({
+    super.key,
+  });
 
   @override
   CreateGroupPageState createState() => CreateGroupPageState();
@@ -97,8 +97,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   }
 
   void createGroup(Group group, Uint8List imagePath) async {
-    await DatabaseService.createGroup(
-        group, FirebaseAuth.instance.currentUser!.uid, imagePath, uuids);
+    await DatabaseService.createGroup(group, imagePath, uuids);
     if (mounted) {
       Navigator.of(context).pop();
     }
@@ -180,7 +179,6 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                         builder: (context) => InvitePage(
-                            uuid: widget.uuid,
                             invitePageKey: (String uuid) {
                               setState(() {
                                 if (uuids.contains(uuid)) {
@@ -275,7 +273,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
       Group(
           name: _groupNameController.text,
           id: '',
-          admin: widget.uuid,
+          admin: FirebaseAuth.instance.currentUser!.uid,
           description: _groupDescriptionController.text,
           categories: selectedCategories,
           isPublic: isPublic,

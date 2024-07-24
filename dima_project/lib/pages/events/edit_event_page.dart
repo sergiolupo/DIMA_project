@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -16,10 +17,9 @@ import 'package:latlong2/latlong.dart';
 
 class EditEventPage extends ConsumerStatefulWidget {
   final Event event;
-  final String uuid;
 
   @override
-  const EditEventPage({super.key, required this.uuid, required this.event});
+  const EditEventPage({super.key, required this.event});
   @override
   EditEventPageState createState() => EditEventPageState();
 }
@@ -32,13 +32,13 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       TextEditingController();
   bool isPublic = true;
   bool notify = true;
-  List<String> uuids = [];
+  List<String> uids = [];
   Map<int, bool> map = {};
   Map<int, Details> details = {};
   bool isLoaded = false;
   int numInfos = 1;
   LatLng? _selectedLocation;
-
+  final String uid = AuthService.uid;
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -284,17 +284,16 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                                   Navigator.of(context).push(
                                     CupertinoPageRoute(
                                         builder: (context) => InvitePage(
-                                            uuid: widget.uuid,
                                             invitePageKey: (String uuid) {
                                               setState(() {
-                                                if (uuids.contains(uuid)) {
-                                                  uuids.remove(uuid);
+                                                if (uids.contains(uuid)) {
+                                                  uids.remove(uuid);
                                                 } else {
-                                                  uuids.add(uuid);
+                                                  uids.add(uuid);
                                                 }
                                               });
                                             },
-                                            invitedUsers: uuids,
+                                            invitedUsers: uids,
                                             isGroup: false,
                                             id: widget.event.id)),
                                   );
@@ -365,9 +364,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                                       await DatabaseService.deleteEvent(
                                           widget.event.id!);
                                       ref.invalidate(
-                                          createdEventsProvider(widget.uuid));
-                                      ref.invalidate(
-                                          joinedEventsProvider(widget.uuid));
+                                          createdEventsProvider(uid));
+                                      ref.invalidate(joinedEventsProvider(uid));
                                       ref.invalidate(
                                           eventProvider(widget.event.id!));
                                       if (context.mounted) {
@@ -408,7 +406,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
 
   Future<void> updateEvent() async {
     for (int i = 0; i < details.length; i++) {
-      details[i]!.members = [widget.uuid];
+      details[i]!.members = [uid];
     }
 
     final event = Event(
@@ -428,11 +426,11 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       selectedImagePath!,
       _oldImage == selectedImagePath,
       widget.event.isPublic != isPublic,
-      uuids,
+      uids,
     );
     ref.invalidate(eventProvider(widget.event.id!));
-    ref.invalidate(joinedEventsProvider(widget.uuid));
-    ref.invalidate(createdEventsProvider(widget.uuid));
+    ref.invalidate(joinedEventsProvider(uid));
+    ref.invalidate(createdEventsProvider(uid));
   }
 
   void delete(int index) {

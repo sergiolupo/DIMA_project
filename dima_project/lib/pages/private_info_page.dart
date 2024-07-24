@@ -4,18 +4,17 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/pages/show_news_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class PrivateInfoPage extends StatefulWidget {
   final PrivateChat privateChat;
-  final String uuid;
 
   const PrivateInfoPage({
     super.key,
     required this.privateChat,
-    required this.uuid,
   });
 
   @override
@@ -28,6 +27,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
   List<Message>? _news;
 
   UserData? _user;
+  final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
@@ -56,7 +56,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
       _news = messages;
     });
     final user = (await DatabaseService.getUserData(
-        widget.uuid == widget.privateChat.members[0]
+        uid == widget.privateChat.members[0]
             ? widget.privateChat.members[1]
             : widget.privateChat.members[0]));
     setState(() {

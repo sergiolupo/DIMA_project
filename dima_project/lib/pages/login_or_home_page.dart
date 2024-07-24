@@ -1,6 +1,6 @@
 import 'package:dima_project/pages/home_page.dart';
 import 'package:dima_project/pages/login_page.dart';
-import 'package:dima_project/utils/helper_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class LoginOrHomePage extends StatefulWidget {
@@ -11,27 +11,26 @@ class LoginOrHomePage extends StatefulWidget {
 }
 
 class LoginOrHomePageState extends State<LoginOrHomePage> {
-  bool _isSignedIn = false;
-
   @override
   void initState() {
     super.initState();
-    //getUserStatuts();
-  }
-
-  getUserStatuts() async {
-    await HelperFunctions.getUserLoggedInStatus().then((value) {
-      if (value != null) {
-        setState(() {
-          _isSignedIn = value;
-        });
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isSignedIn ? const HomePage() : const LoginPage();
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Text("ERROR DURING AUTHENTICATION");
+        }
+        if (snapshot.hasData) {
+          return const HomePage();
+        } else {
+          return const LoginPage();
+        }
+      },
+    );
   }
 
   @override

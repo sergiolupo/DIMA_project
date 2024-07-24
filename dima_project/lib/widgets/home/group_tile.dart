@@ -8,12 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GroupTile extends ConsumerStatefulWidget {
-  final String uuid;
   final Group group;
   final int isJoined; // 0 is not joined, 1 is joined, 2 is requested
   const GroupTile({
     super.key,
-    required this.uuid,
     required this.group,
     required this.isJoined, // Updated this
   });
@@ -23,6 +21,7 @@ class GroupTile extends ConsumerStatefulWidget {
 }
 
 class GroupTileState extends ConsumerState<GroupTile> {
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -34,7 +33,6 @@ class GroupTileState extends ConsumerState<GroupTile> {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
-                      uuid: widget.uuid,
                       group: widget.group,
                     ),
                   ),
@@ -55,7 +53,6 @@ class GroupTileState extends ConsumerState<GroupTile> {
             try {
               await DatabaseService.toggleGroupJoin(
                 widget.group.id,
-                FirebaseAuth.instance.currentUser!.uid,
               );
               ref.invalidate(
                   groupsProvider(FirebaseAuth.instance.currentUser!.uid));

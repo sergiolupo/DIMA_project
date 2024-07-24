@@ -2,12 +2,14 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/follow_requests_page.dart';
 import 'package:dima_project/pages/groups_requests_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowRequestPage extends StatefulWidget {
-  final String uuid;
-  const ShowRequestPage({super.key, required this.uuid});
+  const ShowRequestPage({
+    super.key,
+  });
   @override
   ShowRequestPageState createState() => ShowRequestPageState();
 }
@@ -15,6 +17,7 @@ class ShowRequestPage extends StatefulWidget {
 class ShowRequestPageState extends State<ShowRequestPage> {
   List<UserData>? _followRequests;
   List<Group>? _groupRequests;
+  final String uid = AuthService.uid;
   @override
   void initState() {
     init();
@@ -24,11 +27,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   init() async {
     List<UserData>? followRequests;
     List<Group>? groupRequests;
-    followRequests = (await DatabaseService.getFollowRequests(widget.uuid));
+    followRequests = (await DatabaseService.getFollowRequests(uid));
     setState(() {
       _followRequests = followRequests;
     });
-    groupRequests = (await DatabaseService.getUserGroupRequests(widget.uuid));
+    groupRequests = (await DatabaseService.getUserGroupRequests(uid));
     setState(() {
       _groupRequests = groupRequests;
     });
@@ -57,7 +60,6 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
                             builder: (context) => FollowRequestsPage(
-                                  uuid: widget.uuid,
                                   followRequests: _followRequests!,
                                 )))
                         .then((value) => init())
@@ -117,7 +119,6 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
                             builder: (context) => GroupsRequestsPage(
-                                uuid: widget.uuid,
                                 groupRequests: _groupRequests!)))
                         .then((value) => init())
                   },

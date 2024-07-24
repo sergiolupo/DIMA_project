@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/share_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -18,9 +19,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 
 class CreateEventPage extends ConsumerStatefulWidget {
-  final String uuid;
   final String? groupId;
-  const CreateEventPage({super.key, required this.uuid, this.groupId});
+  const CreateEventPage({super.key, this.groupId});
 
   @override
   CreateEventPageState createState() => CreateEventPageState();
@@ -39,11 +39,13 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   LatLng? _selectedLocation;
   bool isPublic = true;
   bool notify = true;
-  List<String> uuids = [];
+  List<String> uids = [];
   List<String> groupIds = [];
   int numInfos = 1;
   Map<int, bool> map = {};
   Map<int, Details> details = {};
+
+  final String uid = AuthService.uid;
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -73,11 +75,11 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     )) {
       showDoneDialog();
       for (int i = 0; i < details.length; i++) {
-        details[i]!.members = [widget.uuid];
+        details[i]!.members = [uid];
       }
       final event = Event(
         name: _eventNameController.text,
-        admin: widget.uuid,
+        admin: uid,
         description: _eventDescriptionController.text,
         isPublic: isPublic,
         notify: notify,
@@ -86,9 +88,9 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
       );
 
       await DatabaseService.createEvent(
-          event, widget.uuid, selectedImagePath, uuids, groupIds);
+          event, selectedImagePath, uids, groupIds);
     }
-    ref.invalidate(createdEventsProvider(widget.uuid));
+    ref.invalidate(createdEventsProvider(uid));
   }
 
   @override
@@ -251,14 +253,13 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
                                   builder: (context) => InvitePage(
-                                    uuid: widget.uuid,
-                                    invitedUsers: uuids,
+                                    invitedUsers: uids,
                                     invitePageKey: (String uuid) {
                                       setState(() {
-                                        if (uuids.contains(uuid)) {
-                                          uuids.remove(uuid);
+                                        if (uids.contains(uuid)) {
+                                          uids.remove(uuid);
                                         } else {
-                                          uuids.add(uuid);
+                                          uids.add(uuid);
                                         }
                                       });
                                     },
@@ -286,7 +287,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               Navigator.of(context, rootNavigator: true).push(
                                 CupertinoPageRoute(
                                   builder: (context) => ShareEventPage(
-                                    uuid: widget.uuid,
                                     groupIds: groupIds,
                                   ),
                                 ),
@@ -425,7 +425,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       _selectedLocation = null;
                       isPublic = true;
                       notify = true;
-                      uuids = [];
+                      uids = [];
                       groupIds = [];
                       numInfos = 1;
                       map = {};

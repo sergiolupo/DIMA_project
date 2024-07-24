@@ -1,4 +1,5 @@
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -6,16 +7,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GroupsRequestsPage extends ConsumerStatefulWidget {
-  final String uuid;
   final List<Group> groupRequests;
-  const GroupsRequestsPage(
-      {super.key, required this.uuid, required this.groupRequests});
+  const GroupsRequestsPage({super.key, required this.groupRequests});
   @override
   GroupsRequestsPageState createState() => GroupsRequestsPageState();
 }
 
 class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
   late List<Group> groupsRequests;
+  final String uid = AuthService.uid;
   @override
   void initState() {
     groupsRequests = widget.groupRequests;
@@ -56,11 +56,12 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                     onTap: () async {
                       try {
                         await DatabaseService.acceptUserGroupRequest(
-                            group.id, widget.uuid);
+                          group.id,
+                        );
                         setState(() {
                           groupsRequests.removeAt(index);
                         });
-                        ref.invalidate(groupsProvider(widget.uuid));
+                        ref.invalidate(groupsProvider(uid));
                       } catch (error) {
                         debugPrint("Error occurred: $error");
                       }
@@ -85,7 +86,7 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                     onTap: () async {
                       try {
                         await DatabaseService.denyUserGroupRequest(
-                            group.id, widget.uuid);
+                            group.id, uid);
                         setState(() {
                           groupsRequests.removeAt(index);
                         });

@@ -6,20 +6,18 @@ import 'package:dima_project/pages/groups/group_requests_page.dart';
 import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/pages/show_news_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupInfoPage extends StatefulWidget {
-  final String uuid;
   final Group group;
   const GroupInfoPage({
     super.key,
     required this.group,
-    required this.uuid,
   });
 
   @override
@@ -32,6 +30,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   List<Message>? _events;
   List<Message>? _news;
   Group? group;
+
+  final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
@@ -104,7 +104,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       CupertinoPageRoute(
                           builder: (context) => EditGroupPage(
                                 group: group!,
-                                uuid: widget.uuid,
                               )));
 
                   if (newGroup != null) {
@@ -219,7 +218,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            if (!group!.isPublic && group!.admin == widget.uuid)
+                            if (!group!.isPublic && group!.admin == uid)
                               CupertinoListTile(
                                 padding: const EdgeInsets.all(0),
                                 title: const Row(
@@ -475,13 +474,12 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                     } else {
                       final UserData userData = snapshot.data!;
 
-                      if (widget.group.admin == userData.uuid) {
+                      if (widget.group.admin == userData.uid) {
                         return Row(
                           children: [
                             Expanded(
                               child: UserTile(
                                 user: userData,
-                                uuid: widget.uuid,
                                 isFollowing: null,
                               ),
                             ),
@@ -497,7 +495,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       }
                       return UserTile(
                         user: userData,
-                        uuid: widget.uuid,
                         isFollowing: null,
                       );
                     }
@@ -524,7 +521,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               onPressed: () async {
                 await DatabaseService.toggleGroupJoin(
                   widget.group.id,
-                  FirebaseAuth.instance.currentUser!.uid,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).popUntil((route) => route.isFirst);

@@ -22,12 +22,10 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group group;
-  final String uuid;
 
   const GroupChatPage({
     super.key,
     required this.group,
-    required this.uuid,
   });
 
   @override
@@ -70,7 +68,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                   final Group? newGroup = await Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => GroupInfoPage(
-                        uuid: widget.uuid,
                         group: group,
                       ),
                     ),
@@ -264,7 +261,6 @@ class GroupChatPageState extends State<GroupChatPage> {
     await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => CreateEventPage(
-          uuid: widget.uuid,
           groupId: group.id,
         ),
       ),
@@ -281,7 +277,6 @@ class GroupChatPageState extends State<GroupChatPage> {
       });
       final bytes = await image.readAsBytes();
       await DatabaseService.sendChatImage(
-        widget.uuid,
         group.id,
         File(image.path),
         true,
@@ -304,7 +299,6 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
         final bytes = await image.readAsBytes();
         await DatabaseService.sendChatImage(
-          widget.uuid,
           group.id,
           File(image.path),
           true,
@@ -377,7 +371,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                         : Container(),
                     StreamBuilder(
                       stream:
-                          DatabaseService.getUserDataFromUUID(message.sender),
+                          DatabaseService.getUserDataFromUID(message.sender),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           message.senderImage = '';
@@ -531,26 +525,22 @@ class GroupChatPageState extends State<GroupChatPage> {
         return TextMessageTile(
           showCustomSnackbar: showCustomSnackbar,
           message: message,
-          uuid: widget.uuid,
           senderUsername: senderUsername,
         );
       case Type.image:
         return ImageMessageTile(
           message: message,
-          uuid: widget.uuid,
           senderUsername: senderUsername,
         );
       case Type.news:
         return NewsMessageTile(
           message: message,
-          uuid: widget.uuid,
           senderUsername: senderUsername,
         );
       case Type.event:
       default:
         return EventMessageTile(
           message: message,
-          uuid: widget.uuid,
           senderUsername: senderUsername,
         );
     }

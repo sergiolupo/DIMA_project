@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
@@ -330,8 +329,6 @@ class RegisterPageState extends State<RegisterPage> {
     );
     try {
       await DatabaseService.registerUserWithUUID(userData, uuid, imagePath);
-      await HelperFunctions.saveUserLoggedInStatus(true);
-      await HelperFunctions.saveUid(uuid);
     } catch (e) {
       return;
     }

@@ -1,3 +1,4 @@
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,13 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ShowEventMembersPage extends ConsumerStatefulWidget {
   final String eventId;
-  final String uuid;
   final String detailId;
   final String admin;
   const ShowEventMembersPage({
     super.key,
     required this.eventId,
-    required this.uuid,
     required this.detailId,
     required this.admin,
   });
@@ -21,18 +20,19 @@ class ShowEventMembersPage extends ConsumerStatefulWidget {
 }
 
 class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
+  final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(followingProvider(widget.uuid));
+    ref.read(followingProvider(uid));
     ref.read(eventProvider(widget.eventId));
-    ref.read(userProvider(widget.uuid));
+    ref.read(userProvider(uid));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final event = ref.watch(eventProvider(widget.eventId));
-    final followings = ref.watch(followingProvider(widget.uuid));
+    final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
@@ -60,21 +60,20 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
                 data: (userData) {
                   return followings.when(
                       data: (followings) {
-                        final isFollowing = followings
-                                .any((element) => element.uuid! == widget.uuid)
-                            ? 1
-                            : userData.requests!.contains(widget.uuid)
-                                ? 2
-                                : 0;
+                        final isFollowing =
+                            followings.any((element) => element.uid! == uid)
+                                ? 1
+                                : userData.requests!.contains(uid)
+                                    ? 2
+                                    : 0;
 
-                        if (userData.uuid == widget.admin) {
+                        if (userData.uid == widget.admin) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: UserTile(
                                   user: userData,
-                                  uuid: widget.uuid,
                                   isFollowing: isFollowing,
                                 ),
                               ),
@@ -94,7 +93,6 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
 
                         return UserTile(
                           user: userData,
-                          uuid: widget.uuid,
                           isFollowing: isFollowing,
                         );
                       },

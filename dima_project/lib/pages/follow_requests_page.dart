@@ -1,4 +1,5 @@
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -6,15 +7,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FollowRequestsPage extends ConsumerStatefulWidget {
-  final String uuid;
   final List<UserData> followRequests;
-  const FollowRequestsPage(
-      {super.key, required this.uuid, required this.followRequests});
+  const FollowRequestsPage({super.key, required this.followRequests});
   @override
   FollowRequestsPageState createState() => FollowRequestsPageState();
 }
 
 class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
+  final String uid = AuthService.uid;
   late List<UserData> followRequests;
   @override
   void initState() {
@@ -61,11 +61,12 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                   onTap: () async {
                     try {
                       await DatabaseService.acceptUserRequest(
-                          user.uuid!, widget.uuid);
+                        user.uid!,
+                      );
                       setState(() {
                         followRequests.removeAt(index);
                       });
-                      ref.invalidate(followerProvider(widget.uuid));
+                      ref.invalidate(followerProvider(uid));
                     } catch (error) {
                       debugPrint("Error occurred: $error");
                     }
@@ -90,7 +91,8 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                   onTap: () async {
                     try {
                       await DatabaseService.denyUserRequest(
-                          user.uuid!, widget.uuid);
+                        user.uid!,
+                      );
                       setState(() {
                         followRequests.removeAt(index);
                       });

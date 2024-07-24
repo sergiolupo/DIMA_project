@@ -3,7 +3,6 @@ import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowEventsPage extends StatefulWidget {
@@ -161,8 +160,6 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                                       Navigator.of(context).push(
                                         CupertinoPageRoute(
                                           builder: (context) => EventPage(
-                                            uuid: FirebaseAuth
-                                                .instance.currentUser!.uid,
                                             eventId: event.id!,
                                           ),
                                         ),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
@@ -11,8 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
-  final String uuid;
-  const SettingsPage({super.key, required this.uuid});
+  const SettingsPage({
+    super.key,
+  });
 
   @override
   SettingsPageState createState() => SettingsPageState();
@@ -33,7 +35,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   late Uint8List _oldImage;
   bool isPublic = true;
   UserData? user;
-
+  final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
@@ -41,7 +43,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Future<void> _initializeUserData() async {
-    user = await DatabaseService.getUserData(widget.uuid);
+    user = await DatabaseService.getUserData(uid);
     if (user != null) {
       setState(() {
         _oldEmail = user!.email;
@@ -297,7 +299,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         name: _nameController.text,
         surname: _surnameController.text,
         username: _usernameController.text,
-        uuid: user!.uuid,
+        uid: user!.uid,
         isPublic: isPublic,
       ),
       selectedImagePath!,

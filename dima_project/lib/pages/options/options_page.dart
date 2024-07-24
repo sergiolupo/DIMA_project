@@ -8,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
-  final String uuid;
-  const OptionsPage({super.key, required this.uuid});
+  const OptionsPage({
+    super.key,
+  });
   @override
   OptionsPageState createState() => OptionsPageState();
 }
@@ -63,8 +64,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true).push(
                         CupertinoPageRoute(
-                            builder: (context) =>
-                                ShowRequestPage(uuid: widget.uuid)))
+                            builder: (context) => const ShowRequestPage()))
                   },
                   title: const Text('Request'),
                 ),
@@ -73,8 +73,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   title: const Text('Settings'),
                   onTap: () => Navigator.of(context, rootNavigator: true).push(
                       CupertinoPageRoute(
-                          builder: (context) =>
-                              SettingsPage(uuid: widget.uuid))),
+                          builder: (context) => const SettingsPage())),
                 ),
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.doc),
@@ -116,7 +115,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
             CupertinoDialogAction(
               child: const Text('Delete'),
               onPressed: () async {
-                await DatabaseService.deleteUser(widget.uuid);
+                await DatabaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
                 ref.invalidate(followingProvider);

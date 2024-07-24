@@ -1,6 +1,5 @@
 import 'package:dima_project/pages/news/share_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -33,11 +32,9 @@ class _ArticleViewState extends State<ArticleView> {
           trailing: GestureDetector(
             child: const Icon(CupertinoIcons.share),
             onTap: () async {
-              final ids = await Navigator.of(context, rootNavigator: true)
-                  .push(CupertinoPageRoute(
-                      builder: (context) => ShareNewsPage(
-                            uuid: FirebaseAuth.instance.currentUser!.uid,
-                          )));
+              final ids = await Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute(
+                      builder: (context) => const ShareNewsPage()));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
                   await DatabaseService.shareNewsOnGroups(widget.title,

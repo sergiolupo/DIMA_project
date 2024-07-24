@@ -9,13 +9,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class ShowEventTablet extends ConsumerStatefulWidget {
-  final String uuid;
   final String eventId;
   final UserData userData;
   final bool createdEvents;
   const ShowEventTablet({
     super.key,
-    required this.uuid,
     required this.eventId,
     required this.userData,
     required this.createdEvents,
@@ -31,8 +29,8 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
   @override
   void initState() {
     super.initState();
-    ref.read(joinedEventsProvider(widget.userData.uuid!));
-    ref.read(createdEventsProvider(widget.userData.uuid!));
+    ref.read(joinedEventsProvider(widget.userData.uid!));
+    ref.read(createdEventsProvider(widget.userData.uid!));
   }
 
   @override
@@ -44,8 +42,8 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
   @override
   Widget build(BuildContext context) {
     final events = widget.createdEvents
-        ? ref.watch(createdEventsProvider(widget.userData.uuid!))
-        : ref.watch(joinedEventsProvider(widget.userData.uuid!));
+        ? ref.watch(createdEventsProvider(widget.userData.uid!))
+        : ref.watch(joinedEventsProvider(widget.userData.uid!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -125,7 +123,6 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                     context,
                                     CupertinoPageRoute(
                                       builder: (context) => EventPage(
-                                        uuid: widget.uuid,
                                         eventId: event.id!,
                                       ),
                                     ),
@@ -237,10 +234,9 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                         ),
                                         const SizedBox(width: 10.0),
                                         FutureBuilder(
-                                            future:
-                                                EventService.getAddressFromLatLng(
-                                                    event
-                                                        .details![index].latlng!),
+                                            future: EventService
+                                                .getAddressFromLatLng(event
+                                                    .details![index].latlng!),
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData &&
                                                   snapshot.data != null) {

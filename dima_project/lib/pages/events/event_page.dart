@@ -1,4 +1,5 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,16 +10,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class EventPage extends ConsumerStatefulWidget {
-  final String uuid;
   final String eventId;
 
-  const EventPage({super.key, required this.eventId, required this.uuid});
+  const EventPage({
+    super.key,
+    required this.eventId,
+  });
 
   @override
   EventPageState createState() => EventPageState();
 }
 
 class EventPageState extends ConsumerState<EventPage> {
+  final String uid = AuthService.uid;
   @override
   void initState() {
     ref.read(eventProvider(widget.eventId));
@@ -35,7 +39,7 @@ class EventPageState extends ConsumerState<EventPage> {
             navigationBar: CupertinoNavigationBar(
               transitionBetweenRoutes: false,
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-              trailing: widget.uuid == event.admin
+              trailing: uid == event.admin
                   ? CupertinoButton(
                       padding: const EdgeInsets.all(0),
                       onPressed: () {
@@ -44,7 +48,6 @@ class EventPageState extends ConsumerState<EventPage> {
                             CupertinoPageRoute(
                                 builder: (context) => EditEventPage(
                                       event: event,
-                                      uuid: widget.uuid,
                                     )));
                       },
                       child: Text(
@@ -178,7 +181,6 @@ class EventPageState extends ConsumerState<EventPage> {
                                         builder: (context) => DetailPage(
                                           eventId: event.id!,
                                           detailId: detail.id!,
-                                          uuid: widget.uuid,
                                         ),
                                       ),
                                     );

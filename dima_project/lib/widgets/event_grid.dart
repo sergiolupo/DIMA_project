@@ -2,11 +2,9 @@ import 'package:dima_project/models/event.dart';
 import 'package:flutter/cupertino.dart';
 
 class EventGrid extends StatefulWidget {
-  final String uuid;
   final Event event;
   const EventGrid({
     super.key,
-    required this.uuid,
     required this.event,
   });
 

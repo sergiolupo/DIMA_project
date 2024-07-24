@@ -1,5 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/responsive_userprofile.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InvitePage extends ConsumerStatefulWidget {
-  final String uuid;
   final ValueChanged<String> invitePageKey;
   final List<String> invitedUsers;
   final bool isGroup;
@@ -15,7 +15,6 @@ class InvitePage extends ConsumerStatefulWidget {
   @override
   const InvitePage({
     super.key,
-    required this.uuid,
     required this.invitePageKey,
     required this.invitedUsers,
     required this.isGroup,
@@ -29,17 +28,17 @@ class InvitePage extends ConsumerStatefulWidget {
 class InvitePageState extends ConsumerState<InvitePage> {
   final TextEditingController _searchController = TextEditingController();
   String searchText = '';
-
+  final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(followerProvider(widget.uuid));
+    ref.read(followerProvider(uid));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final AsyncValue<List<UserData>> asyncUsers =
-        ref.watch(followerProvider(widget.uuid));
+        ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: Navigator.canPop(context)
@@ -125,7 +124,7 @@ class InvitePageState extends ConsumerState<InvitePage> {
                     final userData = filteredUsers[index];
                     return FutureBuilder(
                       future: DatabaseService.checkIfJoined(
-                          widget.isGroup, widget.id, userData.uuid!),
+                          widget.isGroup, widget.id, userData.uid!),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return const Text('Error');
@@ -138,9 +137,8 @@ class InvitePageState extends ConsumerState<InvitePage> {
 
                         return InvitationTile(
                           user: userData,
-                          uuid: widget.uuid,
                           invitePageKey: widget.invitePageKey,
-                          invited: widget.invitedUsers.contains(userData.uuid),
+                          invited: widget.invitedUsers.contains(userData.uid),
                           isJoining: isJoining,
                         );
                       },
@@ -164,14 +162,12 @@ class InvitePageState extends ConsumerState<InvitePage> {
 class InvitationTile extends StatefulWidget {
   final UserData user;
   final ValueChanged<String> invitePageKey;
-  final String uuid;
   final bool invited;
   final bool isJoining;
   const InvitationTile({
     super.key,
     required this.user,
     required this.invitePageKey,
-    required this.uuid,
     required this.invited,
     required this.isJoining,
   });
@@ -197,8 +193,7 @@ class InvitationTileState extends State<InvitationTile> {
             onTap: () {
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return ResponsiveUserprofile(
-                  user: widget.user.uuid!,
-                  uuid: widget.uuid,
+                  user: widget.user.uid!,
                 );
               }));
             },
@@ -223,7 +218,7 @@ class InvitationTileState extends State<InvitationTile> {
             ? const SizedBox.shrink()
             : GestureDetector(
                 onTap: () {
-                  widget.invitePageKey(widget.user.uuid!);
+                  widget.invitePageKey(widget.user.uid!);
                   setState(() {
                     invited = !invited;
                   });

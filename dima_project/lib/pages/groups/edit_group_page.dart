@@ -13,9 +13,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
-  final String uuid;
   @override
-  const EditGroupPage({super.key, required this.group, required this.uuid});
+  const EditGroupPage({
+    super.key,
+    required this.group,
+  });
   @override
   EditGroupPageState createState() => EditGroupPageState();
 }
@@ -210,7 +212,6 @@ class EditGroupPageState extends State<EditGroupPage> {
                         Navigator.of(context).push(
                           CupertinoPageRoute(
                               builder: (context) => InvitePage(
-                                  uuid: widget.uuid,
                                   invitePageKey: (String uuid) {
                                     setState(() {
                                       if (uuids.contains(uuid)) {

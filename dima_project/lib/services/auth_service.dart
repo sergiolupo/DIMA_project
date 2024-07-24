@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,6 +8,8 @@ import 'package:dima_project/services/database_service.dart';
 
 class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static final String uid = _firebaseAuth.currentUser!.uid;
+
   static Future<UserData> signInWithEmailandPassword(
       String email, String password) async {
     debugPrint("Trying to Login...");
@@ -16,17 +17,12 @@ class AuthService {
         .signInWithEmailAndPassword(email: email, password: password);
     debugPrint("Signed In");
     UserData user = await DatabaseService.getUserData(userCredential.user!.uid);
-    await HelperFunctions.saveUserLoggedInStatus(true);
-    await HelperFunctions.saveUid(userCredential.user!.uid);
     debugPrint("Registered");
     return user;
   }
 
   static Future<void> signOut() async {
     try {
-      await HelperFunctions.saveUserLoggedInStatus(false);
-      await HelperFunctions.saveUid('');
-
       await _firebaseAuth.signOut();
     } catch (e) {
       debugPrint("Error Signing Out: $e");

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -14,8 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class NewsPage extends ConsumerStatefulWidget {
-  final String uuid;
-  const NewsPage({super.key, required this.uuid});
+  const NewsPage({
+    super.key,
+  });
 
   @override
   NewsPageState createState() => NewsPageState();
@@ -29,10 +31,10 @@ class NewsPageState extends ConsumerState<NewsPage> {
   static const int numberOfNews =
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
   int activeIndex = 0;
-
+  final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(userProvider(widget.uuid));
+    ref.read(userProvider(uid));
     getSliders();
     getNews();
     super.initState();
@@ -54,7 +56,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider(widget.uuid));
+    final user = ref.watch(userProvider(uid));
 
     return sliders == null || articles == null
         ? const CupertinoActivityIndicator()

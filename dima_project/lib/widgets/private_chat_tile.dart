@@ -9,13 +9,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 
 class PrivateChatTile extends StatefulWidget {
-  final String uuid;
   final PrivateChat privateChat;
   final LastMessage? lastMessage;
   final UserData other;
   const PrivateChatTile({
     super.key,
-    required this.uuid,
     required this.privateChat,
     required this.lastMessage,
     required this.other,
@@ -39,7 +37,9 @@ class PrivateChatTileState extends State<PrivateChatTile> {
   void initState() {
     super.initState();
     unreadMessagesStream = DatabaseService.getUnreadMessages(
-        false, widget.privateChat.id!, widget.uuid);
+      false,
+      widget.privateChat.id!,
+    );
   }
 
   @override
@@ -67,7 +67,6 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => PrivateChatPage(
-                      uuid: widget.uuid,
                       privateChat: widget.privateChat,
                     ),
                   ),

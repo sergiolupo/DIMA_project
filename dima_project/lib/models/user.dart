@@ -12,7 +12,7 @@ class UserData {
   final Timestamp? lastSeen;
   final bool? isTyping;
   final String? typingTo;
-  final String? uuid;
+  final String? uid;
   bool? isPublic;
   List<String>? requests;
   bool? isSignedInWithGoogle;
@@ -28,7 +28,7 @@ class UserData {
     this.lastSeen,
     this.isTyping,
     this.typingTo,
-    this.uuid,
+    this.uid,
     this.isPublic,
     this.requests,
     this.isSignedInWithGoogle,
@@ -50,7 +50,7 @@ class UserData {
       lastSeen: documentSnapshot['lastSeen'],
       isTyping: documentSnapshot['isTyping'],
       typingTo: documentSnapshot['typingTo'],
-      uuid: documentSnapshot.id,
+      uid: documentSnapshot.id,
       isPublic: documentSnapshot['isPublic'],
       requests: (documentSnapshot['requests'] as List<dynamic>)
           .map((request) => request.toString())

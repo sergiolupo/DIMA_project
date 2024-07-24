@@ -1,5 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/responsive_userprofile.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -8,12 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserTile extends ConsumerStatefulWidget {
   final UserData user;
-  final String uuid;
   final int? isFollowing; // 0 is not following, 1 is following, 2 is requested
   const UserTile({
     super.key,
     required this.user,
-    required this.uuid,
     required this.isFollowing,
   });
 
@@ -22,9 +21,10 @@ class UserTile extends ConsumerStatefulWidget {
 }
 
 class UserTileState extends ConsumerState<UserTile> {
+  final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(userProvider(widget.user.uuid!));
+    ref.read(userProvider(widget.user.uid!));
     super.initState();
   }
 
@@ -35,17 +35,16 @@ class UserTileState extends ConsumerState<UserTile> {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              ref.invalidate(userProvider(widget.user.uuid!));
-              ref.invalidate(followerProvider(widget.user.uuid!));
-              ref.invalidate(followingProvider(widget.user.uuid!));
-              ref.invalidate(groupsProvider(widget.user.uuid!));
-              ref.invalidate(joinedEventsProvider(widget.user.uuid!));
-              ref.invalidate(createdEventsProvider(widget.user.uuid!));
-              ref.invalidate(eventProvider(widget.user.uuid!));
+              ref.invalidate(userProvider(widget.user.uid!));
+              ref.invalidate(followerProvider(widget.user.uid!));
+              ref.invalidate(followingProvider(widget.user.uid!));
+              ref.invalidate(groupsProvider(widget.user.uid!));
+              ref.invalidate(joinedEventsProvider(widget.user.uid!));
+              ref.invalidate(createdEventsProvider(widget.user.uid!));
+              ref.invalidate(eventProvider(widget.user.uid!));
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return ResponsiveUserprofile(
-                  user: widget.user.uuid!,
-                  uuid: widget.uuid,
+                  user: widget.user.uid!,
                 );
               }));
             },
@@ -66,18 +65,18 @@ class UserTileState extends ConsumerState<UserTile> {
             ),
           ),
         ),
-        widget.user.uuid != widget.uuid && widget.isFollowing != null
+        widget.user.uid != uid && widget.isFollowing != null
             ? GestureDetector(
                 onTap: () async {
                   try {
                     await DatabaseService.toggleFollowUnfollow(
-                      widget.user.uuid!,
-                      widget.uuid,
+                      widget.user.uid!,
+                      uid,
                     );
-                    ref.invalidate(followingProvider(widget.uuid));
-                    ref.invalidate(followerProvider(widget.user.uuid!));
-                    ref.invalidate(followerProvider(widget.uuid));
-                    ref.invalidate(userProvider(widget.user.uuid!));
+                    ref.invalidate(followingProvider(uid));
+                    ref.invalidate(followerProvider(widget.user.uid!));
+                    ref.invalidate(followerProvider(uid));
+                    ref.invalidate(userProvider(widget.user.uid!));
                   } catch (error) {
                     debugPrint("Error occurred: $error");
                   }

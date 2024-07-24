@@ -7,12 +7,10 @@ import 'package:flutter/cupertino.dart';
 class TextMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
-  final String uuid;
   final VoidCallback showCustomSnackbar;
   const TextMessageTile({
     required this.message,
     this.senderUsername,
-    required this.uuid,
     required this.showCustomSnackbar,
     super.key,
   });
@@ -30,8 +28,7 @@ class TextMessageTileState extends State<TextMessageTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () => MessageUtils.showBottomSheet(
-          context, widget.message, widget.uuid,
+      onLongPress: () => MessageUtils.showBottomSheet(context, widget.message,
           showCustomSnackbar: () => widget.showCustomSnackbar()),
       child: Stack(
         children: [
@@ -151,7 +148,6 @@ class TextMessageTileState extends State<TextMessageTile> {
                               const SizedBox(width: 8),
                               MessageUtils.buildReadByIcon(
                                 widget.message,
-                                widget.uuid,
                               ),
                             ],
                           ),

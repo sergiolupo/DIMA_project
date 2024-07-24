@@ -65,7 +65,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 onTap: () async {
                   try {
                     await DatabaseService.acceptGroupRequest(
-                        widget.groupId, user.uuid!);
+                        widget.groupId, user.uid!);
                     setState(() {
                       users.removeAt(index);
                     });
@@ -94,7 +94,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 onTap: () async {
                   try {
                     await DatabaseService.denyGroupRequest(
-                        widget.groupId, user.uuid!);
+                        widget.groupId, user.uid!);
                     setState(() {
                       users.removeAt(index);
                     });

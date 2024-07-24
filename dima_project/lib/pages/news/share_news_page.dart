@@ -1,5 +1,6 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -7,9 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ShareNewsPage extends StatefulWidget {
-  final String uuid;
   @override
-  const ShareNewsPage({super.key, required this.uuid});
+  const ShareNewsPage({
+    super.key,
+  });
 
   @override
   State<ShareNewsPage> createState() => ShareNewsPageState();
@@ -22,7 +24,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   List<Group>? groups;
   List<UserData>? users;
   String _searchText = "";
-
+  final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
@@ -31,12 +33,12 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   }
 
   void fetchGroups() async {
-    groups = await DatabaseService.getGroups(widget.uuid);
+    groups = await DatabaseService.getGroups(uid);
     setState(() {});
   }
 
   void fetchUsers() async {
-    final doc = await DatabaseService.getFollowersUser(widget.uuid);
+    final doc = await DatabaseService.getFollowersUser(uid);
     if (doc.exists && doc.data() != null && doc.data()!['followers'] != null) {
       final followers = List<String>.from(doc.data()!['followers']);
       users = await Future.wait(
@@ -167,7 +169,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
               }
             });
           },
-          active: uuids.contains(users![index].uuid!),
+          active: uuids.contains(users![index].uid!),
         );
       },
     );
@@ -404,7 +406,7 @@ class ShareUserTileState extends State<ShareUserTile> {
         setState(() {
           isActive = !isActive;
         });
-        widget.onSelected(widget.user.uuid!);
+        widget.onSelected(widget.user.uid!);
       },
     );
   }

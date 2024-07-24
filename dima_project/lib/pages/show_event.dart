@@ -9,13 +9,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class ShowEvent extends ConsumerStatefulWidget {
-  final String uuid;
   final String eventId;
   final UserData userData;
   final bool createdEvents;
   const ShowEvent({
     super.key,
-    required this.uuid,
     required this.eventId,
     required this.userData,
     required this.createdEvents,
@@ -31,8 +29,8 @@ class ShowEventState extends ConsumerState<ShowEvent> {
   @override
   void initState() {
     super.initState();
-    ref.read(joinedEventsProvider(widget.userData.uuid!));
-    ref.read(createdEventsProvider(widget.userData.uuid!));
+    ref.read(joinedEventsProvider(widget.userData.uid!));
+    ref.read(createdEventsProvider(widget.userData.uid!));
   }
 
   @override
@@ -44,8 +42,8 @@ class ShowEventState extends ConsumerState<ShowEvent> {
   @override
   Widget build(BuildContext context) {
     final events = widget.createdEvents
-        ? ref.watch(createdEventsProvider(widget.userData.uuid!))
-        : ref.watch(joinedEventsProvider(widget.userData.uuid!));
+        ? ref.watch(createdEventsProvider(widget.userData.uid!))
+        : ref.watch(joinedEventsProvider(widget.userData.uid!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -126,7 +124,6 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                     context,
                                     CupertinoPageRoute(
                                       builder: (context) => EventPage(
-                                        uuid: widget.uuid,
                                         eventId: event.id!,
                                       ),
                                     ),

@@ -9,11 +9,9 @@ import 'package:flutter/cupertino.dart';
 class ImageMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
-  final String uuid;
   const ImageMessageTile({
     required this.message,
     this.senderUsername,
-    required this.uuid,
     super.key,
   });
 
@@ -33,7 +31,6 @@ class ImageMessageTileState extends State<ImageMessageTile> {
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
         widget.message,
-        widget.uuid,
         showCustomSnackbar: null,
       ),
       onTap: () {
@@ -161,7 +158,9 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                MessageUtils.buildReadByIcon(widget.message, widget.uuid),
+                MessageUtils.buildReadByIcon(
+                  widget.message,
+                ),
               ],
             ),
           ),

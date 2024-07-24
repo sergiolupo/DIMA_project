@@ -1,6 +1,5 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -131,9 +130,6 @@ class LoginForm extends StatelessWidget {
         context.go('/register', extra: user);
       } else {
         debugPrint("Navigating to Home Page");
-
-        await HelperFunctions.saveUserLoggedInStatus(true);
-        await HelperFunctions.saveUid(user.uid);
 
         if (!context.mounted) return;
         Navigator.of(context).pop();

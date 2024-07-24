@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_tile.dart';
@@ -14,8 +15,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-  final String uuid;
-  const SearchPage({super.key, required this.uuid});
+  const SearchPage({
+    super.key,
+  });
 
   @override
   SearchPageState createState() => SearchPageState();
@@ -31,10 +33,10 @@ class SearchPageState extends ConsumerState<SearchPage> {
       _searchStreamSubscription;
 
   int searchIdx = 0;
-
+  final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(followingProvider(widget.uuid));
+    ref.read(followingProvider(uid));
 
     super.initState();
   }
@@ -70,7 +72,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final followings = ref.watch(followingProvider(widget.uuid));
+    final followings = ref.watch(followingProvider(uid));
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -208,14 +210,13 @@ class SearchPageState extends ConsumerState<SearchPage> {
                       return followings.when(
                           data: (followingData) {
                             final int isFollowing = followingData.any(
-                                    (element) => element.uuid! == userData.uuid)
+                                    (element) => element.uid! == userData.uid)
                                 ? 1
-                                : userData.requests!.contains(widget.uuid)
+                                : userData.requests!.contains(uid)
                                     ? 2
                                     : 0;
                             return UserTile(
                               user: userData,
-                              uuid: widget.uuid,
                               isFollowing: isFollowing,
                             );
                           },
@@ -228,11 +229,10 @@ class SearchPageState extends ConsumerState<SearchPage> {
                       final group = Group.fromSnapshot(docs[index]);
 
                       return GroupTile(
-                        uuid: widget.uuid,
                         group: group,
-                        isJoined: group.members!.contains(widget.uuid)
+                        isJoined: group.members!.contains(uid)
                             ? 1
-                            : group.requests!.contains(widget.uuid)
+                            : group.requests!.contains(uid)
                                 ? 2
                                 : 0,
                       );
@@ -249,7 +249,6 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             } else {
                               final event = snapshot.data as Event;
                               return EventTile(
-                                uuid: widget.uuid,
                                 event: event,
                               );
                             }

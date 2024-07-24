@@ -1,13 +1,13 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/news/share_news_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShareEventPage extends StatefulWidget {
-  final String uuid;
   final List<String> groupIds;
   @override
-  const ShareEventPage({super.key, required this.uuid, required this.groupIds});
+  const ShareEventPage({super.key, required this.groupIds});
 
   @override
   State<ShareEventPage> createState() => ShareEventPageState();
@@ -25,7 +25,8 @@ class ShareEventPageState extends State<ShareEventPage> {
   }
 
   void fetchGroups() async {
-    final List<Group> userGroups = await DatabaseService.getGroups(widget.uuid);
+    final List<Group> userGroups =
+        await DatabaseService.getGroups(AuthService.uid);
     setState(() {
       groups = userGroups;
       groupsIds = widget.groupIds;

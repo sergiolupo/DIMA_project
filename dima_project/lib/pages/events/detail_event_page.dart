@@ -1,3 +1,4 @@
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -8,13 +9,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
-  final String uuid;
   final String eventId;
   final String detailId;
 
   const DetailPage({
     super.key,
-    required this.uuid,
     required this.eventId,
     required this.detailId,
   });
@@ -23,6 +22,7 @@ class DetailPage extends ConsumerStatefulWidget {
 }
 
 class DetailPageState extends ConsumerState<DetailPage> {
+  final String uid = AuthService.uid;
   @override
   void initState() {
     ref.read(eventProvider(widget.eventId));
@@ -42,7 +42,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text('Detail Page',
               style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-          trailing: event.admin == widget.uuid
+          trailing: event.admin == uid
               ? CupertinoButton(
                   padding: EdgeInsets.zero,
                   child: Icon(CupertinoIcons.trash,
@@ -67,8 +67,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                               await DatabaseService.deleteDetail(
                                   event.id!, widget.detailId);
                               ref.invalidate(eventProvider(event.id!));
-                              ref.invalidate(
-                                  createdEventsProvider(widget.uuid));
+                              ref.invalidate(createdEventsProvider(uid));
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                               }
@@ -85,8 +84,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   color: CupertinoTheme.of(context).primaryColor,
                   onPressed: () {
                     ref.invalidate(eventProvider(event.id!));
-                    ref.invalidate(joinedEventsProvider(widget.uuid));
-                    ref.invalidate(createdEventsProvider(widget.uuid));
+                    ref.invalidate(joinedEventsProvider(uid));
+                    ref.invalidate(createdEventsProvider(uid));
                     Navigator.of(context).pop();
                   },
                 )
@@ -160,7 +159,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
                     builder: (context) => ShowEventMembersPage(
-                      uuid: widget.uuid,
                       eventId: widget.eventId,
                       detailId: widget.detailId,
                       admin: event.admin,
@@ -177,7 +175,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
               ),
             ),
             const SizedBox(height: 20),
-            if (event.admin != widget.uuid &&
+            if (event.admin != uid &&
                 DateTime.now().isBefore(DateTime(
                   detail.startDate!.year,
                   detail.startDate!.month,
@@ -192,9 +190,11 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   try {
                     debugPrint('Joining event');
                     await DatabaseService.toggleEventJoin(
-                        event.id!, detail.id!, widget.uuid);
+                      event.id!,
+                      detail.id!,
+                    );
                     ref.invalidate(eventProvider(event.id!));
-                    ref.invalidate(joinedEventsProvider(widget.uuid));
+                    ref.invalidate(joinedEventsProvider(uid));
                   } catch (e) {
                     debugPrint("Event has been deleted");
                     if (!context.mounted) return;
@@ -210,10 +210,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
                               child: const Text('OK'),
                               onPressed: () {
                                 ref.invalidate(eventProvider(event.id!));
-                                ref.invalidate(
-                                    joinedEventsProvider(widget.uuid));
-                                ref.invalidate(
-                                    createdEventsProvider(widget.uuid));
+                                ref.invalidate(joinedEventsProvider(uid));
+                                ref.invalidate(createdEventsProvider(uid));
                                 Navigator.of(context).pop();
                                 Navigator.of(newContext).pop();
                               },
@@ -225,9 +223,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   }
                 },
                 child: Text(
-                  detail.members!.contains(widget.uuid)
+                  detail.members!.contains(uid)
                       ? "Unsubscribe"
-                      : detail.requests!.contains(widget.uuid)
+                      : detail.requests!.contains(uid)
                           ? "Requested"
                           : "Subscribe",
                 ),

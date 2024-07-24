@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
@@ -12,8 +13,7 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
 class MessageUtils {
-  static void showBottomSheet(
-      BuildContext context, Message message, String uuid,
+  static void showBottomSheet(BuildContext context, Message message,
       {required VoidCallback? showCustomSnackbar}) {
     List<Widget> actions = [
       if (message.type == Type.text)
@@ -53,7 +53,10 @@ class MessageUtils {
           icon: CupertinoIcons.eye_fill,
           color: CupertinoColors.systemBlue,
           text: 'Read By',
-          onPressed: () => _showReaders(context, message, uuid),
+          onPressed: () => _showReaders(
+            context,
+            message,
+          ),
           context: context,
         ),
     ];
@@ -88,15 +91,19 @@ class MessageUtils {
     );
   }
 
-  static Widget buildReadByIcon(Message message, String uuid) {
-    bool hasRead = message.readBy!.any((element) => element.username == uuid);
+  static Widget buildReadByIcon(
+    Message message,
+  ) {
+    bool hasRead =
+        message.readBy!.any((element) => element.username == AuthService.uid);
     if (!hasRead) {
-      DatabaseService.updateMessageReadStatus(uuid, message);
+      DatabaseService.updateMessageReadStatus(message);
     }
 
     return message.sentByMe == true
         ? message.readBy!.isNotEmpty &&
-                !message.readBy!.every((element) => element.username == uuid)
+                !message.readBy!
+                    .every((element) => element.username == AuthService.uid)
             ? const Icon(LineAwesomeIcons.check_double_solid,
                 color: CupertinoColors.white, size: 15)
             : const Icon(LineAwesomeIcons.check_solid,
@@ -201,7 +208,10 @@ class MessageUtils {
     );
   }
 
-  static void _showReaders(BuildContext context, Message message, String uuid) {
+  static void _showReaders(
+    BuildContext context,
+    Message message,
+  ) {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -254,7 +264,8 @@ class MessageUtils {
                         itemCount: message.readBy!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final reader = message.readBy![index];
-                          if (message.sentByMe! && reader.username == uuid) {
+                          if (message.sentByMe! &&
+                              reader.username == AuthService.uid) {
                             return const SizedBox.shrink();
                           }
                           return ReadTile(user: reader);

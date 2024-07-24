@@ -12,11 +12,9 @@ import 'package:flutter/cupertino.dart';
 class EventMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
-  final String uuid;
   const EventMessageTile({
     required this.message,
     this.senderUsername,
-    required this.uuid,
     super.key,
   });
 
@@ -49,7 +47,6 @@ class EventMessageTileState extends State<EventMessageTile> {
             onLongPress: () => MessageUtils.showBottomSheet(
               context,
               widget.message,
-              widget.uuid,
               showCustomSnackbar: null,
             ),
             child: Stack(
@@ -135,7 +132,6 @@ class EventMessageTileState extends State<EventMessageTile> {
                                       CupertinoPageRoute(
                                         builder: (context) => EventPage(
                                           eventId: widget.message.content,
-                                          uuid: widget.uuid,
                                         ),
                                       ),
                                     );
@@ -217,7 +213,6 @@ class EventMessageTileState extends State<EventMessageTile> {
                       const SizedBox(width: 8),
                       MessageUtils.buildReadByIcon(
                         widget.message,
-                        widget.uuid,
                       ),
                     ],
                   ),
