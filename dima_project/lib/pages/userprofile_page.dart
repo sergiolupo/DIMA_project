@@ -64,7 +64,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
       loading: () => const CupertinoActivityIndicator(),
       error: (error, stackTrace) {
         return Center(
-          child: Text('Error: $error'),
+          child: Text('quiiiiii: $error'),
         );
       },
     );
