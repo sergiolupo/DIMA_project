@@ -10,20 +10,19 @@ class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final String uid = _firebaseAuth.currentUser!.uid;
 
-  static Future<UserData> signInWithEmailandPassword(
+  static Future<void> signInWithEmailandPassword(
       String email, String password) async {
     debugPrint("Trying to Login...");
-    UserCredential userCredential = await _firebaseAuth
-        .signInWithEmailAndPassword(email: email, password: password);
+    await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
     debugPrint("Signed In");
-    UserData user = await DatabaseService.getUserData(userCredential.user!.uid);
-    debugPrint("Registered");
-    return user;
+    return;
   }
 
   static Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
+      debugPrint("sign out ${_firebaseAuth.currentUser != null}");
     } catch (e) {
       debugPrint("Error Signing Out: $e");
     }

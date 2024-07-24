@@ -5,7 +5,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
   const OptionsPage({
@@ -88,7 +87,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
                   title: const Text('Exit'),
-                  onTap: () => _signOut(context),
+                  onTap: () => _signOut(),
                 ),
               ],
             ),
@@ -123,12 +122,10 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 ref.invalidate(joinedEventsProvider);
                 ref.invalidate(createdEventsProvider);
                 ref.invalidate(eventProvider);
-                AuthService.signOut();
-                AuthService.deleteUser();
+                await AuthService.signOut();
+                await AuthService.deleteUser();
                 if (!mounted) return;
                 Navigator.of(context).pop();
-                if (!mounted) return;
-                context.go('/login');
               },
             ),
           ],
@@ -179,8 +176,7 @@ class CupertinoListSection extends StatelessWidget {
   }
 }
 
-void _signOut(BuildContext context) {
+void _signOut() async {
   DatabaseService.updateActiveStatus(false);
-  AuthService.signOut();
-  context.go('/login');
+  await AuthService.signOut();
 }
