@@ -24,7 +24,7 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
         if (snapshot.hasError) {
           return const Text("ERROR DURING AUTHENTICATION");
         }
-        if (snapshot.hasData) {
+        if (snapshot.hasData && FirebaseAuth.instance.currentUser != null) {
           return const HomePage();
         } else {
           return const LoginPage();

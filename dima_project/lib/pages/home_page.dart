@@ -3,7 +3,6 @@ import 'package:dima_project/pages/groups/list_chat_page.dart';
 import 'package:dima_project/pages/responsive_userprofile.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';
-import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -104,8 +103,8 @@ class HomePageState extends ConsumerState<HomePage> {
             page = const SearchPage();
             break;
           case 4:
-            page = ResponsiveUserprofile(
-              user: AuthService.uid,
+            page = const ResponsiveUserprofile(
+              user: null,
             );
             break;
           default:
