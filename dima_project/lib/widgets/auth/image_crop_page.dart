@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -88,18 +89,18 @@ class ImageCropPageState extends State<ImageCropPage> {
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       ),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(children: [
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                height: 500,
-                color: CupertinoColors.lightBackgroundGray,
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? MediaQuery.of(context).size.height
+                    : MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? MediaQuery.of(context).size.height * 0.83
+                    : MediaQuery.of(context).size.width,
                 child: _selectedImagePath.isNotEmpty
                     ? Image.memory(
                         _selectedImagePath,
@@ -108,34 +109,26 @@ class ImageCropPageState extends State<ImageCropPage> {
                     : _getDefaultImage(),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                CupertinoButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedImagePath = Uint8List(0);
-                      widget.imageInsertPageKey(_selectedImagePath);
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.delete,
-                        color: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .color,
-                        size: 30,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
-      ),
+        Positioned(
+          bottom: 15,
+          right: 5,
+          child: CupertinoButton(
+            onPressed: () {
+              setState(() {
+                _selectedImagePath = Uint8List(0);
+                widget.imageInsertPageKey(_selectedImagePath);
+              });
+            },
+            child: Icon(
+              CupertinoIcons.delete,
+              color: CupertinoTheme.of(context).textTheme.textStyle.color,
+              size: 20,
+            ),
+          ),
+        ),
+      ]),
     );
   }
 

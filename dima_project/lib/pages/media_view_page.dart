@@ -73,7 +73,7 @@ class MediaViewPageState extends State<MediaViewPage> {
 
   Widget _buildMediaView(Message message) {
     return Container(
-      color: CupertinoColors.black,
+      color: CupertinoTheme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
           Center(
