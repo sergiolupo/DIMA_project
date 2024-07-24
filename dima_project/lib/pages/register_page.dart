@@ -273,7 +273,6 @@ class RegisterPageState extends State<RegisterPage> {
               email: widget.user!.email!,
               username: _usernameController.text,
               categories: selectedCategories,
-              isSignedInWithGoogle: true,
             ),
             widget.user!.uid,
             selectedImagePath,
@@ -288,7 +287,6 @@ class RegisterPageState extends State<RegisterPage> {
               password: _passwordController.text,
               username: _usernameController.text,
               categories: selectedCategories,
-              isSignedInWithGoogle: false,
             ),
             selectedImagePath,
           );

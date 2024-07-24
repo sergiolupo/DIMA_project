@@ -46,7 +46,6 @@ class DatabaseService {
       'events': [],
       'groupsRequests': [],
       'requests': [],
-      'isSignedInWithGoogle': user.isSignedInWithGoogle!,
     });
 
     await followersRef.doc(uuid).set({
@@ -55,8 +54,12 @@ class DatabaseService {
     });
   }
 
-  static Future<void> updateUserInformation(UserData user, Uint8List imagePath,
-      bool imageHasChanged, bool visibilityHasChange) async {
+  static Future<void> updateUserInformation(
+    UserData user,
+    Uint8List imagePath,
+    bool imageHasChanged,
+    bool visibilityHasChange,
+  ) async {
     if (imageHasChanged) {
       String imageUrl = imagePath.toString() == '[]' || imagePath.isEmpty
           ? ''

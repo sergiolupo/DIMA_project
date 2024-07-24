@@ -15,7 +15,6 @@ class UserData {
   final String? uid;
   bool? isPublic;
   List<String>? requests;
-  bool? isSignedInWithGoogle;
   UserData({
     required this.categories,
     this.imagePath,
@@ -31,7 +30,6 @@ class UserData {
     this.uid,
     this.isPublic,
     this.requests,
-    this.isSignedInWithGoogle,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -56,7 +54,6 @@ class UserData {
           .map((request) => request.toString())
           .toList()
           .cast<String>(),
-      isSignedInWithGoogle: documentSnapshot['isSignedInWithGoogle'],
     );
   }
 }

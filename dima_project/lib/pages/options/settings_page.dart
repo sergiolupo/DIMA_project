@@ -28,7 +28,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   late TextEditingController _nameController;
   late TextEditingController _surnameController;
   late TextEditingController _emailController;
-  late TextEditingController _passwordController;
   late TextEditingController _usernameController;
   late String _oldEmail;
   late String _oldUsername;
@@ -51,7 +50,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         _nameController = TextEditingController(text: user!.name);
         _surnameController = TextEditingController(text: user!.surname);
         _emailController = TextEditingController(text: user!.email);
-        _passwordController = TextEditingController();
         _usernameController = TextEditingController(text: user!.username);
         isPublic = user!.isPublic ?? true;
         selectedCategories = user!.categories;
@@ -195,11 +193,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             ]),
           ),
         ),
-        const SizedBox(height: 20),
-        !user!.isSignedInWithGoogle!
-            ? _buildTextField(
-                'Password', user!.password, isObscure, _passwordController)
-            : const SizedBox.shrink(),
       ],
     );
   }
@@ -248,7 +241,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     if (_nameController.text.isEmpty ||
         _surnameController.text.isEmpty ||
         _emailController.text.isEmpty ||
-        (_passwordController.text.isEmpty && !user!.isSignedInWithGoogle!) ||
         _usernameController.text.isEmpty) {
       _showDialog('Invalid choice', 'Please fill all the fields');
       return false;
@@ -262,11 +254,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     if (_oldUsername != _usernameController.text &&
         !await _validateUsername(_usernameController.text)) {
       _showDialog('Invalid choice', 'Username is already taken.');
-      return false;
-    }
-    if (_passwordController.text.length < 6 && !user!.isSignedInWithGoogle!) {
-      _showDialog(
-          'Invalid choice', 'Password must be at least 6 characters long.');
       return false;
     }
     return true;
@@ -295,7 +282,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     await DatabaseService.updateUserInformation(
       UserData(
         categories: selectedCategories,
-        password: _passwordController.text,
         email: _emailController.text,
         name: _nameController.text,
         surname: _surnameController.text,
@@ -336,7 +322,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     _nameController.dispose();
     _surnameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
     _usernameController.dispose();
     super.dispose();
   }
