@@ -271,20 +271,53 @@ class UserProfileState extends ConsumerState<UserProfile> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                CustomSelectOption(
-                  textLeft: 'Events created',
-                  textRight: 'Events joined',
-                  onChanged: (value) {
-                    setState(() {
-                      index = value;
-                    });
-                  },
-                ),
-                getCreatedEvents(user),
-                getJoinedEvents(user),
-              ],
+            child: followings.when(
+              data: (followings) {
+                return followings.any((element) =>
+                        element.uid! == widget.user ||
+                        isMyProfile ||
+                        user.isPublic!)
+                    ? Column(
+                        children: [
+                          CustomSelectOption(
+                            textLeft: 'Events created',
+                            textRight: 'Events joined',
+                            onChanged: (value) {
+                              setState(() {
+                                index = value;
+                              });
+                            },
+                          ),
+                          getCreatedEvents(user),
+                          getJoinedEvents(user),
+                        ],
+                      )
+                    : const Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              CupertinoIcons.lock,
+                              size: 100,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Private Profile",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: CupertinoColors.systemGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+              },
+              loading: () => const CupertinoActivityIndicator(),
+              error: (error, stackTrace) {
+                return Center(
+                  child: Text('Error: $error'),
+                );
+              },
             ),
           ),
         ],
