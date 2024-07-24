@@ -152,10 +152,10 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 ref.invalidate(joinedEventsProvider);
                 ref.invalidate(createdEventsProvider);
                 ref.invalidate(eventProvider);
-                await AuthService.signOut();
                 await AuthService.deleteUser();
                 if (!mounted) return;
                 Navigator.of(context).pop();
+                context.go('/');
               },
             ),
           ],
