@@ -273,8 +273,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: followings.when(
               data: (followings) {
-                return followings.any((element) =>
-                        element.uid! == widget.user ||
+                return (followings
+                            .any((element) => element.uid! == widget.user) ||
                         isMyProfile ||
                         user.isPublic!)
                     ? Column(
