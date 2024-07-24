@@ -1598,6 +1598,12 @@ class DatabaseService {
       await toggleFollowUnfollow(AuthService.uid, follower);
     }
     await followersRef.doc(AuthService.uid).delete();
+
+    //delete photo
+    if (doc['imageUrl'] != '') {
+      await StorageService.deleteImageFromStorage(doc['imageUrl']);
+    }
+
     //delete user
     await usersRef.doc(AuthService.uid).delete();
   }
