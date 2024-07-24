@@ -94,11 +94,11 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                           ],
                         ),
                         Stack(
-                          alignment: Alignment.bottomCenter,
+                          alignment: Alignment.topCenter,
                           children: [
                             Container(
-                              width: 400,
-                              height: 400,
+                              width: MediaQuery.of(context).size.width / 3,
+                              height: MediaQuery.of(context).size.width / 3,
                               color: CupertinoColors.white,
                               child: (event.imagePath != null &&
                                       event.imagePath!.isNotEmpty)
@@ -112,8 +112,9 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                     ),
                             ),
                             Container(
-                              margin: const EdgeInsets.only(top: 370),
-                              width: 400,
+                              margin: EdgeInsets.only(
+                                  top: MediaQuery.of(context).size.width * 0.3),
+                              width: MediaQuery.of(context).size.width / 3,
                               child: CupertinoButton.filled(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 24),
@@ -186,16 +187,17 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                       children: [
                         Expanded(
                           child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 2.3,
+                            width: MediaQuery.of(context).size.width / 2,
                             child: ListView.builder(
                               shrinkWrap: true,
                               itemCount: event.details!.length,
                               itemBuilder: (context, index) {
                                 return Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.calendar,
@@ -226,13 +228,14 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                     ),
                                     const SizedBox(height: 10.0),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Icon(
                                           CupertinoIcons.map_pin_ellipse,
                                           color: CupertinoTheme.of(context)
                                               .primaryColor,
                                         ),
-                                        const SizedBox(width: 10.0),
                                         FutureBuilder(
                                             future: EventService
                                                 .getAddressFromLatLng(event
@@ -248,7 +251,7 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .width /
-                                                            2.5,
+                                                            2,
                                                   ),
                                                   child: Text(
                                                     address,
@@ -268,7 +271,7 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                             }),
                                       ],
                                     ),
-                                    const SizedBox(height: 20.0),
+                                    const SizedBox(height: 10.0),
                                   ],
                                 );
                               },

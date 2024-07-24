@@ -29,46 +29,49 @@ class MediaViewPageState extends State<MediaViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemPink,
-        leading: CupertinoButton(
-          onPressed: () => Navigator.of(context).pop(),
-          padding: const EdgeInsets.only(left: 10),
-          color: CupertinoColors.systemPink,
-          child: const Icon(CupertinoIcons.back, color: CupertinoColors.white),
-        ),
-      ),
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: widget.messages.length,
-        itemBuilder: (context, index) {
-          final message = widget.messages[index];
-          return SafeArea(
-            child: FutureBuilder<UserData>(
-              future: DatabaseService.getUserData(message.sender),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CupertinoActivityIndicator());
-                } else if (snapshot.hasError) {
-                  return _buildMediaView(message, 'Account Deleted', '', '');
-                } else if (snapshot.hasData) {
-                  final user = snapshot.data!;
-                  return _buildMediaView(
-                      message, user.username, user.name, user.surname);
-                } else {
-                  return Container();
-                }
-              },
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.messages.length,
+      itemBuilder: (context, index) {
+        final message = widget.messages[index];
+        return CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+              leading: CupertinoButton(
+                onPressed: () => Navigator.of(context).pop(),
+                padding: const EdgeInsets.only(left: 10),
+                child: Icon(CupertinoIcons.back,
+                    color:
+                        CupertinoTheme.of(context).textTheme.textStyle.color),
+              ),
+              middle: SingleChildScrollView(
+                child: FutureBuilder<UserData>(
+                  future: DatabaseService.getUserData(message.sender),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CupertinoActivityIndicator());
+                    } else if (snapshot.hasError) {
+                      return _buildUserInfoRow(
+                        'Account Deleted',
+                        message.time.microsecondsSinceEpoch.toString(),
+                      );
+                    } else if (snapshot.hasData) {
+                      final user = snapshot.data!;
+                      return _buildUserInfoRow(user.username,
+                          message.time.microsecondsSinceEpoch.toString());
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ),
             ),
-          );
-        },
-      ),
+            child: _buildMediaView(message));
+      },
     );
   }
 
-  Widget _buildMediaView(
-      Message message, String username, String name, String surname) {
+  Widget _buildMediaView(Message message) {
     return Container(
       color: CupertinoColors.black,
       child: Stack(
@@ -82,94 +85,35 @@ class MediaViewPageState extends State<MediaViewPage> {
                   const Icon(CupertinoIcons.photo_fill),
             ),
           ),
-          Positioned(
-            top: 20,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildUserInfoRow(
-                    username, message.time.microsecondsSinceEpoch.toString()),
-                if (name.isNotEmpty && surname.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  _buildNameRow(name, surname),
-                ],
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildUserInfoRow(String username, String timestamp) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          username,
-          style: const TextStyle(
-            color: CupertinoColors.white,
-            fontSize: 18,
-            shadows: [
-              Shadow(
-                blurRadius: 10.0,
-                color: CupertinoColors.black,
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
+        Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
+          ),
+          child: Text(
+            overflow: TextOverflow.ellipsis,
+            username,
+            style: TextStyle(
+              color: CupertinoTheme.of(context).textTheme.textStyle.color,
+              fontSize: 16,
+            ),
           ),
         ),
         const SizedBox(width: 10),
         Text(
           DateUtil.getFormattedDateAndTime(context: context, time: timestamp),
-          style: const TextStyle(
-            color: CupertinoColors.white,
-            fontSize: 14,
-            shadows: [
-              Shadow(
-                blurRadius: 10.0,
-                color: CupertinoColors.black,
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNameRow(String name, String surname) {
-    return Row(
-      children: [
-        Text(
-          name,
-          style: const TextStyle(
-            color: CupertinoColors.white,
-            fontSize: 18,
-            shadows: [
-              Shadow(
-                blurRadius: 10.0,
-                color: CupertinoColors.black,
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 3),
-        Text(
-          surname,
-          style: const TextStyle(
-            color: CupertinoColors.white,
-            fontSize: 18,
-            shadows: [
-              Shadow(
-                blurRadius: 10.0,
-                color: CupertinoColors.black,
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
+          style: TextStyle(
+            color: CupertinoTheme.of(context).textTheme.textStyle.color,
+            fontSize: 16,
           ),
         ),
       ],
