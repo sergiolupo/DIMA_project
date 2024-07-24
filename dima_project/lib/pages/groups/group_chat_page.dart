@@ -10,6 +10,7 @@ import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/clipboard_banner.dart';
+import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/event_message_tile.dart';
@@ -20,7 +21,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group group;
@@ -131,7 +131,19 @@ class GroupChatPageState extends State<GroupChatPage> {
                         ),
                       )
                     : Container(),
-                _buildInputBar(),
+                InputBar(
+                  focusNode: _focusNode,
+                  messageEditingController: messageEditingController,
+                  onTapCamera: onTapCamera,
+                  sendMessage: sendMessage,
+                  showOverlay: () => showOverlay(context),
+                  onTypingChanged: (value) {},
+                  padding: const EdgeInsets.only(
+                      left: 15, right: 25, bottom: 25, top: 5),
+                  height: 50,
+                  buttonColor: CupertinoTheme.of(context).primaryColor,
+                  isGroupChat: true,
+                )
               ],
             ),
           );
@@ -153,79 +165,6 @@ class GroupChatPageState extends State<GroupChatPage> {
         }
       });
     }
-  }
-
-  Widget _buildInputBar() {
-    return Container(
-      key: _inputBarKey,
-      color: CupertinoColors.inactiveGray,
-      padding: const EdgeInsets.only(left: 15, right: 25, bottom: 25, top: 5),
-      child: Row(
-        children: [
-          Focus(
-            child: CupertinoButton(
-                padding: const EdgeInsets.all(2),
-                onPressed: () {
-                  _focusNode.unfocus();
-                  showOverlay(context);
-                },
-                child: const Icon(CupertinoIcons.add,
-                    color: CupertinoColors.white, size: 30)),
-          ),
-          Expanded(
-            child: SizedBox(
-              height: 50,
-              child: CupertinoTextField(
-                focusNode: _focusNode,
-                minLines: 1,
-                maxLines: 3,
-                controller: messageEditingController,
-                style: const TextStyle(color: CupertinoColors.white),
-                placeholder: "Type a message...",
-                placeholderStyle: const TextStyle(color: CupertinoColors.white),
-                decoration: BoxDecoration(
-                  border: Border.all(color: CupertinoColors.white),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                suffix: Container(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          messageEditingController.clear();
-                        },
-                        child: const Icon(CupertinoIcons.clear_circled,
-                            color: CupertinoColors.white),
-                      ),
-                      const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: () {
-                          onTapCamera();
-                        },
-                        child: const Icon(CupertinoIcons.camera_fill,
-                            color: CupertinoColors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          CupertinoButton(
-            borderRadius: BorderRadius.circular(20),
-            padding: const EdgeInsets.all(2),
-            color: CupertinoTheme.of(context).primaryColor,
-            onPressed: () {
-              sendMessage();
-            },
-            child: const Icon(LineAwesomeIcons.paper_plane,
-                color: CupertinoColors.white),
-          ),
-        ],
-      ),
-    );
   }
 
   void onTapCreateEvent() async {

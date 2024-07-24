@@ -10,6 +10,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/clipboard_banner.dart';
+import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/event_message_tile.dart';
@@ -19,7 +20,6 @@ import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
@@ -166,7 +166,27 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                   ),
                 )
               : Container(),
-          _buildInputBar(),
+          InputBar(
+            focusNode: _focusNode,
+            messageEditingController: messageEditingController,
+            onTapCamera: onTapCamera,
+            sendMessage: sendMessage,
+            showOverlay: () => showOverlay(context),
+            onTypingChanged: (value) {
+              if (value.isNotEmpty &&
+                  !isTyping &&
+                  widget.privateChat.id != null) {
+                isTyping = true;
+                DatabaseService.updateTyping(widget.privateChat.id!, true);
+              } else if (value.isEmpty && isTyping) {
+                isTyping = false;
+                if (widget.privateChat.id != null) {
+                  DatabaseService.updateTyping(widget.privateChat.id!, false);
+                }
+              }
+            },
+            buttonColor: CupertinoTheme.of(context).primaryColor,
+          )
         ],
       ),
     );
@@ -198,87 +218,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       }
       return const SizedBox(height: 0, width: 0);
     }
-  }
-
-  Widget _buildInputBar() {
-    return Container(
-      key: _inputBarKey,
-      color: CupertinoColors.inactiveGray,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      child: Row(
-        children: [
-          Focus(
-            child: CupertinoButton(
-                padding: const EdgeInsets.all(2),
-                onPressed: () {
-                  _focusNode.unfocus();
-                  showOverlay(context);
-                },
-                child: const Icon(CupertinoIcons.add,
-                    color: CupertinoColors.white, size: 30)),
-          ),
-          Expanded(
-            child: CupertinoTextField(
-              focusNode: _focusNode,
-              minLines: 1,
-              maxLines: 3,
-              controller: messageEditingController,
-              style: const TextStyle(color: CupertinoColors.white),
-              placeholder: "Type a message...",
-              placeholderStyle: const TextStyle(color: CupertinoColors.white),
-              decoration: BoxDecoration(
-                border: Border.all(color: CupertinoColors.white),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              onChanged: (value) {
-                if (value.isNotEmpty &&
-                    !isTyping &&
-                    widget.privateChat.id != null) {
-                  isTyping = true;
-                  DatabaseService.updateTyping(widget.privateChat.id!, true);
-                } else if (value.isEmpty && isTyping) {
-                  isTyping = false;
-                  if (widget.privateChat.id != null) {
-                    DatabaseService.updateTyping(widget.privateChat.id!, false);
-                  }
-                }
-              },
-              suffix: Container(
-                padding: const EdgeInsets.only(right: 10),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        messageEditingController.clear();
-                      },
-                      child: const Icon(CupertinoIcons.clear_circled,
-                          color: CupertinoColors.white),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: onTapCamera,
-                      child: const Icon(CupertinoIcons.camera_fill,
-                          color: CupertinoColors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          CupertinoButton(
-            borderRadius: BorderRadius.circular(20),
-            padding: const EdgeInsets.all(2),
-            color: CupertinoTheme.of(context).primaryColor,
-            onPressed: () {
-              sendMessage();
-            },
-            child: const Icon(LineAwesomeIcons.paper_plane,
-                color: CupertinoColors.white),
-          ),
-        ],
-      ),
-    );
   }
 
   void onTapCamera() async {
