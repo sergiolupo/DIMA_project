@@ -404,6 +404,7 @@ class DatabaseService {
 
   static Future<PrivateChat> getPrivateChatsFromMember(
       List<String> members) async {
+    members.sort();
     QuerySnapshot<Object?> value =
         await privateChatRef.where("members", isEqualTo: members).get();
     if (value.docs.isEmpty) {
