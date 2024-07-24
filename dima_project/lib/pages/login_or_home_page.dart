@@ -18,12 +18,13 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    return FutureBuilder(
+      future: FirebaseAuth.instance.authStateChanges().first,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text("ERROR DURING AUTHENTICATION");
         }
+        debugPrint("User: ${FirebaseAuth.instance.currentUser}");
         if (snapshot.hasData && FirebaseAuth.instance.currentUser != null) {
           return const HomePage();
         } else {

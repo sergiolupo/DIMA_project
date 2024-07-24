@@ -8,25 +8,25 @@ import 'package:dima_project/services/database_service.dart';
 
 class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static final String uid = _firebaseAuth.currentUser!.uid;
+  static String uid = _firebaseAuth.currentUser!.uid;
 
   static Future<void> signInWithEmailandPassword(
       String email, String password) async {
     debugPrint("Trying to Login...");
     await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-    debugPrint("Signed In");
+
+    uid = _firebaseAuth.currentUser!.uid;
+    debugPrint("Signed In with uuid: ${_firebaseAuth.currentUser!.uid}");
     return;
   }
 
   static Future<void> signOut() async {
     try {
-      await _firebaseAuth.signOut();
-      debugPrint("sign out ${_firebaseAuth.currentUser != null}");
+      return await _firebaseAuth.signOut();
     } catch (e) {
       debugPrint("Error Signing Out: $e");
     }
-    debugPrint("Signed Out");
   }
 
   static Future<User?> signInWithGoogle() async {

@@ -5,6 +5,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
   const OptionsPage({
@@ -87,7 +88,9 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
                   title: const Text('Exit'),
-                  onTap: () => _signOut(),
+                  onTap: () async {
+                    await _signOut(context);
+                  },
                 ),
               ],
             ),
@@ -95,6 +98,33 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+    try {
+      await DatabaseService.updateActiveStatus(false);
+
+      await AuthService.signOut();
+      ref.invalidate(userProvider);
+      ref.invalidate(followerProvider);
+      ref.invalidate(followingProvider);
+      ref.invalidate(groupsProvider);
+      ref.invalidate(joinedEventsProvider);
+      ref.invalidate(createdEventsProvider);
+      ref.invalidate(eventProvider);
+      if (!context.mounted) return;
+      context.go('/');
+    } catch (e) {
+      debugPrint("Failed to sign out: $e");
+    }
   }
 
   void deleteAccount() {
@@ -174,9 +204,4 @@ class CupertinoListSection extends StatelessWidget {
       children: children,
     );
   }
-}
-
-void _signOut() async {
-  DatabaseService.updateActiveStatus(false);
-  await AuthService.signOut();
 }
