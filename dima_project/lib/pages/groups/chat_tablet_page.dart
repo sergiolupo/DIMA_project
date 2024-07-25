@@ -4,12 +4,13 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/groups/create_group_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
+import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/group_chat_tile.dart';
+import 'package:dima_project/widgets/group_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
-import 'package:dima_project/widgets/private_chat_tile.dart';
+import 'package:dima_project/widgets/private_chat_tile_tablet.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatTabletPage extends StatefulWidget {
@@ -18,101 +19,100 @@ class ChatTabletPage extends StatefulWidget {
   });
 
   @override
-  ListChatPageState createState() => ListChatPageState();
+  ChatTabletPageState createState() => ChatTabletPageState();
 }
 
-class ListChatPageState extends State<ChatTabletPage> {
+class ChatTabletPageState extends State<ChatTabletPage> {
   Stream<List<PrivateChat>>? _privateChatsStream;
   Stream<List<Group>>? _groupsStream;
-  final String uid = AuthService.uid;
   String searchedText = "";
+  final String uid = AuthService.uid;
   int idx = 0;
+  Widget page = const SizedBox.shrink();
   @override
   void initState() {
     super.initState();
-    _subscribe();
+
+    _initStreams();
   }
 
-  void _subscribe() {
+  _initStreams() {
     _privateChatsStream = DatabaseService.getPrivateChatsStream();
     _groupsStream = DatabaseService.getGroupsStream();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (_groupsStream == null || _privateChatsStream == null)
-        ? const CupertinoPageScaffold(
-            child: Center(
-              child: CupertinoActivityIndicator(),
-            ),
-          )
+    return _privateChatsStream == null || _groupsStream == null
+        ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
-            backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
-            navigationBar: CupertinoNavigationBar(
-              transitionBetweenRoutes: false,
-              trailing: CupertinoButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => const CreateGroupPage()));
-                },
-                child: const Icon(
-                  CupertinoIcons.add_circled_solid,
-                  size: 30,
-                ),
-              ),
-              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-              middle: Text(
-                "Chat",
-                style: TextStyle(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-            ),
-            child: Column(
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CupertinoSearchTextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchedText = value;
-                      });
-                    },
-                  ),
-                ),
-                CustomSelectOption(
-                  textLeft: "Groups",
-                  textRight: "Private",
-                  onChanged: (value) {
-                    setState(() {
-                      idx = value;
-                      _subscribe();
-                    });
-                  },
-                ),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      groupList(),
-                      privateChatList(),
-                    ],
-                  ),
-                ),
+                getListChats(),
+                getChats(),
               ],
             ),
           );
+  }
+
+  Widget getChats() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.width * 0.6, child: page);
+  }
+
+  Widget getListChats() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width * 0.4,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSearchTextField(
+                  onChanged: (value) {
+                    setState(() {
+                      searchedText = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 100,
+              child: CustomSelectOption(
+                textLeft: "Groups",
+                textRight: "Private",
+                onChanged: (value) {
+                  setState(() {
+                    idx = value;
+                    _initStreams();
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              child: Column(
+                children: [
+                  groupList(),
+                  privateChatList(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget groupList() {
     return Visibility(
       visible: idx == 0,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery.of(context).size.height * 0.8,
         child: StreamBuilder<List<Group>>(
           stream: _groupsStream,
           builder: (context, snapshot) {
@@ -152,9 +152,17 @@ class ListChatPageState extends State<ChatTabletPage> {
                       return const SizedBox.shrink();
                     }
                     if (group.lastMessage == null) {
-                      return GroupChatTile(
+                      return GroupChatTileTablet(
                         group: group,
                         lastMessage: null,
+                        onPressed: (Group group) {
+                          setState(() {
+                            page = GroupChatPage(
+                              group: group,
+                              key: UniqueKey(),
+                            );
+                          });
+                        },
                       );
                     }
                     return StreamBuilder<UserData>(
@@ -168,7 +176,13 @@ class ListChatPageState extends State<ChatTabletPage> {
                           );
                         }
                         if (snapshot.hasError) {
-                          return GroupChatTile(
+                          return GroupChatTileTablet(
+                            onPressed: (Group group) {
+                              setState(() {
+                                page = GroupChatPage(
+                                    group: group, key: UniqueKey());
+                              });
+                            },
                             group: group,
                             lastMessage: LastMessage(
                               recentMessageType:
@@ -184,7 +198,13 @@ class ListChatPageState extends State<ChatTabletPage> {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
                           bool sentByMe = user.uid == uid;
-                          return GroupChatTile(
+                          return GroupChatTileTablet(
+                            onPressed: (Group group) {
+                              setState(() {
+                                page = GroupChatPage(
+                                    group: group, key: UniqueKey());
+                              });
+                            },
                             group: group,
                             lastMessage: LastMessage(
                               recentMessageType:
@@ -219,52 +239,11 @@ class ListChatPageState extends State<ChatTabletPage> {
     );
   }
 
-  Widget noChatWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          idx == 0
-              ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset(
-                      'assets/darkMode/search_groups_chat.png',
-                    )
-                  : Image.asset(
-                      'assets/images/search_groups_chat.png',
-                    )
-              : MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset(
-                      'assets/darkMode/search_chat.png',
-                    )
-                  : Image.asset(
-                      'assets/images/search_chat.png',
-                    ),
-          Text(
-            "No ${idx == 0 ? "groups" : "chats"} yet",
-            style: const TextStyle(
-              color: CupertinoColors.systemGrey,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            idx == 0
-                ? "Create a group to start chatting "
-                : "Start a private chat to start chatting",
-            style: const TextStyle(
-                color: CupertinoColors.systemGrey, fontSize: 15),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget privateChatList() {
     return Visibility(
       visible: idx == 1,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery.of(context).size.height * 0.8,
         child: StreamBuilder<List<PrivateChat>>(
           stream: _privateChatsStream,
           builder: (context, snapshot) {
@@ -323,7 +302,15 @@ class ListChatPageState extends State<ChatTabletPage> {
                           bool sentByMe =
                               privateChat.lastMessage!.recentMessageSender ==
                                   uid;
-                          return PrivateChatTile(
+                          return PrivateChatTileTablet(
+                            onPressed: (PrivateChat privateChat) => {
+                              setState(() {
+                                page = PrivateChatPage(
+                                  privateChat: privateChat,
+                                  key: UniqueKey(),
+                                );
+                              })
+                            },
                             privateChat: privateChat,
                             other: other,
                             lastMessage: LastMessage(
@@ -340,7 +327,15 @@ class ListChatPageState extends State<ChatTabletPage> {
                           );
                         } else {
                           if (snapshot.hasError) {
-                            return PrivateChatTile(
+                            return PrivateChatTileTablet(
+                              onPressed: (PrivateChat privateChat) => {
+                                setState(() {
+                                  page = PrivateChatPage(
+                                    privateChat: privateChat,
+                                    key: UniqueKey(),
+                                  );
+                                })
+                              },
                               privateChat: privateChat,
                               other: UserData(
                                 imagePath: '',
@@ -388,6 +383,47 @@ class ListChatPageState extends State<ChatTabletPage> {
             }
           },
         ),
+      ),
+    );
+  }
+
+  Widget noChatWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          idx == 0
+              ? MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Image.asset(
+                      'assets/darkMode/search_chat.png',
+                    )
+                  : Image.asset(
+                      'assets/images/search_groups_chat.png',
+                    )
+              : MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Image.asset(
+                      'assets/darkMode/search_chat.png',
+                    )
+                  : Image.asset(
+                      'assets/images/search_chat.png',
+                    ),
+          Text(
+            "No ${idx == 0 ? "groups" : "chats"} yet",
+            style: const TextStyle(
+              color: CupertinoColors.systemGrey,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            idx == 0
+                ? "Create a group to start chatting "
+                : "Start a private chat to start chatting",
+            style: const TextStyle(
+                color: CupertinoColors.systemGrey, fontSize: 15),
+          ),
+        ],
       ),
     );
   }

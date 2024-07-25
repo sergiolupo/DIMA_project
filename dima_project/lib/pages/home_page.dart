@@ -1,8 +1,12 @@
 import 'package:dima_project/pages/events/create_event_page.dart';
-import 'package:dima_project/pages/responsive_chat_page.dart';
-import 'package:dima_project/pages/responsive_userprofile.dart';
+import 'package:dima_project/pages/groups/chat_page.dart';
+import 'package:dima_project/pages/groups/chat_tablet_page.dart';
+import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';
+import 'package:dima_project/pages/userprofile_page.dart';
+import 'package:dima_project/pages/userprofile_tablet_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,7 +98,10 @@ class HomePageState extends ConsumerState<HomePage> {
             page = const NewsPage();
             break;
           case 1:
-            page = const ResponsiveChatPage();
+            page = const ResponsiveLayout(
+              mobileLayout: ChatPage(),
+              tabletLayout: ChatTabletPage(),
+            );
             break;
           case 2:
             page = const CreateEventPage();
@@ -103,8 +110,13 @@ class HomePageState extends ConsumerState<HomePage> {
             page = const SearchPage();
             break;
           case 4:
-            page = const ResponsiveUserprofile(
-              user: null,
+            page = ResponsiveLayout(
+              mobileLayout: UserProfile(
+                user: AuthService.uid,
+              ),
+              tabletLayout: UserProfileTablet(
+                user: AuthService.uid,
+              ),
             );
             break;
           default:
