@@ -43,6 +43,8 @@ class AuthService {
 
       final UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(credential);
+      uid = _firebaseAuth.currentUser!.uid;
+
       return userCredential.user;
     } else {
       return null;

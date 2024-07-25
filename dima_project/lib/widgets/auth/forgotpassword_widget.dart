@@ -22,7 +22,9 @@ class ForgotPasswordForm extends StatelessWidget {
               fontSize: 18,
             ),
           ),
-          EmailInputField(_usernameController),
+          EmailInputField(
+            _usernameController,
+          ),
           const SizedBox(height: 20),
           CupertinoButton(
             onPressed: () {

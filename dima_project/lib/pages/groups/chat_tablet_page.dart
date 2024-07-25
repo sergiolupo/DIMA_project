@@ -142,7 +142,7 @@ class ListChatPageState extends State<ChatTabletPage> {
                             MediaQuery.of(context).platformBrightness ==
                                     Brightness.dark
                                 ? Image.asset(
-                                    'assets/darkMode/no_chat_found.png')
+                                    'assets/darkMode/no_groups_chat_found.png')
                                 : Image.asset(
                                     'assets/images/no_groups_chat_found.png'),
                             const Text('No groups'),
@@ -227,7 +227,7 @@ class ListChatPageState extends State<ChatTabletPage> {
           idx == 0
               ? MediaQuery.of(context).platformBrightness == Brightness.dark
                   ? Image.asset(
-                      'assets/darkMode/search_chat.png',
+                      'assets/darkMode/search_groups_chat.png',
                     )
                   : Image.asset(
                       'assets/images/search_groups_chat.png',
