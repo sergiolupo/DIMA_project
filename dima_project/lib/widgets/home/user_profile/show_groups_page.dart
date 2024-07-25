@@ -1,6 +1,7 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/home/group_tile.dart';
+import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,6 +20,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   final String uid = AuthService.uid;
+
   @override
   void initState() {
     super.initState();
@@ -27,34 +29,40 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final groups = ref.watch(groupsProvider(widget.user));
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        leading: groups.when(
+          data: (data) => CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: const Icon(CupertinoIcons.back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          loading: () => const CupertinoActivityIndicator(),
+          error: (error, stackTrace) => const SizedBox.shrink(),
         ),
         middle: const Text('Groups'),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: CupertinoSearchTextField(
-                  controller: _searchController,
-                  onChanged: (_) => (setState(() {
+          child: groups.when(
+            data: (groups) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: CupertinoSearchTextField(
+                      controller: _searchController,
+                      onChanged: (_) => setState(() {
                         _searchText = _searchController.text;
-                      }))),
-            ),
-            Consumer(builder: (context, ref, _) {
-              final groups = ref.watch(groupsProvider(widget.user));
-              return groups.when(
-                data: (groups) {
-                  if (groups.isEmpty) {
-                    return SingleChildScrollView(
+                      }),
+                    ),
+                  ),
+                  if (groups.isEmpty)
+                    SingleChildScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       child: Column(
                         children: [
@@ -67,10 +75,9 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                           ),
                         ],
                       ),
-                    );
-                  }
-                  int i = 0;
-                  return ListView.builder(
+                    )
+                  else
+                    ListView.builder(
                       physics: const ClampingScrollPhysics(),
                       itemCount: groups.length,
                       shrinkWrap: true,
@@ -79,8 +86,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                         if (!group.name
                             .toLowerCase()
                             .contains(_searchText.toLowerCase())) {
-                          i += 1;
-                          if (i == groups.length) {
+                          if (index == groups.length - 1) {
                             return SingleChildScrollView(
                               physics: const NeverScrollableScrollPhysics(),
                               child: Column(
@@ -101,22 +107,23 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                           return const SizedBox.shrink();
                         }
                         return GroupTile(
-                            group: group,
-                            isJoined: group.members!.contains(uid)
-                                ? 1
-                                : group.requests!.contains(uid)
-                                    ? 2
-                                    : 0);
-                      });
-                },
-                loading: () => const CupertinoActivityIndicator(),
-                error: (error, stackTrace) {
-                  debugPrint('Error: $error');
-                  return const Text('Error');
-                },
+                          group: group,
+                          isJoined: group.members!.contains(uid)
+                              ? 1
+                              : group.requests!.contains(uid)
+                                  ? 2
+                                  : 0,
+                        );
+                      },
+                    ),
+                ],
               );
-            }),
-          ]),
+            },
+            loading: () => const CupertinoActivityIndicator(),
+            error: (error, stackTrace) {
+              return const DeleteAccountPage();
+            },
+          ),
         ),
       ),
     );
@@ -124,6 +131,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 }

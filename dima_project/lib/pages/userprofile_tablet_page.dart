@@ -5,6 +5,7 @@ import 'package:dima_project/pages/responsive_show_event.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
+import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_following_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
@@ -60,12 +61,15 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
 
     return user.when(
       data: (user) {
+        if (user.username == 'Deleted Account' && user.email == '') {
+          return const DeleteAccountPage();
+        }
         return _buildProfile(user);
       },
       loading: () => const CupertinoActivityIndicator(),
       error: (error, stackTrace) {
-        return Center(
-          child: Text('quiiii: $error'),
+        return const Center(
+          child: Text('Error'),
         );
       },
     );
@@ -220,8 +224,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                               },
                               loading: () => const CupertinoActivityIndicator(),
                               error: (error, stackTrace) {
-                                return Center(
-                                  child: Text('Error: $error'),
+                                return const Center(
+                                  child: Text('N.A.'),
                                 );
                               },
                             ),
@@ -320,8 +324,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
               },
               loading: () => const CupertinoActivityIndicator(),
               error: (error, stackTrace) {
-                return Center(
-                  child: Text('Error: $error'),
+                return const Center(
+                  child: Text('N.A.'),
                 );
               },
             ),
@@ -372,8 +376,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             );
           },
           error: (error, stackTrace) {
-            return Center(
-              child: Text('Error: $error'),
+            return const Center(
+              child: Text('N.A.'),
             );
           },
           loading: () => const CupertinoActivityIndicator()),
@@ -421,8 +425,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             );
           },
           error: (error, stackTrace) {
-            return Center(
-              child: Text('Error: $error'),
+            return const Center(
+              child: Text('N.A.'),
             );
           },
           loading: () => const CupertinoActivityIndicator()),
@@ -465,8 +469,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),
@@ -496,7 +500,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ShowFollowers(
+                builder: (context) => ShowFollowersPage(
                   user: widget.user,
                 ),
               ),
@@ -521,8 +525,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),
@@ -553,7 +557,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ShowFollowing(
+                builder: (context) => ShowFollowingPage(
                   user: widget.user,
                 ),
               ),
@@ -578,8 +582,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),

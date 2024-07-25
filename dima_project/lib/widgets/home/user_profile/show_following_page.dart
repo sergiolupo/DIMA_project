@@ -1,57 +1,70 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShowFollowing extends ConsumerWidget {
+class ShowFollowingPage extends ConsumerStatefulWidget {
   final String user;
-
-  const ShowFollowing({
+  const ShowFollowingPage({
     super.key,
     required this.user,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ShowFollowingPageState createState() => ShowFollowingPageState();
+}
+
+class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     final String uid = AuthService.uid;
     final AsyncValue<List<UserData>> asyncUsers =
-        ref.watch(followingProvider(user));
+        ref.watch(followingProvider(widget.user));
     final AsyncValue<List<UserData>> asyncFollowing =
         ref.watch(followingProvider(uid));
-    final TextEditingController searchController = TextEditingController();
-    String searchText = '';
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        leading: asyncUsers.when(
+          data: (data) => CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: const Icon(CupertinoIcons.back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          loading: () => const CupertinoActivityIndicator(),
+          error: (err, stack) => const SizedBox.shrink(),
         ),
         middle: const Text('Following'),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: CupertinoSearchTextField(
-                controller: searchController,
-                onChanged: (_) {
-                  searchText = searchController.text;
-                },
-              ),
-            ),
-            asyncUsers.when(
-              loading: () => const CupertinoActivityIndicator(),
-              error: (err, stack) => Center(child: Text('Error: $err')),
-              data: (users) {
-                if (users.isEmpty) {
-                  return Column(
+        child: asyncUsers.when(
+          loading: () => const CupertinoActivityIndicator(),
+          error: (err, stack) => const DeleteAccountPage(),
+          data: (users) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: CupertinoSearchTextField(
+                    controller: _searchController,
+                    onChanged: (_) {
+                      setState(() {
+                        _searchText = _searchController.text;
+                      });
+                    },
+                  ),
+                ),
+                if (users.isEmpty)
+                  Column(
                     children: [
                       MediaQuery.of(context).platformBrightness ==
                               Brightness.dark
@@ -62,56 +75,55 @@ class ShowFollowing extends ConsumerWidget {
                         child: Text('Not following anyone'),
                       ),
                     ],
-                  );
-                }
-                final filteredUsers = users.where((user) {
-                  return user.username
-                      .toLowerCase()
-                      .contains(searchText.toLowerCase());
-                }).toList();
-
-                if (filteredUsers.isEmpty) {
-                  return Column(
-                    children: [
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
-                          ? Image.asset('assets/darkMode/search_following.png')
-                          : Image.asset('assets/images/search_following.png'),
-                      const Center(
-                        child: Text('Not following anyone'),
-                      ),
-                    ],
-                  );
-                }
-
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: filteredUsers.length,
+                  )
+                else
+                  ListView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: users.length,
+                    shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      final userData = filteredUsers[index];
+                      final user = users[index];
+                      if (!user.username
+                          .toLowerCase()
+                          .contains(_searchText.toLowerCase())) {
+                        if (index == users.length - 1) {
+                          return Column(
+                            children: [
+                              MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
+                                  ? Image.asset(
+                                      'assets/darkMode/search_following.png')
+                                  : Image.asset(
+                                      'assets/images/search_following.png'),
+                              const Center(
+                                child: Text('Not following anyone'),
+                              ),
+                            ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }
 
                       return asyncFollowing.when(
                         loading: () => const CupertinoActivityIndicator(),
                         error: (err, stack) => Text('Error: $err'),
                         data: (following) {
                           return UserTile(
-                            user: userData,
-                            isFollowing:
-                                following.any((u) => u.uid == userData.uid)
-                                    ? 1
-                                    : userData.isPublic == false &&
-                                            userData.requests!.contains(uid)
-                                        ? 2
-                                        : 0,
+                            user: user,
+                            isFollowing: following.any((u) => u.uid == user.uid)
+                                ? 1
+                                : user.isPublic == false &&
+                                        user.requests!.contains(uid)
+                                    ? 2
+                                    : 0,
                           );
                         },
                       );
                     },
                   ),
-                );
-              },
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );

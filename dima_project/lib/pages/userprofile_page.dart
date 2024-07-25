@@ -5,6 +5,7 @@ import 'package:dima_project/pages/responsive_show_event.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
+import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_followers_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_following_page.dart';
 import 'package:dima_project/widgets/home/user_profile/show_groups_page.dart';
@@ -59,20 +60,15 @@ class UserProfileState extends ConsumerState<UserProfile> {
 
     return user.when(
       data: (user) {
+        if (user.username == 'Deleted Account' && user.email == '') {
+          return const DeleteAccountPage();
+        }
         return _buildProfile(user);
       },
       loading: () => const CupertinoActivityIndicator(),
       error: (error, stackTrace) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-          child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child:
-                  MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/account_canceled.png')
-                      : Image.asset('assets/images/account_canceled.png')),
+        return const Center(
+          child: Text('Error:'),
         );
       },
     );
@@ -241,8 +237,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                               },
                               loading: () => const CupertinoActivityIndicator(),
                               error: (error, stackTrace) {
-                                return Center(
-                                  child: Text('Error: $error'),
+                                return const Center(
+                                  child: Text('N.A.'),
                                 );
                               },
                             ),
@@ -341,8 +337,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
               },
               loading: () => const CupertinoActivityIndicator(),
               error: (error, stackTrace) {
-                return Center(
-                  child: Text('Error: $error'),
+                return const Center(
+                  child: Text('N.A.'),
                 );
               },
             ),
@@ -393,8 +389,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
             );
           },
           error: (error, stackTrace) {
-            return Center(
-              child: Text('Error: $error'),
+            return const Center(
+              child: Text('N.A.'),
             );
           },
           loading: () => const CupertinoActivityIndicator()),
@@ -442,8 +438,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
             );
           },
           error: (error, stackTrace) {
-            return Center(
-              child: Text('Error: $error'),
+            return const Center(
+              child: Text('N.A.'),
             );
           },
           loading: () => const CupertinoActivityIndicator()),
@@ -486,8 +482,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),
@@ -517,7 +513,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ShowFollowers(
+                builder: (context) => ShowFollowersPage(
                   user: widget.user,
                 ),
               ),
@@ -542,8 +538,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),
@@ -574,7 +570,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ShowFollowing(
+                builder: (context) => ShowFollowingPage(
                   user: widget.user,
                 ),
               ),
@@ -599,8 +595,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                   },
                   loading: () => const CupertinoActivityIndicator(),
                   error: (error, stackTrace) {
-                    return Center(
-                      child: Text('Error: $error'),
+                    return const Center(
+                      child: Text('N.A.'),
                     );
                   },
                 ),

@@ -1557,7 +1557,7 @@ class DatabaseService {
     final userDoc = await usersRef.doc(AuthService.uid).get();
     //exit all groups
     for (var group in userDoc['groups']) {
-      toggleGroupJoin(
+      await toggleGroupJoin(
         group,
       );
     }
