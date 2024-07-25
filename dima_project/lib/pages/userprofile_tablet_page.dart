@@ -78,8 +78,6 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                       Brightness.dark
                   ? Image.asset('assets/darkMode/account_canceled_tablet.png')
                   : Image.asset('assets/images/account_canceled_tablet.png')),
-        return const Center(
-          child: Text('Error'),
         );
       },
     );
