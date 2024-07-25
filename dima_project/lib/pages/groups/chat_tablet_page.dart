@@ -94,8 +94,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                 },
               ),
             ),
-            SizedBox(
-              child: Column(
+            Expanded(
+              child: Stack(
                 children: [
                   groupList(),
                   privateChatList(),

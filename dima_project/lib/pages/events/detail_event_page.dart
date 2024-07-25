@@ -42,43 +42,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text('Detail Page',
               style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-          trailing: event.admin == uid
-              ? CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  child: Icon(CupertinoIcons.trash,
-                      color: CupertinoTheme.of(context).primaryColor),
-                  onPressed: () async {
-                    // Show confirmation dialog
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (newContext) => CupertinoAlertDialog(
-                        title: const Text('Date cancellation'),
-                        content: const Text(
-                            'Are you sure you want to delete this event?'),
-                        actions: <Widget>[
-                          CupertinoDialogAction(
-                            child: const Text('Cancel'),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                          CupertinoDialogAction(
-                            child: const Text('Delete'),
-                            onPressed: () async {
-                              Navigator.of(newContext).pop();
-                              await DatabaseService.deleteDetail(
-                                  event.id!, widget.detailId);
-                              ref.invalidate(eventProvider(event.id!));
-                              ref.invalidate(createdEventsProvider(uid));
-                              if (context.mounted) {
-                                Navigator.of(context).pop();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                )
-              : null,
           leading: Navigator.canPop(context)
               ? CupertinoNavigationBarBackButton(
                   color: CupertinoTheme.of(context).primaryColor,
@@ -230,6 +193,45 @@ class DetailPageState extends ConsumerState<DetailPage> {
                           : "Subscribe",
                 ),
               ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              event.admin == uid
+                  ? CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: Icon(CupertinoIcons.trash,
+                          color: CupertinoTheme.of(context).primaryColor),
+                      onPressed: () async {
+                        // Show confirmation dialog
+                        showCupertinoDialog(
+                          context: context,
+                          builder: (newContext) => CupertinoAlertDialog(
+                            title: const Text('Date cancellation'),
+                            content: const Text(
+                                'Are you sure you want to delete this event?'),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: const Text('Cancel'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                              CupertinoDialogAction(
+                                child: const Text('Delete'),
+                                onPressed: () async {
+                                  Navigator.of(newContext).pop();
+                                  await DatabaseService.deleteDetail(
+                                      event.id!, widget.detailId);
+                                  ref.invalidate(eventProvider(event.id!));
+                                  ref.invalidate(createdEventsProvider(uid));
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  : Container(),
+            ]),
           ],
         ),
       );
