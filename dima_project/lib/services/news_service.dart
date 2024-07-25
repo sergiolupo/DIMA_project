@@ -69,7 +69,7 @@ class News {
 
   Future<void> getSliders() async {
     String url =
-        "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=61f777e67a9346cebb7cecf45b243af9";
+        "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=b7481c07197e4c23adb0d826b421fe82";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -109,7 +109,7 @@ class News {
     List<ArticleModel> news = [];
 
     String url =
-        "https://newsapi.org/v2/everything?q=$search&apiKey=61f777e67a9346cebb7cecf45b243af9";
+        "https://newsapi.org/v2/everything?q=$search&apiKey=b7481c07197e4c23adb0d826b421fe82";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);

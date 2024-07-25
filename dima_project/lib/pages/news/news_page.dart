@@ -28,7 +28,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
   List<ArticleModel>? articles;
   News news = News();
 
-  static const int numberOfNews =
+  int numberOfNews =
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
   int activeIndex = 0;
   final String uid = AuthService.uid;
