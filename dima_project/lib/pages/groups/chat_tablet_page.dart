@@ -221,42 +221,49 @@ class ListChatPageState extends State<ChatTabletPage> {
 
   Widget noChatWidget() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          idx == 0
-              ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset(
-                      'assets/darkMode/search_groups_chat.png',
-                    )
-                  : Image.asset(
-                      'assets/images/search_groups_chat.png',
-                    )
-              : MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset(
-                      'assets/darkMode/search_chat.png',
-                    )
-                  : Image.asset(
-                      'assets/images/search_chat.png',
-                    ),
-          Text(
-            "No ${idx == 0 ? "groups" : "chats"} yet",
-            style: const TextStyle(
-              color: CupertinoColors.systemGrey,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      child: ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                idx == 0
+                    ? MediaQuery.of(context).platformBrightness ==
+                            Brightness.dark
+                        ? Image.asset(
+                            'assets/darkMode/search_groups_chat.png',
+                          )
+                        : Image.asset(
+                            'assets/images/search_groups_chat.png',
+                          )
+                    : MediaQuery.of(context).platformBrightness ==
+                            Brightness.dark
+                        ? Image.asset(
+                            'assets/darkMode/search_chat.png',
+                          )
+                        : Image.asset(
+                            'assets/images/search_chat.png',
+                          ),
+                Text(
+                  "No ${idx == 0 ? "groups" : "chats"} yet",
+                  style: const TextStyle(
+                    color: CupertinoColors.systemGrey,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  idx == 0
+                      ? "Create a group to start chatting "
+                      : "Start a private chat to start chatting",
+                  style: const TextStyle(
+                      color: CupertinoColors.systemGrey, fontSize: 15),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            idx == 0
-                ? "Create a group to start chatting "
-                : "Start a private chat to start chatting",
-            style: const TextStyle(
-                color: CupertinoColors.systemGrey, fontSize: 15),
-          ),
-        ],
-      ),
+          ]),
     );
   }
 

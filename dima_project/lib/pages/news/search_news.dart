@@ -57,30 +57,36 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     if (_searchController.text.isNotEmpty) {
-                      return Stack(children: [
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                          child: SingleChildScrollView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            reverse: false,
-                            child: Column(
-                              children: [
-                                MediaQuery.of(context).platformBrightness ==
-                                        Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/no_news_found.png',
-                                      )
-                                    : Image.asset(
-                                        'assets/images/no_news_found.png'),
-                                const Text("No results found"),
-                              ],
-                            ),
+                      return SingleChildScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
+                                  ? Image.asset(
+                                      'assets/darkMode/no_news_found.png',
+                                    )
+                                  : Image.asset(
+                                      'assets/images/no_news_found.png'),
+                              const Text("No results found",
+                                  style: TextStyle(
+                                    color: CupertinoColors.systemGrey,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                              const SizedBox(height: 20),
+                              const Text(
+                                "Digit something else to find some news",
+                                style: TextStyle(
+                                    color: CupertinoColors.systemGrey,
+                                    fontSize: 15),
+                              ),
+                            ],
                           ),
-                        )
-                      ]);
+                        ),
+                      );
                     }
                     return SingleChildScrollView(
                       reverse: false,
@@ -92,7 +98,19 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                                     Brightness.dark
                                 ? Image.asset('assets/darkMode/search_news.png')
                                 : Image.asset('assets/images/search_news.png'),
-                            const Text("Search for news"),
+                            const Text("Search for news",
+                                style: TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            const SizedBox(height: 20),
+                            const Text(
+                              "Digit to find news",
+                              style: TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 15),
+                            ),
                           ],
                         ),
                       ),

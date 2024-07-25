@@ -3,6 +3,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 
@@ -268,12 +269,19 @@ class EventPageState extends ConsumerState<EventPage> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child:
-                    MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Image.asset('assets/darkMode/event_canceled.png')
-                        : Image.asset('assets/images/event_canceled.png')),
+            child: MediaQuery.of(context).size.width > Constants.limitWidth
+                ? MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Image.asset(
+                        'assets/darkMode/event_canceled_tablet.png',
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset('assets/images/event_canceled_tablet.png',
+                        fit: BoxFit.cover)
+                : MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Image.asset('assets/darkMode/event_canceled.png',
+                        fit: BoxFit.cover)
+                    : Image.asset('assets/images/event_canceled.png',
+                        fit: BoxFit.cover),
           );
         },
       );
