@@ -12,8 +12,8 @@ import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
 
-class ListChatPage extends StatefulWidget {
-  const ListChatPage({
+class ChatPage extends StatefulWidget {
+  const ChatPage({
     super.key,
   });
 
@@ -21,7 +21,7 @@ class ListChatPage extends StatefulWidget {
   ListChatPageState createState() => ListChatPageState();
 }
 
-class ListChatPageState extends State<ListChatPage> {
+class ListChatPageState extends State<ChatPage> {
   Stream<List<PrivateChat>>? _privateChatsStream;
   Stream<List<Group>>? _groupsStream;
   final String uid = AuthService.uid;
@@ -142,7 +142,7 @@ class ListChatPageState extends State<ListChatPage> {
                             MediaQuery.of(context).platformBrightness ==
                                     Brightness.dark
                                 ? Image.asset(
-                                    'assets/darkMode/no_chat_found.png')
+                                    'assets/darkMode/no_groups_chat_found.png')
                                 : Image.asset(
                                     'assets/images/no_groups_chat_found.png'),
                             const Text('No groups'),

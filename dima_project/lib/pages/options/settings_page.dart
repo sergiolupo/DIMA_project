@@ -101,7 +101,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                       padding: const EdgeInsets.all(0),
                       onPressed: () async {
                         if (await _validatePage()) {
-                          _saveUserData();
+                          await _saveUserData();
 
                           if (context.mounted) Navigator.of(context).pop();
                         }

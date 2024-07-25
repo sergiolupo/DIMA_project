@@ -65,7 +65,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
       loading: () => const CupertinoActivityIndicator(),
       error: (error, stackTrace) {
         return Center(
-          child: Text('Error: $error'),
+          child: Text('quiiii: $error'),
         );
       },
     );

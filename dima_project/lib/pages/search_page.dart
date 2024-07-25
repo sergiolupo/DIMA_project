@@ -152,7 +152,23 @@ class SearchPageState extends ConsumerState<SearchPage> {
                                         : Image.asset(
                                             'assets/images/no_events_found.png'),
                             Text(
-                                "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found"),
+                                "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found",
+                                style: const TextStyle(
+                                  color: CupertinoColors.inactiveGray,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            const SizedBox(height: 20),
+                            Text(
+                              searchIdx == 0
+                                  ? "Do not exist an account with this username"
+                                  : searchIdx == 1
+                                      ? "Do not exist a group with this name"
+                                      : "Do not exist an event with this name",
+                              style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 15),
+                            ),
                           ],
                         ),
                       ),
@@ -193,7 +209,23 @@ class SearchPageState extends ConsumerState<SearchPage> {
                                         : Image.asset(
                                             'assets/images/search_events.png'),
                             Text(
-                                "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}"),
+                                "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}",
+                                style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            const SizedBox(height: 20),
+                            Text(
+                              searchIdx == 0
+                                  ? "Digit to find new users"
+                                  : searchIdx == 1
+                                      ? "Digit to find new groups"
+                                      : "Digit to find new events",
+                              style: const TextStyle(
+                                  color: CupertinoColors.systemGrey,
+                                  fontSize: 15),
+                            ),
                           ],
                         ),
                       ),

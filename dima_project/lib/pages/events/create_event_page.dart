@@ -34,7 +34,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   Uint8List selectedImagePath = Uint8List(0);
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
   late AnimationController animationController;
-
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
   DateTime now = DateTime.now();
   LatLng? _selectedLocation;
   bool isPublic = true;
@@ -127,6 +128,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                     const SizedBox(height: 20),
                     CupertinoTextField(
                       controller: _eventNameController,
+                      onTap: () => _nameFocus.requestFocus(),
+                      focusNode: _nameFocus,
+                      onTapOutside: (PointerDownEvent event) =>
+                          _nameFocus.unfocus(),
                       textInputAction: TextInputAction.next,
                       padding: const EdgeInsets.all(16),
                       placeholder: 'Event Name',
@@ -161,6 +166,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                     ),
                     const SizedBox(height: 10),
                     CupertinoTextField(
+                      onTap: () => _descriptionFocus.requestFocus(),
+                      focusNode: _descriptionFocus,
+                      onTapOutside: (PointerDownEvent event) =>
+                          _descriptionFocus.unfocus(),
                       controller: _eventDescriptionController,
                       padding: const EdgeInsets.all(16),
                       placeholder: 'Event Description',

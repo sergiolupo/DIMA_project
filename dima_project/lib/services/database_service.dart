@@ -1554,15 +1554,15 @@ class DatabaseService {
   }
 
   static Future<void> deleteUser() async {
-    final doc = await usersRef.doc(AuthService.uid).get();
+    final userDoc = await usersRef.doc(AuthService.uid).get();
     //exit all groups
-    for (var group in doc['groups']) {
+    for (var group in userDoc['groups']) {
       toggleGroupJoin(
         group,
       );
     }
     //exit all events
-    for (var event in doc['events']) {
+    for (var event in userDoc['events']) {
       final eventId = event.split(':')[0];
       final detailId = event.split(':')[1];
 
@@ -1600,8 +1600,8 @@ class DatabaseService {
     await followersRef.doc(AuthService.uid).delete();
 
     //delete photo
-    if (doc['imageUrl'] != '') {
-      await StorageService.deleteImageFromStorage(doc['imageUrl']);
+    if (userDoc['imageUrl'] != '') {
+      await StorageService.deleteImageFromStorage(userDoc['imageUrl']);
     }
 
     //delete user

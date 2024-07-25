@@ -1,5 +1,5 @@
 import 'package:dima_project/pages/events/create_event_page.dart';
-import 'package:dima_project/pages/groups/list_chat_page.dart';
+import 'package:dima_project/pages/responsive_chat_page.dart';
 import 'package:dima_project/pages/responsive_userprofile.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';
@@ -94,7 +94,7 @@ class HomePageState extends ConsumerState<HomePage> {
             page = const NewsPage();
             break;
           case 1:
-            page = const ListChatPage();
+            page = const ResponsiveChatPage();
             break;
           case 2:
             page = const CreateEventPage();

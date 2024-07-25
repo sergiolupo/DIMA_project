@@ -315,7 +315,7 @@ class RegisterPageState extends State<RegisterPage> {
     context.go('/login');
   }
 
-  void registerUserGoogle(
+  Future<void> registerUserGoogle(
       UserData userData, String uuid, Uint8List imagePath) async {
     showCupertinoDialog(
       context: context,
