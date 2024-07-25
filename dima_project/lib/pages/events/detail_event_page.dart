@@ -7,6 +7,7 @@ import 'package:dima_project/widgets/show_date.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
   final String eventId;
@@ -231,6 +232,43 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       },
                     )
                   : Container(),
+              CupertinoButton(
+                onPressed: () {
+                  debugPrint('Adding event to calendar');
+                  Add2Calendar.addEvent2Cal(Event(
+                    title: event.name,
+                    description: event.description,
+                    location: 'location',
+                    startDate: DateTime(
+                        detail.startDate!.year,
+                        detail.startDate!.month,
+                        detail.startDate!.day,
+                        detail.startTime!.hour,
+                        detail.startTime!.minute),
+                    endDate: DateTime(
+                        detail.endDate!.year,
+                        detail.endDate!.month,
+                        detail.endDate!.day,
+                        detail.endTime!.hour,
+                        detail.endTime!.minute),
+                    iosParams: const IOSParams(
+                      reminder: Duration(hours: 1),
+                      //TODO add deeplink to our app
+                      url: 'https://www.youtube.com',
+                    ),
+                  ));
+                },
+                child: Row(
+                  children: [
+                    Text('Add to calendar',
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold)),
+                    Icon(CupertinoIcons.calendar,
+                        color: CupertinoTheme.of(context).primaryColor),
+                  ],
+                ),
+              ),
             ]),
           ],
         ),

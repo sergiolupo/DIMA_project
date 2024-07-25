@@ -57,6 +57,10 @@
 	<string>We need your location to provide better service.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to provide better service.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Calendar usage</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We need your contacts to provide better service.</string>
 <key>CFBundleURLTypes</key>
 <array>
     <dict>

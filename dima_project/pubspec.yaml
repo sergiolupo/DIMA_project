@@ -61,6 +61,7 @@ dependencies:
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
   line_awesome_flutter: ^3.0.1
+  add_2_calendar: ^2.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
