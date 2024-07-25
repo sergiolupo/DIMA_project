@@ -36,6 +36,12 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     _initStreams();
   }
 
+  void _navigateToPrivateChat(Widget newPage) {
+    setState(() {
+      page = newPage;
+    });
+  }
+
   _initStreams() {
     _privateChatsStream = DatabaseService.getPrivateChatsStream();
     _groupsStream = DatabaseService.getGroupsStream();
@@ -56,8 +62,11 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   }
 
   Widget getChats() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.width * 0.6, child: page);
+    return Align(
+      alignment: Alignment.topRight,
+      child:
+          SizedBox(width: MediaQuery.of(context).size.width * 0.6, child: page),
+    );
   }
 
   Widget getListChats() {
@@ -160,6 +169,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             page = GroupChatPage(
                               group: group,
                               key: UniqueKey(),
+                              navigateToPage: _navigateToPrivateChat,
+                              canNavigate: true,
                             );
                           });
                         },
@@ -180,7 +191,10 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             onPressed: (Group group) {
                               setState(() {
                                 page = GroupChatPage(
-                                    group: group, key: UniqueKey());
+                                    group: group,
+                                    key: UniqueKey(),
+                                    navigateToPage: _navigateToPrivateChat,
+                                    canNavigate: true);
                               });
                             },
                             group: group,
@@ -202,7 +216,10 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             onPressed: (Group group) {
                               setState(() {
                                 page = GroupChatPage(
-                                    group: group, key: UniqueKey());
+                                    group: group,
+                                    key: UniqueKey(),
+                                    navigateToPage: _navigateToPrivateChat,
+                                    canNavigate: true);
                               });
                             },
                             group: group,

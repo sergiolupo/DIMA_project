@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/groups/group_helper.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/storage_service.dart';
@@ -13,10 +14,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
+  final bool canNavigate;
+  final Function? navigateToPage;
   @override
   const EditGroupPage({
     super.key,
     required this.group,
+    required this.canNavigate,
+    this.navigateToPage,
   });
   @override
   EditGroupPageState createState() => EditGroupPageState();
@@ -74,7 +79,14 @@ class EditGroupPageState extends State<EditGroupPage> {
                   ? CupertinoButton(
                       padding: const EdgeInsets.all(0),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        if (widget.canNavigate) {
+                          widget.navigateToPage!(GroupInfoPage(
+                              group: widget.group,
+                              canNavigate: widget.canNavigate,
+                              navigateToPage: widget.navigateToPage));
+                        } else {
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: Text(
                         'Cancel',
@@ -106,9 +118,15 @@ class EditGroupPageState extends State<EditGroupPage> {
                           }
                           await updateGroup();
                           if (context.mounted) {
-                            Navigator.of(context).pop(
-                                await DatabaseService.getGroupFromId(
-                                    widget.group.id));
+                            if (widget.canNavigate) {
+                              widget.navigateToPage!(
+                                  await DatabaseService.getGroupFromId(
+                                      widget.group.id));
+                            } else {
+                              Navigator.of(context).pop(
+                                  await DatabaseService.getGroupFromId(
+                                      widget.group.id));
+                            }
                           }
                         }
                       },
@@ -145,7 +163,7 @@ class EditGroupPageState extends State<EditGroupPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => {
+                onTap: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => ImageCropPage(
@@ -158,7 +176,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                         },
                       ),
                     ),
-                  )
+                  );
                 },
                 child: CreateImageWidget.getGroupImageMemory(
                   selectedImagePath!,

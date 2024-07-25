@@ -65,6 +65,7 @@ class GroupChatTileState extends State<GroupChatTile> {
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
                 group: widget.group,
+                canNavigate: false,
               ),
             ),
           );

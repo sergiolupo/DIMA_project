@@ -1,16 +1,21 @@
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupRequestsPage extends StatefulWidget {
-  final String groupId;
+  final Group group;
   final List<UserData> requests;
-
+  final bool canNavigate;
+  final Function? navigateToPage;
   const GroupRequestsPage({
     super.key,
-    required this.groupId,
+    required this.group,
     required this.requests,
+    required this.canNavigate,
+    this.navigateToPage,
   });
 
   @override
@@ -33,6 +38,12 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
           padding: EdgeInsets.zero,
           child: const Icon(CupertinoIcons.back),
           onPressed: () {
+            if (widget.canNavigate) {
+              widget.navigateToPage!(GroupInfoPage(
+                  group: widget.group,
+                  canNavigate: widget.canNavigate,
+                  navigateToPage: widget.navigateToPage));
+            }
             Navigator.of(context).pop();
           },
         ),
@@ -65,7 +76,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 onTap: () async {
                   try {
                     await DatabaseService.acceptGroupRequest(
-                        widget.groupId, user.uid!);
+                        widget.group.id, user.uid!);
                     setState(() {
                       users.removeAt(index);
                     });
@@ -94,7 +105,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 onTap: () async {
                   try {
                     await DatabaseService.denyGroupRequest(
-                        widget.groupId, user.uid!);
+                        widget.group.id, user.uid!);
                     setState(() {
                       users.removeAt(index);
                     });

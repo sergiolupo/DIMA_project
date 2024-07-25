@@ -1,20 +1,29 @@
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
+import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowEventsPage extends StatefulWidget {
-  final String id;
   final bool isGroup;
   final List<Message> events;
-
+  final Group? group;
+  final Function? navigateToPage;
+  final bool canNavigate;
+  final PrivateChat? privateChat;
   const ShowEventsPage(
       {super.key,
-      required this.id,
       required this.isGroup,
-      required this.events});
+      required this.events,
+      this.navigateToPage,
+      required this.canNavigate,
+      this.privateChat,
+      this.group});
 
   @override
   ShowEventsPageState createState() => ShowEventsPageState();
@@ -40,7 +49,22 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                 fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
           ),
           leading: CupertinoButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if (widget.canNavigate) {
+                if (widget.isGroup) {
+                  widget.navigateToPage!(GroupInfoPage(
+                      group: widget.group!,
+                      canNavigate: widget.canNavigate,
+                      navigateToPage: widget.navigateToPage));
+                } else {
+                  widget.navigateToPage!(PrivateInfoPage(
+                    privateChat: widget.privateChat!,
+                  ));
+                }
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
             padding: const EdgeInsets.only(left: 10),
             child: Icon(CupertinoIcons.back,
                 color: CupertinoTheme.of(context).primaryColor),

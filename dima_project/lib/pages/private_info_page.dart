@@ -162,7 +162,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowMediasPage(
-                                      id: widget.privateChat.id!,
+                                      privateChat: widget.privateChat,
+                                      canNavigate: false,
                                       isGroup: false,
                                       medias: _media!,
                                     ),
@@ -211,7 +212,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowEventsPage(
-                                      id: widget.privateChat.id!,
+                                      privateChat: widget.privateChat,
+                                      canNavigate: false,
                                       isGroup: false,
                                       events: _events!,
                                     ),
@@ -260,7 +262,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowNewsPage(
-                                      id: widget.privateChat.id!,
+                                      privateChat: widget.privateChat,
+                                      canNavigate: false,
                                       isGroup: false,
                                       news: _news!,
                                     ),

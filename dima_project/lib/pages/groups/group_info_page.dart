@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/groups/edit_group_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/groups/group_requests_page.dart';
 import 'package:dima_project/pages/show_events_page.dart';
 import 'package:dima_project/pages/show_medias_page.dart';
@@ -15,9 +16,13 @@ import 'package:flutter/cupertino.dart';
 
 class GroupInfoPage extends StatefulWidget {
   final Group group;
+  final Function? navigateToPage;
+  final bool canNavigate;
   const GroupInfoPage({
     super.key,
     required this.group,
+    this.navigateToPage,
+    required this.canNavigate,
   });
 
   @override
@@ -83,6 +88,13 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(GroupChatPage(
+                        group: widget.group,
+                        canNavigate: widget.canNavigate,
+                        navigateToPage: widget.navigateToPage));
+                    return;
+                  }
                   Navigator.of(context).pop(group);
                 },
                 child: Icon(CupertinoIcons.back,
@@ -99,11 +111,20 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               trailing: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () async {
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(EditGroupPage(
+                      group: group!,
+                      canNavigate: true,
+                      navigateToPage: widget.navigateToPage,
+                    ));
+                    return;
+                  }
                   final Group? newGroup = await Navigator.push(
                       context,
                       CupertinoPageRoute(
                           builder: (context) => EditGroupPage(
                                 group: group!,
+                                canNavigate: false,
                               )));
 
                   if (newGroup != null) {
@@ -261,11 +282,22 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   ],
                                 ),
                                 onTap: () {
+                                  if (widget.canNavigate) {
+                                    widget.navigateToPage!(GroupRequestsPage(
+                                      group: widget.group,
+                                      requests: _requests!,
+                                      canNavigate: true,
+                                      navigateToPage: widget.navigateToPage,
+                                    ));
+                                    return;
+                                  }
+
                                   Navigator.of(context).push(
                                     CupertinoPageRoute(
                                       builder: (context) => GroupRequestsPage(
-                                        groupId: widget.group.id,
+                                        group: widget.group,
                                         requests: _requests!,
+                                        canNavigate: false,
                                       ),
                                     ),
                                   );
@@ -308,12 +340,23 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 ],
                               ),
                               onTap: () {
+                                if (widget.canNavigate) {
+                                  widget.navigateToPage!(ShowMediasPage(
+                                    isGroup: true,
+                                    medias: _media!,
+                                    canNavigate: true,
+                                    navigateToPage: widget.navigateToPage,
+                                    group: widget.group,
+                                  ));
+                                  return;
+                                }
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowMediasPage(
-                                      id: widget.group.id,
                                       isGroup: true,
                                       medias: _media!,
+                                      group: widget.group,
+                                      canNavigate: false,
                                     ),
                                   ),
                                 );
@@ -357,10 +400,21 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 ],
                               ),
                               onTap: () {
+                                if (widget.canNavigate) {
+                                  widget.navigateToPage!(ShowEventsPage(
+                                    group: widget.group,
+                                    isGroup: true,
+                                    events: _events!,
+                                    canNavigate: true,
+                                    navigateToPage: widget.navigateToPage,
+                                  ));
+                                  return;
+                                }
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowEventsPage(
-                                      id: widget.group.id,
+                                      group: widget.group,
+                                      canNavigate: false,
                                       isGroup: true,
                                       events: _events!,
                                     ),
@@ -406,10 +460,21 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 ],
                               ),
                               onTap: () {
+                                if (widget.canNavigate) {
+                                  widget.navigateToPage!(ShowNewsPage(
+                                    group: widget.group,
+                                    isGroup: true,
+                                    news: _news!,
+                                    canNavigate: true,
+                                    navigateToPage: widget.navigateToPage,
+                                  ));
+                                  return;
+                                }
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => ShowNewsPage(
-                                      id: widget.group.id,
+                                      group: widget.group,
+                                      canNavigate: false,
                                       isGroup: true,
                                       news: _news!,
                                     ),

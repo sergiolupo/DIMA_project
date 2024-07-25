@@ -34,6 +34,7 @@ class GroupTileState extends ConsumerState<GroupTile> {
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
                       group: widget.group,
+                      canNavigate: false,
                     ),
                   ),
                 );

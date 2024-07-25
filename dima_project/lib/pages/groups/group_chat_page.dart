@@ -24,10 +24,13 @@ import 'package:image_picker/image_picker.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group group;
-
+  final bool canNavigate;
+  final Function? navigateToPage;
   const GroupChatPage({
     super.key,
+    required this.canNavigate,
     required this.group,
+    this.navigateToPage,
   });
 
   @override
@@ -67,17 +70,30 @@ class GroupChatPageState extends State<GroupChatPage> {
               middle: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () async {
-                  final Group? newGroup = await Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => GroupInfoPage(
-                        group: group,
+                  if (!widget.canNavigate) {
+                    final Group? newGroup = await Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => GroupInfoPage(
+                          group: group,
+                          canNavigate: widget.canNavigate,
+                          navigateToPage: widget.navigateToPage,
+                        ),
                       ),
-                    ),
-                  );
-                  if (newGroup != null) {
-                    setState(() {
-                      group = newGroup;
-                    });
+                    );
+                    if (newGroup != null) {
+                      setState(() {
+                        group = newGroup;
+                      });
+                    }
+                  } else {
+                    widget.navigateToPage!(
+                      GroupInfoPage(
+                        group: group,
+                        canNavigate: widget.canNavigate,
+                        navigateToPage: widget.navigateToPage,
+                      ),
+                    );
+                    return;
                   }
                 },
                 child: Row(
@@ -103,18 +119,20 @@ class GroupChatPageState extends State<GroupChatPage> {
               ),
               backgroundColor:
                   CupertinoTheme.of(context).scaffoldBackgroundColor,
-              leading: CupertinoButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  } else {
-                    context.go("/home", extra: 1);
-                  }
-                },
-                child: Icon(CupertinoIcons.back,
-                    color: CupertinoTheme.of(context).primaryColor),
-              ),
+              leading: widget.canNavigate
+                  ? null
+                  : CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () {
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        } else {
+                          context.go("/home", extra: 1);
+                        }
+                      },
+                      child: Icon(CupertinoIcons.back,
+                          color: CupertinoTheme.of(context).primaryColor),
+                    ),
             ),
             child: Column(
               children: <Widget>[
