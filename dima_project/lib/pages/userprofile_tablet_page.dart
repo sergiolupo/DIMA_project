@@ -68,8 +68,16 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
       },
       loading: () => const CupertinoActivityIndicator(),
       error: (error, stackTrace) {
-        return const Center(
-          child: Text('Error'),
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+          child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: MediaQuery.of(context).platformBrightness ==
+                      Brightness.dark
+                  ? Image.asset('assets/darkMode/account_canceled_tablet.png')
+                  : Image.asset('assets/images/account_canceled_tablet.png')),
         );
       },
     );
