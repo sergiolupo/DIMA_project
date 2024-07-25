@@ -27,9 +27,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   List<String> selectedCategories = [];
   late TextEditingController _nameController;
   late TextEditingController _surnameController;
-  late TextEditingController _emailController;
   late TextEditingController _usernameController;
-  late String _oldEmail;
   late String _oldUsername;
   late Uint8List _oldImage;
   bool isPublic = true;
@@ -45,11 +43,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     user = await DatabaseService.getUserData(uid);
     if (user != null) {
       setState(() {
-        _oldEmail = user!.email;
         _oldUsername = user!.username;
         _nameController = TextEditingController(text: user!.name);
         _surnameController = TextEditingController(text: user!.surname);
-        _emailController = TextEditingController(text: user!.email);
         _usernameController = TextEditingController(text: user!.username);
         isPublic = user!.isPublic ?? true;
         selectedCategories = user!.categories;
@@ -146,10 +142,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
           ),
         ),
         const SizedBox(height: 30),
-        _buildTextField('Name', user!.name, false, _nameController),
-        _buildTextField('Surname', user!.surname, false, _surnameController),
-        _buildTextField('Username', user!.username, false, _usernameController),
-        _buildTextField('Email', user!.email, false, _emailController),
+        _buildTextField('Name', user!.name, _nameController),
+        _buildTextField('Surname', user!.surname, _surnameController),
+        _buildTextField('Username', user!.username, _usernameController),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.only(right: 10.0, left: 10),
@@ -197,8 +192,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildTextField(String labelText, String? placeholder, bool isObscure,
-      TextEditingController controller) {
+  Widget _buildTextField(
+      String labelText, String? placeholder, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
@@ -216,7 +211,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             placeholder: placeholder,
             controller: controller,
             padding: const EdgeInsets.all(15),
-            obscureText: isObscure,
             suffix: labelText == 'Password'
                 ? CupertinoButton(
                     padding: EdgeInsets.zero,
@@ -240,30 +234,15 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   Future<bool> _validatePage() async {
     if (_nameController.text.isEmpty ||
         _surnameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
         _usernameController.text.isEmpty) {
       _showDialog('Invalid choice', 'Please fill all the fields');
       return false;
     }
     debugPrint('Validating first page');
-    if (_oldEmail != _emailController.text &&
-        !_validateEmail(_emailController.text)) {
-      _showDialog('Invalid choice', 'Invalid email.');
-      return false;
-    }
+
     if (_oldUsername != _usernameController.text &&
         !await _validateUsername(_usernameController.text)) {
       _showDialog('Invalid choice', 'Username is already taken.');
-      return false;
-    }
-    return true;
-  }
-
-  bool _validateEmail(String email) {
-    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-        caseSensitive: false, multiLine: false);
-    if (!emailRegex.hasMatch(email)) {
-      debugPrint('Invalid email');
       return false;
     }
     return true;
@@ -282,7 +261,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     await DatabaseService.updateUserInformation(
       UserData(
         categories: selectedCategories,
-        email: _emailController.text,
+        email: user!.email,
         name: _nameController.text,
         surname: _surnameController.text,
         username: _usernameController.text,
@@ -321,7 +300,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   void dispose() {
     _nameController.dispose();
     _surnameController.dispose();
-    _emailController.dispose();
     _usernameController.dispose();
     super.dispose();
   }
