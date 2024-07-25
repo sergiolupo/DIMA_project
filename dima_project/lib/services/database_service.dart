@@ -1311,6 +1311,7 @@ class DatabaseService {
         }
       }
     }
+    eventsList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     return eventsList;
   }
 
@@ -1333,6 +1334,7 @@ class DatabaseService {
         }
       }
     }
+    eventsList.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     return eventsList;
   }
 
