@@ -167,6 +167,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                 )
               : Container(),
           InputBar(
+            key: _inputBarKey,
             focusNode: _focusNode,
             messageEditingController: messageEditingController,
             onTapCamera: onTapCamera,
@@ -367,7 +368,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       final Size size = renderBox.size;
       debugPrint(size.toString());
       _clipboardOverlay = OverlayEntry(
-        builder: (context) => ClipboardBanner(size: size),
+        builder: (context) => ClipboardBanner(size: size, canNavigate: false),
       );
       Overlay.of(context).insert(_clipboardOverlay!);
 

@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 
 class ClipboardBanner extends StatelessWidget {
   final Size size;
+  final bool canNavigate;
 
-  const ClipboardBanner({super.key, required this.size});
+  const ClipboardBanner(
+      {super.key, required this.size, required, required this.canNavigate});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: size.height,
-      left: 0,
+      left: canNavigate ? MediaQuery.of(context).size.width * 0.4 : 0,
       right: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

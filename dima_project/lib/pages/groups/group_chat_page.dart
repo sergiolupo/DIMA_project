@@ -150,6 +150,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                       )
                     : Container(),
                 InputBar(
+                  key: _inputBarKey,
                   focusNode: _focusNode,
                   messageEditingController: messageEditingController,
                   onTapCamera: onTapCamera,
@@ -173,7 +174,8 @@ class GroupChatPageState extends State<GroupChatPage> {
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
       _clipboardOverlay = OverlayEntry(
-        builder: (context) => ClipboardBanner(size: size),
+        builder: (context) =>
+            ClipboardBanner(size: size, canNavigate: widget.canNavigate),
       );
       Overlay.of(context).insert(_clipboardOverlay!);
 
