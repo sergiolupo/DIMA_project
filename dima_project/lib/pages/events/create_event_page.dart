@@ -110,7 +110,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
         middle: Text(
           'Create Event',
           style: TextStyle(
-              fontSize: 25, color: CupertinoTheme.of(context).primaryColor),
+              fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
         ),
       ),
       child: ListView(

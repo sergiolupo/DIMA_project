@@ -1,4 +1,3 @@
-import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/pages/groups/chat_page.dart';
 import 'package:dima_project/pages/groups/chat_tablet_page.dart';

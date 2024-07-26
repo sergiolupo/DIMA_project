@@ -102,42 +102,37 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     openStreetMapTileLayer,
                     CupertinoButton(
                       onPressed: () async {
-                        debugPrint('Opening maps');
-                        try {
-                          final coords = Coords(detail.latlng!.latitude,
-                              detail.latlng!.longitude);
-                          final title = event.name;
-                          final availableMaps = await MapLauncher.installedMaps;
+                        final coords = Coords(
+                            detail.latlng!.latitude, detail.latlng!.longitude);
+                        final title = event.name;
+                        final availableMaps = await MapLauncher.installedMaps;
 
-                          showCupertinoModalPopup(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SafeArea(
-                                child: SingleChildScrollView(
-                                  child: Wrap(
-                                    children: <Widget>[
-                                      for (var map in availableMaps)
-                                        CupertinoListTile(
-                                          onTap: () => map.showMarker(
-                                            coords: coords,
-                                            title: title,
-                                          ),
-                                          title: Text(map.mapName),
-                                          leading: SvgPicture.asset(
-                                            map.icon,
-                                            height: 30.0,
-                                            width: 30.0,
-                                          ),
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SafeArea(
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  children: <Widget>[
+                                    for (var map in availableMaps)
+                                      CupertinoListTile(
+                                        onTap: () => map.showMarker(
+                                          coords: coords,
+                                          title: title,
                                         ),
-                                    ],
-                                  ),
+                                        title: Text(map.mapName),
+                                        leading: SvgPicture.asset(
+                                          map.icon,
+                                          height: 30.0,
+                                          width: 30.0,
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                              );
-                            },
-                          );
-                        } catch (e) {
-                          print(e);
-                        }
+                              ),
+                            );
+                          },
+                        );
                       },
                       child: MarkerLayer(
                         markers: [
