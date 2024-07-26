@@ -21,8 +21,8 @@ class ChatTabletPage extends StatefulWidget {
 }
 
 class ChatTabletPageState extends State<ChatTabletPage> {
-  Stream<List<PrivateChat>>? _privateChatsStream;
-  Stream<List<Group>>? _groupsStream;
+  late final Stream<List<PrivateChat>> _privateChatsStream;
+  late final Stream<List<Group>> _groupsStream;
   String searchedText = "";
   final String uid = AuthService.uid;
   int idx = 0;
@@ -30,8 +30,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   @override
   void initState() {
     super.initState();
-
-    _initStreams();
+    _privateChatsStream = DatabaseService.getPrivateChatsStream();
+    _groupsStream = DatabaseService.getGroupsStream();
   }
 
   void _navigateToPrivateChat(Widget newPage) {
@@ -40,23 +40,16 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     });
   }
 
-  _initStreams() {
-    _privateChatsStream = DatabaseService.getPrivateChatsStream();
-    _groupsStream = DatabaseService.getGroupsStream();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _privateChatsStream == null || _groupsStream == null
-        ? const CupertinoActivityIndicator()
-        : CupertinoPageScaffold(
-            child: Row(
-              children: [
-                getListChats(),
-                getChats(),
-              ],
-            ),
-          );
+    return CupertinoPageScaffold(
+      child: Row(
+        children: [
+          getListChats(),
+          getChats(),
+        ],
+      ),
+    );
   }
 
   Widget getChats() {
@@ -116,7 +109,6 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                   onChanged: (value) {
                     setState(() {
                       idx = value;
-                      _initStreams();
                     });
                   },
                 ),
@@ -137,156 +129,156 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   }
 
   Widget groupList() {
-    return Visibility(
-      visible: idx == 0,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: StreamBuilder<List<Group>>(
-          stream: _groupsStream,
-          builder: (context, snapshot) {
-            int i = 0;
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CupertinoActivityIndicator(),
-              );
-            }
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: StreamBuilder<List<Group>>(
+        stream: _groupsStream,
+        builder: (context, snapshot) {
+          if (idx == 1) {
+            return const SizedBox.shrink();
+          }
+          int i = 0;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          }
 
-            if (snapshot.hasData) {
-              var data = snapshot.data!;
-              if (data.isNotEmpty) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final group = data[index];
-                    if (!group.name
-                        .toLowerCase()
-                        .contains(searchedText.toLowerCase())) {
-                      i += 1;
-                      if (i == data.length) {
-                        return Center(
-                            child: Column(
-                          children: [
-                            MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/no_groups_chat_found.png')
-                                : Image.asset(
-                                    'assets/images/no_groups_chat_found.png'),
-                            const Text('No groups'),
-                          ],
-                        ));
-                      }
-                      return const SizedBox.shrink();
+          if (snapshot.hasData) {
+            var data = snapshot.data!;
+            if (data.isNotEmpty) {
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final group = data[index];
+                  if (!group.name
+                      .toLowerCase()
+                      .contains(searchedText.toLowerCase())) {
+                    i += 1;
+                    if (i == data.length) {
+                      return Center(
+                          child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset(
+                                  'assets/darkMode/no_groups_chat_found.png')
+                              : Image.asset(
+                                  'assets/images/no_groups_chat_found.png'),
+                          const Text('No groups'),
+                        ],
+                      ));
                     }
-                    return GroupChatTileTablet(
-                      group: group,
-                      onPressed: (Group group) {
-                        setState(() {
-                          page = GroupChatPage(
-                            group: group,
-                            key: UniqueKey(),
-                            navigateToPage: _navigateToPrivateChat,
-                            canNavigate: true,
-                          );
-                        });
-                      },
-                    );
-                  },
-                );
-              } else {
-                return noChatWidget();
-              }
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CupertinoActivityIndicator(),
+                    return const SizedBox.shrink();
+                  }
+                  return GroupChatTileTablet(
+                    group: group,
+                    onPressed: (Group group) {
+                      setState(() {
+                        group.lastMessage!.unreadMessages = 0;
+                        page = GroupChatPage(
+                          group: group,
+                          key: UniqueKey(),
+                          navigateToPage: _navigateToPrivateChat,
+                          canNavigate: true,
+                        );
+                      });
+                    },
+                  );
+                },
               );
             } else {
-              return Container(); // Return an empty container or handle other cases as needed
+              return noChatWidget();
             }
-          },
-        ),
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          } else {
+            return Container(); // Return an empty container or handle other cases as needed
+          }
+        },
       ),
     );
   }
 
   Widget privateChatList() {
-    return Visibility(
-      visible: idx == 1,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: StreamBuilder<List<PrivateChat>>(
-          stream: _privateChatsStream,
-          builder: (context, snapshot) {
-            int i = 0;
-            if (snapshot.hasData) {
-              var data = snapshot.data!;
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: StreamBuilder<List<PrivateChat>>(
+        stream: _privateChatsStream,
+        builder: (context, snapshot) {
+          if (idx == 0) {
+            return const SizedBox.shrink();
+          }
+          int i = 0;
+          if (snapshot.hasData) {
+            var data = snapshot.data!;
 
-              if (data.isNotEmpty) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final privateChat = data[index];
+            if (data.isNotEmpty) {
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final privateChat = data[index];
 
-                    if (privateChat.lastMessage == null) {
-                      return const SizedBox();
+                  if (privateChat.lastMessage == null) {
+                    return const SizedBox();
+                  }
+                  final other = privateChat.other!;
+
+                  if (!other.username
+                      .toLowerCase()
+                      .contains(searchedText.toLowerCase())) {
+                    i += 1;
+                    if (i == data.length) {
+                      return Center(
+                          child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset('assets/darkMode/no_chat_found.png')
+                              : Image.asset('assets/images/no_chat_found.png'),
+                          const Text('No private chats'),
+                        ],
+                      ));
                     }
-                    final other = privateChat.other!;
+                    return const SizedBox.shrink();
+                  }
 
-                    if (!other.username
-                        .toLowerCase()
-                        .contains(searchedText.toLowerCase())) {
-                      i += 1;
-                      if (i == data.length) {
-                        return Center(
-                            child: Column(
-                          children: [
-                            MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/no_chat_found.png')
-                                : Image.asset(
-                                    'assets/images/no_chat_found.png'),
-                            const Text('No private chats'),
-                          ],
-                        ));
-                      }
-                      return const SizedBox.shrink();
-                    }
-
-                    bool sentByMe =
-                        privateChat.lastMessage!.recentMessageSender == uid;
-                    privateChat.lastMessage!.sentByMe = sentByMe;
-                    if (privateChat.lastMessage!.recentMessageSender != uid) {
-                      privateChat.lastMessage!.recentMessageSender =
-                          privateChat.other!.username;
-                    }
-                    return PrivateChatTileTablet(
-                      onPressed: (PrivateChat privateChat) => {
-                        setState(() {
-                          page = PrivateChatPage(
-                            privateChat: privateChat,
-                            key: UniqueKey(),
-                          );
-                        })
-                      },
-                      privateChat: privateChat,
-                    );
-                  },
-                );
-              } else {
-                return noChatWidget();
-              }
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CupertinoActivityIndicator(),
+                  bool sentByMe =
+                      privateChat.lastMessage!.recentMessageSender == uid;
+                  privateChat.lastMessage!.sentByMe = sentByMe;
+                  if (privateChat.lastMessage!.recentMessageSender != uid) {
+                    privateChat.lastMessage!.recentMessageSender =
+                        privateChat.other!.username;
+                  }
+                  return PrivateChatTileTablet(
+                    onPressed: (PrivateChat privateChat) => {
+                      setState(() {
+                        privateChat.lastMessage!.unreadMessages = 0;
+                        page = PrivateChatPage(
+                          privateChat: privateChat,
+                          key: UniqueKey(),
+                        );
+                      })
+                    },
+                    privateChat: privateChat,
+                  );
+                },
               );
             } else {
-              return Container(); // Return an empty container or handle other cases as needed
+              return noChatWidget();
             }
-          },
-        ),
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          } else {
+            return Container(); // Return an empty container or handle other cases as needed
+          }
+        },
       ),
     );
   }
