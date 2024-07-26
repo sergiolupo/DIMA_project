@@ -5,6 +5,7 @@ class OptionsMenu extends StatelessWidget {
   final VoidCallback onTapCamera;
   final VoidCallback onTapPhoto;
   final OverlayEntry? overlayEntry;
+  final bool? isTablet;
 
   const OptionsMenu({
     super.key,
@@ -12,6 +13,7 @@ class OptionsMenu extends StatelessWidget {
     required this.onTapCamera,
     required this.onTapPhoto,
     required this.overlayEntry,
+    this.isTablet,
   });
 
   @override
@@ -30,11 +32,11 @@ class OptionsMenu extends StatelessWidget {
         ),
         Positioned(
           bottom: 0,
-          left: 0,
+          left: isTablet! ? MediaQuery.of(context).size.width * 0.4 : 0,
           right: 0,
           child: Container(
             padding: const EdgeInsets.only(top: 10),
-            height: 100,
+            height: 80,
             color: CupertinoColors.inactiveGray,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

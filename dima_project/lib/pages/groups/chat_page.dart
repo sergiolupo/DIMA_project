@@ -65,7 +65,7 @@ class ListChatPageState extends State<ChatPage> {
               ),
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               middle: Text(
-                "Chat",
+                "Chats",
                 style: TextStyle(
                   color: CupertinoTheme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,

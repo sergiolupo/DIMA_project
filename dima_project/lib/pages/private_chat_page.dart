@@ -426,6 +426,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   void showOverlay(BuildContext context) {
     _optionsMenuOverlay = OverlayEntry(
         builder: (context) => OptionsMenu(
+            isTablet: false,
             onTapCamera: onTapCamera,
             onTapPhoto: onTapPhoto,
             overlayEntry: _optionsMenuOverlay));

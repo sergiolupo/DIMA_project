@@ -73,45 +73,66 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width * 0.4,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CupertinoSearchTextField(
+      child: CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text(
+            'Chats',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+          ),
+          trailing: CupertinoButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () {
+              /*Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => const CreateGroupPage()));*/
+            },
+            child: const Icon(
+              CupertinoIcons.add_circled_solid,
+              size: 30,
+            ),
+          ),
+        ),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CupertinoSearchTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        searchedText = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: CustomSelectOption(
+                  textLeft: "Groups",
+                  textRight: "Private",
                   onChanged: (value) {
                     setState(() {
-                      searchedText = value;
+                      idx = value;
+                      _initStreams();
                     });
                   },
                 ),
               ),
-            ),
-            SizedBox(
-              height: 100,
-              child: CustomSelectOption(
-                textLeft: "Groups",
-                textRight: "Private",
-                onChanged: (value) {
-                  setState(() {
-                    idx = value;
-                    _initStreams();
-                  });
-                },
+              Expanded(
+                child: Stack(
+                  children: [
+                    groupList(),
+                    privateChatList(),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Stack(
-                children: [
-                  groupList(),
-                  privateChatList(),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

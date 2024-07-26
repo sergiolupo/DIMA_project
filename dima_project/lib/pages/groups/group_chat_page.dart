@@ -250,7 +250,6 @@ class GroupChatPageState extends State<GroupChatPage> {
           return ListView.builder(
             shrinkWrap: true,
             reverse: true,
-            physics: const ClampingScrollPhysics(),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
@@ -360,6 +359,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         onTapCamera: onTapCamera,
         onTapPhoto: onTapPhoto,
         overlayEntry: _optionsMenuOverlay,
+        isTablet: widget.canNavigate,
       ),
     );
 
