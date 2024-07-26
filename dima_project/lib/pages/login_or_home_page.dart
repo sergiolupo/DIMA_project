@@ -2,6 +2,7 @@ import 'package:dima_project/pages/home_page.dart';
 import 'package:dima_project/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class LoginOrHomePage extends StatefulWidget {
   const LoginOrHomePage({super.key});
@@ -14,6 +15,7 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
   @override
   void initState() {
     super.initState();
+    FlutterNativeSplash.remove();
   }
 
   @override
