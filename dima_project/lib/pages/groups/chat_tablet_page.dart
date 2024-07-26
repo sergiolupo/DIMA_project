@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -181,82 +179,17 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                       }
                       return const SizedBox.shrink();
                     }
-                    if (group.lastMessage == null) {
-                      return GroupChatTileTablet(
-                        group: group,
-                        lastMessage: null,
-                        onPressed: (Group group) {
-                          setState(() {
-                            page = GroupChatPage(
-                              group: group,
-                              key: UniqueKey(),
-                              navigateToPage: _navigateToPrivateChat,
-                              canNavigate: true,
-                            );
-                          });
-                        },
-                      );
-                    }
-                    return StreamBuilder<UserData>(
-                      stream: DatabaseService.getUserDataFromUID(
-                          group.lastMessage!.recentMessageSender),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CupertinoActivityIndicator(),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return GroupChatTileTablet(
-                            onPressed: (Group group) {
-                              setState(() {
-                                page = GroupChatPage(
-                                    group: group,
-                                    key: UniqueKey(),
-                                    navigateToPage: _navigateToPrivateChat,
-                                    canNavigate: true);
-                              });
-                            },
+                    return GroupChatTileTablet(
+                      group: group,
+                      onPressed: (Group group) {
+                        setState(() {
+                          page = GroupChatPage(
                             group: group,
-                            lastMessage: LastMessage(
-                              recentMessageType:
-                                  group.lastMessage!.recentMessageType,
-                              recentMessage: group.lastMessage!.recentMessage,
-                              recentMessageSender: 'Deleted Account',
-                              recentMessageTimestamp:
-                                  group.lastMessage!.recentMessageTimestamp,
-                              sentByMe: false,
-                            ),
+                            key: UniqueKey(),
+                            navigateToPage: _navigateToPrivateChat,
+                            canNavigate: true,
                           );
-                        }
-                        if (snapshot.hasData) {
-                          final user = snapshot.data!;
-                          bool sentByMe = user.uid == uid;
-                          return GroupChatTileTablet(
-                            onPressed: (Group group) {
-                              setState(() {
-                                page = GroupChatPage(
-                                    group: group,
-                                    key: UniqueKey(),
-                                    navigateToPage: _navigateToPrivateChat,
-                                    canNavigate: true);
-                              });
-                            },
-                            group: group,
-                            lastMessage: LastMessage(
-                              recentMessageType:
-                                  group.lastMessage!.recentMessageType,
-                              recentMessage: group.lastMessage!.recentMessage,
-                              recentMessageSender: user.username,
-                              recentMessageTimestamp:
-                                  group.lastMessage!.recentMessageTimestamp,
-                              sentByMe: sentByMe,
-                            ),
-                          );
-                        } else {
-                          return Container(); // Return an empty container or handle other cases as needed
-                        }
+                        });
                       },
                     );
                   },
@@ -299,113 +232,46 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     if (privateChat.lastMessage == null) {
                       return const SizedBox();
                     }
+                    final other = privateChat.other!;
 
-                    return StreamBuilder<UserData>(
-                      stream: DatabaseService.getUserDataFromUID(
-                          privateChat.members[0] == uid
-                              ? privateChat.members[1]
-                              : privateChat.members[0]),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CupertinoActivityIndicator(),
-                          );
-                        }
+                    if (!other.username
+                        .toLowerCase()
+                        .contains(searchedText.toLowerCase())) {
+                      i += 1;
+                      if (i == data.length) {
+                        return Center(
+                            child: Column(
+                          children: [
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/no_chat_found.png')
+                                : Image.asset(
+                                    'assets/images/no_chat_found.png'),
+                            const Text('No private chats'),
+                          ],
+                        ));
+                      }
+                      return const SizedBox.shrink();
+                    }
 
-                        if (snapshot.hasData) {
-                          final other = snapshot.data!;
-
-                          if (!other.username
-                              .toLowerCase()
-                              .contains(searchedText.toLowerCase())) {
-                            i += 1;
-                            if (i == data.length) {
-                              return Center(
-                                  child: Column(
-                                children: [
-                                  MediaQuery.of(context).platformBrightness ==
-                                          Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_chat_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_chat_found.png'),
-                                  const Text('No private chats'),
-                                ],
-                              ));
-                            }
-                            return const SizedBox.shrink();
-                          }
-
-                          bool sentByMe =
-                              privateChat.lastMessage!.recentMessageSender ==
-                                  uid;
-                          return PrivateChatTileTablet(
-                            onPressed: (PrivateChat privateChat) => {
-                              setState(() {
-                                page = PrivateChatPage(
-                                  privateChat: privateChat,
-                                  key: UniqueKey(),
-                                );
-                              })
-                            },
+                    bool sentByMe =
+                        privateChat.lastMessage!.recentMessageSender == uid;
+                    privateChat.lastMessage!.sentByMe = sentByMe;
+                    if (privateChat.lastMessage!.recentMessageSender != uid) {
+                      privateChat.lastMessage!.recentMessageSender =
+                          privateChat.other!.username;
+                    }
+                    return PrivateChatTileTablet(
+                      onPressed: (PrivateChat privateChat) => {
+                        setState(() {
+                          page = PrivateChatPage(
                             privateChat: privateChat,
-                            other: other,
-                            lastMessage: LastMessage(
-                              recentMessageType:
-                                  privateChat.lastMessage!.recentMessageType,
-                              recentMessage:
-                                  privateChat.lastMessage!.recentMessage,
-                              recentMessageSender:
-                                  sentByMe ? '' : other.username,
-                              recentMessageTimestamp: privateChat
-                                  .lastMessage!.recentMessageTimestamp,
-                              sentByMe: sentByMe,
-                            ),
+                            key: UniqueKey(),
                           );
-                        } else {
-                          if (snapshot.hasError) {
-                            return PrivateChatTileTablet(
-                              onPressed: (PrivateChat privateChat) => {
-                                setState(() {
-                                  page = PrivateChatPage(
-                                    privateChat: privateChat,
-                                    key: UniqueKey(),
-                                  );
-                                })
-                              },
-                              privateChat: privateChat,
-                              other: UserData(
-                                imagePath: '',
-                                username: 'Deleted Account',
-                                categories: [],
-                                email: '',
-                                name: '',
-                                surname: '',
-                              ),
-                              lastMessage: LastMessage(
-                                recentMessageType:
-                                    privateChat.lastMessage!.recentMessageType,
-                                recentMessage:
-                                    privateChat.lastMessage!.recentMessage,
-                                recentMessageSender: privateChat
-                                            .lastMessage!.recentMessageSender ==
-                                        uid
-                                    ? ''
-                                    : 'Deleted Account',
-                                recentMessageTimestamp: privateChat
-                                    .lastMessage!.recentMessageTimestamp,
-                                sentByMe: privateChat
-                                            .lastMessage!.recentMessageSender ==
-                                        uid
-                                    ? true
-                                    : false,
-                              ),
-                            );
-                          }
-                          return Container(); // Return an empty container or handle other cases as needed
-                        }
+                        })
                       },
+                      privateChat: privateChat,
                     );
                   },
                 );

@@ -1,5 +1,4 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -9,11 +8,9 @@ import 'package:dima_project/models/message.dart';
 
 class GroupChatTile extends StatefulWidget {
   final Group group;
-  final LastMessage? lastMessage;
   const GroupChatTile({
     super.key,
     required this.group,
-    required this.lastMessage,
   });
 
   @override
@@ -21,7 +18,6 @@ class GroupChatTile extends StatefulWidget {
 }
 
 class GroupChatTileState extends State<GroupChatTile> {
-  Stream<int>? unreadMessagesStream;
   Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
@@ -33,10 +29,6 @@ class GroupChatTileState extends State<GroupChatTile> {
   @override
   void initState() {
     super.initState();
-    unreadMessagesStream = DatabaseService.getUnreadMessages(
-      true,
-      widget.group.id,
-    );
   }
 
   @override
@@ -105,21 +97,23 @@ class GroupChatTileState extends State<GroupChatTile> {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        (widget.lastMessage != null)
+                        (widget.group.lastMessage != null)
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.lastMessage!.sentByMe == true
+                                    widget.group.lastMessage!.sentByMe == true
                                         ? "You: "
-                                        : "${widget.lastMessage!.recentMessageSender}: ",
+                                        : "${widget.group.lastMessage!.recentMessageSender}: ",
                                     style: const TextStyle(
                                         fontSize: 14,
                                         color: CupertinoColors.inactiveGray),
                                   ),
-                                  if (widget.lastMessage!.recentMessageType !=
+                                  if (widget.group.lastMessage!
+                                          .recentMessageType !=
                                       Type.text)
-                                    map[widget.lastMessage!.recentMessageType]!,
+                                    map[widget
+                                        .group.lastMessage!.recentMessageType]!,
                                   Container(
                                     constraints: BoxConstraints(
                                         maxWidth:
@@ -127,7 +121,7 @@ class GroupChatTileState extends State<GroupChatTile> {
                                                 0.4),
                                     child: Text(
                                       maxLines: 2,
-                                      widget.lastMessage!.recentMessage,
+                                      widget.group.lastMessage!.recentMessage,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                           fontSize: 14,
@@ -147,50 +141,44 @@ class GroupChatTileState extends State<GroupChatTile> {
                   ),
                 ],
               ),
-              (widget.lastMessage != null)
-                  ? StreamBuilder(
-                      stream: unreadMessagesStream,
-                      builder: (context, snapshot) {
-                        final bool hasUnreadMessages =
-                            snapshot.hasData && snapshot.data != 0;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              DateUtil.getFormattedTime(
-                                context: context,
-                                time: widget.lastMessage!.recentMessageTimestamp
-                                    .microsecondsSinceEpoch
-                                    .toString(),
-                              ),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: hasUnreadMessages
-                                    ? CupertinoTheme.of(context).primaryColor
-                                    : CupertinoColors.inactiveGray,
-                              ),
-                            ),
-                            const SizedBox(height: 1),
-                            hasUnreadMessages
-                                ? Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: Text(
-                                      snapshot.data.toString(),
-                                      style: const TextStyle(
-                                          color: CupertinoColors.white,
-                                          fontSize: 12),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        );
-                      },
+              (widget.group.lastMessage != null)
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          DateUtil.getFormattedTime(
+                            context: context,
+                            time: widget.group.lastMessage!
+                                .recentMessageTimestamp.microsecondsSinceEpoch
+                                .toString(),
+                          ),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: widget.group.lastMessage!.unreadMessages! > 0
+                                ? CupertinoTheme.of(context).primaryColor
+                                : CupertinoColors.inactiveGray,
+                          ),
+                        ),
+                        const SizedBox(height: 1),
+                        widget.group.lastMessage!.unreadMessages! > 0
+                            ? Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  widget.group.lastMessage!.unreadMessages!
+                                      .toString(),
+                                  style: const TextStyle(
+                                      color: CupertinoColors.white,
+                                      fontSize: 12),
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
                     )
                   : const SizedBox(),
             ],

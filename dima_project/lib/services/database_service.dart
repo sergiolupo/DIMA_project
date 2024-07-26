@@ -444,10 +444,21 @@ class DatabaseService {
     });
 
     final groupsList = <Group>[];
+    Group group;
     for (var groupId in groupIds) {
       final snapshot = await groupsRef.doc(groupId).get();
       if (snapshot.exists) {
-        groupsList.add(Group.fromSnapshot(snapshot));
+        group = Group.fromSnapshot(snapshot);
+        if (group.lastMessage != null) {
+          group.lastMessage!.sentByMe =
+              group.lastMessage!.recentMessageSender == AuthService.uid;
+          group.lastMessage!.recentMessageSender =
+              (await getUserData(group.lastMessage!.recentMessageSender))
+                  .username; // get the sender's name
+          group.lastMessage!.unreadMessages =
+              await getUnreadMessages(true, group.id);
+        }
+        groupsList.add(group);
       }
     }
     yield groupsList; // yield the initial list of groups
@@ -465,6 +476,15 @@ class DatabaseService {
           yield groupsList;
         } else {
           if (members!.contains(AuthService.uid) && group.id != '') {
+            if (group.lastMessage != null) {
+              group.lastMessage!.sentByMe =
+                  group.lastMessage!.recentMessageSender == AuthService.uid;
+              group.lastMessage!.recentMessageSender =
+                  (await getUserData(group.lastMessage!.recentMessageSender))
+                      .username; // get the sender's name
+              group.lastMessage!.unreadMessages =
+                  await getUnreadMessages(true, group.id);
+            }
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
                 groupsList.indexWhere((g) => g.id == groupId);
@@ -490,10 +510,17 @@ class DatabaseService {
     });
 
     final chatsList = <PrivateChat>[];
+    PrivateChat privateChat;
     for (var id in privateChats) {
       final snapshot = await privateChatRef.doc(id).get();
       if (snapshot.exists) {
-        chatsList.add(PrivateChat.fromSnapshot(snapshot));
+        privateChat = PrivateChat.fromSnapshot(snapshot);
+        privateChat.other = await getUserData(privateChat.members
+            .firstWhere((element) => element != AuthService.uid));
+        privateChat.lastMessage!.unreadMessages =
+            await getUnreadMessages(false, privateChat.id!);
+
+        chatsList.add(privateChat);
       }
     }
     yield chatsList; // yield the initial list of private chats
@@ -507,12 +534,16 @@ class DatabaseService {
         if (!change.doc.data()!['members'].contains(AuthService.uid)) {
           continue;
         }
-        final privateChat = PrivateChat.fromSnapshot(change.doc);
+        privateChat = PrivateChat.fromSnapshot(change.doc);
         if (change.type == DocumentChangeType.removed) {
           chatsList.removeWhere((g) => g.id == id);
           yield chatsList;
         } else {
           if (privateChat.members.contains(AuthService.uid)) {
+            privateChat.other = await getUserData(privateChat.members
+                .firstWhere((element) => element != AuthService.uid));
+            privateChat.lastMessage!.unreadMessages =
+                await getUnreadMessages(false, privateChat.id!);
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
             if (existingGroupIndex != -1) {
@@ -650,53 +681,43 @@ class DatabaseService {
     }
   }
 
-  static Stream<int> getUnreadMessages(bool isGroup, String id) {
+  static Future<int> getUnreadMessages(bool isGroup, String id) async {
     if (!isGroup) {
-      return privateChatRef
-          .doc(id)
-          .collection('messages')
-          .snapshots()
-          .map((snapshot) {
-        int unreadCount = 0;
-        for (var doc in snapshot.docs) {
-          var readBy = doc.data()['readBy'] ?? {};
-          // Check if the message hasn't been read by the user
-          var read = false;
-          for (var value in readBy) {
-            if ((AuthService.uid == value['username'])) {
-              read = true;
-              break;
-            }
-          }
-          if (!read) {
-            unreadCount++;
+      var snapshot = await privateChatRef.doc(id).collection('messages').get();
+      int unreadCount = 0;
+      for (var doc in snapshot.docs) {
+        var readBy = doc.data()['readBy'] ?? {};
+        // Check if the message hasn't been read by the user
+        var read = false;
+        for (var value in readBy) {
+          if ((AuthService.uid == value['username'])) {
+            read = true;
+            break;
           }
         }
-        return unreadCount;
-      });
+        if (!read) {
+          unreadCount++;
+        }
+      }
+      return unreadCount;
     } else {
-      return groupsRef
-          .doc(id)
-          .collection('messages')
-          .snapshots()
-          .map((snapshot) {
-        int unreadCount = 0;
-        for (var doc in snapshot.docs) {
-          var readBy = doc.data()['readBy'] ?? {};
-          // Check if the message hasn't been read by the user
-          var read = false;
-          for (var value in readBy) {
-            if ((AuthService.uid == value['username'])) {
-              read = true;
-              break;
-            }
-          }
-          if (!read) {
-            unreadCount++;
+      var snapshot = await groupsRef.doc(id).collection('messages').get();
+      int unreadCount = 0;
+      for (var doc in snapshot.docs) {
+        var readBy = doc.data()['readBy'] ?? {};
+        // Check if the message hasn't been read by the user
+        var read = false;
+        for (var value in readBy) {
+          if ((AuthService.uid == value['username'])) {
+            read = true;
+            break;
           }
         }
-        return unreadCount;
-      });
+        if (!read) {
+          unreadCount++;
+        }
+      }
+      return unreadCount;
     }
   }
 

@@ -1,15 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/models/user.dart';
 
 class PrivateChat {
   final List<String> members;
   final LastMessage? lastMessage;
   String? id;
+  UserData? other;
   PrivateChat({
     required this.members,
     this.lastMessage,
     this.id,
+    this.other,
   });
 
   static PrivateChat fromSnapshot(DocumentSnapshot documentSnapshot) {
