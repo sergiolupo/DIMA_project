@@ -724,7 +724,7 @@ class DatabaseService {
     }
   }
 
-  static void deleteMessage(Message message) async {
+  static Future<void> deleteMessage(Message message) async {
     if (message.isGroupMessage) {
       await groupsRef
           .doc(message.chatID)
@@ -799,27 +799,28 @@ class DatabaseService {
     }
   }
 
-  static void updateMessageContent(Message message, String updatedMessage) {
+  static Future<void> updateMessageContent(
+      Message message, String updatedMessage) async {
     Timestamp time = Timestamp.now();
     if (message.isGroupMessage) {
-      groupsRef
+      await groupsRef
           .doc(message.chatID)
           .collection('messages')
           .doc(message.id)
           .update({'content': updatedMessage, 'time': time, 'readBy': []});
-      groupsRef.doc(message.chatID).update({
+      await groupsRef.doc(message.chatID).update({
         'recentMessage': updatedMessage,
         'recentMessageSender': message.sender,
         'recentMessageTime': time,
         'recentMessageType': message.type.toString(),
       });
     } else {
-      privateChatRef
+      await privateChatRef
           .doc(message.chatID)
           .collection('messages')
           .doc(message.id)
           .update({'content': updatedMessage, 'time': time, 'readBy': []});
-      privateChatRef.doc(message.chatID).update({
+      await privateChatRef.doc(message.chatID).update({
         'recentMessage': updatedMessage,
         'recentMessageSender': message.sender,
         'recentMessageTime': time,

@@ -15,59 +15,58 @@ import 'package:http/http.dart' as http;
 class MessageUtils {
   static void showBottomSheet(BuildContext context, Message message,
       {required VoidCallback? showCustomSnackbar}) {
-    List<Widget> actions = [
-      if (message.type == Type.text)
-        _buildOptionItem(
-          icon: CupertinoIcons.doc_on_clipboard,
-          color: CupertinoColors.systemBlue,
-          text: 'Copy Text',
-          onPressed: () => _copyText(context, message, showCustomSnackbar!),
-          context: context,
-        ),
-      if (message.type == Type.image)
-        _buildOptionItem(
-          icon: CupertinoIcons.download_circle,
-          color: CupertinoColors.systemBlue,
-          text: 'Save Image',
-          onPressed: () => _saveImage(message),
-          context: context,
-        ),
-      if (message.sentByMe! && message.type == Type.text)
-        _buildOptionItem(
-          icon: CupertinoIcons.pencil,
-          color: CupertinoColors.systemBlue,
-          text: 'Edit Message',
-          onPressed: () => _editMessage(context, message),
-          context: context,
-        ),
-      if (message.sentByMe!)
-        _buildOptionItem(
-          icon: CupertinoIcons.delete,
-          color: CupertinoColors.systemRed,
-          text: 'Delete Message',
-          onPressed: () => _deleteMessage(context, message),
-          context: context,
-        ),
-      if (message.sentByMe!)
-        _buildOptionItem(
-          icon: CupertinoIcons.eye_fill,
-          color: CupertinoColors.systemBlue,
-          text: 'Read By',
-          onPressed: () => _showReaders(
-            context,
-            message,
-          ),
-          context: context,
-        ),
-    ];
-
     showCupertinoModalPopup(
       context: context,
-      builder: (_) {
+      builder: (BuildContext newContext) {
         return CupertinoActionSheet(
-          actions: actions,
+          actions: [
+            if (message.type == Type.text)
+              _buildOptionItem(
+                icon: CupertinoIcons.doc_on_clipboard,
+                color: CupertinoColors.systemBlue,
+                text: 'Copy Text',
+                onPressed: () =>
+                    _copyText(context, message, showCustomSnackbar!),
+                context: newContext,
+              ),
+            if (message.type == Type.image)
+              _buildOptionItem(
+                icon: CupertinoIcons.download_circle,
+                color: CupertinoColors.systemBlue,
+                text: 'Save Image',
+                onPressed: () => _saveImage(message),
+                context: newContext,
+              ),
+            if (message.sentByMe! && message.type == Type.text)
+              _buildOptionItem(
+                icon: CupertinoIcons.pencil,
+                color: CupertinoColors.systemBlue,
+                text: 'Edit Message',
+                onPressed: () => _editMessage(context, message),
+                context: newContext,
+              ),
+            if (message.sentByMe!)
+              _buildOptionItem(
+                icon: CupertinoIcons.delete,
+                color: CupertinoColors.systemRed,
+                text: 'Delete Message',
+                onPressed: () => _deleteMessage(context, message),
+                context: newContext,
+              ),
+            if (message.sentByMe!)
+              _buildOptionItem(
+                icon: CupertinoIcons.eye_fill,
+                color: CupertinoColors.systemBlue,
+                text: 'Read By',
+                onPressed: () => _showReaders(
+                  context,
+                  message,
+                ),
+                context: newContext,
+              ),
+          ],
           cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(newContext),
             child: const Text('Cancel'),
           ),
         );
@@ -114,7 +113,10 @@ class MessageUtils {
   static Future<void> _copyText(BuildContext context, Message message,
       VoidCallback showCustomSnackbar) async {
     await Clipboard.setData(ClipboardData(text: message.content));
-    if (context.mounted) showCustomSnackbar();
+    if (context.mounted) {
+      debugPrint('Text copied to clipboard');
+      showCustomSnackbar();
+    }
   }
 
   static Future<File> _saveImage(Message message) async {
@@ -139,7 +141,7 @@ class MessageUtils {
     String updatedMessage = message.content;
     showCupertinoDialog(
       context: context,
-      builder: (_) {
+      builder: (BuildContext newContext) {
         return CupertinoAlertDialog(
           title: const Row(
             children: [
@@ -164,15 +166,16 @@ class MessageUtils {
           actions: [
             CupertinoDialogAction(
               child: const Text('Update'),
-              onPressed: () {
-                DatabaseService.updateMessageContent(message, updatedMessage);
-                Navigator.pop(context);
+              onPressed: () async {
+                await DatabaseService.updateMessageContent(
+                    message, updatedMessage);
+                if (newContext.mounted) Navigator.pop(newContext);
               },
             ),
             CupertinoDialogAction(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(newContext);
               },
             ),
           ],
@@ -184,22 +187,22 @@ class MessageUtils {
   static void _deleteMessage(BuildContext context, Message message) {
     showCupertinoDialog(
       context: context,
-      builder: (_) {
+      builder: (BuildContext newContext) {
         return CupertinoAlertDialog(
           title: const Text('Delete Message'),
           content: const Text('Are you sure you want to delete this message?'),
           actions: [
             CupertinoDialogAction(
               child: const Text('Yes'),
-              onPressed: () {
-                Navigator.pop(context);
-                DatabaseService.deleteMessage(message);
+              onPressed: () async {
+                await DatabaseService.deleteMessage(message);
+                if (newContext.mounted) Navigator.pop(newContext);
               },
             ),
             CupertinoDialogAction(
               child: const Text('No'),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(newContext);
               },
             ),
           ],
