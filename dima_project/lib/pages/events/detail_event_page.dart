@@ -8,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:map_launcher/map_launcher.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
   final String eventId;
@@ -94,22 +96,62 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     initialCenter: detail.latlng!,
                     initialZoom: 11,
                     interactionOptions:
-                        const InteractionOptions(flags: InteractiveFlag.all),
+                        const InteractionOptions(flags: InteractiveFlag.none),
                   ),
                   children: [
                     openStreetMapTileLayer,
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          width: 80.0,
-                          height: 80.0,
-                          point: detail.latlng!,
-                          child: Icon(
-                            CupertinoIcons.location_solid,
-                            color: CupertinoTheme.of(context).primaryColor,
+                    CupertinoButton(
+                      onPressed: () async {
+                        debugPrint('Opening maps');
+                        try {
+                          final coords = Coords(detail.latlng!.latitude,
+                              detail.latlng!.longitude);
+                          final title = event.name;
+                          final availableMaps = await MapLauncher.installedMaps;
+
+                          showCupertinoModalPopup(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SafeArea(
+                                child: SingleChildScrollView(
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      for (var map in availableMaps)
+                                        CupertinoListTile(
+                                          onTap: () => map.showMarker(
+                                            coords: coords,
+                                            title: title,
+                                          ),
+                                          title: Text(map.mapName),
+                                          leading: SvgPicture.asset(
+                                            map.icon,
+                                            height: 30.0,
+                                            width: 30.0,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } catch (e) {
+                          print(e);
+                        }
+                      },
+                      child: MarkerLayer(
+                        markers: [
+                          Marker(
+                            width: 80.0,
+                            height: 80.0,
+                            point: detail.latlng!,
+                            child: Icon(
+                              CupertinoIcons.location_solid,
+                              color: CupertinoTheme.of(context).primaryColor,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ]),
             ),

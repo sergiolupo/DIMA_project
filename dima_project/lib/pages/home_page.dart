@@ -1,4 +1,5 @@
 import 'package:dima_project/pages/events/create_event_page.dart';
+import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/pages/groups/chat_page.dart';
 import 'package:dima_project/pages/groups/chat_tablet_page.dart';
 import 'package:dima_project/pages/responsive_layout.dart';
@@ -12,6 +13,7 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final int? index;
@@ -78,8 +80,8 @@ class HomePageState extends ConsumerState<HomePage> {
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.add),
-            label: 'Create',
+            icon: Icon(CupertinoIcons.calendar),
+            label: 'Calendar',
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.search),
@@ -104,7 +106,7 @@ class HomePageState extends ConsumerState<HomePage> {
             );
             break;
           case 2:
-            page = const CreateEventPage();
+            page = const TableCalendarPage();
             break;
           case 3:
             page = const SearchPage();
