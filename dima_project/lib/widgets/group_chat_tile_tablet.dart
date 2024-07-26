@@ -8,10 +8,12 @@ import 'package:dima_project/models/message.dart';
 class GroupChatTileTablet extends StatefulWidget {
   final Group group;
   final Function(Group) onPressed;
+  final String username;
   const GroupChatTileTablet({
     super.key,
     required this.group,
     required this.onPressed,
+    required this.username,
   });
 
   @override
@@ -97,7 +99,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                                 Text(
                                   widget.group.lastMessage!.sentByMe == true
                                       ? "You: "
-                                      : "${widget.group.lastMessage!.recentMessageSender}: ",
+                                      : "${widget.username}: ",
                                   style: const TextStyle(
                                       fontSize: 14,
                                       color: CupertinoColors.inactiveGray),

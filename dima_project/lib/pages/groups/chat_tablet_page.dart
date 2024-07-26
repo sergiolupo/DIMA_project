@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -172,20 +173,54 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     }
                     return const SizedBox.shrink();
                   }
-                  return GroupChatTileTablet(
-                    group: group,
-                    onPressed: (Group group) {
-                      setState(() {
-                        group.lastMessage!.unreadMessages = 0;
-                        page = GroupChatPage(
+                  if (group.lastMessage == null) {
+                    return GroupChatTileTablet(
+                      username: '',
+                      group: group,
+                      onPressed: (Group group) {
+                        setState(() {
+                          group.lastMessage!.unreadMessages = 0;
+                          page = GroupChatPage(
+                            group: group,
+                            key: UniqueKey(),
+                            navigateToPage: _navigateToPrivateChat,
+                            canNavigate: true,
+                          );
+                        });
+                      },
+                    );
+                  }
+                  return StreamBuilder(
+                      stream: DatabaseService.getUserDataFromUID(
+                          group.lastMessage!.recentMessageSender),
+                      builder: (context, snapshot) {
+                        String username = "";
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          username = "";
+                        }
+                        if (snapshot.hasError) {
+                          username = "Deleted Account";
+                        }
+                        if (snapshot.hasData) {
+                          username = snapshot.data!.username;
+                        }
+                        return GroupChatTileTablet(
                           group: group,
-                          key: UniqueKey(),
-                          navigateToPage: _navigateToPrivateChat,
-                          canNavigate: true,
+                          username: username,
+                          onPressed: (Group group) {
+                            setState(() {
+                              group.lastMessage!.unreadMessages = 0;
+                              page = GroupChatPage(
+                                group: group,
+                                key: UniqueKey(),
+                                navigateToPage: _navigateToPrivateChat,
+                                canNavigate: true,
+                              );
+                            });
+                          },
                         );
                       });
-                    },
-                  );
                 },
               );
             } else {
@@ -226,45 +261,82 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                   if (privateChat.lastMessage == null) {
                     return const SizedBox();
                   }
-                  final other = privateChat.other!;
 
-                  if (!other.username
-                      .toLowerCase()
-                      .contains(searchedText.toLowerCase())) {
-                    i += 1;
-                    if (i == data.length) {
-                      return Center(
-                          child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset('assets/darkMode/no_chat_found.png')
-                              : Image.asset('assets/images/no_chat_found.png'),
-                          const Text('No private chats'),
-                        ],
-                      ));
-                    }
-                    return const SizedBox.shrink();
-                  }
-
-                  bool sentByMe =
-                      privateChat.lastMessage!.recentMessageSender == uid;
-                  privateChat.lastMessage!.sentByMe = sentByMe;
-                  if (privateChat.lastMessage!.recentMessageSender != uid) {
-                    privateChat.lastMessage!.recentMessageSender =
-                        privateChat.other!.username;
-                  }
-                  return PrivateChatTileTablet(
-                    onPressed: (PrivateChat privateChat) => {
-                      setState(() {
-                        privateChat.lastMessage!.unreadMessages = 0;
-                        page = PrivateChatPage(
-                          privateChat: privateChat,
-                          key: UniqueKey(),
+                  return StreamBuilder<UserData>(
+                    stream: DatabaseService.getUserDataFromUID(
+                        privateChat.members[0] == uid
+                            ? privateChat.members[1]
+                            : privateChat.members[0]),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CupertinoActivityIndicator(),
                         );
-                      })
+                      }
+
+                      if (snapshot.hasData) {
+                        final other = snapshot.data!;
+
+                        if (!other.username
+                            .toLowerCase()
+                            .contains(searchedText.toLowerCase())) {
+                          i += 1;
+                          if (i == data.length) {
+                            return Center(
+                                child: Column(
+                              children: [
+                                MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/no_chat_found.png')
+                                    : Image.asset(
+                                        'assets/images/no_chat_found.png'),
+                                const Text('No private chats'),
+                              ],
+                            ));
+                          }
+                          return const SizedBox.shrink();
+                        }
+
+                        return PrivateChatTileTablet(
+                          onPressed: (PrivateChat privateChat) => {
+                            setState(() {
+                              privateChat.lastMessage!.unreadMessages = 0;
+                              page = PrivateChatPage(
+                                privateChat: privateChat,
+                                key: UniqueKey(),
+                              );
+                            })
+                          },
+                          privateChat: privateChat,
+                          other: other,
+                        );
+                      } else {
+                        if (snapshot.hasError) {
+                          return PrivateChatTileTablet(
+                            onPressed: (PrivateChat privateChat) => {
+                              setState(() {
+                                privateChat.lastMessage!.unreadMessages = 0;
+                                page = PrivateChatPage(
+                                  privateChat: privateChat,
+                                  key: UniqueKey(),
+                                );
+                              })
+                            },
+                            other: UserData(
+                              imagePath: '',
+                              username: 'Deleted Account',
+                              categories: [],
+                              email: '',
+                              name: '',
+                              surname: '',
+                            ),
+                            privateChat: privateChat,
+                          );
+                        }
+                        return Container(); // Return an empty container or handle other cases as needed
+                      }
                     },
-                    privateChat: privateChat,
                   );
                 },
               );

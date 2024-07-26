@@ -452,9 +452,6 @@ class DatabaseService {
         if (group.lastMessage != null) {
           group.lastMessage!.sentByMe =
               group.lastMessage!.recentMessageSender == AuthService.uid;
-          group.lastMessage!.recentMessageSender =
-              (await getUserData(group.lastMessage!.recentMessageSender))
-                  .username; // get the sender's name
           group.lastMessage!.unreadMessages =
               await getUnreadMessages(true, group.id);
         }
@@ -479,9 +476,6 @@ class DatabaseService {
             if (group.lastMessage != null) {
               group.lastMessage!.sentByMe =
                   group.lastMessage!.recentMessageSender == AuthService.uid;
-              group.lastMessage!.recentMessageSender =
-                  (await getUserData(group.lastMessage!.recentMessageSender))
-                      .username; // get the sender's name
               group.lastMessage!.unreadMessages =
                   await getUnreadMessages(true, group.id);
             }
@@ -515,8 +509,8 @@ class DatabaseService {
       final snapshot = await privateChatRef.doc(id).get();
       if (snapshot.exists) {
         privateChat = PrivateChat.fromSnapshot(snapshot);
-        privateChat.other = await getUserData(privateChat.members
-            .firstWhere((element) => element != AuthService.uid));
+        privateChat.lastMessage!.sentByMe =
+            privateChat.lastMessage!.recentMessageSender == AuthService.uid;
         privateChat.lastMessage!.unreadMessages =
             await getUnreadMessages(false, privateChat.id!);
 
@@ -540,8 +534,8 @@ class DatabaseService {
           yield chatsList;
         } else {
           if (privateChat.members.contains(AuthService.uid)) {
-            privateChat.other = await getUserData(privateChat.members
-                .firstWhere((element) => element != AuthService.uid));
+            privateChat.lastMessage!.sentByMe =
+                privateChat.lastMessage!.recentMessageSender == AuthService.uid;
             privateChat.lastMessage!.unreadMessages =
                 await getUnreadMessages(false, privateChat.id!);
             // DocumentChangeType.added or DocumentChangeType.modified

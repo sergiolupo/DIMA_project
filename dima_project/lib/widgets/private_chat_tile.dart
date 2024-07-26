@@ -1,4 +1,5 @@
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -8,9 +9,11 @@ import 'package:dima_project/models/message.dart';
 
 class PrivateChatTile extends StatefulWidget {
   final PrivateChat privateChat;
+  final UserData other;
   const PrivateChatTile({
     super.key,
     required this.privateChat,
+    required this.other,
   });
 
   @override
@@ -67,8 +70,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getUserImage(
-                      widget.privateChat.other!.imagePath!,
+                  CreateImageWidget.getUserImage(widget.other.imagePath!,
                       small: true),
                   const SizedBox(width: 16),
                   Container(
@@ -78,7 +80,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.privateChat.other!.username,
+                          widget.other.username,
                           style: TextStyle(
                               color: CupertinoTheme.of(context)
                                   .textTheme
@@ -96,7 +98,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                     widget.privateChat.lastMessage!.sentByMe ==
                                             true
                                         ? "You: "
-                                        : "${widget.privateChat.lastMessage!.recentMessageSender}: ",
+                                        : "${widget.other.username}: ",
                                     style: const TextStyle(
                                         fontSize: 14,
                                         color: CupertinoColors.inactiveGray),

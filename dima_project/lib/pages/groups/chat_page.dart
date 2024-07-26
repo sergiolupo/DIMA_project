@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -97,14 +98,13 @@ class ListChatPageState extends State<ChatPage> {
 
   Widget groupList() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height * 0.8,
       child: StreamBuilder<List<Group>>(
         stream: _groupsStream,
         builder: (context, snapshot) {
           if (idx == 1) {
             return const SizedBox.shrink();
           }
-
           int i = 0;
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -140,9 +140,32 @@ class ListChatPageState extends State<ChatPage> {
                     }
                     return const SizedBox.shrink();
                   }
-                  return GroupChatTile(
-                    group: group,
-                  );
+                  if (group.lastMessage == null) {
+                    return GroupChatTile(
+                      username: '',
+                      group: group,
+                    );
+                  }
+                  return StreamBuilder(
+                      stream: DatabaseService.getUserDataFromUID(
+                          group.lastMessage!.recentMessageSender),
+                      builder: (context, snapshot) {
+                        String username = "";
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          username = "";
+                        }
+                        if (snapshot.hasError) {
+                          username = "Deleted Account";
+                        }
+                        if (snapshot.hasData) {
+                          username = snapshot.data!.username;
+                        }
+                        return GroupChatTile(
+                          group: group,
+                          username: username,
+                        );
+                      });
                 },
               );
             } else {
@@ -213,57 +236,80 @@ class ListChatPageState extends State<ChatPage> {
           if (idx == 0) {
             return const SizedBox.shrink();
           }
-
           int i = 0;
           if (snapshot.hasData) {
             var data = snapshot.data!;
 
             if (data.isNotEmpty) {
               return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final privateChat = data[index];
+                shrinkWrap: true,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final privateChat = data[index];
 
-                    if (privateChat.lastMessage == null) {
-                      return const SizedBox();
-                    }
+                  if (privateChat.lastMessage == null) {
+                    return const SizedBox();
+                  }
 
-                    final other = privateChat.other!;
-                    if (!other.username
-                        .toLowerCase()
-                        .contains(searchedText.toLowerCase())) {
-                      i += 1;
-                      if (i == data.length) {
-                        return Center(
-                            child: Column(
-                          children: [
-                            MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/no_chat_found.png')
-                                : Image.asset(
-                                    'assets/images/no_chat_found.png'),
-                            const Text('No private chats'),
-                          ],
-                        ));
+                  return StreamBuilder<UserData>(
+                    stream: DatabaseService.getUserDataFromUID(
+                        privateChat.members[0] == uid
+                            ? privateChat.members[1]
+                            : privateChat.members[0]),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CupertinoActivityIndicator(),
+                        );
                       }
-                      return const SizedBox.shrink();
-                    }
 
-                    bool sentByMe =
-                        privateChat.lastMessage!.recentMessageSender == uid;
-                    privateChat.lastMessage!.sentByMe = sentByMe;
+                      if (snapshot.hasData) {
+                        final other = snapshot.data!;
 
-                    if (privateChat.lastMessage!.recentMessageSender != uid) {
-                      privateChat.lastMessage!.recentMessageSender =
-                          privateChat.other!.username;
-                    }
-
-                    return PrivateChatTile(
-                      privateChat: privateChat,
-                    );
-                  });
+                        if (!other.username
+                            .toLowerCase()
+                            .contains(searchedText.toLowerCase())) {
+                          i += 1;
+                          if (i == data.length) {
+                            return Center(
+                                child: Column(
+                              children: [
+                                MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/no_chat_found.png')
+                                    : Image.asset(
+                                        'assets/images/no_chat_found.png'),
+                                const Text('No private chats'),
+                              ],
+                            ));
+                          }
+                          return const SizedBox.shrink();
+                        }
+                        return PrivateChatTile(
+                          privateChat: privateChat,
+                          other: other,
+                        );
+                      } else {
+                        if (snapshot.hasError) {
+                          return PrivateChatTile(
+                            privateChat: privateChat,
+                            other: UserData(
+                              imagePath: '',
+                              username: 'Deleted Account',
+                              categories: [],
+                              email: '',
+                              name: '',
+                              surname: '',
+                            ),
+                          );
+                        }
+                        return Container(); // Return an empty container or handle other cases as needed
+                      }
+                    },
+                  );
+                },
+              );
             } else {
               return noChatWidget();
             }
