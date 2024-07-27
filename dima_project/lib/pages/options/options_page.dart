@@ -112,7 +112,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     try {
       await DatabaseService.updateActiveStatus(false);
 
-      await AuthService.signOut();
+      AuthService.signOut();
       ref.invalidate(userProvider);
       ref.invalidate(followerProvider);
       ref.invalidate(followingProvider);
@@ -121,7 +121,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       ref.invalidate(createdEventsProvider);
       ref.invalidate(eventProvider);
       if (!context.mounted) return;
-      context.go('/');
+      context.go('/login');
     } catch (e) {
       debugPrint("Failed to sign out: $e");
     }
@@ -155,7 +155,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 await AuthService.deleteUser();
                 if (!mounted) return;
                 Navigator.of(context).pop();
-                context.go('/');
+                context.go('/login');
               },
             ),
           ],

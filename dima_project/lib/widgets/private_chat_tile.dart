@@ -54,6 +54,9 @@ class PrivateChatTileState extends State<PrivateChatTile> {
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
+          setState(() {
+            widget.privateChat.lastMessage!.unreadMessages = 0;
+          });
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => PrivateChatPage(

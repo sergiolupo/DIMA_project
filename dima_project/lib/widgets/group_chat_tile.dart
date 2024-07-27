@@ -55,6 +55,9 @@ class GroupChatTileState extends State<GroupChatTile> {
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
+          setState(() {
+            widget.group.lastMessage!.unreadMessages = 0;
+          });
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
