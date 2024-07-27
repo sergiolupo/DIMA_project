@@ -294,8 +294,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                         detail.endTime!.minute),
                     iosParams: const IOSParams(
                       reminder: Duration(hours: 1),
-                      //TODO add deeplink to our app
-                      url: 'https://www.youtube.com',
                     ),
                   ));
                 },
