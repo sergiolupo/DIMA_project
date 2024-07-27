@@ -181,8 +181,21 @@ class EventPageState extends ConsumerState<EventPage> {
                                                 }),
                                           ],
                                         ),
-                                        trailing:
-                                            const Icon(CupertinoIcons.forward),
+                                        trailing: DateTime(
+                                                    detail.startDate!.year,
+                                                    detail.startDate!.month,
+                                                    detail.startDate!.day,
+                                                    detail.startTime!.hour,
+                                                    detail.startTime!.minute)
+                                                .isBefore(DateTime.now())
+                                            ? const Icon(
+                                                CupertinoIcons.circle_fill,
+                                                color:
+                                                    CupertinoColors.systemRed)
+                                            : const Icon(
+                                                CupertinoIcons.circle_fill,
+                                                color: CupertinoColors
+                                                    .systemGreen),
                                         onTap: () {
                                           Navigator.of(context).push(
                                             CupertinoPageRoute(

@@ -1,55 +1,85 @@
+import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
+import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:dima_project/utils/table_calendar_utils.dart';
 
-class TableCalendarPage extends StatefulWidget {
+class TableCalendarPage extends ConsumerStatefulWidget {
   const TableCalendarPage({super.key});
 
   @override
   TableBasicsExampleState createState() => TableBasicsExampleState();
 }
 
-class TableBasicsExampleState extends State<TableCalendarPage> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
+class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
+  late ValueNotifier<List<Details>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-
+  List<Details> details = [];
   @override
   void initState() {
     super.initState();
 
     _selectedDay = _focusedDay.value;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedEvents = ValueNotifier(_getEventsForDay(
+      _selectedDay!,
+    ));
   }
 
   @override
   void dispose() {
     _focusedDay.dispose();
     _selectedEvents.dispose();
+    ref.read(joinedEventsProvider(AuthService.uid));
+    ref.read(createdEventsProvider(AuthService.uid));
+
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    return kEvents[day] ?? [];
+  List<Details> _getEventsForDay(DateTime day) {
+    for (final detail in details) {
+      DateTime start = DateTime(
+          detail.startDate!.year,
+          detail.startDate!.month,
+          detail.startDate!.day,
+          detail.startTime!.hour,
+          detail.startTime!.minute);
+      DateTime end = DateTime(detail.endDate!.year, detail.endDate!.month,
+          detail.endDate!.day, detail.endTime!.hour, detail.endTime!.minute);
+      if (day.isBefore(start) && day.isAfter(end)) {
+        details.remove(detail);
+      }
+    }
+    return details;
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
+  List<Details> _getEventsForRange(
+    DateTime start,
+    DateTime end,
+  ) {
     // Implementation example
     final days = daysInRange(start, end);
 
     return [
-      for (final d in days) ..._getEventsForDay(d),
+      for (final d in days)
+        ..._getEventsForDay(
+          d,
+        ),
     ];
   }
 
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+  void _onDaySelected(
+    DateTime selectedDay,
+    DateTime focusedDay,
+  ) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
@@ -59,11 +89,17 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedEvents.value = _getEventsForDay(selectedDay);
+      _selectedEvents.value = _getEventsForDay(
+        selectedDay,
+      );
     }
   }
 
-  void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
+  void _onRangeSelected(
+    DateTime? start,
+    DateTime? end,
+    DateTime focusedDay,
+  ) {
     setState(() {
       _selectedDay = null;
       _focusedDay.value = focusedDay;
@@ -84,6 +120,53 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final joinedEvents = ref.watch(joinedEventsProvider(AuthService.uid));
+    final createdEvents = ref.watch(createdEventsProvider(AuthService.uid));
+    return joinedEvents.when(
+      data: (joinedEvents) {
+        return createdEvents.when(
+          data: (createdEvents) {
+            details = [];
+
+            setState(() {
+              _selectedEvents = ValueNotifier(_getEventsForDay(
+                _selectedDay!,
+              ));
+              for (final event in joinedEvents) {
+                for (final detail in event.details!) {
+                  if (detail.members!.contains(AuthService.uid)) {
+                    details.add(detail);
+                  }
+                }
+              }
+              for (final event in createdEvents) {
+                for (final detail in event.details!) {
+                  if (detail.members!.contains(AuthService.uid)) {
+                    details.add(detail);
+                  }
+                }
+              }
+            });
+            return _buildCalendar();
+          },
+          loading: () {
+            return const Center(child: CupertinoActivityIndicator());
+          },
+          error: (error, stackTrace) {
+            return const Center(child: Text('Error loading created events'));
+          },
+        );
+      },
+      loading: () {
+        return const Center(child: CupertinoActivityIndicator());
+      },
+      error: (error, stackTrace) {
+        return const Center(child: Text('Error loading joined events'));
+      },
+    );
+  }
+
+  Widget _buildCalendar() {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -108,7 +191,7 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
           ValueListenableBuilder<DateTime>(
             valueListenable: _focusedDay,
             builder: (context, value, _) {
-              return TableCalendar<Event>(
+              return TableCalendar<Details>(
                 pageJumpingEnabled: true,
                 calendarBuilders: const CalendarBuilders(),
                 firstDay: kFirstDay,
@@ -169,7 +252,7 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
+            child: ValueListenableBuilder<List<Details>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
                 return ListView.builder(
