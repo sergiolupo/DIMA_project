@@ -66,67 +66,73 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width * 0.4,
-      child: CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text(
-            'Chats',
-            style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
-          ),
-          trailing: idx == 0
-              ? CupertinoButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => const CreateGroupPage()));
-                  },
-                  child: const Icon(
-                    CupertinoIcons.add_circled_solid,
-                    size: 30,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 10.0, top: 20.0),
+                  child: Text(
+                    'Chats',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                )
-              : null,
-        ),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 50,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CupertinoSearchTextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchedText = value;
-                      });
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0, top: 11.0),
+                  child: CupertinoButton(
+                    child: const Icon(CupertinoIcons.add),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => const CreateGroupPage(),
+                        ),
+                      );
                     },
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 100,
-                child: CustomSelectOption(
-                  textLeft: "Groups",
-                  textRight: "Private",
+              ],
+            ),
+            SizedBox(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSearchTextField(
                   onChanged: (value) {
                     setState(() {
-                      idx = value;
+                      searchedText = value;
                     });
                   },
                 ),
               ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    groupList(),
-                    privateChatList(),
-                  ],
-                ),
+            ),
+            SizedBox(
+              height: 100,
+              child: CustomSelectOption(
+                textLeft: "Groups",
+                textRight: "Private",
+                onChanged: (value) {
+                  setState(() {
+                    idx = value;
+                  });
+                },
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  groupList(),
+                  privateChatList(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
