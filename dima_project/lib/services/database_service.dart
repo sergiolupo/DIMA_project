@@ -1486,6 +1486,7 @@ class DatabaseService {
   static updateGroup(Group group, Uint8List? uint8list, bool sameImage,
       bool visibilityHasChanged, List<String> uuids) async {
     await groupsRef.doc(group.id).update(Group.toMap(group));
+
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
@@ -1495,9 +1496,11 @@ class DatabaseService {
         'groupImage': imageUrl,
       });
     }
-    List<String> members = group.members!;
+    List<dynamic> members = await groupsRef.doc(group.id).get().then((value) {
+      return value['members'];
+    });
     if (visibilityHasChanged && group.isPublic) {
-      List<String> requests = await getGroupRequests(group.id);
+      List<dynamic> requests = await getGroupRequests(group.id);
       for (var id in requests) {
         await acceptGroupRequest(group.id, id);
         members.add(id);

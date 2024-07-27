@@ -103,11 +103,14 @@ class EditGroupPageState extends State<EditGroupPage> {
                       return;
                     }
                     await updateGroup();
+                    Group newGroup =
+                        await DatabaseService.getGroupFromId(widget.group.id);
                     if (context.mounted) {
-                      Group newGroup =
-                          await DatabaseService.getGroupFromId(widget.group.id);
                       if (widget.canNavigate) {
-                        widget.navigateToPage!(newGroup);
+                        widget.navigateToPage!(GroupInfoPage(
+                            group: newGroup,
+                            canNavigate: widget.canNavigate,
+                            navigateToPage: widget.navigateToPage));
                       } else {
                         if (context.mounted) {
                           Navigator.of(context).pop(newGroup);
