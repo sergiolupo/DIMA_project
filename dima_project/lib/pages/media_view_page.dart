@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/show_medias_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,8 +11,20 @@ import 'package:flutter/cupertino.dart';
 class MediaViewPage extends StatefulWidget {
   final Message media;
   final List<Message> messages;
-
-  const MediaViewPage({super.key, required this.media, required this.messages});
+  final bool canNavigate;
+  final Function? navigateToPage;
+  final bool isGroup;
+  final Group? group;
+  final PrivateChat? privateChat;
+  const MediaViewPage(
+      {super.key,
+      required this.media,
+      required this.messages,
+      required this.canNavigate,
+      required this.isGroup,
+      this.privateChat,
+      this.group,
+      this.navigateToPage});
 
   @override
   MediaViewPageState createState() => MediaViewPageState();
@@ -38,7 +53,20 @@ class MediaViewPageState extends State<MediaViewPage> {
             navigationBar: CupertinoNavigationBar(
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               leading: CupertinoButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(ShowMediasPage(
+                        isGroup: widget.isGroup,
+                        medias: widget.messages,
+                        canNavigate: widget.canNavigate,
+                        group: widget.group,
+                        privateChat: widget.privateChat,
+                        navigateToPage: widget.navigateToPage));
+
+                    return;
+                  }
+                  Navigator.of(context).pop();
+                },
                 padding: const EdgeInsets.only(left: 10),
                 child: Icon(CupertinoIcons.back,
                     color:

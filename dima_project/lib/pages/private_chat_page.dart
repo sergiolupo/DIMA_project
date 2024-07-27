@@ -23,10 +23,13 @@ import 'package:image_picker/image_picker.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
-
+  final bool canNavigate;
+  final Function? navigateToPage;
   const PrivateChatPage({
     super.key,
     required this.privateChat,
+    required this.canNavigate,
+    this.navigateToPage,
   });
 
   @override
@@ -62,15 +65,27 @@ class PrivateChatPageState extends State<PrivateChatPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: GestureDetector(
-          onTap: () => {
-            if (widget.privateChat.id != null)
-              {
+          onTap: () {
+            if (widget.privateChat.id != null) {
+              if (!widget.canNavigate) {
                 Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => PrivateInfoPage(
                     privateChat: widget.privateChat,
+                    canNavigate: widget.canNavigate,
+                    navigateToPage: widget.navigateToPage,
                   ),
-                ))
+                ));
+              } else {
+                widget.navigateToPage!(
+                  PrivateInfoPage(
+                    privateChat: widget.privateChat,
+                    canNavigate: widget.canNavigate,
+                    navigateToPage: widget.navigateToPage,
+                  ),
+                );
+                return;
               }
+            }
           },
           child: SingleChildScrollView(
             child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -138,19 +153,21 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
-            if (isTyping && widget.privateChat.id != null) {
-              DatabaseService.updateTyping(widget.privateChat.id!, false);
-            }
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
-          },
-          child: Icon(CupertinoIcons.back,
-              color: CupertinoTheme.of(context).primaryColor),
-        ),
+        leading: (!widget.canNavigate)
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  if (isTyping && widget.privateChat.id != null) {
+                    DatabaseService.updateTyping(widget.privateChat.id!, false);
+                  }
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
+              )
+            : null,
       ),
       child: Column(
         children: <Widget>[
@@ -332,11 +349,14 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                           )
                         : Container(),
                     (message.type == Type.text)
-                        ? TextMessageTile(
-                            message: message,
-                            showCustomSnackbar: () {
-                              showCustomSnackbar();
-                            },
+                        ? Hero(
+                            tag: message.id!,
+                            child: TextMessageTile(
+                              message: message,
+                              showCustomSnackbar: () {
+                                showCustomSnackbar();
+                              },
+                            ),
                           )
                         : (message.type == Type.image)
                             ? ImageMessageTile(

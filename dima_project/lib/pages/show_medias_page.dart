@@ -58,6 +58,8 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                 } else {
                   widget.navigateToPage!(PrivateInfoPage(
                     privateChat: widget.privateChat!,
+                    canNavigate: widget.canNavigate,
+                    navigateToPage: widget.navigateToPage,
                   ));
                 }
               } else {
@@ -127,16 +129,35 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                             ),
                           ),
                           onTap: () {
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) => MediaViewPage(
-                                  media: message,
-                                  messages: groupedMedias.values
-                                      .expand((element) => element)
-                                      .toList(),
+                            if (widget.canNavigate) {
+                              widget.navigateToPage!(MediaViewPage(
+                                isGroup: widget.isGroup,
+                                group: widget.group,
+                                privateChat: widget.privateChat,
+                                canNavigate: widget.canNavigate,
+                                navigateToPage: widget.navigateToPage,
+                                media: message,
+                                messages: groupedMedias.values
+                                    .expand((element) => element)
+                                    .toList(),
+                              ));
+                            } else {
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                  builder: (context) => MediaViewPage(
+                                    isGroup: widget.isGroup,
+                                    group: widget.group,
+                                    privateChat: widget.privateChat,
+                                    canNavigate: widget.canNavigate,
+                                    navigateToPage: widget.navigateToPage,
+                                    media: message,
+                                    messages: groupedMedias.values
+                                        .expand((element) => element)
+                                        .toList(),
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
                         );
                       },

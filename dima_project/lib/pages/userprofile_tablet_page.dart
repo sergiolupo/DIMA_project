@@ -253,6 +253,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                                   CupertinoPageRoute(
                                     builder: (context) => PrivateChatPage(
                                       privateChat: chat,
+                                      canNavigate: false,
                                     ),
                                   ),
                                 );

@@ -61,6 +61,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
             CupertinoPageRoute(
               builder: (context) => PrivateChatPage(
                 privateChat: widget.privateChat,
+                canNavigate: false,
               ),
             ),
           );

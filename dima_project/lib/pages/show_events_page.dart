@@ -59,6 +59,8 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                 } else {
                   widget.navigateToPage!(PrivateInfoPage(
                     privateChat: widget.privateChat!,
+                    navigateToPage: widget.navigateToPage,
+                    canNavigate: widget.canNavigate,
                   ));
                 }
               } else {

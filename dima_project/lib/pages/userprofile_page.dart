@@ -258,6 +258,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                   CupertinoPageRoute(
                                     builder: (context) => PrivateChatPage(
                                       privateChat: chat,
+                                      canNavigate: false,
                                     ),
                                   ),
                                 );

@@ -35,7 +35,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     _groupsStream = DatabaseService.getGroupsStream();
   }
 
-  void _navigateToPrivateChat(Widget newPage) {
+  void _navigateToPage(Widget newPage) {
     setState(() {
       page = newPage;
     });
@@ -183,7 +183,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           page = GroupChatPage(
                             group: group,
                             key: UniqueKey(),
-                            navigateToPage: _navigateToPrivateChat,
+                            navigateToPage: _navigateToPage,
                             canNavigate: true,
                           );
                         });
@@ -214,7 +214,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               page = GroupChatPage(
                                 group: group,
                                 key: UniqueKey(),
-                                navigateToPage: _navigateToPrivateChat,
+                                navigateToPage: _navigateToPage,
                                 canNavigate: true,
                               );
                             });
@@ -305,6 +305,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               page = PrivateChatPage(
                                 privateChat: privateChat,
                                 key: UniqueKey(),
+                                navigateToPage: _navigateToPage,
+                                canNavigate: true,
                               );
                             })
                           },
@@ -320,6 +322,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 page = PrivateChatPage(
                                   privateChat: privateChat,
                                   key: UniqueKey(),
+                                  navigateToPage: _navigateToPage,
+                                  canNavigate: true,
                                 );
                               })
                             },

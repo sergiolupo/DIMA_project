@@ -37,6 +37,8 @@ class ImageMessageTileState extends State<ImageMessageTile> {
         Navigator.of(context).push(
           CupertinoPageRoute(
             builder: (context) => MediaViewPage(
+              canNavigate: false,
+              isGroup: widget.message.isGroupMessage,
               media: widget.message,
               messages: [widget.message],
             ),

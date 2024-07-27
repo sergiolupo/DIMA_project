@@ -50,28 +50,35 @@ class GroupInfoPageState extends State<GroupInfoPage> {
     List<UserData> users = [];
     List<Message> messages = [];
     users = (await DatabaseService.getGroupRequestsForGroup(widget.group.id));
-    setState(() {
-      _requests = users;
-    });
+    if (mounted) {
+      setState(() {
+        _requests = users;
+      });
+    }
 
     messages = (await DatabaseService.getGroupMessagesType(
         widget.group.id, Type.image));
-    setState(() {
-      _media = messages;
-    });
+    if (mounted) {
+      setState(() {
+        _media = messages;
+      });
+    }
 
     messages = (await DatabaseService.getGroupMessagesType(
         widget.group.id, Type.event));
-
-    setState(() {
-      _events = messages;
-    });
+    if (mounted) {
+      setState(() {
+        _events = messages;
+      });
+    }
 
     messages = (await DatabaseService.getGroupMessagesType(
         widget.group.id, Type.news));
-    setState(() {
-      _news = messages;
-    });
+    if (mounted) {
+      setState(() {
+        _news = messages;
+      });
+    }
   }
 
   @override
