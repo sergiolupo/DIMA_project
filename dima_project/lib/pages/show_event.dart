@@ -244,10 +244,21 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                                     snapshot.data != null) {
                                                   final address =
                                                       snapshot.data as String;
-                                                  return Text(
-                                                    address,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
+                                                  return Container(
+                                                    constraints: BoxConstraints(
+                                                      maxWidth:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                    ),
+                                                    child: Text(
+                                                      address,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                      ),
                                                     ),
                                                   );
                                                 } else {
