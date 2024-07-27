@@ -7,7 +7,6 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -26,7 +25,6 @@ class EditEventPage extends ConsumerStatefulWidget {
 
 class EditEventPageState extends ConsumerState<EditEventPage> {
   Uint8List? selectedImagePath;
-  Uint8List? _oldImage;
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _eventDescriptionController =
       TextEditingController();
@@ -37,6 +35,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   Map<int, Details> details = {};
   bool isLoaded = false;
   int numInfos = 1;
+  String? defaultImage;
+
   LatLng? _selectedLocation;
   final String uid = AuthService.uid;
   @override
@@ -62,17 +62,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       map[widget.event.details!.length] = true;
       numInfos = widget.event.details!.length + 1;
     });
-    _fetchProfileImage();
     _fetchLocations();
-  }
-
-  Future<void> _fetchProfileImage() async {
-    final image =
-        await StorageService.downloadImageFromStorage(widget.event.imagePath!);
-    setState(() {
-      selectedImagePath = image;
-      _oldImage = image;
-    });
   }
 
   Future<void> _fetchLocations() async {
@@ -96,10 +86,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return selectedImagePath == null ||
-            _eventNameController.text.isEmpty ||
-            _eventDescriptionController.text.isEmpty ||
-            !isLoaded
+    return !isLoaded
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -158,21 +145,26 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                           Navigator.of(context).push(
                             CupertinoPageRoute(
                               builder: (context) => ImageCropPage(
+                                defaultImage:
+                                    defaultImage ?? widget.event.imagePath!,
                                 imageType: 2,
                                 imagePath: selectedImagePath,
                                 imageInsertPageKey:
                                     (Uint8List selectedImagePath) {
                                   setState(() {
                                     this.selectedImagePath = selectedImagePath;
+                                    defaultImage = '';
                                   });
                                 },
                               ),
                             ),
                           )
                         },
-                        child: CreateImageWidget.getEventImageMemory(
-                          selectedImagePath!,
-                        ),
+                        child: selectedImagePath == null
+                            ? CreateImageWidget.getEventImage(
+                                widget.event.imagePath!)
+                            : CreateImageWidget.getEventImageMemory(
+                                selectedImagePath!),
                       ),
                       const SizedBox(height: 20),
                       CupertinoTextField(
@@ -385,7 +377,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
     await DatabaseService.updateEvent(
       event,
       selectedImagePath!,
-      _oldImage == selectedImagePath,
+      selectedImagePath == null,
       widget.event.isPublic != isPublic,
       uids,
     );

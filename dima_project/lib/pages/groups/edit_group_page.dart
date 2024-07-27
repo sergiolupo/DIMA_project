@@ -5,7 +5,6 @@ import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -32,8 +31,7 @@ class EditGroupPageState extends State<EditGroupPage> {
   final TextEditingController _groupDescriptionController =
       TextEditingController();
   Uint8List? selectedImagePath;
-  Uint8List? _oldImage;
-
+  String? defaultImage;
   bool isPublic = true;
   bool notify = true;
   List<String> uuids = [];
@@ -56,101 +54,88 @@ class EditGroupPageState extends State<EditGroupPage> {
       _groupNameController.text = widget.group.name;
       _groupDescriptionController.text = widget.group.description!;
     });
-    _fetchProfileImage();
-  }
-
-  Future<void> _fetchProfileImage() async {
-    final image =
-        await StorageService.downloadImageFromStorage(widget.group.imagePath!);
-    setState(() {
-      selectedImagePath = image;
-      _oldImage = image;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return selectedImagePath == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-              leading: index == 0
-                  ? CupertinoButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        if (widget.canNavigate) {
-                          widget.navigateToPage!(GroupInfoPage(
-                              group: widget.group,
-                              canNavigate: widget.canNavigate,
-                              navigateToPage: widget.navigateToPage));
-                        } else {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoTheme.of(context).primaryColor,
-                        ),
-                      ),
-                    )
-                  : CupertinoNavigationBarBackButton(
-                      color: CupertinoTheme.of(context).primaryColor,
-                      onPressed: () {
-                        setState(() {
-                          index = 0;
-                        });
-                      },
-                    ),
-              trailing: index == 0
-                  ? CupertinoButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () async {
-                        if (index == 0) {
-                          if (!GroupHelper.validateFirstPage(
-                            context,
-                            _groupNameController.text,
-                            _groupDescriptionController.text,
-                          )) {
-                            return;
-                          }
-                          await updateGroup();
-                          if (context.mounted) {
-                            if (widget.canNavigate) {
-                              widget.navigateToPage!(
-                                  await DatabaseService.getGroupFromId(
-                                      widget.group.id));
-                            } else {
-                              Navigator.of(context).pop(
-                                  await DatabaseService.getGroupFromId(
-                                      widget.group.id));
-                            }
-                          }
-                        }
-                      },
-                      child: Text(
-                        'Done',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoTheme.of(context).primaryColor,
-                        ),
-                      ))
-                  : null,
-              middle: Text('Edit Group',
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        leading: index == 0
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(GroupInfoPage(
+                        group: widget.group,
+                        canNavigate: widget.canNavigate,
+                        navigateToPage: widget.navigateToPage));
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text(
+                  'Cancel',
                   style: TextStyle(
-                      color: CupertinoTheme.of(context).primaryColor)),
-            ),
-            child: index == 0
-                ? buildPage1(context)
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CategorySelectionForm(
-                      selectedCategories: selectedCategories,
-                    ),
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoTheme.of(context).primaryColor,
                   ),
-          );
+                ),
+              )
+            : CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
+                onPressed: () {
+                  setState(() {
+                    index = 0;
+                  });
+                },
+              ),
+        trailing: index == 0
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () async {
+                  if (index == 0) {
+                    if (!GroupHelper.validateFirstPage(
+                      context,
+                      _groupNameController.text,
+                      _groupDescriptionController.text,
+                    )) {
+                      return;
+                    }
+                    await updateGroup();
+                    if (context.mounted) {
+                      if (widget.canNavigate) {
+                        widget.navigateToPage!(
+                            await DatabaseService.getGroupFromId(
+                                widget.group.id));
+                      } else {
+                        Navigator.of(context).pop(
+                            await DatabaseService.getGroupFromId(
+                                widget.group.id));
+                      }
+                    }
+                  }
+                },
+                child: Text(
+                  'Done',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoTheme.of(context).primaryColor,
+                  ),
+                ))
+            : null,
+        middle: Text('Edit Group',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
+      ),
+      child: index == 0
+          ? buildPage1(context)
+          : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CategorySelectionForm(
+                selectedCategories: selectedCategories,
+              ),
+            ),
+    );
   }
 
   Widget buildPage1(BuildContext context) {
@@ -167,20 +152,22 @@ class EditGroupPageState extends State<EditGroupPage> {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => ImageCropPage(
+                        defaultImage: defaultImage ?? widget.group.imagePath!,
                         imageType: 1,
                         imagePath: selectedImagePath,
                         imageInsertPageKey: (Uint8List selectedImagePath) {
                           setState(() {
                             this.selectedImagePath = selectedImagePath;
+                            defaultImage = '';
                           });
                         },
                       ),
                     ),
                   );
                 },
-                child: CreateImageWidget.getGroupImageMemory(
-                  selectedImagePath!,
-                ),
+                child: selectedImagePath == null
+                    ? CreateImageWidget.getGroupImage(widget.group.imagePath!)
+                    : CreateImageWidget.getGroupImageMemory(selectedImagePath!),
               ),
               const SizedBox(height: 20),
               CupertinoTextField(
@@ -318,8 +305,8 @@ class EditGroupPageState extends State<EditGroupPage> {
     );
     await DatabaseService.updateGroup(
       group,
-      selectedImagePath!,
-      _oldImage == selectedImagePath,
+      selectedImagePath,
+      selectedImagePath == null,
       widget.group.isPublic != isPublic,
       uuids,
     );

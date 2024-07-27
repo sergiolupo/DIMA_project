@@ -3,7 +3,6 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -29,38 +28,14 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   late TextEditingController _surnameController;
   late TextEditingController _usernameController;
   late String _oldUsername;
-  late Uint8List _oldImage;
+  late bool _oldIsPublic;
   bool isPublic = true;
-  UserData? user;
+  String? defaultImage;
   final String uid = AuthService.uid;
   @override
   void initState() {
     super.initState();
-    _initializeUserData();
-  }
-
-  Future<void> _initializeUserData() async {
-    user = await DatabaseService.getUserData(uid);
-    if (user != null) {
-      setState(() {
-        _oldUsername = user!.username;
-        _nameController = TextEditingController(text: user!.name);
-        _surnameController = TextEditingController(text: user!.surname);
-        _usernameController = TextEditingController(text: user!.username);
-        isPublic = user!.isPublic ?? true;
-        selectedCategories = user!.categories;
-      });
-      await _fetchProfileImage();
-    }
-  }
-
-  Future<void> _fetchProfileImage() async {
-    final image =
-        await StorageService.downloadImageFromStorage(user!.imagePath!);
-    setState(() {
-      selectedImagePath = image;
-      _oldImage = image;
-    });
+    ref.read(userProvider(uid));
   }
 
   void _toggleObscure() {
@@ -71,125 +46,137 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return selectedImagePath == null || user == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-              middle: const Text('Settings'),
-              leading: CupertinoButton(
-                onPressed: () => _currentPage == 1
-                    ? Navigator.of(context).pop()
-                    : selectedCategories.isEmpty
-                        ? _showDialog('Invalid choice',
-                            'Please select at least one category')
-                        : setState(() {
-                            _currentPage = 1;
-                          }),
-                padding: const EdgeInsets.only(left: 10),
-                child: Icon(
-                  CupertinoIcons.back,
-                  color: CupertinoTheme.of(context).primaryColor,
-                ),
-              ),
-              trailing: _currentPage == 1
-                  ? CupertinoButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () async {
-                        if (await _validatePage()) {
-                          await _saveUserData();
-
-                          if (context.mounted) Navigator.of(context).pop();
-                        }
-                      },
-                      child: Text(
-                        'Done',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoTheme.of(context).primaryColor,
-                        ),
-                      ))
-                  : null,
+    final user = ref.watch(userProvider(uid));
+    return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: const Text('Settings'),
+          leading: CupertinoButton(
+            onPressed: () => _currentPage == 1
+                ? Navigator.of(context).pop()
+                : selectedCategories.isEmpty
+                    ? _showDialog(
+                        'Invalid choice', 'Please select at least one category')
+                    : setState(() {
+                        _currentPage = 1;
+                      }),
+            padding: const EdgeInsets.only(left: 10),
+            child: Icon(
+              CupertinoIcons.back,
+              color: CupertinoTheme.of(context).primaryColor,
             ),
-            child: _currentPage == 1
-                ? _buildMainPage()
-                : CategorySelectionForm(
-                    selectedCategories: selectedCategories,
-                  ));
+          ),
+          trailing: _currentPage == 1
+              ? CupertinoButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () async {
+                    if (await _validatePage()) {
+                      await _saveUserData();
+
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
+                  },
+                  child: Text(
+                    'Done',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: CupertinoTheme.of(context).primaryColor,
+                    ),
+                  ))
+              : null,
+        ),
+        child: _currentPage == 1
+            ? _buildMainPage(user)
+            : CategorySelectionForm(
+                selectedCategories: selectedCategories,
+              ));
   }
 
-  Widget _buildMainPage() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => ImageCropPage(
-                  imageType: 0,
-                  imagePath: selectedImagePath,
-                  imageInsertPageKey: (Uint8List selectedImagePath) {
-                    setState(() {
-                      this.selectedImagePath = selectedImagePath;
-                    });
-                  },
-                ),
-              ),
-            )
-          },
-          child: CreateImageWidget.getUserImageMemory(
-            selectedImagePath!,
-          ),
-        ),
-        const SizedBox(height: 30),
-        _buildTextField('Name', user!.name, _nameController),
-        _buildTextField('Surname', user!.surname, _surnameController),
-        _buildTextField('Username', user!.username, _usernameController),
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.only(right: 10.0, left: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: CupertinoTheme.of(context).primaryContrastingColor,
-            ),
-            child: Column(children: [
-              CupertinoListTile(
-                title: const Text('Categories'),
-                leading: const Icon(FontAwesomeIcons.tableList),
-                trailing: const Icon(CupertinoIcons.forward),
-                onTap: () {
-                  setState(() {
-                    _currentPage = 2;
-                  });
+  Widget _buildMainPage(AsyncValue<UserData> user) {
+    return user.when(
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (error, stack) => Text('Error: $error'),
+        data: (user) {
+          _nameController = TextEditingController(text: user.name);
+          _surnameController = TextEditingController(text: user.surname);
+          _usernameController = TextEditingController(text: user.username);
+          _oldUsername = user.username;
+          _oldIsPublic = user.isPublic!;
+          selectedCategories = user.categories;
+          return Column(
+            children: [
+              GestureDetector(
+                onTap: () => {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => ImageCropPage(
+                        defaultImage: defaultImage ?? user.imagePath!,
+                        imageType: 0,
+                        imagePath: selectedImagePath,
+                        imageInsertPageKey: (Uint8List selectedImagePath) {
+                          setState(() {
+                            this.selectedImagePath = selectedImagePath;
+                            defaultImage = '';
+                          });
+                        },
+                      ),
+                    ),
+                  )
                 },
+                child: selectedImagePath == null
+                    ? CreateImageWidget.getUserImage(user.imagePath!)
+                    : CreateImageWidget.getUserImageMemory(selectedImagePath!),
               ),
-              Container(
-                height: 1,
-                color: CupertinoColors.separator,
-              ),
-              CupertinoListTile(
-                title: const Text('Public Profile'),
-                leading: isPublic
-                    ? const Icon(CupertinoIcons.lock_open_fill)
-                    : const Icon(CupertinoIcons.lock_fill),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: CupertinoSwitch(
-                    value: isPublic,
-                    onChanged: (bool value) {
-                      setState(() {
-                        isPublic = value;
-                      });
-                    },
+              const SizedBox(height: 30),
+              _buildTextField('Name', user.name, _nameController),
+              _buildTextField('Surname', user.surname, _surnameController),
+              _buildTextField('Username', user.username, _usernameController),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0, left: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: CupertinoTheme.of(context).primaryContrastingColor,
                   ),
+                  child: Column(children: [
+                    CupertinoListTile(
+                      title: const Text('Categories'),
+                      leading: const Icon(FontAwesomeIcons.tableList),
+                      trailing: const Icon(CupertinoIcons.forward),
+                      onTap: () {
+                        setState(() {
+                          _currentPage = 2;
+                        });
+                      },
+                    ),
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.separator,
+                    ),
+                    CupertinoListTile(
+                      title: const Text('Public Profile'),
+                      leading: isPublic
+                          ? const Icon(CupertinoIcons.lock_open_fill)
+                          : const Icon(CupertinoIcons.lock_fill),
+                      trailing: Transform.scale(
+                        scale: 0.75,
+                        child: CupertinoSwitch(
+                          value: isPublic,
+                          onChanged: (bool value) {
+                            setState(() {
+                              isPublic = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ]),
                 ),
               ),
-            ]),
-          ),
-        ),
-      ],
-    );
+            ],
+          );
+        });
   }
 
   Widget _buildTextField(
@@ -261,19 +248,19 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     await DatabaseService.updateUserInformation(
       UserData(
         categories: selectedCategories,
-        email: user!.email,
+        email: '',
         name: _nameController.text,
         surname: _surnameController.text,
         username: _usernameController.text,
-        uid: user!.uid,
+        uid: AuthService.uid,
         isPublic: isPublic,
       ),
       selectedImagePath!,
-      _oldImage != selectedImagePath,
-      user!.isPublic != isPublic,
+      selectedImagePath != null,
+      _oldIsPublic != isPublic,
     );
     debugPrint('User data updated');
-    ref.invalidate(userProvider(user!.uid!));
+    ref.invalidate(userProvider(AuthService.uid));
   }
 
   void _showDialog(String title, String content) {

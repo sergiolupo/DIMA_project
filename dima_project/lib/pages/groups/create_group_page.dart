@@ -127,6 +127,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => ImageCropPage(
+                          defaultImage: '',
                           imageType: 1,
                           imagePath: selectedImagePath,
                           imageInsertPageKey: (Uint8List selectedImagePath) {

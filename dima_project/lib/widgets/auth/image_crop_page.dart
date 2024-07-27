@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/utils/constants.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -8,12 +9,13 @@ class ImageCropPage extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
   final int imageType; // 0 for user, 1 for group, 2 for event
-
+  final String defaultImage;
   const ImageCropPage({
     super.key,
     this.imagePath,
     required this.imageInsertPageKey,
     required this.imageType,
+    required this.defaultImage,
   });
 
   @override
@@ -22,12 +24,13 @@ class ImageCropPage extends StatefulWidget {
 
 class ImageCropPageState extends State<ImageCropPage> {
   final ImagePicker _picker = ImagePicker();
-  late Uint8List _selectedImagePath;
-
+  Uint8List _selectedImagePath = Uint8List(0);
+  String defaultImage = '';
   @override
   void initState() {
     super.initState();
     _selectedImagePath = widget.imagePath ?? Uint8List(0);
+    defaultImage = widget.defaultImage;
   }
 
   Future<void> _pickImage(bool isCamera) async {
@@ -119,6 +122,7 @@ class ImageCropPageState extends State<ImageCropPage> {
               setState(() {
                 _selectedImagePath = Uint8List(0);
                 widget.imageInsertPageKey(_selectedImagePath);
+                defaultImage = '';
               });
             },
             child: Icon(
@@ -135,20 +139,11 @@ class ImageCropPageState extends State<ImageCropPage> {
   Widget _getDefaultImage() {
     switch (widget.imageType) {
       case 1:
-        return Image.asset(
-          'assets/default_group_image.png',
-          fit: BoxFit.cover,
-        );
+        return CreateImageWidget.getGroupImage(defaultImage);
       case 2:
-        return Image.asset(
-          'assets/default_event_image.png',
-          fit: BoxFit.cover,
-        );
+        return CreateImageWidget.getEventImage(defaultImage);
       default:
-        return Image.asset(
-          'assets/default_user_image.png',
-          fit: BoxFit.cover,
-        );
+        return CreateImageWidget.getUserImage(defaultImage);
     }
   }
 
@@ -187,6 +182,7 @@ class ImageCropPageState extends State<ImageCropPage> {
               setState(() {
                 _selectedImagePath = Uint8List(0);
                 widget.imageInsertPageKey(_selectedImagePath);
+                defaultImage = '';
               });
               Navigator.of(context).pop();
             },

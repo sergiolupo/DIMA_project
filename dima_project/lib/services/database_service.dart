@@ -1496,11 +1496,11 @@ class DatabaseService {
     });
   }
 
-  static updateGroup(Group group, Uint8List uint8list, bool sameImage,
+  static updateGroup(Group group, Uint8List? uint8list, bool sameImage,
       bool visibilityHasChanged, List<String> uuids) async {
     await groupsRef.doc(group.id).update(Group.toMap(group));
     if (!sameImage) {
-      String imageUrl = uint8list.toString() == '[]' || uint8list.isEmpty
+      String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
           : await StorageService.uploadImageToStorage(
               'group_images/${group.id}.jpg', uint8list);

@@ -59,6 +59,7 @@ class RegisterPageState extends State<RegisterPage> {
             Navigator.of(context).push(
               CupertinoPageRoute(
                 builder: (context) => ImageCropPage(
+                  defaultImage: '',
                   imageType: 0,
                   imagePath: selectedImagePath,
                   imageInsertPageKey: (Uint8List selectedImagePath) {

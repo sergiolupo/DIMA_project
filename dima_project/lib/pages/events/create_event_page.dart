@@ -142,6 +142,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           Navigator.of(context).push(
                             CupertinoPageRoute(
                               builder: (context) => ImageCropPage(
+                                defaultImage: '',
                                 imageType: 2,
                                 imagePath: selectedImagePath,
                                 imageInsertPageKey:

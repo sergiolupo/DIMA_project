@@ -35,7 +35,7 @@ class EventService {
   }
 
   static Future<String?> getAddressFromLatLng(LatLng latLng) async {
-    final apiKey = '0233c5a7-dc20-4eba-8b86-970fe87df3c2';
+    const apiKey = '0233c5a7-dc20-4eba-8b86-970fe87df3c2';
     final url =
         'https://graphhopper.com/api/1/geocode?reverse=true&point=${latLng.latitude},${latLng.longitude}&key=$apiKey';
 
