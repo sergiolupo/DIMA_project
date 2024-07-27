@@ -184,82 +184,84 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: event.details!.length,
                           itemBuilder: (context, index) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20.0),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      FontAwesomeIcons.calendar,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    Text(
-                                      DateFormat('d/M/y').format(
-                                          event.details![index].startDate!),
-                                      style: TextStyle(
-                                          color: CupertinoTheme.of(context)
-                                              .textTheme
-                                              .textStyle
-                                              .color),
-                                    ),
-                                    const Text(' - '),
-                                    Text(
-                                      DateFormat('d/M/y').format(
-                                          event.details![index].endDate!),
-                                      style: TextStyle(
-                                          color: CupertinoTheme.of(context)
-                                              .textTheme
-                                              .textStyle
-                                              .color),
-                                    ),
-                                    /*Transform.scale(
-                                        scale: 0.4,
-                                        child: ShowDate(
-                                            date: event
-                                                .details![index].startDate!,
-                                            time: event
-                                                .details![index].startTime!))*/
-                                  ],
-                                ),
-                                const SizedBox(height: 10.0),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.map_pin_ellipse,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    FutureBuilder(
-                                        future:
-                                            EventService.getAddressFromLatLng(
-                                                event.details![index].latlng!),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData &&
-                                              snapshot.data != null) {
-                                            final address =
-                                                snapshot.data as String;
-                                            return Text(
-                                              address,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            );
-                                          } else {
-                                            return const Center(
-                                              child:
-                                                  CupertinoActivityIndicator(),
-                                            );
-                                          }
-                                        }),
-                                  ],
-                                )
-                              ],
-                            );
+                            debugPrint(
+                                event.details![index].members!.toString());
+                            return event.details![index].members!
+                                    .contains(widget.userData.uid)
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 20.0),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.calendar,
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Text(
+                                            DateFormat('d/M/y').format(event
+                                                .details![index].startDate!),
+                                            style: TextStyle(
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color),
+                                          ),
+                                          const Text(' - '),
+                                          Text(
+                                            DateFormat('d/M/y').format(
+                                                event.details![index].endDate!),
+                                            style: TextStyle(
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10.0),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            CupertinoIcons.map_pin_ellipse,
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          FutureBuilder(
+                                              future: EventService
+                                                  .getAddressFromLatLng(event
+                                                      .details![index].latlng!),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData &&
+                                                    snapshot.data != null) {
+                                                  final address =
+                                                      snapshot.data as String;
+                                                  return Text(
+                                                    address,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  return const Center(
+                                                    child:
+                                                        CupertinoActivityIndicator(),
+                                                  );
+                                                }
+                                              }),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                : const SizedBox();
                           },
                         ),
                       ],

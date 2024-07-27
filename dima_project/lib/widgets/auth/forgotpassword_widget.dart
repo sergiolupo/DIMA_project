@@ -33,7 +33,7 @@ class ForgotPasswordForm extends StatelessWidget {
               }
             },
             padding: const EdgeInsets.symmetric(horizontal: 50),
-            color: CupertinoColors.systemPink,
+            color: CupertinoTheme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(20),
             child: const Text(
               'Reset Password',

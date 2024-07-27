@@ -35,26 +35,26 @@ class EventService {
   }
 
   static Future<String?> getAddressFromLatLng(LatLng latLng) async {
+    final apiKey = '0233c5a7-dc20-4eba-8b86-970fe87df3c2';
     final url =
-        'https://nominatim.openstreetmap.org/reverse?format=json&lat=${latLng.latitude}&lon=${latLng.longitude}';
+        'https://graphhopper.com/api/1/geocode?reverse=true&point=${latLng.latitude},${latLng.longitude}&key=$apiKey';
 
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final address = data['address'];
-      if (address != null) {
-        final houseNumber = address['house_number'] ?? '';
-        final road = address['road'] ?? '';
-        final city =
-            address['city'] ?? address['town'] ?? address['village'] ?? '';
+      if (data['hits'] != null && data['hits'].isNotEmpty) {
+        final address = data['hits'][0];
+        final houseNumber = address['housenumber'] ?? '';
+        final road = address['street'] ?? '';
+        final city = address['city'] ?? address['name'] ?? '';
         final country = address['country'] ?? '';
 
         return [road, houseNumber, city, country]
             .where((part) => part.isNotEmpty)
             .join(', ');
       }
-      return data['display_name'] as String?;
+      return null;
     } else {
       debugPrint('Failed to fetch address: ${response.statusCode}');
       return null;

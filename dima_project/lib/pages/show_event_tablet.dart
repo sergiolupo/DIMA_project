@@ -192,88 +192,100 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                               shrinkWrap: true,
                               itemCount: event.details!.length,
                               itemBuilder: (context, index) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          FontAwesomeIcons.calendar,
-                                          color: CupertinoTheme.of(context)
-                                              .primaryColor,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          DateFormat('d/M/y').format(
-                                              event.details![index].startDate!),
-                                          style: TextStyle(
-                                              color: CupertinoTheme.of(context)
-                                                  .textTheme
-                                                  .textStyle
-                                                  .color),
-                                        ),
-                                        const Text(' - '),
-                                        Text(
-                                          DateFormat('d/M/y').format(
-                                              event.details![index].endDate!),
-                                          style: TextStyle(
-                                              color: CupertinoTheme.of(context)
-                                                  .textTheme
-                                                  .textStyle
-                                                  .color),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.map_pin_ellipse,
-                                          color: CupertinoTheme.of(context)
-                                              .primaryColor,
-                                        ),
-                                        FutureBuilder(
-                                            future: EventService
-                                                .getAddressFromLatLng(event
-                                                    .details![index].latlng!),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData &&
-                                                  snapshot.data != null) {
-                                                final address =
-                                                    snapshot.data as String;
-                                                return Container(
-                                                  constraints: BoxConstraints(
-                                                    maxWidth:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            2,
-                                                  ),
-                                                  child: Text(
-                                                    address,
-                                                    overflow:
-                                                        TextOverflow.visible,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                );
-                                              } else {
-                                                return const Center(
-                                                  child:
-                                                      CupertinoActivityIndicator(),
-                                                );
-                                              }
-                                            }),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                  ],
-                                );
+                                return event.details![index].members!
+                                        .contains(widget.userData.uid)
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                FontAwesomeIcons.calendar,
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .primaryColor,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              Text(
+                                                DateFormat('d/M/y').format(event
+                                                    .details![index]
+                                                    .startDate!),
+                                                style: TextStyle(
+                                                    color: CupertinoTheme.of(
+                                                            context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color),
+                                              ),
+                                              const Text(' - '),
+                                              Text(
+                                                DateFormat('d/M/y').format(event
+                                                    .details![index].endDate!),
+                                                style: TextStyle(
+                                                    color: CupertinoTheme.of(
+                                                            context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                CupertinoIcons.map_pin_ellipse,
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .primaryColor,
+                                              ),
+                                              FutureBuilder(
+                                                  future: EventService
+                                                      .getAddressFromLatLng(
+                                                          event.details![index]
+                                                              .latlng!),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData &&
+                                                        snapshot.data != null) {
+                                                      final address = snapshot
+                                                          .data as String;
+                                                      return Container(
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxWidth: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              2,
+                                                        ),
+                                                        child: Text(
+                                                          address,
+                                                          overflow: TextOverflow
+                                                              .visible,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return const Center(
+                                                        child:
+                                                            CupertinoActivityIndicator(),
+                                                      );
+                                                    }
+                                                  }),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                        ],
+                                      )
+                                    : const SizedBox();
                               },
                             ),
                           ),

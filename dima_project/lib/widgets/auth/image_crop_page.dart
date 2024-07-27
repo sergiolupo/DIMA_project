@@ -166,9 +166,11 @@ class ImageCropPageState extends State<ImageCropPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
+              child: Text(
                 'Set New Photo',
-                style: TextStyle(color: CupertinoColors.black),
+                style: TextStyle(
+                    color:
+                        CupertinoTheme.of(context).textTheme.textStyle.color),
               ),
             ),
           ),
@@ -191,8 +193,9 @@ class ImageCropPageState extends State<ImageCropPage> {
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: const Text('Cancel',
-              style: TextStyle(color: CupertinoColors.black)),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: CupertinoTheme.of(context).textTheme.textStyle.color)),
           onPressed: () {
             Navigator.of(context).pop();
           },

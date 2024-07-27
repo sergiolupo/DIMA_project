@@ -1345,7 +1345,8 @@ class DatabaseService {
       final snapshot = await eventsRef.doc(eventId).get();
       if (snapshot.exists) {
         Event event = await Event.fromSnapshot(snapshot);
-        if (event.admin != uuid) {
+        if (event.admin != uuid &&
+            !eventsList.any((element) => element.id == event.id)) {
           eventsList.add(event);
         }
       }

@@ -143,6 +143,9 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10),
                                                 constraints: BoxConstraints(
                                                     maxWidth:
                                                         MediaQuery.of(context)
@@ -161,6 +164,9 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                                                 ),
                                               ),
                                               Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10),
                                                 constraints: BoxConstraints(
                                                     maxWidth:
                                                         MediaQuery.of(context)
