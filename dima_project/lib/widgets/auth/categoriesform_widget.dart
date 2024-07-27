@@ -19,24 +19,27 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: CategoryIconMapper.categories.map((category) {
-        return CategoryIconMapper.buildCategoryItem(
-          context: context,
-          title: category,
-          icon: CategoryIconMapper.iconForCategory(category),
-          onTap: () {
-            setState(() {
-              if (selectedCategories.contains(category)) {
-                selectedCategories.remove(category);
-              } else {
-                selectedCategories.add(category);
-              }
-            });
-          },
-          selectedCategories: selectedCategories,
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Column(
+        children: CategoryIconMapper.categories.map((category) {
+          return CategoryIconMapper.buildCategoryItem(
+            context: context,
+            title: category,
+            icon: CategoryIconMapper.iconForCategory(category),
+            onTap: () {
+              setState(() {
+                if (selectedCategories.contains(category)) {
+                  selectedCategories.remove(category);
+                } else {
+                  selectedCategories.add(category);
+                }
+              });
+            },
+            selectedCategories: selectedCategories,
+          );
+        }).toList(),
+      ),
     );
   }
 

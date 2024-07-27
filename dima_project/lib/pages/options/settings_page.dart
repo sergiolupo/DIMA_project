@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -145,9 +146,17 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                       leading: const Icon(FontAwesomeIcons.tableList),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
-                        setState(() {
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => CategoriesPage(
+                              selectedCategories: selectedCategories,
+                            ),
+                          ),
+                        );
+
+                        /*setState(() {
                           _currentPage = 2;
-                        });
+                        });*/
                       },
                     ),
                     Container(
@@ -255,10 +264,11 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         uid: AuthService.uid,
         isPublic: isPublic,
       ),
-      selectedImagePath!,
+      selectedImagePath,
       selectedImagePath != null,
       _oldIsPublic != isPublic,
     );
+
     debugPrint('User data updated');
     ref.invalidate(userProvider(AuthService.uid));
   }

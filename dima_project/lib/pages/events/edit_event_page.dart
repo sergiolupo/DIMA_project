@@ -36,7 +36,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   bool isLoaded = false;
   int numInfos = 1;
   String? defaultImage;
-
   LatLng? _selectedLocation;
   final String uid = AuthService.uid;
   @override
@@ -60,7 +59,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       }
       details[widget.event.details!.length] = Details();
       map[widget.event.details!.length] = true;
-      numInfos = widget.event.details!.length + 1;
+      numInfos = widget.event.details!.length;
     });
     _fetchLocations();
   }
@@ -258,6 +257,14 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                               ),
                             );
                           }),
+                      if (widget.event.details!.length == numInfos)
+                        CupertinoButton(
+                            child: const Icon(CupertinoIcons.add),
+                            onPressed: () {
+                              setState(() {
+                                numInfos++;
+                              });
+                            }),
                       const SizedBox(height: 10),
                       Container(
                           decoration: BoxDecoration(

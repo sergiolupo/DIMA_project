@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -131,7 +131,7 @@ class EditGroupPageState extends State<EditGroupPage> {
           ? buildPage1(context)
           : Padding(
               padding: const EdgeInsets.all(8.0),
-              child: CategorySelectionForm(
+              child: CategoriesPage(
                 selectedCategories: selectedCategories,
               ),
             ),
@@ -241,9 +241,13 @@ class EditGroupPageState extends State<EditGroupPage> {
                       leading: const Icon(FontAwesomeIcons.tableList),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
-                        setState(() {
-                          index = 1;
-                        });
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => CategoriesPage(
+                              selectedCategories: selectedCategories,
+                            ),
+                          ),
+                        );
                       },
                     ),
                     Container(

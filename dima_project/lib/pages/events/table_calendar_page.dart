@@ -1,9 +1,13 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
+import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:dima_project/utils/table_calendar_utils.dart';
@@ -16,14 +20,14 @@ class TableCalendarPage extends ConsumerStatefulWidget {
 }
 
 class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
-  late ValueNotifier<List<Details>> _selectedEvents;
+  late ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  List<Details> details = [];
+  List<Event> events = [];
   @override
   void initState() {
     super.initState();
@@ -44,24 +48,28 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
     super.dispose();
   }
 
-  List<Details> _getEventsForDay(DateTime day) {
-    for (final detail in details) {
-      DateTime start = DateTime(
+  List<Event> _getEventsForDay(DateTime day) {
+    List<Event> result = [];
+    for (final event in events) {
+      for (final detail in event.details!) {
+        DateTime start = DateTime(
           detail.startDate!.year,
           detail.startDate!.month,
           detail.startDate!.day,
-          detail.startTime!.hour,
-          detail.startTime!.minute);
-      DateTime end = DateTime(detail.endDate!.year, detail.endDate!.month,
-          detail.endDate!.day, detail.endTime!.hour, detail.endTime!.minute);
-      if (day.isBefore(start) && day.isAfter(end)) {
-        details.remove(detail);
+        );
+        DateTime end = DateTime(
+            detail.endDate!.year, detail.endDate!.month, detail.endDate!.day);
+        if ((day.isAfter(start) && day.isBefore(end)) ||
+            isSameDay(start, day) ||
+            isSameDay(end, day)) {
+          result.add(event);
+        }
       }
     }
-    return details;
+    return result;
   }
 
-  List<Details> _getEventsForRange(
+  List<Event> _getEventsForRange(
     DateTime start,
     DateTime end,
   ) {
@@ -126,26 +134,28 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
       data: (joinedEvents) {
         return createdEvents.when(
           data: (createdEvents) {
-            details = [];
+            events = [];
 
             setState(() {
-              _selectedEvents = ValueNotifier(_getEventsForDay(
-                _selectedDay!,
-              ));
               for (final event in joinedEvents) {
                 for (final detail in event.details!) {
                   if (detail.members!.contains(AuthService.uid)) {
-                    details.add(detail);
+                    events.add(event);
+                    break;
                   }
                 }
               }
               for (final event in createdEvents) {
                 for (final detail in event.details!) {
                   if (detail.members!.contains(AuthService.uid)) {
-                    details.add(detail);
+                    events.add(event);
+                    break;
                   }
                 }
               }
+              _selectedEvents = ValueNotifier(_getEventsForDay(
+                _selectedDay!,
+              ));
             });
             return _buildCalendar();
           },
@@ -191,7 +201,7 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
           ValueListenableBuilder<DateTime>(
             valueListenable: _focusedDay,
             builder: (context, value, _) {
-              return TableCalendar<Details>(
+              return TableCalendar<Event>(
                 pageJumpingEnabled: true,
                 calendarBuilders: const CalendarBuilders(),
                 firstDay: kFirstDay,
@@ -252,25 +262,149 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Details>>(
+            child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
                 return ListView.builder(
                   itemCount: value.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: CupertinoListTile(
-                        onTap: () {},
-                        title: Text('${value[index]}'),
-                      ),
+                    final event = events[index];
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: ListView.builder(
+                          itemCount: event.details!.length,
+                          itemBuilder: (context, index) {
+                            final detail = event.details![index];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: CupertinoTheme.of(context)
+                                        .primaryContrastingColor,
+                                  ),
+                                  child: CupertinoListTile(
+                                    leading: Icon(
+                                      CupertinoIcons.calendar,
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                    ),
+                                    title: MediaQuery.of(context).size.width >
+                                            Constants.limitWidth
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                event.name,
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .textTheme
+                                                          .textStyle
+                                                          .color,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                              ),
+                                              const SizedBox(width: 10),
+                                              FutureBuilder(
+                                                  future: EventService
+                                                      .getAddressFromLatLng(
+                                                          detail.latlng!),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData &&
+                                                        snapshot.data != null) {
+                                                      final address = snapshot
+                                                          .data as String;
+                                                      return Text(
+                                                        address,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return const Center(
+                                                        child:
+                                                            CupertinoActivityIndicator(),
+                                                      );
+                                                    }
+                                                  }),
+                                            ],
+                                          )
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                event.name,
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .textTheme
+                                                          .textStyle
+                                                          .color,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                              ),
+                                              FutureBuilder(
+                                                  future: EventService
+                                                      .getAddressFromLatLng(
+                                                          detail.latlng!),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData &&
+                                                        snapshot.data != null) {
+                                                      final address = snapshot
+                                                          .data as String;
+                                                      return Text(
+                                                        address,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return const Center(
+                                                        child:
+                                                            CupertinoActivityIndicator(),
+                                                      );
+                                                    }
+                                                  }),
+                                            ],
+                                          ),
+                                    trailing: DateTime(
+                                                detail.startDate!.year,
+                                                detail.startDate!.month,
+                                                detail.startDate!.day,
+                                                detail.startTime!.hour,
+                                                detail.startTime!.minute)
+                                            .isBefore(DateTime.now())
+                                        ? const Icon(CupertinoIcons.circle_fill,
+                                            color: CupertinoColors.systemRed)
+                                        : const Icon(CupertinoIcons.circle_fill,
+                                            color: CupertinoColors.systemGreen),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) => DetailPage(
+                                            eventId: event.id!,
+                                            detailId: detail.id!,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            );
+                          }),
                     );
                   },
                 );

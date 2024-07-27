@@ -56,12 +56,12 @@ class DatabaseService {
 
   static Future<void> updateUserInformation(
     UserData user,
-    Uint8List imagePath,
+    Uint8List? imagePath,
     bool imageHasChanged,
     bool visibilityHasChange,
   ) async {
     if (imageHasChanged) {
-      String imageUrl = imagePath.toString() == '[]' || imagePath.isEmpty
+      String imageUrl = imagePath.toString() == '[]' || imagePath!.isEmpty
           ? ''
           : await StorageService.uploadImageToStorage(
               'profile_images/${user.uid!}.jpg', imagePath);
@@ -72,7 +72,6 @@ class DatabaseService {
         'name': user.name,
         'surname': user.surname,
         'username': user.username,
-        'email': user.email,
         'imageUrl': imageUrl,
         'selectedCategories': serializedList,
         'isPublic': user.isPublic,
@@ -84,7 +83,6 @@ class DatabaseService {
         'name': user.name,
         'surname': user.surname,
         'username': user.username,
-        'email': user.email,
         'selectedCategories': serializedList,
         'isPublic': user.isPublic,
       });

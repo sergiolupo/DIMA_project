@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -71,19 +72,21 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             'Chats',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
           ),
-          trailing: CupertinoButton(
-            padding: const EdgeInsets.all(0),
-            onPressed: () {
-              /*Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => const CreateGroupPage()));*/
-            },
-            child: const Icon(
-              CupertinoIcons.add_circled_solid,
-              size: 30,
-            ),
-          ),
+          trailing: idx == 0
+              ? CupertinoButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => const CreateGroupPage()));
+                  },
+                  child: const Icon(
+                    CupertinoIcons.add_circled_solid,
+                    size: 30,
+                  ),
+                )
+              : null,
         ),
         child: Align(
           alignment: Alignment.centerLeft,

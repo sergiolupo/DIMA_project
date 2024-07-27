@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -204,9 +205,13 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 leading: const Icon(FontAwesomeIcons.tableList),
                 trailing: const Icon(CupertinoIcons.forward),
                 onTap: () {
-                  setState(() {
-                    _currentPage = 2;
-                  });
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => CategoriesPage(
+                        selectedCategories: selectedCategories,
+                      ),
+                    ),
+                  );
                 },
               ),
               Container(
