@@ -100,53 +100,56 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   ),
                   children: [
                     openStreetMapTileLayer,
-                    CupertinoButton(
-                      onPressed: () async {
-                        final coords = Coords(
-                            detail.latlng!.latitude, detail.latlng!.longitude);
-                        final title = event.name;
-                        final availableMaps = await MapLauncher.installedMaps;
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          width: 80.0,
+                          height: 80.0,
+                          point: detail.latlng!,
+                          child: CupertinoButton(
+                            onPressed: () async {
+                              final coords = Coords(detail.latlng!.latitude,
+                                  detail.latlng!.longitude);
+                              final title = event.name;
+                              final availableMaps =
+                                  await MapLauncher.installedMaps;
 
-                        showCupertinoModalPopup(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SafeArea(
-                              child: SingleChildScrollView(
-                                child: Wrap(
-                                  children: <Widget>[
-                                    for (var map in availableMaps)
-                                      CupertinoListTile(
-                                        onTap: () => map.showMarker(
-                                          coords: coords,
-                                          title: title,
-                                        ),
-                                        title: Text(map.mapName),
-                                        leading: SvgPicture.asset(
-                                          map.icon,
-                                          height: 30.0,
-                                          width: 30.0,
+                              if (context.mounted) {
+                                showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SafeArea(
+                                      child: SingleChildScrollView(
+                                        child: Wrap(
+                                          children: <Widget>[
+                                            for (var map in availableMaps)
+                                              CupertinoListTile(
+                                                onTap: () => map.showMarker(
+                                                  coords: coords,
+                                                  title: title,
+                                                ),
+                                                title: Text(map.mapName),
+                                                leading: SvgPicture.asset(
+                                                  map.icon,
+                                                  height: 30.0,
+                                                  width: 30.0,
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                       ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: MarkerLayer(
-                        markers: [
-                          Marker(
-                            width: 80.0,
-                            height: 80.0,
-                            point: detail.latlng!,
+                                    );
+                                  },
+                                );
+                              }
+                            },
                             child: Icon(
                               CupertinoIcons.location_solid,
                               color: CupertinoTheme.of(context).primaryColor,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ]),
             ),
@@ -270,12 +273,13 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     )
                   : Container(),
               CupertinoButton(
-                onPressed: () {
+                onPressed: () async {
                   debugPrint('Adding event to calendar');
                   Add2Calendar.addEvent2Cal(Event(
                     title: event.name,
                     description: event.description,
-                    location: 'location',
+                    location:
+                        await EventService.getAddressFromLatLng(detail.latlng!),
                     startDate: DateTime(
                         detail.startDate!.year,
                         detail.startDate!.month,

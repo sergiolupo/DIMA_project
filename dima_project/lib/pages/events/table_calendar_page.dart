@@ -109,6 +109,7 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
             valueListenable: _focusedDay,
             builder: (context, value, _) {
               return TableCalendar<Event>(
+                pageJumpingEnabled: true,
                 calendarBuilders: const CalendarBuilders(),
                 firstDay: kFirstDay,
                 lastDay: kLastDay,
@@ -139,16 +140,16 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
                         .withOpacity(1),
                     shape: BoxShape.circle,
                   ),
+                  todayDecoration: BoxDecoration(
+                    color: CupertinoTheme.of(context)
+                        .primaryColor
+                        .withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
                   selectedDecoration: BoxDecoration(
                     color: CupertinoTheme.of(context).primaryColor,
                     shape: BoxShape.circle,
                   ),
-                  todayTextStyle: TextStyle(
-                      color:
-                          CupertinoTheme.of(context).textTheme.textStyle.color),
-                  selectedTextStyle: TextStyle(
-                      color:
-                          CupertinoTheme.of(context).textTheme.textStyle.color),
                   outsideDaysVisible: false,
                 ),
                 onDaySelected: _onDaySelected,
@@ -184,7 +185,7 @@ class TableBasicsExampleState extends State<TableCalendarPage> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: CupertinoListTile(
-                        onTap: () => print('${value[index]}'),
+                        onTap: () {},
                         title: Text('${value[index]}'),
                       ),
                     );

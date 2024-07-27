@@ -77,187 +77,195 @@ class EventPageState extends ConsumerState<EventPage> {
                     fontSize: 18),
               ),
             ),
-            child: Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: SafeArea(
-                  child: Container(
-                    padding: const EdgeInsets.all(30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CreateImageWidget.getEventImage(event.imagePath!),
-                        const SizedBox(height: 10),
-                        Text(
-                          textAlign: TextAlign.start,
-                          event.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            alignment: Alignment.centerLeft,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: CupertinoTheme.of(context)
-                                    .primaryContrastingColor,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Description:',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  event.description,
-                                  maxLines: 3,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        const SizedBox(height: 20),
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: event.details!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final detail = event.details![index];
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: SafeArea(
+                      child: Container(
+                        padding: const EdgeInsets.all(30),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CreateImageWidget.getEventImage(event.imagePath!),
+                            const SizedBox(height: 10),
+                            Text(
+                              textAlign: TextAlign.start,
+                              event.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
                                     color: CupertinoTheme.of(context)
                                         .primaryContrastingColor,
-                                  ),
-                                  child: CupertinoListTile(
-                                    leading: Icon(
-                                      CupertinoIcons.calendar,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                        ),
-                                        FutureBuilder(
-                                            future: EventService
-                                                .getAddressFromLatLng(
-                                                    detail.latlng!),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData &&
-                                                  snapshot.data != null) {
-                                                final address =
-                                                    snapshot.data as String;
-                                                return Text(
-                                                  address,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                  ),
-                                                );
-                                              } else {
-                                                return const Center(
-                                                  child:
-                                                      CupertinoActivityIndicator(),
-                                                );
-                                              }
-                                            }),
-                                      ],
-                                    ),
-                                    trailing:
-                                        const Icon(CupertinoIcons.forward),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        CupertinoPageRoute(
-                                          builder: (context) => DetailPage(
-                                            eventId: event.id!,
-                                            detailId: detail.id!,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
-                        ),
-                        uid == event.admin
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CupertinoButton(
-                                      child: const Text(
-                                        'Delete Event',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: CupertinoColors.systemRed),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Description:',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      onPressed: () {
-                                        showCupertinoDialog(
-                                          context: context,
-                                          builder: (newContext) =>
-                                              CupertinoAlertDialog(
-                                            title: const Text('Delete Event'),
-                                            content: const Text(
-                                                'Are you sure you want to delete this date?'),
-                                            actions: <Widget>[
-                                              CupertinoDialogAction(
-                                                child: const Text('Cancel'),
-                                                onPressed: () =>
-                                                    Navigator.of(newContext)
-                                                        .pop(),
-                                              ),
-                                              CupertinoDialogAction(
-                                                child: const Text('Delete'),
-                                                onPressed: () async {
-                                                  Navigator.of(newContext)
-                                                      .pop();
-                                                  await DatabaseService
-                                                      .deleteEvent(
-                                                          widget.eventId);
-                                                  ref.invalidate(
-                                                      createdEventsProvider(
-                                                          uid));
-                                                  ref.invalidate(
-                                                      joinedEventsProvider(
-                                                          uid));
-                                                  ref.invalidate(eventProvider(
-                                                      widget.eventId));
-                                                  if (context.mounted) {
-                                                    Navigator.of(context).pop();
+                                    ),
+                                    Text(
+                                      event.description,
+                                      maxLines: 3,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                            const SizedBox(height: 20),
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: event.details!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final detail = event.details![index];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: CupertinoTheme.of(context)
+                                            .primaryContrastingColor,
+                                      ),
+                                      child: CupertinoListTile(
+                                        leading: Icon(
+                                          CupertinoIcons.calendar,
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
+                                        ),
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                            ),
+                                            FutureBuilder(
+                                                future: EventService
+                                                    .getAddressFromLatLng(
+                                                        detail.latlng!),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData &&
+                                                      snapshot.data != null) {
+                                                    final address =
+                                                        snapshot.data as String;
+                                                    return Text(
+                                                      address,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return const Center(
+                                                      child:
+                                                          CupertinoActivityIndicator(),
+                                                    );
                                                   }
-                                                },
+                                                }),
+                                          ],
+                                        ),
+                                        trailing:
+                                            const Icon(CupertinoIcons.forward),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            CupertinoPageRoute(
+                                              builder: (context) => DetailPage(
+                                                eventId: event.id!,
+                                                detailId: detail.id!,
                                               ),
-                                            ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                            ),
+                            uid == event.admin
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CupertinoButton(
+                                          child: const Text(
+                                            'Delete Event',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    CupertinoColors.systemRed),
                                           ),
-                                        );
-                                      }),
-                                ],
-                              )
-                            : Container(),
-                      ],
+                                          onPressed: () {
+                                            showCupertinoDialog(
+                                              context: context,
+                                              builder: (newContext) =>
+                                                  CupertinoAlertDialog(
+                                                title:
+                                                    const Text('Delete Event'),
+                                                content: const Text(
+                                                    'Are you sure you want to delete this date?'),
+                                                actions: <Widget>[
+                                                  CupertinoDialogAction(
+                                                    child: const Text('Cancel'),
+                                                    onPressed: () =>
+                                                        Navigator.of(newContext)
+                                                            .pop(),
+                                                  ),
+                                                  CupertinoDialogAction(
+                                                    child: const Text('Delete'),
+                                                    onPressed: () async {
+                                                      Navigator.of(newContext)
+                                                          .pop();
+                                                      await DatabaseService
+                                                          .deleteEvent(
+                                                              widget.eventId);
+                                                      ref.invalidate(
+                                                          createdEventsProvider(
+                                                              uid));
+                                                      ref.invalidate(
+                                                          joinedEventsProvider(
+                                                              uid));
+                                                      ref.invalidate(
+                                                          eventProvider(
+                                                              widget.eventId));
+                                                      if (context.mounted) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                    ],
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           );
         },

@@ -251,7 +251,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                     ),
                     CupertinoListTile(
                       title: const Text('Categories'),
-                      leading: const Icon(FontAwesomeIcons.thList),
+                      leading: const Icon(FontAwesomeIcons.tableList),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
                         setState(() {

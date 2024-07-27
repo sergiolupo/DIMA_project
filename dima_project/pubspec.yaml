@@ -63,9 +63,10 @@ dependencies:
   line_awesome_flutter: ^3.0.1
   add_2_calendar: ^2.1.2
   flutter_native_splash: ^2.4.0
+  flutter_native_splash: ^2.4.0
   table_calendar: ^3.1.2
   map_launcher: ^3.3.1
-  flutter_svg: # to use icons as they are svgs
+  flutter_svg:  # to use icons as they are svgs
   
 dev_dependencies:
   flutter_test:
