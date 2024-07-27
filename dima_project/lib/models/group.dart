@@ -36,7 +36,6 @@ class Group {
       'description': group.description ?? "",
       'categories':
           group.categories?.map((category) => {'value': category}).toList(),
-      'members': group.members ?? [],
       'isPublic': group.isPublic,
       'notify': group.notify,
     };

@@ -95,7 +95,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                 padding: const EdgeInsets.all(0),
                 onPressed: () async {
                   if (index == 0) {
-                    if (!GroupHelper.validateFirstPage(
+                    if (!GroupHelper.validateNameAndDescription(
                       context,
                       _groupNameController.text,
                       _groupDescriptionController.text,
@@ -104,14 +104,14 @@ class EditGroupPageState extends State<EditGroupPage> {
                     }
                     await updateGroup();
                     if (context.mounted) {
+                      Group newGroup =
+                          await DatabaseService.getGroupFromId(widget.group.id);
                       if (widget.canNavigate) {
-                        widget.navigateToPage!(
-                            await DatabaseService.getGroupFromId(
-                                widget.group.id));
+                        widget.navigateToPage!(newGroup);
                       } else {
-                        Navigator.of(context).pop(
-                            await DatabaseService.getGroupFromId(
-                                widget.group.id));
+                        if (context.mounted) {
+                          Navigator.of(context).pop(newGroup);
+                        }
                       }
                     }
                   }
@@ -301,7 +301,6 @@ class EditGroupPageState extends State<EditGroupPage> {
       imagePath: widget.group.imagePath!,
       isPublic: isPublic,
       notify: notify,
-      members: widget.group.members,
     );
     await DatabaseService.updateGroup(
       group,

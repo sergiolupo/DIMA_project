@@ -179,7 +179,6 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                       group: group,
                       onPressed: (Group group) {
                         setState(() {
-                          group.lastMessage!.unreadMessages = 0;
                           page = GroupChatPage(
                             group: group,
                             key: UniqueKey(),

@@ -266,7 +266,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   }
 
   void managePage() {
-    if (!GroupHelper.validateFirstPage(
+    if (!GroupHelper.validateNameAndDescription(
         context, _groupNameController.text, _groupDescriptionController.text)) {
       return;
     }

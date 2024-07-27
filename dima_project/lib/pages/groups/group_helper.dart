@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class GroupHelper {
-  static bool validateFirstPage(
+  static bool validateNameAndDescription(
       BuildContext context, String name, String description) {
     if (name.isEmpty) {
       _showErrorDialog(context, 'Event name is required');
@@ -14,7 +14,7 @@ class GroupHelper {
     return true;
   }
 
-  static bool validateSecondPage(
+  static bool validateCategories(
       BuildContext context, List<String> categories) {
     if (categories.isEmpty) {
       _showErrorDialog(context, 'Please select at least one category');

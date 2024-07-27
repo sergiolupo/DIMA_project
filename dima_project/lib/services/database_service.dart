@@ -469,6 +469,7 @@ class DatabaseService {
         final members = group.members;
 
         if (change.type == DocumentChangeType.removed) {
+          debugPrint('Group removed');
           groupsList.removeWhere((g) => g.id == groupId);
           yield groupsList;
         } else {
