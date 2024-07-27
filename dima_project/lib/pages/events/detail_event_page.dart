@@ -192,6 +192,36 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 onPressed: () async {
                   try {
+                    if (!DateTime.now().isBefore(DateTime(
+                      detail.startDate!.year,
+                      detail.startDate!.month,
+                      detail.startDate!.day,
+                      detail.startTime!.hour,
+                      detail.startTime!.minute,
+                    ))) {
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext newContext) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Event has already started'),
+                            content: const Text('You cannot join this event.'),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  ref.invalidate(eventProvider(event.id!));
+                                  ref.invalidate(joinedEventsProvider(uid));
+                                  ref.invalidate(createdEventsProvider(uid));
+                                  Navigator.of(newContext).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      return;
+                    }
                     debugPrint('Joining event');
                     await DatabaseService.toggleEventJoin(
                       event.id!,
@@ -202,7 +232,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   } catch (e) {
                     debugPrint("Event has been deleted");
                     if (!context.mounted) return;
-
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext newContext) {
@@ -216,8 +245,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                 ref.invalidate(eventProvider(event.id!));
                                 ref.invalidate(joinedEventsProvider(uid));
                                 ref.invalidate(createdEventsProvider(uid));
-                                Navigator.of(context).pop();
                                 Navigator.of(newContext).pop();
+
+                                Navigator.of(context).pop();
                               },
                             ),
                           ],

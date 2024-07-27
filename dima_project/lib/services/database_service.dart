@@ -1265,11 +1265,6 @@ class DatabaseService {
           usersRef.doc(AuthService.uid).update({
             'events': FieldValue.arrayUnion(["$eventId:$detailId"])
           }),
-          if ((await usersRef.doc(AuthService.uid).get())['eventsRequests']
-              .contains("$eventId:$detailId"))
-            usersRef.doc(AuthService.uid).update({
-              'eventsRequests': FieldValue.arrayRemove(["$eventId:$detailId"])
-            }),
         ]);
       } else {
         if (!detailDoc['requests'].contains(AuthService.uid)) {
@@ -1480,13 +1475,6 @@ class DatabaseService {
           await acceptEventRequest(event.id!, key, id);
           members.add(id);
         }
-      }
-    }
-    for (var id in uuids) {
-      if (!members.contains(id)) {
-        await usersRef.doc(id).update({
-          'eventsRequests': FieldValue.arrayUnion([event.id])
-        });
       }
     }
   }
