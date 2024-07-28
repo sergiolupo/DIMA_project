@@ -1,5 +1,4 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,11 +8,13 @@ class GroupChatTileTablet extends StatefulWidget {
   final Group group;
   final Function(Group) onPressed;
   final String username;
+  final Function(DismissDirection) onDismissed;
   const GroupChatTileTablet({
     super.key,
     required this.group,
     required this.onPressed,
     required this.username,
+    required this.onDismissed,
   });
 
   @override
@@ -21,7 +22,6 @@ class GroupChatTileTablet extends StatefulWidget {
 }
 
 class GroupChatTileTabletState extends State<GroupChatTileTablet> {
-  Stream<int>? unreadMessagesStream;
   Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
@@ -49,11 +49,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
           color: CupertinoColors.white,
         ),
       ),
-      onDismissed: (direction) async {
-        await DatabaseService.toggleGroupJoin(
-          widget.group.id,
-        );
-      },
+      onDismissed: widget.onDismissed,
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {

@@ -217,6 +217,13 @@ class ChatTabletPageState extends State<ChatTabletPage> {
 
                     if (group.lastMessage == null) {
                       return GroupChatTileTablet(
+                        onDismissed: (DismissDirection direction) async {
+                          setState(() {
+                            selectedGroup = null;
+                            page = const SizedBox.shrink();
+                          });
+                          await DatabaseService.toggleGroupJoin(group.id);
+                        },
                         username: '',
                         group: group,
                         onPressed: (Group group) {
@@ -248,6 +255,13 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             username = snapshot.data!.username;
                           }
                           return GroupChatTileTablet(
+                            onDismissed: (DismissDirection direction) async {
+                              setState(() {
+                                selectedGroup = null;
+                                page = const SizedBox.shrink();
+                              });
+                              await DatabaseService.toggleGroupJoin(group.id);
+                            },
                             group: group,
                             username: username,
                             onPressed: (Group group) {
@@ -299,7 +313,6 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final privateChat = data[index];
-
                   if (privateChat.lastMessage == null) {
                     return const SizedBox();
                   }
@@ -370,6 +383,14 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         }
 
                         return PrivateChatTileTablet(
+                          onDismissed: (DismissDirection direction) async {
+                            setState(() {
+                              selectedUser = null;
+                              page = const SizedBox.shrink();
+                            });
+                            await DatabaseService.deletePrivateChat(
+                                privateChat);
+                          },
                           onPressed: (PrivateChat privateChat) => {
                             setState(() {
                               selectedUser = other;
@@ -389,6 +410,14 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                       } else {
                         if (snapshot.hasError) {
                           return PrivateChatTileTablet(
+                            onDismissed: (DismissDirection direction) async {
+                              setState(() {
+                                selectedUser = null;
+                                page = const SizedBox.shrink();
+                              });
+                              await DatabaseService.deletePrivateChat(
+                                  privateChat);
+                            },
                             onPressed: (PrivateChat privateChat) => {
                               setState(() {
                                 selectedUser = null;

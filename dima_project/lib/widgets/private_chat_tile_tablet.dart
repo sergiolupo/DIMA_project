@@ -1,6 +1,5 @@
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,11 +9,13 @@ class PrivateChatTileTablet extends StatefulWidget {
   final PrivateChat privateChat;
   final Function(PrivateChat) onPressed;
   final UserData other;
+  final Function(DismissDirection) onDismissed;
   const PrivateChatTileTablet({
     super.key,
     required this.privateChat,
     required this.onPressed,
     required this.other,
+    required this.onDismissed,
   });
 
   @override
@@ -22,7 +23,6 @@ class PrivateChatTileTablet extends StatefulWidget {
 }
 
 class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
-  Stream<int>? unreadMessagesStream;
   Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
@@ -50,9 +50,7 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
           color: CupertinoColors.white,
         ),
       ),
-      onDismissed: (direction) async {
-        await DatabaseService.deletePrivateChat(widget.privateChat);
-      },
+      onDismissed: widget.onDismissed,
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
