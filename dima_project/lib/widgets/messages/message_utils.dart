@@ -37,14 +37,6 @@ class MessageUtils {
                 onPressed: () => _saveImage(message),
                 context: newContext,
               ),
-            if (message.sentByMe! && message.type == Type.text)
-              _buildOptionItem(
-                icon: CupertinoIcons.pencil,
-                color: CupertinoColors.systemBlue,
-                text: 'Edit Message',
-                onPressed: () => _editMessage(context, message),
-                context: newContext,
-              ),
             if (message.sentByMe!)
               _buildOptionItem(
                 icon: CupertinoIcons.delete,
@@ -135,53 +127,6 @@ class MessageUtils {
     } else {
       throw Exception('Failed to download image');
     }
-  }
-
-  static void _editMessage(BuildContext context, Message message) {
-    String updatedMessage = message.content;
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext newContext) {
-        return CupertinoAlertDialog(
-          title: const Row(
-            children: [
-              Icon(CupertinoIcons.pencil,
-                  color: CupertinoColors.activeBlue, size: 28),
-              SizedBox(width: 10),
-              Text("Edit Message"),
-            ],
-          ),
-          content: CupertinoTextField(
-            minLines: 1,
-            maxLines: 2,
-            controller: TextEditingController(text: updatedMessage),
-            onChanged: (value) {
-              updatedMessage = value;
-            },
-            decoration: BoxDecoration(
-              color: CupertinoTheme.of(context).primaryContrastingColor,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Update'),
-              onPressed: () async {
-                await DatabaseService.updateMessageContent(
-                    message, updatedMessage);
-                if (newContext.mounted) Navigator.pop(newContext);
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(newContext);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   static void _deleteMessage(BuildContext context, Message message) {
