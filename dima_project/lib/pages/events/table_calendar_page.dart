@@ -2,7 +2,6 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,6 +50,7 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   List<Event> _getEventsForDay(DateTime day) {
     List<Event> result = [];
     for (final event in events) {
+      List<Details> details = [];
       for (final detail in event.details!) {
         DateTime start = DateTime(
           detail.startDate!.year,
@@ -59,11 +59,15 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
         );
         DateTime end = DateTime(
             detail.endDate!.year, detail.endDate!.month, detail.endDate!.day);
-        if ((day.isAfter(start) && day.isBefore(end)) ||
+        if (((day.isAfter(start) && day.isBefore(end)) ||
             isSameDay(start, day) ||
-            isSameDay(end, day)) {
-          result.add(event);
+            isSameDay(end, day))) {
+          details.add(detail);
         }
+      }
+      if (details.isNotEmpty) {
+        Event e = event.copyWith(details: details);
+        result.add(e);
       }
     }
     return result;
@@ -289,24 +293,29 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                   itemBuilder: (context, index) {
                     final event = value[index];
                     return SizedBox(
-                      height: 75.0,
-                      child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: event.details!.length,
-                        itemBuilder: (context, index) {
-                          final detail = event.details![index];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: CupertinoTheme.of(context)
-                                      .primaryContrastingColor,
-                                ),
-                                child: CupertinoListTile(
+                      child: Column(
+                        children: [
+                          Text(
+                            event.name,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: event.details!.length * 70,
+                            child: ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: event.details!.length,
+                              itemBuilder: (context, index) {
+                                final detail = event.details![index];
+
+                                return CupertinoListTile(
                                   leading: Icon(
                                     CupertinoIcons.calendar,
                                     color:
@@ -317,44 +326,15 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                                       ? Row(
                                           children: [
                                             Text(
-                                              event.name,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .textTheme
-                                                        .textStyle
-                                                        .color,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
                                               '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
                                             ),
                                             const SizedBox(width: 10),
-                                            FutureBuilder(
-                                                future: EventService
-                                                    .getAddressFromLatLng(
-                                                        detail.latlng!),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData &&
-                                                      snapshot.data != null) {
-                                                    final address =
-                                                        snapshot.data as String;
-                                                    return Text(
-                                                      address,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return const Center(
-                                                      child:
-                                                          CupertinoActivityIndicator(),
-                                                    );
-                                                  }
-                                                }),
+                                            Text(
+                                              detail.location!,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            )
                                           ],
                                         )
                                       : Column(
@@ -362,42 +342,14 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              event.name,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .textTheme
-                                                        .textStyle
-                                                        .color,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
                                               '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
                                             ),
-                                            FutureBuilder(
-                                                future: EventService
-                                                    .getAddressFromLatLng(
-                                                        detail.latlng!),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData &&
-                                                      snapshot.data != null) {
-                                                    final address =
-                                                        snapshot.data as String;
-                                                    return Text(
-                                                      address,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return const Center(
-                                                      child:
-                                                          CupertinoActivityIndicator(),
-                                                    );
-                                                  }
-                                                }),
+                                            Text(
+                                              detail.location!,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            )
                                           ],
                                         ),
                                   trailing: DateTime(
@@ -421,12 +373,11 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                                       ),
                                     );
                                   },
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                            ],
-                          );
-                        },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },

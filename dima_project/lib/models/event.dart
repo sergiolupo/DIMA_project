@@ -107,4 +107,18 @@ class Event {
       details: details,
     );
   }
+
+  Event copyWith({required List<Details> details}) {
+    return Event(
+      name: name,
+      id: id,
+      admin: admin,
+      imagePath: imagePath,
+      description: description,
+      isPublic: isPublic,
+      notify: notify,
+      createdAt: createdAt,
+      details: details,
+    );
+  }
 }
