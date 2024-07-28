@@ -9,6 +9,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/event.dart';
@@ -494,58 +495,64 @@ class DatabaseService {
   }
 
   static Stream<List<PrivateChat>> getPrivateChatsStream() async* {
-    final privateChats =
-        await usersRef.doc(AuthService.uid).get().then((value) {
-      return value['privateChats'];
-    });
+    try {
+      final privateChats =
+          await usersRef.doc(AuthService.uid).get().then((value) {
+        return value['privateChats'];
+      });
 
-    final chatsList = <PrivateChat>[];
-    PrivateChat privateChat;
-    for (var id in privateChats) {
-      final snapshot = await privateChatRef.doc(id).get();
-      if (snapshot.exists) {
-        privateChat = PrivateChat.fromSnapshot(snapshot);
-        privateChat.lastMessage!.sentByMe =
-            privateChat.lastMessage!.recentMessageSender == AuthService.uid;
-        privateChat.lastMessage!.unreadMessages =
-            await getUnreadMessages(false, privateChat.id!);
+      final chatsList = <PrivateChat>[];
+      PrivateChat privateChat;
+      for (var id in privateChats) {
+        final snapshot = await privateChatRef.doc(id).get();
+        if (snapshot.exists) {
+          privateChat = PrivateChat.fromSnapshot(snapshot);
+          privateChat.lastMessage!.sentByMe =
+              privateChat.lastMessage!.recentMessageSender == AuthService.uid;
+          privateChat.lastMessage!.unreadMessages =
+              await getUnreadMessages(false, privateChat.id!);
 
-        chatsList.add(privateChat);
-      }
-    }
-    yield chatsList; // yield the initial list of private chats
-
-    final snapshots = privateChatRef
-        .snapshots(); // listen to changes in the groups collection
-
-    await for (var snapshot in snapshots) {
-      for (var change in snapshot.docChanges) {
-        final id = change.doc.id;
-        if (!change.doc.data()!['members'].contains(AuthService.uid)) {
-          continue;
+          chatsList.add(privateChat);
         }
-        privateChat = PrivateChat.fromSnapshot(change.doc);
-        if (change.type == DocumentChangeType.removed) {
-          chatsList.removeWhere((g) => g.id == id);
-          yield chatsList;
-        } else {
-          if (privateChat.members.contains(AuthService.uid)) {
-            privateChat.lastMessage!.sentByMe =
-                privateChat.lastMessage!.recentMessageSender == AuthService.uid;
-            privateChat.lastMessage!.unreadMessages =
-                await getUnreadMessages(false, privateChat.id!);
-            // DocumentChangeType.added or DocumentChangeType.modified
-            final existingGroupIndex = chatsList.indexWhere((g) => g.id == id);
-            if (existingGroupIndex != -1) {
-              chatsList[existingGroupIndex] = privateChat;
-            } else {
-              chatsList.add(privateChat);
-            }
-            yield chatsList;
+      }
+      yield chatsList; // yield the initial list of private chats
+
+      final snapshots = privateChatRef
+          .snapshots(); // listen to changes in the groups collection
+
+      await for (var snapshot in snapshots) {
+        for (var change in snapshot.docChanges) {
+          final id = change.doc.id;
+          if (!change.doc.data()!['members'].contains(AuthService.uid)) {
+            continue;
           }
+          privateChat = PrivateChat.fromSnapshot(change.doc);
+          if (change.type == DocumentChangeType.removed) {
+            chatsList.removeWhere((g) => g.id == id);
+          } else {
+            if (privateChat.members.contains(AuthService.uid) &&
+                privateChat.lastMessage != null) {
+              privateChat.lastMessage!.sentByMe =
+                  privateChat.lastMessage!.recentMessageSender ==
+                      AuthService.uid;
+              privateChat.lastMessage!.unreadMessages =
+                  await getUnreadMessages(false, privateChat.id!);
+              // DocumentChangeType.added or DocumentChangeType.modified
+              final existingGroupIndex =
+                  chatsList.indexWhere((g) => g.id == id);
+              if (existingGroupIndex != -1) {
+                chatsList[existingGroupIndex] = privateChat;
+              } else {
+                chatsList.add(privateChat);
+              }
+            }
+          }
+          yield chatsList;
         }
-        yield chatsList;
       }
+    } catch (e) {
+      debugPrint('Error while getting private chats: $e');
+      yield [];
     }
   }
 
