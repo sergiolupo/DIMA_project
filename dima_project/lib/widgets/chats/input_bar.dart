@@ -7,7 +7,6 @@ class InputBar extends StatelessWidget {
   final void Function() onTapCamera;
   final void Function() sendMessage;
   final void Function() showOverlay;
-  final void Function(String) onTypingChanged;
   final String placeholderText;
   final Color buttonColor;
   final double height;
@@ -21,7 +20,6 @@ class InputBar extends StatelessWidget {
     required this.onTapCamera,
     required this.sendMessage,
     required this.showOverlay,
-    required this.onTypingChanged,
     this.placeholderText = "Type a message...",
     this.buttonColor = CupertinoColors.white,
     this.height = 50.0,
@@ -62,9 +60,6 @@ class InputBar extends StatelessWidget {
                   border: Border.all(color: CupertinoColors.white),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                onChanged: (value) {
-                  onTypingChanged(value);
-                },
                 suffix: Container(
                   padding: const EdgeInsets.only(right: 10),
                   child: Row(

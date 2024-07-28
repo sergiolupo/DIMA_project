@@ -293,7 +293,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               children: [
                                 (snapshot.connectionState ==
                                             ConnectionState.waiting ||
-                                        snapshot.hasError)
+                                        snapshot.hasError ||
+                                        snapshot.data!.isEmpty)
                                     ? const SizedBox()
                                     : Text(
                                         snapshot.data!.length.toString(),
@@ -364,7 +365,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               children: [
                                 (snapshot.connectionState ==
                                             ConnectionState.waiting ||
-                                        snapshot.hasError)
+                                        snapshot.hasError ||
+                                        snapshot.data!.isEmpty)
                                     ? const SizedBox()
                                     : Text(
                                         snapshot.data!.length.toString(),
@@ -435,7 +437,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                               children: [
                                 (snapshot.connectionState ==
                                             ConnectionState.waiting ||
-                                        snapshot.hasError)
+                                        snapshot.hasError ||
+                                        snapshot.data!.isEmpty)
                                     ? const SizedBox()
                                     : Text(
                                         snapshot.data!.length.toString(),

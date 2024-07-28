@@ -25,11 +25,13 @@ class PrivateChatPage extends StatefulWidget {
   final PrivateChat privateChat;
   final bool canNavigate;
   final Function? navigateToPage;
+  final UserData user;
   const PrivateChatPage({
     super.key,
     required this.privateChat,
     required this.canNavigate,
     this.navigateToPage,
+    required this.user,
   });
 
   @override
@@ -40,24 +42,17 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
   final String uid = AuthService.uid;
-  bool isTyping = false;
   bool isUploading = false;
   final GlobalKey _inputBarKey = GlobalKey();
   OverlayEntry? _clipboardOverlay;
   OverlayEntry? _optionsMenuOverlay;
   final FocusNode _focusNode = FocusNode();
-  Stream<DocumentSnapshot<Map<String, dynamic>>>? userInfo;
+
   @override
   void initState() {
     _checkPrivateChatId();
-    _getUserInfo();
-    super.initState();
-  }
 
-  _getUserInfo() {
-    userInfo = widget.privateChat.members[0] != uid
-        ? DatabaseService.getUserInfo(widget.privateChat.members[0])
-        : DatabaseService.getUserInfo(widget.privateChat.members[1]);
+    super.initState();
   }
 
   @override
@@ -87,69 +82,23 @@ class PrivateChatPageState extends State<PrivateChatPage> {
               }
             }
           },
-          child: SingleChildScrollView(
-            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: userInfo!,
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!.data() == null) {
-                  return Row(
-                    children: [
-                      CreateImageWidget.getUserImage(
-                        '',
-                        small: true,
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.6,
-                              ),
-                              child: const Text(
-                                'Deleted Account',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ]),
-                    ],
-                  );
-                }
-
-                if (snapshot.hasData) {
-                  final user =
-                      UserData.fromSnapshot(snapshot.data as DocumentSnapshot);
-
-                  return Row(
-                    children: [
-                      CreateImageWidget.getUserImage(
-                        user.imagePath!,
-                        small: true,
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.6,
-                              ),
-                              child: Text(
-                                user.username,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            _userStatus(user),
-                          ]),
-                    ],
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+          child: Row(
+            children: [
+              CreateImageWidget.getUserImage(
+                widget.user.imagePath!,
+                small: true,
+              ),
+              const SizedBox(width: 10),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.6,
+                ),
+                child: Text(
+                  widget.user.username,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -157,9 +106,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             ? CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
-                  if (isTyping && widget.privateChat.id != null) {
-                    DatabaseService.updateTyping(widget.privateChat.id!, false);
-                  }
                   if (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
                   }
@@ -190,52 +136,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             onTapCamera: onTapCamera,
             sendMessage: sendMessage,
             showOverlay: () => showOverlay(context),
-            onTypingChanged: (value) {
-              if (value.isNotEmpty &&
-                  !isTyping &&
-                  widget.privateChat.id != null) {
-                isTyping = true;
-                DatabaseService.updateTyping(widget.privateChat.id!, true);
-              } else if (value.isEmpty && isTyping) {
-                isTyping = false;
-                if (widget.privateChat.id != null) {
-                  DatabaseService.updateTyping(widget.privateChat.id!, false);
-                }
-              }
-            },
             buttonColor: CupertinoTheme.of(context).primaryColor,
           )
         ],
       ),
     );
-  }
-
-  Widget _userStatus(UserData user) {
-    if (user.isTyping != null &&
-        user.isTyping! &&
-        user.typingTo == widget.privateChat.id) {
-      return const Text(
-        "is typing...",
-        style: TextStyle(fontSize: 12),
-      );
-    } else {
-      if (user.online != null && user.online!) {
-        return const Text(
-          "Online",
-          style: TextStyle(fontSize: 12),
-        );
-      } else {
-        if (user.lastSeen != null && !user.online!) {
-          return Text(
-            DateUtil.getLastSeenTime(
-                context: context,
-                time: user.lastSeen!.microsecondsSinceEpoch.toString()),
-            style: const TextStyle(fontSize: 12),
-          );
-        }
-      }
-      return const SizedBox(height: 0, width: 0);
-    }
   }
 
   void onTapCamera() async {
@@ -420,8 +325,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
       widget.privateChat.id ??=
           await DatabaseService.createPrivateChat(widget.privateChat);
-      isTyping = false;
-      DatabaseService.updateTyping(widget.privateChat.id!, false);
       DatabaseService.sendMessage(widget.privateChat.id!, message);
 
       setState(() {

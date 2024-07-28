@@ -259,6 +259,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                     builder: (context) => PrivateChatPage(
                                       privateChat: chat,
                                       canNavigate: false,
+                                      user: user,
                                     ),
                                   ),
                                 );

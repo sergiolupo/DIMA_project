@@ -62,6 +62,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
               builder: (context) => PrivateChatPage(
                 privateChat: widget.privateChat,
                 canNavigate: false,
+                user: widget.other,
               ),
             ),
           );

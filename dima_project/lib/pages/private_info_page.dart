@@ -92,6 +92,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
               widget.navigateToPage!(PrivateChatPage(
                 privateChat: widget.privateChat,
                 canNavigate: widget.canNavigate,
+                user: _user,
               ));
               return;
             }

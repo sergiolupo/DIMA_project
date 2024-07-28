@@ -156,7 +156,6 @@ class GroupChatPageState extends State<GroupChatPage> {
                   onTapCamera: onTapCamera,
                   sendMessage: sendMessage,
                   showOverlay: () => showOverlay(context),
-                  onTypingChanged: (value) {},
                   padding: const EdgeInsets.only(
                       left: 15, right: 25, bottom: 25, top: 5),
                   height: 50,

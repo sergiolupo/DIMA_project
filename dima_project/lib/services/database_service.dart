@@ -38,10 +38,7 @@ class DatabaseService {
       'selectedCategories': serializedList,
       'groups': [],
       'privateChats': [],
-      'isOnline': false,
       'lastSeen': Timestamp.now(),
-      'isTyping': false,
-      'typingTo': '',
       'isPublic': true,
       'events': [],
       'groupsRequests': [],
@@ -851,20 +848,6 @@ class DatabaseService {
       debugPrint(e.toString());
       return const Stream.empty();
     }
-  }
-
-  static Future<void> updateActiveStatus(bool isOnline) async {
-    await usersRef.doc(AuthService.uid).update({
-      'isOnline': isOnline,
-      'lastSeen': Timestamp.now(),
-    });
-  }
-
-  static void updateTyping(String id, bool isTyping) {
-    usersRef.doc(AuthService.uid).update({
-      'isTyping': isTyping,
-      'typingTo': id,
-    });
   }
 
   static Future<void> sendChatImage(String chatID, File file,

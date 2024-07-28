@@ -110,8 +110,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       },
     );
     try {
-      await DatabaseService.updateActiveStatus(false);
-
       AuthService.signOut();
       ref.invalidate(userProvider);
       ref.invalidate(followerProvider);

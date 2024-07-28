@@ -254,6 +254,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                                     builder: (context) => PrivateChatPage(
                                       privateChat: chat,
                                       canNavigate: false,
+                                      user: user,
                                     ),
                                   ),
                                 );

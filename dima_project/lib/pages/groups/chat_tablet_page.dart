@@ -7,6 +7,7 @@ import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
+import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/group_chat_tile_tablet.dart';
@@ -29,6 +30,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   String searchedText = "";
   final String uid = AuthService.uid;
   Group? selectedGroup;
+  UserData? selectedUser;
   int idx = 0;
   Widget page = const SizedBox.shrink();
   @override
@@ -338,15 +340,45 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           return const SizedBox.shrink();
                         }
 
+                        if (selectedUser != null &&
+                            selectedUser!.uid == other.uid &&
+                            (selectedUser!.username != other.username ||
+                                selectedUser!.imagePath != other.imagePath)) {
+                          selectedUser = other;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              if (page is PrivateChatPage) {
+                                page = PrivateChatPage(
+                                  privateChat: privateChat,
+                                  key: UniqueKey(),
+                                  navigateToPage: _navigateToPage,
+                                  canNavigate: true,
+                                  user: other,
+                                );
+                              }
+                              if (page is PrivateInfoPage) {
+                                page = PrivateInfoPage(
+                                  privateChat: privateChat,
+                                  key: UniqueKey(),
+                                  navigateToPage: _navigateToPage,
+                                  canNavigate: true,
+                                );
+                              }
+                            });
+                          });
+                        }
+
                         return PrivateChatTileTablet(
                           onPressed: (PrivateChat privateChat) => {
                             setState(() {
+                              selectedUser = other;
                               privateChat.lastMessage!.unreadMessages = 0;
                               page = PrivateChatPage(
                                 privateChat: privateChat,
                                 key: UniqueKey(),
                                 navigateToPage: _navigateToPage,
                                 canNavigate: true,
+                                user: other,
                               );
                             })
                           },
@@ -358,12 +390,21 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           return PrivateChatTileTablet(
                             onPressed: (PrivateChat privateChat) => {
                               setState(() {
+                                selectedUser = null;
                                 privateChat.lastMessage!.unreadMessages = 0;
                                 page = PrivateChatPage(
                                   privateChat: privateChat,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,
+                                  user: UserData(
+                                    imagePath: '',
+                                    username: 'Deleted Account',
+                                    categories: [],
+                                    email: '',
+                                    name: '',
+                                    surname: '',
+                                  ),
                                 );
                               })
                             },

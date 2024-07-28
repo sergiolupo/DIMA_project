@@ -7,10 +7,8 @@ import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/pages/userprofile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -28,19 +26,6 @@ class HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     _currentIndex = widget.index ?? 0;
-    DatabaseService.updateActiveStatus(true);
-    //for updating the active status of the user
-    //resume -> online
-    //pause -> offline
-    SystemChannels.lifecycle.setMessageHandler((message) {
-      if (message.toString().contains("pause")) {
-        DatabaseService.updateActiveStatus(false);
-      }
-      if (message.toString().contains("resume")) {
-        DatabaseService.updateActiveStatus(true);
-      }
-      return Future.value(message);
-    });
   }
 
   @override
