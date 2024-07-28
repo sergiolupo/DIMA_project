@@ -1,15 +1,16 @@
-import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/events/event_page.dart';
-import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/deleted_message_tile.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 
-class EventMessageTile extends StatefulWidget {
+class EventMessageTile extends ConsumerStatefulWidget {
   final Message message;
   final String? senderUsername;
   const EventMessageTile({
@@ -22,27 +23,18 @@ class EventMessageTile extends StatefulWidget {
   EventMessageTileState createState() => EventMessageTileState();
 }
 
-class EventMessageTileState extends State<EventMessageTile> {
+class EventMessageTileState extends ConsumerState<EventMessageTile> {
   @override
   void initState() {
+    ref.read(eventProvider(widget.message.content));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Event>(
-        stream: DatabaseService.getEventStream(widget.message.content),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CupertinoActivityIndicator();
-          }
-          if (snapshot.hasError ||
-              (snapshot.hasData && snapshot.data == null)) {
-            return DeletedMessageTile(
-              message: widget.message,
-            );
-          }
-          final event = snapshot.data as Event;
+    final event = ref.watch(eventProvider(widget.message.content));
+    return event.when(
+        data: (event) {
           return GestureDetector(
             onLongPress: () => MessageUtils.showBottomSheet(
               context,
@@ -220,6 +212,22 @@ class EventMessageTileState extends State<EventMessageTile> {
               ],
             ),
           );
-        });
+        },
+        loading: () => Shimmer.fromColors(
+            baseColor: CupertinoColors.systemGrey,
+            highlightColor: CupertinoColors.white,
+            child: Align(
+              alignment: widget.message.sentByMe!
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Container(
+                height: 10,
+                width: 100,
+                color: CupertinoColors.systemGrey,
+              ),
+            )),
+        error: (error, stack) => DeletedMessageTile(
+              message: widget.message,
+            ));
   }
 }

@@ -8,10 +8,6 @@ class UserData {
   final String username;
   final List<String> categories;
   final String? imagePath;
-  final bool? online;
-  final Timestamp? lastSeen;
-  final bool? isTyping;
-  final String? typingTo;
   final String? uid;
   bool? isPublic;
   List<String>? requests;
@@ -23,10 +19,6 @@ class UserData {
     required this.name,
     required this.surname,
     required this.username,
-    this.online,
-    this.lastSeen,
-    this.isTyping,
-    this.typingTo,
     this.uid,
     this.isPublic,
     this.requests,
@@ -44,10 +36,6 @@ class UserData {
           .map((categoryMap) => categoryMap['value'].toString())
           .toList()
           .cast<String>(),
-      online: documentSnapshot['isOnline'],
-      lastSeen: documentSnapshot['lastSeen'],
-      isTyping: documentSnapshot['isTyping'],
-      typingTo: documentSnapshot['typingTo'],
       uid: documentSnapshot.id,
       isPublic: documentSnapshot['isPublic'],
       requests: (documentSnapshot['requests'] as List<dynamic>)
