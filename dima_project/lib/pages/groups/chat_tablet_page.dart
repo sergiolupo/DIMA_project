@@ -5,6 +5,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
+import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -27,6 +28,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   late final Stream<List<Group>> _groupsStream;
   String searchedText = "";
   final String uid = AuthService.uid;
+  Group? selectedGroup;
   int idx = 0;
   Widget page = const SizedBox.shrink();
   @override
@@ -158,79 +160,108 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             var data = snapshot.data!;
             if (data.isNotEmpty) {
               return ListView.builder(
-                shrinkWrap: true,
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  final group = data[index];
-                  if (!group.name
-                      .toLowerCase()
-                      .contains(searchedText.toLowerCase())) {
-                    i += 1;
-                    if (i == data.length) {
-                      return Center(
-                          child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset(
-                                  'assets/darkMode/no_groups_chat_found.png')
-                              : Image.asset(
-                                  'assets/images/no_groups_chat_found.png'),
-                          const Text('No groups'),
-                        ],
-                      ));
+                  shrinkWrap: true,
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    final group = data[index];
+                    if (!group.name
+                        .toLowerCase()
+                        .contains(searchedText.toLowerCase())) {
+                      i += 1;
+                      if (i == data.length) {
+                        return Center(
+                            child: Column(
+                          children: [
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/no_groups_chat_found.png')
+                                : Image.asset(
+                                    'assets/images/no_groups_chat_found.png'),
+                            const Text('No groups'),
+                          ],
+                        ));
+                      }
+                      return const SizedBox.shrink();
                     }
-                    return const SizedBox.shrink();
-                  }
-                  if (group.lastMessage == null) {
-                    return GroupChatTileTablet(
-                      username: '',
-                      group: group,
-                      onPressed: (Group group) {
+
+                    if (selectedGroup != null &&
+                        selectedGroup!.id == group.id &&
+                        (selectedGroup!.name != group.name ||
+                            selectedGroup!.imagePath != group.imagePath)) {
+                      selectedGroup = group;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
-                          page = GroupChatPage(
+                          if (page is GroupChatPage) {
+                            page = GroupChatPage(
+                              group: group,
+                              key: UniqueKey(),
+                              navigateToPage: _navigateToPage,
+                              canNavigate: true,
+                            );
+                          }
+                          if (page is GroupInfoPage) {
+                            page = GroupInfoPage(
+                              group: group,
+                              key: UniqueKey(),
+                              navigateToPage: _navigateToPage,
+                              canNavigate: true,
+                            );
+                          }
+                        });
+                      });
+                    }
+
+                    if (group.lastMessage == null) {
+                      return GroupChatTileTablet(
+                        username: '',
+                        group: group,
+                        onPressed: (Group group) {
+                          setState(() {
+                            selectedGroup = group;
+                            page = GroupChatPage(
+                              group: group,
+                              key: UniqueKey(),
+                              navigateToPage: _navigateToPage,
+                              canNavigate: true,
+                            );
+                          });
+                        },
+                      );
+                    }
+                    return StreamBuilder(
+                        stream: DatabaseService.getUserDataFromUID(
+                            group.lastMessage!.recentMessageSender),
+                        builder: (context, snapshot) {
+                          String username = "";
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            username = "";
+                          }
+                          if (snapshot.hasError) {
+                            username = "Deleted Account";
+                          }
+                          if (snapshot.hasData) {
+                            username = snapshot.data!.username;
+                          }
+                          return GroupChatTileTablet(
                             group: group,
-                            key: UniqueKey(),
-                            navigateToPage: _navigateToPage,
-                            canNavigate: true,
+                            username: username,
+                            onPressed: (Group group) {
+                              setState(() {
+                                selectedGroup = group;
+                                group.lastMessage!.unreadMessages = 0;
+                                page = GroupChatPage(
+                                  group: group,
+                                  key: UniqueKey(),
+                                  navigateToPage: _navigateToPage,
+                                  canNavigate: true,
+                                );
+                              });
+                            },
                           );
                         });
-                      },
-                    );
-                  }
-                  return StreamBuilder(
-                      stream: DatabaseService.getUserDataFromUID(
-                          group.lastMessage!.recentMessageSender),
-                      builder: (context, snapshot) {
-                        String username = "";
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          username = "";
-                        }
-                        if (snapshot.hasError) {
-                          username = "Deleted Account";
-                        }
-                        if (snapshot.hasData) {
-                          username = snapshot.data!.username;
-                        }
-                        return GroupChatTileTablet(
-                          group: group,
-                          username: username,
-                          onPressed: (Group group) {
-                            setState(() {
-                              group.lastMessage!.unreadMessages = 0;
-                              page = GroupChatPage(
-                                group: group,
-                                key: UniqueKey(),
-                                navigateToPage: _navigateToPage,
-                                canNavigate: true,
-                              );
-                            });
-                          },
-                        );
-                      });
-                },
-              );
+                  });
             } else {
               return noChatWidget();
             }
