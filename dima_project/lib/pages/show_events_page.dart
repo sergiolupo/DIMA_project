@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/private_info_page.dart';
@@ -16,6 +17,7 @@ class ShowEventsPage extends StatefulWidget {
   final Function? navigateToPage;
   final bool canNavigate;
   final PrivateChat? privateChat;
+  final UserData? user;
   const ShowEventsPage(
       {super.key,
       required this.isGroup,
@@ -23,6 +25,7 @@ class ShowEventsPage extends StatefulWidget {
       this.navigateToPage,
       required this.canNavigate,
       this.privateChat,
+      this.user,
       this.group});
 
   @override
@@ -61,6 +64,7 @@ class ShowEventsPageState extends State<ShowEventsPage> {
                     privateChat: widget.privateChat!,
                     navigateToPage: widget.navigateToPage,
                     canNavigate: widget.canNavigate,
+                    user: widget.user!,
                   ));
                 }
               } else {

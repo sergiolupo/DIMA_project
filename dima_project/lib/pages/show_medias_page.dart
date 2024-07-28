@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/media_view_page.dart';
 import 'package:dima_project/pages/private_info_page.dart';
@@ -15,12 +16,14 @@ class ShowMediasPage extends StatefulWidget {
   final Function? navigateToPage;
   final Group? group;
   final PrivateChat? privateChat;
+  final UserData? user;
   const ShowMediasPage(
       {super.key,
       required this.isGroup,
       required this.medias,
       required this.canNavigate,
       this.privateChat,
+      this.user,
       this.group,
       this.navigateToPage});
 
@@ -60,6 +63,7 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                     privateChat: widget.privateChat!,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
+                    user: widget.user!,
                   ));
                 }
               } else {

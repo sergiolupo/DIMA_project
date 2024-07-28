@@ -68,6 +68,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     privateChat: widget.privateChat,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
+                    user: widget.user,
                   ),
                 ));
               } else {
@@ -76,6 +77,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     privateChat: widget.privateChat,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
+                    user: widget.user,
                   ),
                 );
                 return;

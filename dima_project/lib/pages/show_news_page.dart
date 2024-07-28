@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -14,11 +15,13 @@ class ShowNewsPage extends StatefulWidget {
   final bool canNavigate;
   final Function? navigateToPage;
   final PrivateChat? privateChat;
+  final UserData? user;
   const ShowNewsPage(
       {super.key,
       required this.isGroup,
       required this.news,
       this.group,
+      this.user,
       required this.canNavigate,
       this.privateChat,
       this.navigateToPage});
@@ -59,6 +62,7 @@ class ShowNewsPageState extends State<ShowNewsPage> {
                     privateChat: widget.privateChat!,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
+                    user: widget.user!,
                   ));
                 }
               }

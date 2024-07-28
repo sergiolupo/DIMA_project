@@ -362,6 +362,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,
+                                  user: other,
                                 );
                               }
                             });
