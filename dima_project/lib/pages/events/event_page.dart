@@ -1,7 +1,6 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -157,28 +156,12 @@ class EventPageState extends ConsumerState<EventPage> {
                                             Text(
                                               '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
                                             ),
-                                            FutureBuilder(
-                                                future: EventService
-                                                    .getAddressFromLatLng(
-                                                        detail.latlng!),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData &&
-                                                      snapshot.data != null) {
-                                                    final address =
-                                                        snapshot.data as String;
-                                                    return Text(
-                                                      address,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return const Center(
-                                                      child:
-                                                          CupertinoActivityIndicator(),
-                                                    );
-                                                  }
-                                                }),
+                                            Text(
+                                              detail.location!,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         trailing: DateTime(

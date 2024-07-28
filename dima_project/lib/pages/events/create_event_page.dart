@@ -37,7 +37,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _descriptionFocus = FocusNode();
   DateTime now = DateTime.now();
-  LatLng? _selectedLocation;
   bool isPublic = true;
   bool notify = true;
   List<String> uids = [];
@@ -432,7 +431,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       _eventNameController.clear();
                       _eventDescriptionController.clear();
                       selectedImagePath = Uint8List(0);
-                      _selectedLocation = null;
                       isPublic = true;
                       notify = true;
                       uids = [];
@@ -465,17 +463,19 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     final result = await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => LocationPage(
-          initialLocation: _selectedLocation,
+          initialLocation: details[idx]!.latlng,
         ),
       ),
     );
 
     if (result != null && result is LatLng) {
+      setState(() {
+        details[idx]!.latlng = result;
+      });
+
       var loc = await EventService.getAddressFromLatLng(result);
 
       setState(() {
-        _selectedLocation = result;
-        details[idx]!.latlng = result;
         details[idx]!.location = loc!;
       });
     }

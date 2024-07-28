@@ -71,23 +71,12 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 ShowDate(date: detail.endDate!, time: detail.endTime!)
               ],
             ),
-            FutureBuilder(
-                future: EventService.getAddressFromLatLng(detail.latlng!),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    final address = snapshot.data as String;
-                    return Text(
-                      'Location: $address',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    );
-                  } else {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
-                }),
+            Text(
+              'Location: ${detail.location}',
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
             SizedBox(
               height: 200,
               width: MediaQuery.of(context).size.width * 0.9,

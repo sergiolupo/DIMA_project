@@ -104,6 +104,13 @@ class EventService {
             context, 'Event end time is not correct in the box ${i + 1}');
         return false;
       }
+      if ((detail.location == null || detail.location!.isEmpty) &&
+          detail.latlng != null) {
+        _showErrorDialog(context,
+            'Please wait for the location to be fetched in the box ${i + 1}');
+        return false;
+      }
+
       if (detail.location == null || detail.location!.isEmpty) {
         _showErrorDialog(
             context, 'Event location is required in the box ${i + 1}');
