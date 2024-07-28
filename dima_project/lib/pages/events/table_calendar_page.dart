@@ -294,87 +294,113 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                     final event = value[index];
                     return SizedBox(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            event.name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .color,
-                              fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0, top: 4),
+                            child: Text(
+                              event.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .color,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            height: event.details!.length * 70,
-                            child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: event.details!.length,
-                              itemBuilder: (context, index) {
-                                final detail = event.details![index];
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                              ),
+                              height: event.details!.length * 45,
+                              child: ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: event.details!.length,
+                                itemBuilder: (context, index) {
+                                  final detail = event.details![index];
 
-                                return CupertinoListTile(
-                                  leading: Icon(
-                                    CupertinoIcons.calendar,
-                                    color:
-                                        CupertinoTheme.of(context).primaryColor,
-                                  ),
-                                  title: MediaQuery.of(context).size.width >
-                                          Constants.limitWidth
-                                      ? Row(
-                                          children: [
-                                            Text(
-                                              '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              detail.location!,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                            ),
-                                            Text(
-                                              detail.location!,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          ],
+                                  return Column(
+                                    children: [
+                                      CupertinoListTile(
+                                        leading: Icon(
+                                          CupertinoIcons.calendar,
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
                                         ),
-                                  trailing: DateTime(
-                                              detail.startDate!.year,
-                                              detail.startDate!.month,
-                                              detail.startDate!.day,
-                                              detail.startTime!.hour,
-                                              detail.startTime!.minute)
-                                          .isBefore(DateTime.now())
-                                      ? const Icon(CupertinoIcons.circle_fill,
-                                          color: CupertinoColors.systemRed)
-                                      : const Icon(CupertinoIcons.circle_fill,
-                                          color: CupertinoColors.systemGreen),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      CupertinoPageRoute(
-                                        builder: (context) => DetailPage(
-                                          eventId: event.id!,
-                                          detailId: detail.id!,
-                                        ),
+                                        title: MediaQuery.of(context)
+                                                    .size
+                                                    .width >
+                                                Constants.limitWidth
+                                            ? Row(
+                                                children: [
+                                                  Text(
+                                                    '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Text(
+                                                    detail.location!,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                            : Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                                  ),
+                                                  Text(
+                                                    detail.location!,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                        trailing: DateTime(
+                                                    detail.startDate!.year,
+                                                    detail.startDate!.month,
+                                                    detail.startDate!.day,
+                                                    detail.startTime!.hour,
+                                                    detail.startTime!.minute)
+                                                .isBefore(DateTime.now())
+                                            ? const Icon(
+                                                CupertinoIcons.circle_fill,
+                                                color:
+                                                    CupertinoColors.systemRed)
+                                            : const Icon(
+                                                CupertinoIcons.circle_fill,
+                                                color: CupertinoColors
+                                                    .systemGreen),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            CupertinoPageRoute(
+                                              builder: (context) => DetailPage(
+                                                eventId: event.id!,
+                                                detailId: detail.id!,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
-                                );
-                              },
+                                      if (index != event.details!.length - 1)
+                                        Container(
+                                          height: 1,
+                                          color: CupertinoColors.separator,
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ],
