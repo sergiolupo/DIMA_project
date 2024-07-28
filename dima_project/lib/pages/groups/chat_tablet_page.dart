@@ -77,29 +77,30 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 10.0, top: 20.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0, top: 25.0),
                   child: Text(
                     'Chats',
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
+                      color: CupertinoTheme.of(context).primaryColor,
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 11.0),
-                  child: CupertinoButton(
-                    child: const Icon(CupertinoIcons.add),
-                    onPressed: () {
-                      _navigateToPage(CreateGroupPage(
-                        canNavigate: true,
-                        navigateToPage: _navigateToPage,
-                      ));
-                    },
-                  ),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  borderRadius: BorderRadius.circular(30),
+                  minSize: 30,
+                  child: const Icon(CupertinoIcons.add),
+                  onPressed: () {
+                    _navigateToPage(CreateGroupPage(
+                      canNavigate: true,
+                      navigateToPage: _navigateToPage,
+                    ));
+                  },
                 ),
               ],
             ),
@@ -117,7 +118,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
               ),
             ),
             SizedBox(
-              height: 100,
+              height: 50,
               child: CustomSelectOption(
                 textLeft: "Groups",
                 textRight: "Private",

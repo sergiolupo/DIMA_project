@@ -184,8 +184,6 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: event.details!.length,
                           itemBuilder: (context, index) {
-                            debugPrint(
-                                event.details![index].members!.toString());
                             return event.details![index].members!
                                     .contains(widget.userData.uid)
                                 ? Column(

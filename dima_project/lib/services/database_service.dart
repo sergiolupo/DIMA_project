@@ -1340,7 +1340,8 @@ class DatabaseService {
       final snapshot = await eventsRef.doc(eventId).get();
       if (snapshot.exists) {
         Event event = await Event.fromSnapshot(snapshot);
-        if (event.admin == uuid) {
+        if (event.admin == uuid &&
+            !eventsList.any((element) => element.id == event.id)) {
           eventsList.add(event);
         }
       }
@@ -1455,7 +1456,7 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> updateEvent(Event event, Uint8List uint8list,
+  static Future<void> updateEvent(Event event, Uint8List? uint8list,
       bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
@@ -1475,7 +1476,7 @@ class DatabaseService {
     }
 
     if (!sameImage) {
-      String imageUrl = uint8list.toString() == '[]' || uint8list.isEmpty
+      String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
           : await StorageService.uploadImageToStorage(
               'event_images/${event.id}.jpg', uint8list);

@@ -55,8 +55,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
         details[i] = widget.event.details![i];
         map[i] = false;
       }
-      details[widget.event.details!.length] = Details();
-      map[widget.event.details!.length] = true;
       numInfos = widget.event.details!.length;
     });
   }
@@ -88,7 +86,11 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   _eventDescriptionController.text,
                   details.values.toList(),
                   widget.event.details!)) {
-                await updateEvent();
+                try {
+                  await updateEvent();
+                } catch (e) {
+                  debugPrint('Error: $e');
+                }
                 if (context.mounted) Navigator.of(context).pop();
               }
             },
@@ -359,10 +361,9 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       details: details.values.toList(),
       createdAt: widget.event.createdAt,
     );
-
     await DatabaseService.updateEvent(
       event,
-      selectedImagePath!,
+      selectedImagePath,
       selectedImagePath == null,
       widget.event.isPublic != isPublic,
       uids,

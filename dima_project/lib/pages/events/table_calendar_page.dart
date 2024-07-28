@@ -179,23 +179,30 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   Widget _buildCalendar() {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-          middle: Text(
-            'Calendar',
-            style: TextStyle(
-                color: CupertinoTheme.of(context).primaryColor, fontSize: 25),
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        middle: Text(
+          'Calendar',
+          style: TextStyle(
+            color: CupertinoTheme.of(context).primaryColor,
+            fontSize: 25,
           ),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => const CreateEventPage()));
-            },
-            child: Icon(CupertinoIcons.add_circled,
-                color: CupertinoTheme.of(context).primaryColor),
-          )),
+        ),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const CreateEventPage(),
+              ),
+            );
+          },
+          child: Icon(
+            CupertinoIcons.add_circled,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
+      ),
       child: Column(
         children: [
           ValueListenableBuilder<DateTime>(
@@ -243,7 +250,19 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                     color: CupertinoTheme.of(context).primaryColor,
                     shape: BoxShape.circle,
                   ),
+                  weekendTextStyle: TextStyle(
+                      color: CupertinoTheme.of(context)
+                          .textTheme
+                          .textStyle
+                          .color!),
                   outsideDaysVisible: false,
+                  outsideTextStyle: TextStyle(
+                    color: CupertinoTheme.of(context)
+                        .textTheme
+                        .textStyle
+                        .color!
+                        .withOpacity(0.5),
+                  ),
                 ),
                 onDaySelected: _onDaySelected,
                 onRangeSelected: _onRangeSelected,
@@ -268,143 +287,147 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                 return ListView.builder(
                   itemCount: value.length,
                   itemBuilder: (context, index) {
-                    final event = events[index];
+                    final event = value[index];
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: 75.0,
                       child: ListView.builder(
-                          itemCount: event.details!.length,
-                          itemBuilder: (context, index) {
-                            final detail = event.details![index];
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: CupertinoTheme.of(context)
-                                        .primaryContrastingColor,
-                                  ),
-                                  child: CupertinoListTile(
-                                    leading: Icon(
-                                      CupertinoIcons.calendar,
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                    title: MediaQuery.of(context).size.width >
-                                            Constants.limitWidth
-                                        ? Row(
-                                            children: [
-                                              Text(
-                                                event.name,
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color:
-                                                      CupertinoTheme.of(context)
-                                                          .textTheme
-                                                          .textStyle
-                                                          .color,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Text(
-                                                '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                              ),
-                                              const SizedBox(width: 10),
-                                              FutureBuilder(
-                                                  future: EventService
-                                                      .getAddressFromLatLng(
-                                                          detail.latlng!),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData &&
-                                                        snapshot.data != null) {
-                                                      final address = snapshot
-                                                          .data as String;
-                                                      return Text(
-                                                        address,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return const Center(
-                                                        child:
-                                                            CupertinoActivityIndicator(),
-                                                      );
-                                                    }
-                                                  }),
-                                            ],
-                                          )
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                event.name,
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color:
-                                                      CupertinoTheme.of(context)
-                                                          .textTheme
-                                                          .textStyle
-                                                          .color,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
-                                              ),
-                                              FutureBuilder(
-                                                  future: EventService
-                                                      .getAddressFromLatLng(
-                                                          detail.latlng!),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData &&
-                                                        snapshot.data != null) {
-                                                      final address = snapshot
-                                                          .data as String;
-                                                      return Text(
-                                                        address,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return const Center(
-                                                        child:
-                                                            CupertinoActivityIndicator(),
-                                                      );
-                                                    }
-                                                  }),
-                                            ],
-                                          ),
-                                    trailing: DateTime(
-                                                detail.startDate!.year,
-                                                detail.startDate!.month,
-                                                detail.startDate!.day,
-                                                detail.startTime!.hour,
-                                                detail.startTime!.minute)
-                                            .isBefore(DateTime.now())
-                                        ? const Icon(CupertinoIcons.circle_fill,
-                                            color: CupertinoColors.systemRed)
-                                        : const Icon(CupertinoIcons.circle_fill,
-                                            color: CupertinoColors.systemGreen),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        CupertinoPageRoute(
-                                          builder: (context) => DetailPage(
-                                            eventId: event.id!,
-                                            detailId: detail.id!,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: event.details!.length,
+                        itemBuilder: (context, index) {
+                          final detail = event.details![index];
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor,
                                 ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          }),
+                                child: CupertinoListTile(
+                                  leading: Icon(
+                                    CupertinoIcons.calendar,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                  ),
+                                  title: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? Row(
+                                          children: [
+                                            Text(
+                                              event.name,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                            ),
+                                            const SizedBox(width: 10),
+                                            FutureBuilder(
+                                                future: EventService
+                                                    .getAddressFromLatLng(
+                                                        detail.latlng!),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData &&
+                                                      snapshot.data != null) {
+                                                    final address =
+                                                        snapshot.data as String;
+                                                    return Text(
+                                                      address,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return const Center(
+                                                      child:
+                                                          CupertinoActivityIndicator(),
+                                                    );
+                                                  }
+                                                }),
+                                          ],
+                                        )
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              event.name,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color:
+                                                    CupertinoTheme.of(context)
+                                                        .textTheme
+                                                        .textStyle
+                                                        .color,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${DateFormat('dd/MM/yyyy').format(detail.startDate!)} - ${DateFormat('dd/MM/yyyy').format(detail.endDate!)}',
+                                            ),
+                                            FutureBuilder(
+                                                future: EventService
+                                                    .getAddressFromLatLng(
+                                                        detail.latlng!),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData &&
+                                                      snapshot.data != null) {
+                                                    final address =
+                                                        snapshot.data as String;
+                                                    return Text(
+                                                      address,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return const Center(
+                                                      child:
+                                                          CupertinoActivityIndicator(),
+                                                    );
+                                                  }
+                                                }),
+                                          ],
+                                        ),
+                                  trailing: DateTime(
+                                              detail.startDate!.year,
+                                              detail.startDate!.month,
+                                              detail.startDate!.day,
+                                              detail.startTime!.hour,
+                                              detail.startTime!.minute)
+                                          .isBefore(DateTime.now())
+                                      ? const Icon(CupertinoIcons.circle_fill,
+                                          color: CupertinoColors.systemRed)
+                                      : const Icon(CupertinoIcons.circle_fill,
+                                          color: CupertinoColors.systemGreen),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => DetailPage(
+                                          eventId: event.id!,
+                                          detailId: detail.id!,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          );
+                        },
+                      ),
                     );
                   },
                 );
