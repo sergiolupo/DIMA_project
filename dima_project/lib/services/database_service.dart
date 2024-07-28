@@ -453,6 +453,20 @@ class DatabaseService {
         groupsList.add(group);
       }
     }
+    debugPrint('Groups list: $groupsList');
+    groupsList.sort((a, b) {
+      if (a.lastMessage == null && b.lastMessage == null) {
+        return 0; // Both are null, consider them equal
+      } else if (a.lastMessage == null) {
+        return 1; // a should come after b
+      } else if (b.lastMessage == null) {
+        return -1; // b should come after a
+      } else {
+        // Both lastMessage are not null, compare their timestamps
+        return b.lastMessage!.recentMessageTimestamp
+            .compareTo(a.lastMessage!.recentMessageTimestamp);
+      }
+    });
     yield groupsList; // yield the initial list of groups
     final snapshots =
         groupsRef.snapshots(); // listen to changes in the groups collection
@@ -482,6 +496,19 @@ class DatabaseService {
             } else {
               groupsList.add(group);
             }
+            groupsList.sort((a, b) {
+              if (a.lastMessage == null && b.lastMessage == null) {
+                return 0; // Both are null, consider them equal
+              } else if (a.lastMessage == null) {
+                return 1; // a should come after b
+              } else if (b.lastMessage == null) {
+                return -1; // b should come after a
+              } else {
+                // Both lastMessage are not null, compare their timestamps
+                return b.lastMessage!.recentMessageTimestamp
+                    .compareTo(a.lastMessage!.recentMessageTimestamp);
+              }
+            });
             yield groupsList;
           } else {
             groupsList.removeWhere((g) => g.id == groupId);
@@ -513,6 +540,19 @@ class DatabaseService {
           chatsList.add(privateChat);
         }
       }
+      chatsList.sort((a, b) {
+        if (a.lastMessage == null && b.lastMessage == null) {
+          return 0; // Both are null, consider them equal
+        } else if (a.lastMessage == null) {
+          return 1; // a should come after b
+        } else if (b.lastMessage == null) {
+          return -1; // b should come after a
+        } else {
+          // Both lastMessage are not null, compare their timestamps
+          return b.lastMessage!.recentMessageTimestamp
+              .compareTo(a.lastMessage!.recentMessageTimestamp);
+        }
+      });
       yield chatsList; // yield the initial list of private chats
 
       final snapshots = privateChatRef
@@ -545,6 +585,19 @@ class DatabaseService {
               }
             }
           }
+          chatsList.sort((a, b) {
+            if (a.lastMessage == null && b.lastMessage == null) {
+              return 0; // Both are null, consider them equal
+            } else if (a.lastMessage == null) {
+              return 1; // a should come after b
+            } else if (b.lastMessage == null) {
+              return -1; // b should come after a
+            } else {
+              // Both lastMessage are not null, compare their timestamps
+              return b.lastMessage!.recentMessageTimestamp
+                  .compareTo(a.lastMessage!.recentMessageTimestamp);
+            }
+          });
           yield chatsList;
         }
       }

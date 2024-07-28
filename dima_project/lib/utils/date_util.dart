@@ -28,31 +28,6 @@ class DateUtil {
     return '${_formatHour(hour)}:${_formatMinute(date.minute)} $period, ${_formatDate(date)}';
   }
 
-  static String getLastSeenTime({
-    required BuildContext context,
-    required String time,
-  }) {
-    final int i = int.tryParse(time) ?? -1;
-    if (i == -1) {
-      return 'Last seen not available';
-    }
-    final date = DateTime.fromMicrosecondsSinceEpoch(i);
-    final now = DateTime.now();
-    int hour = date.hour;
-
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day) {
-      return 'Last seen today at ${_formatHour(hour)}:${_formatMinute(date.minute)}';
-    } else if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day - 1) {
-      return 'Last seen yesterday at ${_formatHour(hour)}:${_formatMinute(date.minute)}';
-    } else {
-      return 'Last seen on ${_formatDate(date)} at ${_formatHour(hour)}:${_formatMinute(date.minute)}';
-    }
-  }
-
   static int _hourOfPeriod(int hour) {
     if (hour == 0) {
       return 12;
