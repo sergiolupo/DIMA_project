@@ -66,9 +66,8 @@ class ImageCropPageState extends State<ImageCropPage> {
                 fontWeight: FontWeight.bold),
           ),
         ),
-        leading: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
+        leading: GestureDetector(
+          onTap: () {
             Navigator.of(context).pop();
           },
           child: Row(

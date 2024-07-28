@@ -17,26 +17,26 @@ class ShowDate extends StatelessWidget {
           height: 100,
         ),
         Positioned(
-          top: 20,
-          left: 28,
+          top: 18,
+          left: 20,
           child: Text(
-            DateFormat('HH:mm').format(time),
+            DateFormat('yMMM').format(date),
             style: const TextStyle(color: CupertinoColors.white),
           ),
         ),
         Positioned(
-          top: 40,
-          left: 28,
+          top: 45,
+          left: 25,
           child: Text(
-            '${DateUtil.convertMonthToString(date.month)} ${date.day}',
+            '${DateFormat('EEE').format(date)} ${date.day}',
             style: const TextStyle(color: CupertinoColors.black),
           ),
         ),
         Positioned(
-          top: 60,
-          left: 28,
+          top: 65,
+          left: 30,
           child: Text(
-            date.year.toString(),
+            DateFormat('HH:mm').format(time),
             style: const TextStyle(color: CupertinoColors.black),
           ),
         ),
