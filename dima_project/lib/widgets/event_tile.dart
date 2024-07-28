@@ -38,19 +38,37 @@ class EventTileState extends ConsumerState<EventTile> {
                 ),
               );
             },
-            child: CupertinoListTile(
-              leading: CreateImageWidget.getEventImage(widget.event.imagePath!),
-              title: Text(
-                widget.event.name,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize:
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.width > Constants.limitWidth
+                      ? 8.0
+                      : 0.0),
+              child: CupertinoListTile(
+                leading: Transform.scale(
+                    scale:
                         MediaQuery.of(context).size.width > Constants.limitWidth
-                            ? 25
-                            : 16),
+                            ? 1.3
+                            : 1,
+                    child: CreateImageWidget.getEventImage(
+                        widget.event.imagePath!)),
+                title: Text(
+                  widget.event.name,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 20
+                          : 17),
+                ),
+                subtitle: Text("Description: ${widget.event.description}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 15
+                            : 12)),
               ),
-              subtitle: Text("Description: ${widget.event.description}",
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
             ),
           ),
         ),

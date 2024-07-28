@@ -97,7 +97,6 @@ class SearchPageState extends ConsumerState<SearchPage> {
                   "Search${searchIdx == 0 ? " users" : searchIdx == 1 ? " groups" : " events"}...",
             ),
           ),
-          const SizedBox(height: 10),
           CustomSelectOption(
             textLeft: "Users",
             textRight: "Events",
@@ -109,7 +108,6 @@ class SearchPageState extends ConsumerState<SearchPage> {
               });
             },
           ),
-          const SizedBox(height: 10),
           Expanded(
             child: StreamBuilder<
                 List<QueryDocumentSnapshot<Map<String, dynamic>>>>(

@@ -7,8 +7,16 @@ class GroupHelper {
       _showErrorDialog(context, 'Event name is required');
       return false;
     }
+    if (name.length > 20) {
+      _showErrorDialog(context, 'Event name is too long');
+      return false;
+    }
     if (description.isEmpty) {
       _showErrorDialog(context, 'Event description is required');
+      return false;
+    }
+    if (description.length > 150) {
+      _showErrorDialog(context, 'Event description is too long');
       return false;
     }
     return true;

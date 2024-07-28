@@ -29,6 +29,9 @@ class PersonalInformationForm extends StatelessWidget {
               if (value == null || value.isEmpty) {
                 return 'Please enter your name';
               }
+              if (value.length > 20) {
+                return 'Name is too long';
+              }
               return null; // Return null if the input is valid
             },
             prefix: const Padding(
@@ -49,6 +52,9 @@ class PersonalInformationForm extends StatelessWidget {
           validator: (String? value) {
             if (value == null || value.isEmpty) {
               return 'Please enter your surname';
+            }
+            if (value.length > 20) {
+              return 'Surname is too long';
             }
             return null; // Return null if the input is valid
           },
@@ -83,6 +89,9 @@ class UsernameInputTextField extends StatelessWidget {
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a username';
+        }
+        if (value.length > 20) {
+          return 'Username is too long';
         }
         return null; // Return null if the input is valid
       },

@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,11 +41,28 @@ class GroupTileState extends ConsumerState<GroupTile> {
                 );
               }
             },
-            child: CupertinoListTile(
-              leading: CreateImageWidget.getGroupImage(widget.group.imagePath!),
-              title: Text(
-                widget.group.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.width > Constants.limitWidth
+                      ? 8.0
+                      : 0),
+              child: CupertinoListTile(
+                leading: Transform.scale(
+                    scale:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 1.3
+                            : 1,
+                    child: CreateImageWidget.getGroupImage(
+                        widget.group.imagePath!)),
+                title: Text(
+                  widget.group.name,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 20
+                          : 17),
+                ),
               ),
             ),
           ),
@@ -75,7 +93,12 @@ class GroupTileState extends ConsumerState<GroupTile> {
                     : widget.isJoined == 2
                         ? "Requested"
                         : "Join",
-                style: const TextStyle(color: CupertinoColors.white),
+                style: TextStyle(
+                    color: CupertinoColors.white,
+                    fontSize:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 18
+                            : 15),
               ),
             ),
           ),

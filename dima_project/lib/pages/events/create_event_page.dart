@@ -768,15 +768,14 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
               ),
             )
           : Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor,
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Text(
@@ -812,7 +811,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -176,7 +176,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   details.putIfAbsent(index, () => Details());
 
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: CreateEventPageState.getEventInfo(
                       fixedIndex: widget.event.details!.length,
                       location: () => _selectLocation(context, index),
@@ -224,14 +223,31 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   );
                 }),
             if (widget.event.details!.length == numInfos)
-              CupertinoButton(
-                  child: const Icon(CupertinoIcons.add),
-                  onPressed: () {
-                    setState(() {
-                      numInfos++;
-                    });
-                  }),
-            const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CupertinoButton(
+                      child: Row(
+                        children: [
+                          Icon(
+                            CupertinoIcons.calendar_badge_plus,
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
+                          const SizedBox(width: 5),
+                          Text('Add more dates',
+                              style: TextStyle(
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor)),
+                        ],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          numInfos++;
+                        });
+                      }),
+                ],
+              ),
+            const SizedBox(height: 20),
             Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),

@@ -5,6 +5,7 @@ import 'package:dima_project/pages/userprofile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,19 +58,35 @@ class UserTileState extends ConsumerState<UserTile> {
               }));
             },
             child: CupertinoListTile(
-              leading: ClipOval(
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  color: CupertinoColors.lightBackgroundGray,
-                  child: CreateImageWidget.getUserImage(widget.user.imagePath!),
+              leading: Transform.scale(
+                scale: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 1.3
+                    : 1,
+                child: ClipOval(
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    color: CupertinoColors.lightBackgroundGray,
+                    child:
+                        CreateImageWidget.getUserImage(widget.user.imagePath!),
+                  ),
                 ),
               ),
               title: Text(
                 widget.user.username,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 20
+                            : 17),
               ),
-              subtitle: Text("${widget.user.name} ${widget.user.surname}"),
+              subtitle: Text("${widget.user.name} ${widget.user.surname}",
+                  style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? 15
+                          : 12)),
             ),
           ),
         ),
@@ -104,7 +121,12 @@ class UserTileState extends ConsumerState<UserTile> {
                           : widget.isFollowing == 1
                               ? "Unfollow"
                               : "Requested",
-                      style: const TextStyle(color: CupertinoColors.white),
+                      style: TextStyle(
+                          color: CupertinoColors.white,
+                          fontSize: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? 18
+                              : 15),
                     ),
                   ),
                 ),
