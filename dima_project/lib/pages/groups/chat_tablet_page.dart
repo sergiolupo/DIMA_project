@@ -31,6 +31,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   final String uid = AuthService.uid;
   Group? selectedGroup;
   UserData? selectedUser;
+  PrivateChat? selectedPrivateChat;
   int idx = 0;
   Widget page = const SizedBox.shrink();
   @override
@@ -218,11 +219,14 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     if (group.lastMessage == null) {
                       return GroupChatTileTablet(
                         onDismissed: (DismissDirection direction) async {
-                          setState(() {
-                            selectedGroup = null;
-                            page = const SizedBox.shrink();
-                          });
                           await DatabaseService.toggleGroupJoin(group.id);
+                          setState(() {
+                            if (selectedGroup != null &&
+                                selectedGroup!.id == group.id) {
+                              selectedGroup = null;
+                              page = const SizedBox.shrink();
+                            }
+                          });
                         },
                         username: '',
                         group: group,
@@ -256,11 +260,14 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           }
                           return GroupChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
-                              setState(() {
-                                selectedGroup = null;
-                                page = const SizedBox.shrink();
-                              });
                               await DatabaseService.toggleGroupJoin(group.id);
+                              setState(() {
+                                if (selectedGroup != null &&
+                                    selectedGroup!.id == group.id) {
+                                  selectedGroup = null;
+                                  page = const SizedBox.shrink();
+                                }
+                              });
                             },
                             group: group,
                             username: username,
@@ -358,6 +365,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             (selectedUser!.username != other.username ||
                                 selectedUser!.imagePath != other.imagePath)) {
                           selectedUser = other;
+                          selectedPrivateChat = privateChat;
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             setState(() {
                               if (page is PrivateChatPage) {
@@ -384,16 +392,21 @@ class ChatTabletPageState extends State<ChatTabletPage> {
 
                         return PrivateChatTileTablet(
                           onDismissed: (DismissDirection direction) async {
-                            setState(() {
-                              selectedUser = null;
-                              page = const SizedBox.shrink();
-                            });
                             await DatabaseService.deletePrivateChat(
                                 privateChat);
+                            setState(() {
+                              if (selectedUser != null &&
+                                  selectedUser!.uid == other.uid) {
+                                selectedUser = null;
+                                selectedPrivateChat = null;
+                                page = const SizedBox.shrink();
+                              }
+                            });
                           },
                           onPressed: (PrivateChat privateChat) => {
                             setState(() {
                               selectedUser = other;
+                              selectedPrivateChat = privateChat;
                               privateChat.lastMessage!.unreadMessages = 0;
                               page = PrivateChatPage(
                                 privateChat: privateChat,
@@ -411,16 +424,22 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         if (snapshot.hasError) {
                           return PrivateChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
-                              setState(() {
-                                selectedUser = null;
-                                page = const SizedBox.shrink();
-                              });
                               await DatabaseService.deletePrivateChat(
                                   privateChat);
+
+                              setState(() {
+                                if (selectedPrivateChat != null &&
+                                    selectedPrivateChat!.id == privateChat.id) {
+                                  selectedUser = null;
+                                  selectedPrivateChat = null;
+                                  page = const SizedBox.shrink();
+                                }
+                              });
                             },
                             onPressed: (PrivateChat privateChat) => {
                               setState(() {
                                 selectedUser = null;
+                                selectedPrivateChat = privateChat;
                                 privateChat.lastMessage!.unreadMessages = 0;
                                 page = PrivateChatPage(
                                   privateChat: privateChat,

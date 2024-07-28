@@ -612,6 +612,12 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                   group.id,
                 );
                 if (!context.mounted) return;
+
+                if (widget.canNavigate) {
+                  Navigator.of(context).pop();
+                  widget.navigateToPage!(const SizedBox.shrink());
+                  return;
+                }
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
               child: const Text("Leave"),

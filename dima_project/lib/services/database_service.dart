@@ -9,7 +9,6 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/event.dart';
@@ -465,7 +464,6 @@ class DatabaseService {
         final members = group.members;
 
         if (change.type == DocumentChangeType.removed) {
-          debugPrint('Group removed');
           groupsList.removeWhere((g) => g.id == groupId);
           yield groupsList;
         } else {
@@ -961,28 +959,6 @@ class DatabaseService {
     ]);
   }
 
-  static Stream<List<dynamic>> getGroupMessagesTypeStream(
-      String id, Type type) {
-    return groupsRef
-        .doc(id)
-        .collection('messages')
-        .where("type", isEqualTo: type.toString())
-        .orderBy('time', descending: true)
-        .snapshots()
-        .map((s) => s.docs);
-  }
-
-  static Stream<List<dynamic>> getPrivateMessagesTypeStream(
-      String id, Type type) {
-    return privateChatRef
-        .doc(id)
-        .collection('messages')
-        .where("type", isEqualTo: type.toString())
-        .orderBy('time', descending: true)
-        .snapshots()
-        .map((s) => s.docs);
-  }
-
   static Future<List<Message>> getGroupMessagesType(
       String id, Type type) async {
     final docs = (await groupsRef
@@ -1010,18 +986,23 @@ class DatabaseService {
 
   static Future<List<Message>> getPrivateMessagesType(
       String id, Type type) async {
-    final docs = (await privateChatRef
-            .doc(id)
-            .collection('messages')
-            .where("type", isEqualTo: type.toString())
-            .orderBy('time', descending: true)
-            .get())
-        .docs;
-    List<Message> messages = [];
-    for (var doc in docs) {
-      messages.add(Message.fromSnapshot(doc, id, AuthService.uid));
+    try {
+      final docs = (await privateChatRef
+              .doc(id)
+              .collection('messages')
+              .where("type", isEqualTo: type.toString())
+              .orderBy('time', descending: true)
+              .get())
+          .docs;
+      List<Message> messages = [];
+      for (var doc in docs) {
+        messages.add(Message.fromSnapshot(doc, id, AuthService.uid));
+      }
+      return messages;
+    } catch (e) {
+      debugPrint("Not possible to get messages for chat $id");
+      return [];
     }
-    return messages;
   }
 
   static Future<void> acceptUserRequest(
