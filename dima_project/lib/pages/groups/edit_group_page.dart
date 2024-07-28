@@ -142,7 +142,8 @@ class EditGroupPageState extends State<EditGroupPage> {
   }
 
   Widget buildPage1(BuildContext context) {
-    return SafeArea(
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Container(
         alignment: Alignment.center,
         child: Padding(
