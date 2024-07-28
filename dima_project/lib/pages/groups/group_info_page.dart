@@ -13,6 +13,7 @@ import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 
 class GroupInfoPage extends StatefulWidget {
   final Group group;
@@ -30,11 +31,7 @@ class GroupInfoPage extends StatefulWidget {
 }
 
 class GroupInfoPageState extends State<GroupInfoPage> {
-  List<UserData>? _requests;
-  List<Message>? _media;
-  List<Message>? _events;
-  List<Message>? _news;
-  Group? group;
+  late Group group;
 
   final String uid = AuthService.uid;
   @override
@@ -43,42 +40,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
     setState(() {
       group = widget.group;
     });
-    init();
-  }
-
-  void init() async {
-    List<UserData> users = [];
-    List<Message> messages = [];
-    users = (await DatabaseService.getGroupRequestsForGroup(widget.group.id));
-    if (mounted) {
-      setState(() {
-        _requests = users;
-      });
-    }
-
-    messages = (await DatabaseService.getGroupMessagesType(
-        widget.group.id, Type.image));
-    if (mounted) {
-      setState(() {
-        _media = messages;
-      });
-    }
-
-    messages = (await DatabaseService.getGroupMessagesType(
-        widget.group.id, Type.event));
-    if (mounted) {
-      setState(() {
-        _events = messages;
-      });
-    }
-
-    messages = (await DatabaseService.getGroupMessagesType(
-        widget.group.id, Type.news));
-    if (mounted) {
-      setState(() {
-        _news = messages;
-      });
-    }
   }
 
   @override
@@ -91,7 +52,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupChatPage(
-                  group: widget.group,
+                  group: group,
                   canNavigate: widget.canNavigate,
                   navigateToPage: widget.navigateToPage));
               return;
@@ -112,7 +73,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
           onPressed: () async {
             if (widget.canNavigate) {
               widget.navigateToPage!(EditGroupPage(
-                group: group!,
+                group: group,
                 canNavigate: true,
                 navigateToPage: widget.navigateToPage,
               ));
@@ -122,7 +83,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 context,
                 CupertinoPageRoute(
                     builder: (context) => EditGroupPage(
-                          group: group!,
+                          group: group,
                           canNavigate: false,
                         )));
 
@@ -131,7 +92,6 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 group = newGroup;
               });
             }
-            init();
           },
           child: Text(
             'Edit',
@@ -159,11 +119,11 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CreateImageWidget.getGroupImage(
-                            group!.imagePath!,
+                            group.imagePath!,
                           ),
                           const SizedBox(width: 20),
                           Text(
-                            group!.name,
+                            group.name,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -175,7 +135,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: group!.categories!
+                        children: group.categories!
                             .map((category) => Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4),
@@ -226,7 +186,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              group!.description!,
+                              group.description!,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -236,237 +196,292 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      if (!group!.isPublic && group!.admin == uid)
-                        CupertinoListTile(
-                          padding: const EdgeInsets.all(0),
-                          title: const Row(
-                            children: [
-                              Icon(
-                                CupertinoIcons.bell,
-                                color: CupertinoColors.black,
+                      if (!group.isPublic && group.admin == uid)
+                        FutureBuilder(
+                          future: DatabaseService.getGroupRequestsForGroup(
+                              group.id),
+                          builder: (context, snapshot) {
+                            return CupertinoListTile(
+                              padding: const EdgeInsets.all(0),
+                              title: const Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.bell,
+                                    color: CupertinoColors.black,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text("Requests"),
+                                ],
                               ),
-                              SizedBox(width: 10),
-                              Text("Requests"),
-                            ],
-                          ),
-                          trailing: Row(
-                            children: [
-                              _requests != null && _requests!.isNotEmpty
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Container(
-                                        color: CupertinoTheme.of(context)
-                                            .primaryColor,
-                                        child: Text(
-                                          _requests!.length.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.normal,
-                                            color: CupertinoColors.white,
+                              trailing: Row(
+                                children: [
+                                  (snapshot.connectionState ==
+                                              ConnectionState.waiting ||
+                                          snapshot.hasError)
+                                      ? const SizedBox()
+                                      : ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                            child: Text(
+                                              snapshot.data!.length.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal,
+                                                color: CupertinoColors.white,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                              const SizedBox(width: 10),
-                              Icon(
-                                CupertinoIcons.right_chevron,
-                                color: CupertinoTheme.of(context).primaryColor,
-                                size: 18,
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    CupertinoIcons.right_chevron,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                    size: 18,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          onTap: () {
-                            if (widget.canNavigate) {
-                              widget.navigateToPage!(GroupRequestsPage(
-                                group: widget.group,
-                                requests: _requests!,
-                                canNavigate: true,
-                                navigateToPage: widget.navigateToPage,
-                              ));
-                              return;
-                            }
+                              onTap: () {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.waiting ||
+                                    snapshot.hasError) return;
+                                final List<UserData> requests = snapshot.data!;
+                                if (widget.canNavigate) {
+                                  widget.navigateToPage!(GroupRequestsPage(
+                                    group: group,
+                                    requests: requests,
+                                    canNavigate: true,
+                                    navigateToPage: widget.navigateToPage,
+                                  ));
+                                  return;
+                                }
 
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) => GroupRequestsPage(
-                                  group: widget.group,
-                                  requests: _requests!,
-                                  canNavigate: false,
-                                ),
-                              ),
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => GroupRequestsPage(
+                                      group: group,
+                                      requests: requests,
+                                      canNavigate: false,
+                                    ),
+                                  ),
+                                );
+                              },
                             );
-                            init();
                           },
                         ),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.photo_on_rectangle,
-                              color: CupertinoTheme.of(context).primaryColor,
+                      FutureBuilder(
+                        future: DatabaseService.getGroupMessagesType(
+                            group.id, Type.image),
+                        builder: (context, snapshot) {
+                          return CupertinoListTile(
+                            padding: const EdgeInsets.all(0),
+                            title: Row(
+                              children: [
+                                Icon(
+                                  CupertinoIcons.photo_on_rectangle,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text("Media"),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const Text("Media"),
-                          ],
-                        ),
-                        trailing: Row(
-                          children: [
-                            _media != null && _media!.isNotEmpty
-                                ? Text(
-                                    _media!.length.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                      color: CupertinoColors.opaqueSeparator,
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
+                            trailing: Row(
+                              children: [
+                                (snapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        snapshot.hasError)
+                                    ? const SizedBox()
+                                    : Text(
+                                        snapshot.data!.length.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.normal,
+                                          color:
+                                              CupertinoColors.opaqueSeparator,
+                                        ),
+                                      ),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  CupertinoIcons.right_chevron,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                  size: 18,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (widget.canNavigate) {
-                            widget.navigateToPage!(ShowMediasPage(
-                              isGroup: true,
-                              medias: _media!,
-                              canNavigate: true,
-                              navigateToPage: widget.navigateToPage,
-                              group: widget.group,
-                            ));
-                            return;
-                          }
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => ShowMediasPage(
-                                isGroup: true,
-                                medias: _media!,
-                                group: widget.group,
-                                canNavigate: false,
-                              ),
-                            ),
+                            onTap: () {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  snapshot.hasError) return;
+                              final List<Message> media = snapshot.data!;
+                              if (widget.canNavigate) {
+                                widget.navigateToPage!(ShowMediasPage(
+                                  isGroup: true,
+                                  medias: media,
+                                  canNavigate: true,
+                                  navigateToPage: widget.navigateToPage,
+                                  group: group,
+                                ));
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                  builder: (context) => ShowMediasPage(
+                                    isGroup: true,
+                                    medias: media,
+                                    group: group,
+                                    canNavigate: false,
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                          init();
                         },
                       ),
                       const SizedBox(height: 10),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.calendar,
-                              color: CupertinoTheme.of(context).primaryColor,
+                      FutureBuilder(
+                        future: DatabaseService.getGroupMessagesType(
+                            group.id, Type.event),
+                        builder: (context, snapshot) {
+                          return CupertinoListTile(
+                            padding: const EdgeInsets.all(0),
+                            title: Row(
+                              children: [
+                                Icon(
+                                  CupertinoIcons.calendar,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text("Events"),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const Text("Events"),
-                          ],
-                        ),
-                        trailing: Row(
-                          children: [
-                            _events != null && _events!.isNotEmpty
-                                ? Text(
-                                    _events!.length.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                      color: CupertinoColors.opaqueSeparator,
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
+                            trailing: Row(
+                              children: [
+                                (snapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        snapshot.hasError)
+                                    ? const SizedBox()
+                                    : Text(
+                                        snapshot.data!.length.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.normal,
+                                          color:
+                                              CupertinoColors.opaqueSeparator,
+                                        ),
+                                      ),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  CupertinoIcons.right_chevron,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                  size: 18,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (widget.canNavigate) {
-                            widget.navigateToPage!(ShowEventsPage(
-                              group: widget.group,
-                              isGroup: true,
-                              events: _events!,
-                              canNavigate: true,
-                              navigateToPage: widget.navigateToPage,
-                            ));
-                            return;
-                          }
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => ShowEventsPage(
-                                group: widget.group,
-                                canNavigate: false,
-                                isGroup: true,
-                                events: _events!,
-                              ),
-                            ),
+                            onTap: () {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  snapshot.hasError) return;
+                              final List<Message> events = snapshot.data!;
+                              if (widget.canNavigate) {
+                                widget.navigateToPage!(ShowEventsPage(
+                                  group: group,
+                                  isGroup: true,
+                                  events: events,
+                                  canNavigate: true,
+                                  navigateToPage: widget.navigateToPage,
+                                ));
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                  builder: (context) => ShowEventsPage(
+                                    group: group,
+                                    canNavigate: false,
+                                    isGroup: true,
+                                    events: events,
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                          init();
                         },
                       ),
                       const SizedBox(height: 10),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.news,
-                              color: CupertinoTheme.of(context).primaryColor,
+                      FutureBuilder(
+                        future: DatabaseService.getGroupMessagesType(
+                            group.id, Type.news),
+                        builder: (context, snapshot) {
+                          return CupertinoListTile(
+                            padding: const EdgeInsets.all(0),
+                            title: Row(
+                              children: [
+                                Icon(
+                                  CupertinoIcons.news,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text("News"),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const Text("News"),
-                          ],
-                        ),
-                        trailing: Row(
-                          children: [
-                            _news != null && _news!.isNotEmpty
-                                ? Text(
-                                    _news!.length.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                      color: CupertinoColors.opaqueSeparator,
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
+                            trailing: Row(
+                              children: [
+                                (snapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        snapshot.hasError)
+                                    ? const SizedBox()
+                                    : Text(
+                                        snapshot.data!.length.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.normal,
+                                          color:
+                                              CupertinoColors.opaqueSeparator,
+                                        ),
+                                      ),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  CupertinoIcons.right_chevron,
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor,
+                                  size: 18,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (widget.canNavigate) {
-                            widget.navigateToPage!(ShowNewsPage(
-                              group: widget.group,
-                              isGroup: true,
-                              news: _news!,
-                              canNavigate: true,
-                              navigateToPage: widget.navigateToPage,
-                            ));
-                            return;
-                          }
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => ShowNewsPage(
-                                group: widget.group,
-                                canNavigate: false,
-                                isGroup: true,
-                                news: _news!,
-                              ),
-                            ),
+                            onTap: () {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  snapshot.hasError) return;
+                              final List<Message> news = snapshot.data!;
+                              if (widget.canNavigate) {
+                                widget.navigateToPage!(ShowNewsPage(
+                                  group: group,
+                                  isGroup: true,
+                                  news: news,
+                                  canNavigate: true,
+                                  navigateToPage: widget.navigateToPage,
+                                ));
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                  builder: (context) => ShowNewsPage(
+                                    group: group,
+                                    canNavigate: false,
+                                    isGroup: true,
+                                    news: news,
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                          init();
                         },
                       ),
                       const SizedBox(height: 10),
@@ -509,49 +524,69 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   }
 
   Widget memberList() {
-    return group == null || group!.members == null
-        ? const CupertinoActivityIndicator()
-        : ListView.builder(
-            shrinkWrap: true,
-            itemCount: group!.members!.length,
-            itemBuilder: (context, index) {
-              return FutureBuilder(
-                  future: DatabaseService.getUserData(group!.members![index]),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CupertinoActivityIndicator(); // Or any loading indicator
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      final UserData userData = snapshot.data!;
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: group.members!.length,
+      itemBuilder: (context, index) {
+        return FutureBuilder(
+            future: DatabaseService.getUserData(group.members![index]),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Shimmer.fromColors(
+                  baseColor: CupertinoColors.systemGrey6,
+                  highlightColor: CupertinoColors.systemGrey4,
+                  child: CupertinoListTile(
+                    leading: ClipOval(
+                      child: Container(
+                        color: CupertinoColors.white,
+                        width: 50.0,
+                        height: 50.0,
+                      ),
+                    ),
+                    title: Container(
+                      width: 50.0,
+                      height: 10.0,
+                      color: CupertinoColors.white,
+                    ),
+                    subtitle: Container(
+                      width: 50.0,
+                      height: 10.0,
+                      color: CupertinoColors.white,
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final UserData userData = snapshot.data!;
 
-                      if (widget.group.admin == userData.uid) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: UserTile(
-                                user: userData,
-                                isFollowing: null,
-                              ),
-                            ),
-                            const Text(
-                              "Admin",
-                              style: TextStyle(
-                                color: CupertinoColors.systemGrey4,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                      return UserTile(
-                        user: userData,
-                        isFollowing: null,
-                      );
-                    }
-                  });
-            },
-          );
+                if (group.admin == userData.uid) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: UserTile(
+                          user: userData,
+                          isFollowing: null,
+                        ),
+                      ),
+                      const Text(
+                        "Admin",
+                        style: TextStyle(
+                          color: CupertinoColors.systemGrey4,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return UserTile(
+                  user: userData,
+                  isFollowing: null,
+                );
+              }
+            });
+      },
+    );
   }
 
   void showLeaveGroupDialog(BuildContext context) {
@@ -571,7 +606,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
             CupertinoDialogAction(
               onPressed: () async {
                 await DatabaseService.toggleGroupJoin(
-                  widget.group.id,
+                  group.id,
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).popUntil((route) => route.isFirst);

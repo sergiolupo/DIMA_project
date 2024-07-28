@@ -65,6 +65,7 @@ dependencies:
   flutter_native_splash: ^2.4.0
   table_calendar: ^3.1.2
   map_launcher: ^3.3.1
+  shimmer: ^3.0.0
   flutter_svg:  # to use icons as they are svgs
   
 dev_dependencies:

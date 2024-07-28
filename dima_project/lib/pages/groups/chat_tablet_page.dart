@@ -187,7 +187,9 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     if (selectedGroup != null &&
                         selectedGroup!.id == group.id &&
                         (selectedGroup!.name != group.name ||
-                            selectedGroup!.imagePath != group.imagePath)) {
+                            selectedGroup!.imagePath != group.imagePath ||
+                            selectedGroup!.members!.length !=
+                                group.members!.length)) {
                       selectedGroup = group;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
