@@ -91,11 +91,10 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                   child: CupertinoButton(
                     child: const Icon(CupertinoIcons.add),
                     onPressed: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => const CreateGroupPage(),
-                        ),
-                      );
+                      _navigateToPage(CreateGroupPage(
+                        canNavigate: true,
+                        navigateToPage: _navigateToPage,
+                      ));
                     },
                   ),
                 ),

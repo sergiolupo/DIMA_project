@@ -15,8 +15,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CreateGroupPage extends ConsumerStatefulWidget {
+  final bool canNavigate;
+  final Function? navigateToPage;
   const CreateGroupPage({
     super.key,
+    this.navigateToPage,
+    required this.canNavigate,
   });
 
   @override
@@ -68,6 +72,10 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
         leading: CupertinoButton(
           onPressed: () {
             if (_currentPage == 1) {
+              if (widget.canNavigate) {
+                widget.navigateToPage!(const SizedBox());
+                return;
+              }
               Navigator.of(context).pop();
             } else {
               setState(() {
@@ -100,6 +108,10 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   void createGroup(Group group, Uint8List imagePath) async {
     await DatabaseService.createGroup(group, imagePath, uuids);
     if (mounted) {
+      if (widget.canNavigate) {
+        widget.navigateToPage!(const SizedBox());
+        return;
+      }
       Navigator.of(context).pop();
     }
   }
@@ -205,6 +217,12 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 leading: const Icon(FontAwesomeIcons.tableList),
                 trailing: const Icon(CupertinoIcons.forward),
                 onTap: () {
+                  if (widget.canNavigate) {
+                    setState(() {
+                      _currentPage = 2;
+                    });
+                    return;
+                  }
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => CategoriesPage(

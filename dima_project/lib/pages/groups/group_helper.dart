@@ -14,16 +14,6 @@ class GroupHelper {
     return true;
   }
 
-  static bool validateCategories(
-      BuildContext context, List<String> categories) {
-    if (categories.isEmpty) {
-      _showErrorDialog(context, 'Please select at least one category');
-      return false;
-    }
-
-    return true;
-  }
-
   static void _showErrorDialog(BuildContext context, String message) {
     showCupertinoDialog(
       context: context,

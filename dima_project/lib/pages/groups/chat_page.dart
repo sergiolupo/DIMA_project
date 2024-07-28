@@ -45,7 +45,9 @@ class ListChatPageState extends State<ChatPage> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => const CreateGroupPage()));
+                    builder: (context) => const CreateGroupPage(
+                          canNavigate: false,
+                        )));
           },
           child: const Icon(
             CupertinoIcons.add_circled_solid,

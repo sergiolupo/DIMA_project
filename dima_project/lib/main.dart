@@ -1,4 +1,3 @@
-import 'package:dima_project/pages/groups/create_group_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -48,12 +47,6 @@ final GoRouter _router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         int? index = state.extra as int?;
         return HomePage(index: index);
-      },
-    ),
-    GoRoute(
-      path: '/creategroup',
-      builder: (BuildContext context, GoRouterState state) {
-        return const CreateGroupPage();
       },
     ),
   ],
