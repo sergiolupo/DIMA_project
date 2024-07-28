@@ -244,6 +244,12 @@ class EditGroupPageState extends State<EditGroupPage> {
                       leading: const Icon(FontAwesomeIcons.tableList),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
+                        if (widget.canNavigate) {
+                          setState(() {
+                            index = 1;
+                          });
+                          return;
+                        }
                         Navigator.of(context).push(
                           CupertinoPageRoute(
                             builder: (context) => CategoriesPage(
