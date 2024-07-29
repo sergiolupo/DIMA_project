@@ -13,7 +13,7 @@ class News {
 
   Future<void> getNews() async {
     String url =
-        "https://newsapi.org/v2/top-headlines?country=us&apiKey=61f777e67a9346cebb7cecf45b243af9";
+        "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -23,16 +23,13 @@ class News {
         if (element["title"] != null &&
             element['description'] != null &&
             element['url'] != null &&
-            element['urlToImage'] != null &&
-            element['content'] != null &&
-            element['author'] != null) {
+            element['urlToImage'] != null) {
           ArticleModel articleModel = ArticleModel(
-              title: element["title"],
-              description: element["description"],
-              url: element["url"],
-              urlToImage: element["urlToImage"],
-              content: element["content"],
-              author: element["author"]);
+            title: element["title"],
+            description: element["description"],
+            url: element["url"],
+            urlToImage: element["urlToImage"],
+          );
           news.add(articleModel);
         }
       });
@@ -51,16 +48,13 @@ class News {
         if (element["title"] != null &&
             element['description'] != null &&
             element['url'] != null &&
-            element['urlToImage'] != null &&
-            element['content'] != null &&
-            element['author'] != null) {
+            element['urlToImage'] != null) {
           ArticleModel showCategoryModel = ArticleModel(
-              title: element["title"],
-              description: element["description"],
-              url: element["url"],
-              urlToImage: element["urlToImage"],
-              content: element["content"],
-              author: element["author"]);
+            title: element["title"],
+            description: element["description"],
+            url: element["url"],
+            urlToImage: element["urlToImage"],
+          );
           categories.add(showCategoryModel);
         }
       });
@@ -69,7 +63,7 @@ class News {
 
   Future<void> getSliders() async {
     String url =
-        "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=b7481c07197e4c23adb0d826b421fe82";
+        "https://newsapi.org/v2/top-headlines?sources=fox-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -79,16 +73,13 @@ class News {
         if (element["title"] != null &&
             element['description'] != null &&
             element['url'] != null &&
-            element['urlToImage'] != null &&
-            element['content'] != null &&
-            element['author'] != null) {
+            element['urlToImage'] != null) {
           ArticleModel sliderModel = ArticleModel(
-              title: element["title"],
-              description: element["description"],
-              url: element["url"],
-              urlToImage: element["urlToImage"],
-              content: element["content"],
-              author: element["author"]);
+            title: element["title"],
+            description: element["description"],
+            url: element["url"],
+            urlToImage: element["urlToImage"],
+          );
           sliders.add(sliderModel);
         }
       });
@@ -109,7 +100,7 @@ class News {
     List<ArticleModel> news = [];
 
     String url =
-        "https://newsapi.org/v2/everything?q=$search&apiKey=b7481c07197e4c23adb0d826b421fe82";
+        "https://newsapi.org/v2/everything?q=$search&apiKey=61f777e67a9346cebb7cecf45b243af9";
     var response = await http.get(Uri.parse(url));
 
     var jsonData = jsonDecode(response.body);
@@ -119,22 +110,17 @@ class News {
         if (element["title"] != null &&
             element['description'] != null &&
             element['url'] != null &&
-            element['urlToImage'] != null &&
-            element['content'] != null &&
-            element['author'] != null) {
+            element['urlToImage'] != null) {
           ArticleModel articleModel = ArticleModel(
             title: element["title"],
             description: element["description"],
             url: element["url"],
             urlToImage: element["urlToImage"],
-            content: element["content"],
-            author: element[
-                "author"], // Assuming you have an author field in the ArticleModel
           );
           news.add(articleModel);
         }
       });
     }
-    yield news; // Emit the list of articles
+    yield news;
   }
 }
