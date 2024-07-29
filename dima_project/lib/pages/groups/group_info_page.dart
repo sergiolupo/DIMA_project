@@ -539,25 +539,34 @@ class GroupInfoPageState extends State<GroupInfoPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
-                  baseColor: CupertinoColors.systemGrey6,
-                  highlightColor: CupertinoColors.systemGrey4,
+                  baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+                  highlightColor:
+                      CupertinoTheme.of(context).primaryContrastingColor,
                   child: CupertinoListTile(
                     leading: ClipOval(
                       child: Container(
-                        color: CupertinoColors.white,
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor,
                         width: 50.0,
                         height: 50.0,
                       ),
                     ),
                     title: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          shape: BoxShape.rectangle,
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor),
                       width: 50.0,
-                      height: 10.0,
-                      color: CupertinoColors.white,
+                      height: 15.0,
                     ),
                     subtitle: Container(
-                      width: 50.0,
+                      width: 70.0,
                       height: 10.0,
-                      color: CupertinoColors.white,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor),
                     ),
                   ),
                 );

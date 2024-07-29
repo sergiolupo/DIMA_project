@@ -120,16 +120,20 @@ class CredentialsInformationForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        EmailInputField(emailController),
-        PasswordInputField(passwordController),
-        PasswordInputField(
-          confirmPasswordController,
-          isConfirmPassword: true,
-          confirmValue: passwordController,
-        ),
-      ],
+    return Container(
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.5),
+      child: Column(
+        children: [
+          EmailInputField(emailController),
+          PasswordInputField(passwordController),
+          PasswordInputField(
+            confirmPasswordController,
+            isConfirmPassword: true,
+            confirmValue: passwordController,
+          ),
+        ],
+      ),
     );
   }
 }

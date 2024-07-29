@@ -55,8 +55,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   void dispose() {
     _eventNameController.dispose();
     _eventDescriptionController.dispose();
-    super.dispose();
     animationController.dispose();
+    _nameFocus.dispose();
+    _descriptionFocus.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,17 +98,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
           event, selectedImagePath, uids, groupIds);
 
       ref.invalidate(createdEventsProvider(uid));
-      if (widget.canNavigate) {
-        widget.navigateToPage!(GroupChatPage(
-          canNavigate: widget.canNavigate,
-          group: widget.group!,
-          navigateToPage: widget.navigateToPage,
-        ));
-      } else {
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-      }
     }
   }
 
@@ -458,6 +449,17 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       map = {};
                       details = {};
                     });
+                  }
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(GroupChatPage(
+                      canNavigate: widget.canNavigate,
+                      group: widget.group!,
+                      navigateToPage: widget.navigateToPage,
+                    ));
+                  } else {
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                    }
                   }
                 },
               ),

@@ -10,9 +10,17 @@ class StartMessagingWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(CupertinoIcons.chat_bubble_text, size: 100),
+          Icon(
+            CupertinoIcons.chat_bubble_text,
+            size: 100,
+            color: CupertinoColors.systemGrey,
+          ),
           Text('Select a chat to start messaging',
-              style: TextStyle(fontSize: 20)),
+              style: TextStyle(
+                color: CupertinoColors.systemGrey,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )),
         ],
       ),
     );

@@ -214,16 +214,35 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
           );
         },
         loading: () => Shimmer.fromColors(
-            baseColor: CupertinoColors.systemGrey,
-            highlightColor: CupertinoColors.white,
-            child: Align(
-              alignment: widget.message.sentByMe!
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              child: Container(
-                height: 10,
-                width: 100,
-                color: CupertinoColors.systemGrey,
+            baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+            highlightColor: CupertinoTheme.of(context).primaryContrastingColor,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: widget.message.sentByMe!
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Container(
+                  margin: widget.message.sentByMe!
+                      ? const EdgeInsets.only(left: 30)
+                      : const EdgeInsets.only(right: 30),
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: CupertinoTheme.of(context).primaryContrastingColor,
+                    borderRadius: widget.message.sentByMe!
+                        ? const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          )
+                        : const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                  ),
+                ),
               ),
             )),
         error: (error, stack) => DeletedMessageTile(
