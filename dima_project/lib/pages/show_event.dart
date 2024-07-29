@@ -1,6 +1,5 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
-import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -233,39 +232,21 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                                 .primaryColor,
                                           ),
                                           const SizedBox(width: 10.0),
-                                          FutureBuilder(
-                                              future: EventService
-                                                  .getAddressFromLatLng(event
-                                                      .details![index].latlng!),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData &&
-                                                    snapshot.data != null) {
-                                                  final address =
-                                                      snapshot.data as String;
-                                                  return Container(
-                                                    constraints: BoxConstraints(
-                                                      maxWidth:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.8,
-                                                    ),
-                                                    child: Text(
-                                                      address,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  return const Center(
-                                                    child:
-                                                        CupertinoActivityIndicator(),
-                                                  );
-                                                }
-                                              }),
+                                          Container(
+                                            constraints: BoxConstraints(
+                                              maxWidth: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.8,
+                                            ),
+                                            child: Text(
+                                              event.details![index].location!,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       )
                                     ],
