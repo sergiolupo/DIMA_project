@@ -1,16 +1,14 @@
-import 'dart:io';
-
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/home/option_item.dart';
 import 'package:dima_project/widgets/home/read_tile.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 
 class MessageUtils {
   static void showBottomSheet(BuildContext context, Message message,
@@ -111,22 +109,11 @@ class MessageUtils {
     }
   }
 
-  static Future<File> _saveImage(Message message) async {
-    // Get the directory to save the file.
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/${const Uuid().v4()}.png';
-    // Fetch the image from the URL.
-    final response = await http.get(Uri.parse(message.content));
-
-    // Check if the request was successful.
-    if (response.statusCode == 200) {
-      debugPrint('Image downloaded successfully');
-      // Write the image data to the file.
-      final file = File(filePath);
-      return file.writeAsBytes(response.bodyBytes);
-    } else {
-      throw Exception('Failed to download image');
-    }
+  static _saveImage(Message message) async {
+    var response = await Dio().get(message.content,
+        options: Options(responseType: ResponseType.bytes));
+    await ImageGallerySaver.saveImage(Uint8List.fromList(response.data),
+        quality: 60, name: const Uuid().v4());
   }
 
   static void _deleteMessage(BuildContext context, Message message) {
