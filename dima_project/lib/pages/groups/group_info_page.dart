@@ -68,40 +68,42 @@ class GroupInfoPageState extends State<GroupInfoPage> {
               color: CupertinoTheme.of(context).primaryColor, fontSize: 18.0),
         ),
         backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
-        trailing: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () async {
-            if (widget.canNavigate) {
-              widget.navigateToPage!(EditGroupPage(
-                group: group,
-                canNavigate: true,
-                navigateToPage: widget.navigateToPage,
-              ));
-              return;
-            }
-            final Group? newGroup = await Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => EditGroupPage(
-                          group: group,
-                          canNavigate: false,
-                        )));
+        trailing: widget.group.admin == uid
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () async {
+                  if (widget.canNavigate) {
+                    widget.navigateToPage!(EditGroupPage(
+                      group: group,
+                      canNavigate: true,
+                      navigateToPage: widget.navigateToPage,
+                    ));
+                    return;
+                  }
+                  final Group? newGroup = await Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => EditGroupPage(
+                                group: group,
+                                canNavigate: false,
+                              )));
 
-            if (newGroup != null) {
-              setState(() {
-                group = newGroup;
-              });
-            }
-          },
-          child: Text(
-            'Edit',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: CupertinoTheme.of(context).primaryColor,
-            ),
-          ),
-        ),
+                  if (newGroup != null) {
+                    setState(() {
+                      group = newGroup;
+                    });
+                  }
+                },
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoTheme.of(context).primaryColor,
+                  ),
+                ),
+              )
+            : null,
       ),
       child: CupertinoScrollbar(
         child: SingleChildScrollView(

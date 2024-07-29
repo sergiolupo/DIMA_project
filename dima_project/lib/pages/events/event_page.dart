@@ -43,6 +43,8 @@ class EventPageState extends ConsumerState<EventPage> {
                 ? CupertinoButton(
                     padding: const EdgeInsets.all(0),
                     onPressed: () {
+                      ref.invalidate(eventProvider(widget.eventId));
+                      ref.invalidate(createdEventsProvider(uid));
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
