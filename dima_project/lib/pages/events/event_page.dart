@@ -227,6 +227,22 @@ class EventPageState extends ConsumerState<EventPage> {
                                                   onPressed: () async {
                                                     Navigator.of(newContext)
                                                         .pop();
+                                                    BuildContext buildContext =
+                                                        context;
+                                                    // Show the loading dialog
+                                                    showCupertinoDialog(
+                                                      context: context,
+                                                      barrierDismissible: false,
+                                                      builder: (BuildContext
+                                                          newContext) {
+                                                        buildContext =
+                                                            newContext;
+                                                        return const CupertinoAlertDialog(
+                                                          content:
+                                                              CupertinoActivityIndicator(),
+                                                        );
+                                                      },
+                                                    );
                                                     await DatabaseService
                                                         .deleteEvent(
                                                             widget.eventId);
@@ -239,6 +255,10 @@ class EventPageState extends ConsumerState<EventPage> {
                                                     ref.invalidate(
                                                         eventProvider(
                                                             widget.eventId));
+                                                    if (buildContext.mounted) {
+                                                      Navigator.of(buildContext)
+                                                          .pop();
+                                                    }
                                                     if (context.mounted) {
                                                       Navigator.of(context)
                                                           .pop();

@@ -139,35 +139,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                         ),
                                       ),
                                     );
-                                    /*Center(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            shape: BoxShape.rectangle,
-                                            color: CupertinoTheme.of(context)
-                                                .primaryContrastingColor),
-                                        child: SingleChildScrollView(
-                                          child: Wrap(
-                                            children: <Widget>[
-                                              for (var map in availableMaps)
-                                                CupertinoListTile(
-                                                  onTap: () => map.showMarker(
-                                                    coords: coords,
-                                                    title: title,
-                                                  ),
-                                                  title: Text(map.mapName),
-                                                  leading: SvgPicture.asset(
-                                                    map.icon,
-                                                    height: 30.0,
-                                                    width: 30.0,
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );*/
                                   },
                                 );
                               }
@@ -306,7 +277,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                           builder: (newContext) => CupertinoAlertDialog(
                             title: const Text('Date cancellation'),
                             content: const Text(
-                                'Are you sure you want to delete this event?'),
+                                'Are you sure you want to delete this date?'),
                             actions: <Widget>[
                               CupertinoDialogAction(
                                 child: const Text('Cancel'),
@@ -316,10 +287,25 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                 child: const Text('Delete'),
                                 onPressed: () async {
                                   Navigator.of(newContext).pop();
+                                  BuildContext buildContext = context;
+                                  // Show the loading dialog
+                                  showCupertinoDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext newContext) {
+                                      buildContext = newContext;
+                                      return const CupertinoAlertDialog(
+                                        content: CupertinoActivityIndicator(),
+                                      );
+                                    },
+                                  );
                                   await DatabaseService.deleteDetail(
                                       event.id!, widget.detailId);
                                   ref.invalidate(eventProvider(event.id!));
                                   ref.invalidate(createdEventsProvider(uid));
+                                  if (buildContext.mounted) {
+                                    Navigator.of(buildContext).pop();
+                                  }
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
