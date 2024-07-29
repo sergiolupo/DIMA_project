@@ -9,10 +9,12 @@ import 'package:flutter/cupertino.dart';
 class ImageMessageTile extends StatefulWidget {
   final Message message;
   final String? senderUsername;
+  final VoidCallback showCustomSnackbar;
   const ImageMessageTile({
     required this.message,
     this.senderUsername,
     super.key,
+    required this.showCustomSnackbar,
   });
 
   @override
@@ -31,7 +33,7 @@ class ImageMessageTileState extends State<ImageMessageTile> {
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
         widget.message,
-        showCustomSnackbar: null,
+        showCustomSnackbar: widget.showCustomSnackbar,
       ),
       onTap: () {
         Navigator.of(context).push(

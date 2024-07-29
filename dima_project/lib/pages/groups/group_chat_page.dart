@@ -9,7 +9,7 @@ import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/chats/clipboard_banner.dart';
+import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -167,14 +167,17 @@ class GroupChatPageState extends State<GroupChatPage> {
           );
   }
 
-  void showCustomSnackbar() {
+  void showCustomSnackbar(bool isCopy) {
     if (mounted) {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
       _clipboardOverlay = OverlayEntry(
-        builder: (context) =>
-            ClipboardBanner(size: size, canNavigate: widget.canNavigate),
+        builder: (context) => BannerMessage(
+          size: size,
+          canNavigate: widget.canNavigate,
+          isCopy: isCopy,
+        ),
       );
       Overlay.of(context).insert(_clipboardOverlay!);
 
@@ -389,7 +392,9 @@ class GroupChatPageState extends State<GroupChatPage> {
     switch (message.type) {
       case Type.text:
         return TextMessageTile(
-          showCustomSnackbar: showCustomSnackbar,
+          showCustomSnackbar: () {
+            showCustomSnackbar(true);
+          },
           message: message,
           senderUsername: senderUsername,
         );
@@ -397,6 +402,9 @@ class GroupChatPageState extends State<GroupChatPage> {
         return ImageMessageTile(
           message: message,
           senderUsername: senderUsername,
+          showCustomSnackbar: () {
+            showCustomSnackbar(false);
+          },
         );
       case Type.news:
         return NewsMessageTile(

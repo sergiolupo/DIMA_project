@@ -29,10 +29,10 @@ class MessageUtils {
               ),
             if (message.type == Type.image)
               _buildOptionItem(
-                icon: CupertinoIcons.download_circle,
+                icon: LineAwesomeIcons.download_solid,
                 color: CupertinoColors.systemBlue,
                 text: 'Save Image',
-                onPressed: () => _saveImage(message),
+                onPressed: () => _saveImage(message, showCustomSnackbar!),
                 context: newContext,
               ),
             if (message.sentByMe!)
@@ -109,7 +109,8 @@ class MessageUtils {
     }
   }
 
-  static _saveImage(Message message) async {
+  static _saveImage(Message message, VoidCallback showCustomSnackbar) async {
+    showCustomSnackbar();
     var response = await Dio().get(message.content,
         options: Options(responseType: ResponseType.bytes));
     await ImageGallerySaver.saveImage(Uint8List.fromList(response.data),

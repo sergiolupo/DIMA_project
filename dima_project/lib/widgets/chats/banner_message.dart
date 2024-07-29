@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ClipboardBanner extends StatelessWidget {
+class BannerMessage extends StatelessWidget {
   final Size size;
   final bool canNavigate;
-
-  const ClipboardBanner(
-      {super.key, required this.size, required, required this.canNavigate});
+  final bool isCopy;
+  const BannerMessage(
+      {super.key,
+      required this.size,
+      required,
+      required this.canNavigate,
+      required this.isCopy});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +31,18 @@ class ClipboardBanner extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(CupertinoIcons.rectangle_fill_on_rectangle_fill,
-                  color: CupertinoTheme.of(context).primaryColor),
+              isCopy
+                  ? Icon(
+                      CupertinoIcons.rectangle_fill_on_rectangle_fill,
+                      color: CupertinoTheme.of(context).primaryColor,
+                    )
+                  : Icon(
+                      FontAwesomeIcons.download,
+                      color: CupertinoTheme.of(context).primaryColor,
+                    ),
               const SizedBox(width: 10),
               Text(
-                "Copied to clipboard",
+                isCopy ? "Copied to clipboard" : "Image saved to Photos",
                 style:
                     TextStyle(color: CupertinoTheme.of(context).primaryColor),
               ),

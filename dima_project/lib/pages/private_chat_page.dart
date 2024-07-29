@@ -9,7 +9,7 @@ import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/chats/clipboard_banner.dart';
+import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -261,13 +261,16 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                             child: TextMessageTile(
                               message: message,
                               showCustomSnackbar: () {
-                                showCustomSnackbar();
+                                showCustomSnackbar(true);
                               },
                             ),
                           )
                         : (message.type == Type.image)
                             ? ImageMessageTile(
                                 message: message,
+                                showCustomSnackbar: () {
+                                  showCustomSnackbar(false);
+                                },
                               )
                             : message.type == Type.news
                                 ? NewsMessageTile(
@@ -288,14 +291,15 @@ class PrivateChatPageState extends State<PrivateChatPage> {
     );
   }
 
-  void showCustomSnackbar() {
+  void showCustomSnackbar(bool isCopy) {
     if (mounted) {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
       debugPrint(size.toString());
       _clipboardOverlay = OverlayEntry(
-        builder: (context) => ClipboardBanner(size: size, canNavigate: false),
+        builder: (context) =>
+            BannerMessage(size: size, canNavigate: false, isCopy: isCopy),
       );
       Overlay.of(context).insert(_clipboardOverlay!);
 
