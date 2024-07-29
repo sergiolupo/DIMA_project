@@ -12,6 +12,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -617,7 +618,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
                 if (widget.canNavigate) {
                   Navigator.of(context).pop();
-                  widget.navigateToPage!(const SizedBox.shrink());
+                  widget.navigateToPage!(const StartMessagingWidget());
                   return;
                 }
                 Navigator.of(context).popUntil((route) => route.isFirst);

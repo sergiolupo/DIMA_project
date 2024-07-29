@@ -13,6 +13,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/group_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/private_chat_tile_tablet.dart';
+import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatTabletPage extends StatefulWidget {
@@ -33,7 +34,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   UserData? selectedUser;
   PrivateChat? selectedPrivateChat;
   int idx = 0;
-  Widget page = const SizedBox.shrink();
+  Widget page = const StartMessagingWidget();
   @override
   void initState() {
     super.initState();
@@ -225,7 +226,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             if (selectedGroup != null &&
                                 selectedGroup!.id == group.id) {
                               selectedGroup = null;
-                              page = const SizedBox.shrink();
+                              page = const StartMessagingWidget();
                             }
                           });
                         },
@@ -266,7 +267,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 if (selectedGroup != null &&
                                     selectedGroup!.id == group.id) {
                                   selectedGroup = null;
-                                  page = const SizedBox.shrink();
+                                  page = const StartMessagingWidget();
                                 }
                               });
                             },
@@ -400,7 +401,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   selectedUser!.uid == other.uid) {
                                 selectedUser = null;
                                 selectedPrivateChat = null;
-                                page = const SizedBox.shrink();
+                                page = const StartMessagingWidget();
                               }
                             });
                           },
@@ -433,7 +434,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                     selectedPrivateChat!.id == privateChat.id) {
                                   selectedUser = null;
                                   selectedPrivateChat = null;
-                                  page = const SizedBox.shrink();
+                                  page = const StartMessagingWidget();
                                 }
                               });
                             },
