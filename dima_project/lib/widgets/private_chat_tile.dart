@@ -2,10 +2,10 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:intl/intl.dart';
 
 class PrivateChatTile extends StatefulWidget {
   final PrivateChat privateChat;
@@ -147,12 +147,22 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          DateUtil.getFormattedTime(
-                            context: context,
-                            time: widget.privateChat.lastMessage!
-                                .recentMessageTimestamp.microsecondsSinceEpoch
-                                .toString(),
-                          ),
+                          DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                      .isBefore(DateTime.now()) &&
+                                  DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                      .isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 1)))
+                              ? DateFormat.jm().format(
+                                  DateTime.fromMicrosecondsSinceEpoch(widget
+                                      .privateChat
+                                      .lastMessage!
+                                      .recentMessageTimestamp
+                                      .microsecondsSinceEpoch))
+                              : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                      DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                          .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                           style: TextStyle(
                             fontSize: 12,
                             color: widget.privateChat.lastMessage!

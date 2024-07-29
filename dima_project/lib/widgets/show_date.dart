@@ -24,19 +24,19 @@ class ShowDate extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 45,
-          left: 25,
+          top: 40,
+          left: 13,
           child: Text(
             '${DateFormat('EEE').format(date)} ${date.day}',
-            style: const TextStyle(color: CupertinoColors.black),
+            style: const TextStyle(color: CupertinoColors.black, fontSize: 22),
           ),
         ),
         Positioned(
-          top: 65,
-          left: 30,
+          top: 66,
+          left: 19,
           child: Text(
             DateFormat('HH:mm').format(time),
-            style: const TextStyle(color: CupertinoColors.black),
+            style: const TextStyle(color: CupertinoColors.black, fontSize: 22),
           ),
         ),
       ],

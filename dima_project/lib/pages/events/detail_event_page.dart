@@ -42,6 +42,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
       );
       return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
+          transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text('Detail Page',
               style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
@@ -106,28 +107,67 @@ class DetailPageState extends ConsumerState<DetailPage> {
                               if (context.mounted) {
                                 showCupertinoModalPopup(
                                   context: context,
-                                  builder: (BuildContext context) {
-                                    return SafeArea(
-                                      child: SingleChildScrollView(
-                                        child: Wrap(
-                                          children: <Widget>[
-                                            for (var map in availableMaps)
-                                              CupertinoListTile(
-                                                onTap: () => map.showMarker(
-                                                  coords: coords,
-                                                  title: title,
-                                                ),
-                                                title: Text(map.mapName),
-                                                leading: SvgPicture.asset(
+                                  builder: (BuildContext newContext) {
+                                    return CupertinoActionSheet(
+                                      actions: [
+                                        for (var map in availableMaps)
+                                          CupertinoActionSheetAction(
+                                            onPressed: () => map.showMarker(
+                                              coords: coords,
+                                              title: title,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                SvgPicture.asset(
                                                   map.icon,
                                                   height: 30.0,
                                                   width: 30.0,
                                                 ),
-                                              ),
-                                          ],
+                                                const SizedBox(width: 8),
+                                                Text(map.mapName),
+                                              ],
+                                            ),
+                                          )
+                                      ],
+                                      cancelButton: CupertinoActionSheetAction(
+                                        onPressed: () =>
+                                            Navigator.pop(newContext),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                              color: CupertinoColors.systemRed),
                                         ),
                                       ),
                                     );
+                                    /*Center(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            shape: BoxShape.rectangle,
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor),
+                                        child: SingleChildScrollView(
+                                          child: Wrap(
+                                            children: <Widget>[
+                                              for (var map in availableMaps)
+                                                CupertinoListTile(
+                                                  onTap: () => map.showMarker(
+                                                    coords: coords,
+                                                    title: title,
+                                                  ),
+                                                  title: Text(map.mapName),
+                                                  leading: SvgPicture.asset(
+                                                    map.icon,
+                                                    height: 30.0,
+                                                    width: 30.0,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );*/
                                   },
                                 );
                               }

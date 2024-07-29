@@ -1,8 +1,8 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:intl/intl.dart';
 
 class GroupChatTileTablet extends StatefulWidget {
   final Group group;
@@ -140,12 +140,22 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            DateUtil.getFormattedTime(
-                              context: context,
-                              time: widget.group.lastMessage!
-                                  .recentMessageTimestamp.microsecondsSinceEpoch
-                                  .toString(),
-                            ),
+                            DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                        .isBefore(DateTime.now()) &&
+                                    DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                        .isAfter(DateTime.now()
+                                            .subtract(const Duration(days: 1)))
+                                ? DateFormat.jm().format(
+                                    DateTime.fromMicrosecondsSinceEpoch(widget
+                                        .group
+                                        .lastMessage!
+                                        .recentMessageTimestamp
+                                        .microsecondsSinceEpoch))
+                                : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                        DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                            .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                    ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                    : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                             style: TextStyle(
                               fontSize: 12,
                               color:
