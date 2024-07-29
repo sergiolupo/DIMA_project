@@ -72,8 +72,24 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   padding: const EdgeInsets.all(0),
                   onPressed: () async {
                     if (await _validatePage()) {
+                      if (!context.mounted) return;
+                      BuildContext buildContext = context;
+                      // Show the loading dialog
+                      showCupertinoDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext newContext) {
+                          buildContext = newContext;
+                          return const CupertinoAlertDialog(
+                            content: CupertinoActivityIndicator(),
+                          );
+                        },
+                      );
                       await _saveUserData();
-
+                      // Close the loading dialog
+                      if (buildContext.mounted) {
+                        Navigator.of(buildContext).pop();
+                      }
                       if (context.mounted) Navigator.of(context).pop();
                     }
                   },
@@ -153,10 +169,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                             ),
                           ),
                         );
-
-                        /*setState(() {
-                          _currentPage = 2;
-                        });*/
                       },
                     ),
                     Container(
