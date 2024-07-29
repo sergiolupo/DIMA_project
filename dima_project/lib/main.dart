@@ -2,6 +2,7 @@ import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,17 +12,27 @@ import 'firebase_options.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(
     const ProviderScope(
       child: MyApp(),
     ),
   );
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  debugPrint(message.notification!.title);
 }
 
 final GoRouter _router = GoRouter(
