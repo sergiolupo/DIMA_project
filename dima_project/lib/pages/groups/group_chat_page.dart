@@ -188,11 +188,21 @@ class GroupChatPageState extends State<GroupChatPage> {
 
   void onTapCreateEvent() async {
     _optionsMenuOverlay?.remove();
-
+    if (widget.canNavigate) {
+      widget.navigateToPage!(
+        CreateEventPage(
+          group: group,
+          canNavigate: widget.canNavigate,
+          navigateToPage: widget.navigateToPage,
+        ),
+      );
+      return;
+    }
     await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => CreateEventPage(
-          groupId: group.id,
+          group: group,
+          canNavigate: false,
         ),
       ),
     );
@@ -369,9 +379,6 @@ class GroupChatPageState extends State<GroupChatPage> {
 
   @override
   void dispose() {
-    if (_optionsMenuOverlay?.mounted ?? false) {
-      _optionsMenuOverlay?.remove();
-    }
     if (_clipboardOverlay?.mounted ?? false) {
       _clipboardOverlay?.remove();
     }

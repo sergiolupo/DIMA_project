@@ -453,7 +453,6 @@ class DatabaseService {
         groupsList.add(group);
       }
     }
-    debugPrint('Groups list: $groupsList');
     groupsList.sort((a, b) {
       if (a.lastMessage == null && b.lastMessage == null) {
         return 0; // Both are null, consider them equal

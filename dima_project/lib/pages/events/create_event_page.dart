@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/events/share_event_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -19,8 +21,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 
 class CreateEventPage extends ConsumerStatefulWidget {
-  final String? groupId;
-  const CreateEventPage({super.key, this.groupId});
+  final Group? group;
+  final bool canNavigate;
+  final Function? navigateToPage;
+  const CreateEventPage(
+      {super.key, this.group, required this.canNavigate, this.navigateToPage});
 
   @override
   CreateEventPageState createState() => CreateEventPageState();
@@ -57,7 +62,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   @override
   void initState() {
     setState(() {
-      if (widget.groupId != null) groupIds.add(widget.groupId!);
+      if (widget.group != null) groupIds.add(widget.group!.id);
     });
     super.initState();
     animationController = AnimationController(
@@ -89,8 +94,20 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
 
       await DatabaseService.createEvent(
           event, selectedImagePath, uids, groupIds);
+
+      ref.invalidate(createdEventsProvider(uid));
+      if (widget.canNavigate) {
+        widget.navigateToPage!(GroupChatPage(
+          canNavigate: widget.canNavigate,
+          group: widget.group!,
+          navigateToPage: widget.navigateToPage,
+        ));
+      } else {
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
     }
-    ref.invalidate(createdEventsProvider(uid));
   }
 
   @override
@@ -98,14 +115,20 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: Navigator.canPop(context)
-            ? CupertinoNavigationBarBackButton(
-                color: CupertinoTheme.of(context).primaryColor,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            : null,
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
+          onPressed: () {
+            if (widget.canNavigate) {
+              widget.navigateToPage!(GroupChatPage(
+                canNavigate: widget.canNavigate,
+                group: widget.group!,
+                navigateToPage: widget.navigateToPage,
+              ));
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         middle: Text(
           'Create Event',
           style: TextStyle(
@@ -421,11 +444,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 onPressed: () {
                   animationController.reset();
                   Navigator.of(context).pop();
-                  //When the event is created inside a group
-                  if (mounted && Navigator.canPop(context)) {
-                    debugPrint('Event created');
-                    Navigator.of(context).pop();
-                  }
+
                   if (mounted) {
                     setState(() {
                       _eventNameController.clear();

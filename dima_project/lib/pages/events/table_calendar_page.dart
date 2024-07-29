@@ -197,7 +197,9 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => const CreateEventPage(),
+                builder: (context) => const CreateEventPage(
+                  canNavigate: false,
+                ),
               ),
             );
           },
