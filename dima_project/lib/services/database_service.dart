@@ -1540,6 +1540,7 @@ class DatabaseService {
   }
 
   static Future<void> deletePrivateChat(PrivateChat chat) async {
+    await privateChatRef.doc(chat.id!).delete();
     try {
       await usersRef.doc(chat.members[0]).update({
         'privateChats': FieldValue.arrayRemove([chat.id])
@@ -1554,7 +1555,6 @@ class DatabaseService {
     } catch (e) {
       debugPrint("User doesn't exists:${chat.members[1]}");
     }
-    return await privateChatRef.doc(chat.id!).delete();
   }
 
   static Future<void> deleteDetail(String eventId, String detailId) async {
