@@ -103,9 +103,27 @@ class EditGroupPageState extends State<EditGroupPage> {
                     )) {
                       return;
                     }
+                    BuildContext buildContext = context;
+                    // Show the loading dialog
+                    showCupertinoDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext newContext) {
+                        buildContext = newContext;
+                        return const CupertinoAlertDialog(
+                          content: CupertinoActivityIndicator(),
+                        );
+                      },
+                    );
                     await updateGroup();
+
                     Group newGroup =
                         await DatabaseService.getGroupFromId(widget.group.id);
+
+                    if (buildContext.mounted) {
+                      Navigator.of(buildContext).pop();
+                    }
+
                     if (context.mounted) {
                       if (widget.canNavigate) {
                         widget.navigateToPage!(GroupInfoPage(

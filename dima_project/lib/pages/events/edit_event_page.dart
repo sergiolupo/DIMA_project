@@ -86,12 +86,33 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   _eventDescriptionController.text,
                   details.values.toList(),
                   widget.event.details!)) {
+                BuildContext buildContext = context;
+                // Show the loading dialog
+                showCupertinoDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext newContext) {
+                    buildContext = newContext;
+                    return const CupertinoAlertDialog(
+                      content: CupertinoActivityIndicator(),
+                    );
+                  },
+                );
+
                 try {
                   await updateEvent();
                 } catch (e) {
                   debugPrint('Error: $e');
+                } finally {
+                  // Pop the loading dialog
+                  if (buildContext.mounted) {
+                    Navigator.of(buildContext).pop();
+                  }
                 }
-                if (context.mounted) Navigator.of(context).pop();
+                // Navigate back if the context is still mounted
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
             child: Text(

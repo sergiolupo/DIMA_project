@@ -106,7 +106,22 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   }
 
   void createGroup(Group group, Uint8List imagePath) async {
+    BuildContext buildContext = context;
+    // Show the loading dialog
+    showCupertinoDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext newContext) {
+        buildContext = newContext;
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
     await DatabaseService.createGroup(group, imagePath, uuids);
+    if (buildContext.mounted) {
+      Navigator.of(buildContext).pop();
+    }
     if (mounted) {
       if (widget.canNavigate) {
         widget.navigateToPage!(const SizedBox());
