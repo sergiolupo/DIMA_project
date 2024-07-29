@@ -142,6 +142,15 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
             CupertinoDialogAction(
               child: const Text('Delete'),
               onPressed: () async {
+                Navigator.of(newContext).pop();
+                showCupertinoDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CupertinoAlertDialog(
+                      content: CupertinoActivityIndicator(),
+                    );
+                  },
+                );
                 await DatabaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
