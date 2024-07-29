@@ -257,11 +257,15 @@ class NewsPageState extends ConsumerState<NewsPage> {
             ClipRRect(
               borderRadius: BorderRadius.circular((10)),
               child: CachedNetworkImage(
+                errorWidget: (context, url, error) => Image.asset(
+                  "assets/generic_news.png",
+                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
                 imageUrl: image,
                 height: MediaQuery.of(context).size.width,
-                /*MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? 300
-                    : 250.0,*/
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
                 alignment: Alignment.topCenter,
@@ -269,9 +273,6 @@ class NewsPageState extends ConsumerState<NewsPage> {
             ),
             Container(
               height: MediaQuery.of(context).size.width,
-              /*MediaQuery.of(context).size.width > Constants.limitWidth
-                  ? 300
-                  : 250,*/
               padding: const EdgeInsets.only(left: 10.0),
               margin: EdgeInsets.only(
                   top: MediaQuery.of(context).size.width > Constants.limitWidth

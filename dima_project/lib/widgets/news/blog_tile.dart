@@ -41,6 +41,19 @@ class BlogTile extends StatelessWidget {
                 ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
+                      errorWidget: (context, url, error) => Image.asset(
+                        "assets/generic_news.png",
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 230
+                            : 100,
+                        width: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.width / 3
+                            : MediaQuery.of(context).size.width / 2.5,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                      ),
                       imageUrl: imageUrl,
                       height: MediaQuery.of(context).size.width >
                               Constants.limitWidth

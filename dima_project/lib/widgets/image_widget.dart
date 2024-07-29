@@ -143,6 +143,13 @@ class CreateImageWidget {
               sentByMe ? const Radius.circular(0) : const Radius.circular(20),
         ),
         child: CachedNetworkImage(
+          errorWidget: (context, url, error) => Image.asset(
+            "assets/generic_news.png",
+            height: size,
+            width: size,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          ),
           imageUrl: content,
           fit: BoxFit.cover,
           width: size,

@@ -31,6 +31,15 @@ class ShowCategory extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
+              errorWidget: (context, url, error) => Image.asset(
+                "assets/generic_news.png",
+                height: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? MediaQuery.of(context).size.height * 0.6
+                    : 200,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
               imageUrl: image,
               height: MediaQuery.of(context).size.width > Constants.limitWidth
                   ? MediaQuery.of(context).size.height * 0.6
