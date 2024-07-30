@@ -1,4 +1,5 @@
 import 'package:app_settings/app_settings.dart';
+import 'package:dima_project/pages/login_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -37,30 +38,19 @@ class NotificationServices {
     );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (payload) {});
-  }
-
-  void firebaseInit() {
-    FirebaseMessaging.onMessage.listen((message) {
-      debugPrint(message.notification!.title.toString());
-      debugPrint(message.notification!.body.toString());
-      showNotification(message);
+        onDidReceiveNotificationResponse: (payload) {
+      handleMessage(context, message);
     });
   }
 
-  Future<void> showNotification(RemoteMessage message) async {
-    NotificationDetails notificationDetails = const NotificationDetails(
-        iOS: DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    ));
-
-    _flutterLocalNotificationsPlugin.show(
-        0,
-        message.notification!.title.toString(),
-        message.notification!.body.toString(),
-        notificationDetails);
+  void firebaseInit(BuildContext context) {
+    FirebaseMessaging.onMessage.listen((message) {
+      debugPrint(message.notification!.title.toString());
+      debugPrint(message.notification!.body.toString());
+      debugPrint(message.data.toString());
+      forgroundMessage();
+      initLocalNotifications(context, message);
+    });
   }
 
   Future<String> getDeviceToken() async {
@@ -74,5 +64,41 @@ class NotificationServices {
       event.toString();
       debugPrint('refresh');
     });
+  }
+
+  Future<void> setUpInteractMessage(BuildContext context) async {
+    //when app is terminated
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      debugPrint('initialMessage');
+      if (!context.mounted) return;
+      handleMessage(context, initialMessage);
+    }
+    //when app is in background
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      debugPrint('onMessageOpenedApp');
+      handleMessage(
+        context,
+        message,
+      );
+    });
+  }
+
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    //handle notification function
+    if (message.data['type'] == 'message') {
+      Navigator.push(
+          context, CupertinoPageRoute(builder: (context) => const LoginPage()));
+    }
+  }
+
+  Future forgroundMessage() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   }
 }

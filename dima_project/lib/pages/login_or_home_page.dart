@@ -20,7 +20,9 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
     super.initState();
 
     notificationServices.requestNotificationPermission();
-    notificationServices.firebaseInit();
+    notificationServices.forgroundMessage();
+    notificationServices.firebaseInit(context);
+    notificationServices.setUpInteractMessage(context);
     notificationServices.isTokenRefresh();
     notificationServices.getDeviceToken().then((value) {
       debugPrint('device token');

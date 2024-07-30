@@ -1,0 +1,11 @@
+{
+    "aps":{
+        "alert":{
+            "title":"Background",
+            "body":"Hello, world!"
+        }
+    },
+    "type": "message",
+    "action": "login",
+    "gcm.message_id": "123"
+}
