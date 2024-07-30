@@ -7,6 +7,7 @@ import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/pages/userprofile_page.dart';
 import 'package:dima_project/pages/userprofile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,8 +23,16 @@ class HomePage extends ConsumerStatefulWidget {
 class HomePageState extends ConsumerState<HomePage> {
   late int? _currentIndex;
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
+  NotificationService notificationServices = NotificationService();
+
   @override
   void initState() {
+    notificationServices.requestNotificationPermission();
+    notificationServices.forgroundMessage();
+    notificationServices.firebaseInit(context);
+    notificationServices.setUpInteractMessage(context);
+    notificationServices.setupToken(ref);
+
     super.initState();
     _currentIndex = widget.index ?? 0;
   }

@@ -1,10 +1,15 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:dima_project/pages/login_page.dart';
+import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NotificationServices {
+class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -59,10 +64,16 @@ class NotificationServices {
     return token!;
   }
 
-  void isTokenRefresh() async {
+  void setupToken(WidgetRef ref) async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    await DatabaseService.updateToken(token!);
+
     messaging.onTokenRefresh.listen((event) {
-      event.toString();
-      debugPrint('refresh');
+      if (FirebaseAuth.instance.currentUser == null) {
+        return;
+      }
+      ref.invalidate(userProvider(AuthService.uid));
+      DatabaseService.updateToken(event);
     });
   }
 

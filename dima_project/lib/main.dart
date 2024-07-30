@@ -29,8 +29,6 @@ void main() async {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Handling a background message ${message.messageId}');
-  debugPrint(message.notification!.title);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

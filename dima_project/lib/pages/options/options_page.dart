@@ -110,6 +110,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       },
     );
     try {
+      await DatabaseService.updateToken('');
       AuthService.signOut();
       ref.invalidate(userProvider);
       ref.invalidate(followerProvider);
@@ -151,6 +152,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                     );
                   },
                 );
+                await DatabaseService.updateToken('');
                 await DatabaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);

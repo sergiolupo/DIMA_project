@@ -40,6 +40,7 @@ class DatabaseService {
       'privateChats': [],
       'lastSeen': Timestamp.now(),
       'isPublic': true,
+      'token': '',
       'events': [],
       'groupsRequests': [],
       'requests': [],
@@ -48,6 +49,12 @@ class DatabaseService {
     await followersRef.doc(uuid).set({
       'followers': [],
       'following': [],
+    });
+  }
+
+  static Future<void> updateToken(String token) async {
+    await usersRef.doc(AuthService.uid).update({
+      'token': token,
     });
   }
 
