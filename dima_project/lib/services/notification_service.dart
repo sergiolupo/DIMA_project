@@ -10,6 +10,7 @@ import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +19,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:dima_project/models/message.dart' as chat_message;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -97,10 +97,10 @@ class NotificationService {
       if (!context.mounted) return;
       handleMessage(context, initialMessage);
     }
-    // Check for saved notification data
-    final prefs = await SharedPreferences.getInstance();
-    String? notificationType = prefs.getString('notificationType');
-    String? notificationData = prefs.getString('notificationData');
+    String? notificationType =
+        await SharedPreferencesHelper.getNotificationType();
+    String? notificationData =
+        await SharedPreferencesHelper.getNotificationData();
 
     if (notificationType != null && notificationData != null) {
       debugPrint('notificationType');
@@ -110,9 +110,7 @@ class NotificationService {
       if (!context.mounted) return;
       handleMessage(context, RemoteMessage(data: data));
 
-      // Clear the saved data after handling
-      await prefs.remove('notificationType');
-      await prefs.remove('notificationData');
+      await SharedPreferencesHelper.clearNotification();
     }
 
     //when app is in background

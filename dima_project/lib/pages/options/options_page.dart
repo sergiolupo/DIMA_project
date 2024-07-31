@@ -3,6 +3,7 @@ import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -111,6 +112,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     );
     try {
       await DatabaseService.updateToken('');
+      await SharedPreferencesHelper.clearNotification();
       AuthService.signOut();
       ref.invalidate(userProvider);
       ref.invalidate(followerProvider);
@@ -153,6 +155,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   },
                 );
                 await DatabaseService.updateToken('');
+                await SharedPreferencesHelper.clearNotification();
                 await DatabaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
