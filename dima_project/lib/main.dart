@@ -1,4 +1,10 @@
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
+import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +14,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
@@ -32,6 +39,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Save notification data to SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('notificationType', message.data['type']);
+  await prefs.setString('notificationData', message.data.toString());
 }
 
 final GoRouter _router = GoRouter(
@@ -59,6 +71,33 @@ final GoRouter _router = GoRouter(
         return HomePage(index: index);
       },
     ),
+    GoRoute(
+        path: '/privateChat',
+        builder: (BuildContext context, GoRouterState state) {
+          Map<String, dynamic> map = state.extra as Map<String, dynamic>;
+          PrivateChat privateChat = map['privateChat'] as PrivateChat;
+          UserData user = map['user'] as UserData;
+          return PrivateChatPage(
+            privateChat: privateChat,
+            user: user,
+            canNavigate: false,
+          );
+        }),
+    GoRoute(
+        path: '/groupChat',
+        builder: (BuildContext context, GoRouterState state) {
+          Group group = state.extra as Group;
+          return GroupChatPage(
+            group: group,
+            canNavigate: false,
+          );
+        }),
+    GoRoute(
+        path: '/event',
+        builder: (BuildContext context, GoRouterState state) {
+          String eventId = state.extra as String;
+          return EventPage(eventId: eventId);
+        }),
   ],
 );
 

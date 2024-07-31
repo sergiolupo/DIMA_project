@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/pages/login_page.dart';
+import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/pages/groups/group_chat_page.dart';
+import 'package:dima_project/pages/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -14,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:dima_project/models/message.dart' as chat_message;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -92,6 +97,24 @@ class NotificationService {
       if (!context.mounted) return;
       handleMessage(context, initialMessage);
     }
+    // Check for saved notification data
+    final prefs = await SharedPreferences.getInstance();
+    String? notificationType = prefs.getString('notificationType');
+    String? notificationData = prefs.getString('notificationData');
+
+    if (notificationType != null && notificationData != null) {
+      debugPrint('notificationType');
+
+      Map<String, dynamic> data =
+          Map<String, dynamic>.from(json.decode(notificationData));
+      if (!context.mounted) return;
+      handleMessage(context, RemoteMessage(data: data));
+
+      // Clear the saved data after handling
+      await prefs.remove('notificationType');
+      await prefs.remove('notificationData');
+    }
+
     //when app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       debugPrint('onMessageOpenedApp');
@@ -104,9 +127,40 @@ class NotificationService {
 
   void handleMessage(BuildContext context, RemoteMessage message) {
     //handle notification function
-    if (message.data['type'] == 'message') {
+    if (message.data['type'] == 'private_chat') {
+      Map<String, dynamic> map = {
+        'privateChat': PrivateChat.fromMap(
+            Map<String, dynamic>.from(message.data['private_chat'])),
+        'user':
+            UserData.fromMap(Map<String, dynamic>.from(message.data['user'])),
+      };
       Navigator.push(
-          context, CupertinoPageRoute(builder: (context) => const LoginPage()));
+          context,
+          CupertinoPageRoute(
+              builder: (context) => PrivateChatPage(
+                    privateChat: map['privateChat'],
+                    user: map['user'],
+                    canNavigate: false,
+                  )));
+    }
+    if (message.data['type'] == 'group_chat') {
+      Group group =
+          Group.fromMap(Map<String, dynamic>.from(message.data['group']));
+      Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => GroupChatPage(
+                    group: group,
+                    canNavigate: false,
+                  )));
+    }
+    if (message.data['type'] == 'event') {
+      Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => EventPage(
+                    eventId: message.data['event_id'],
+                  )));
     }
   }
 

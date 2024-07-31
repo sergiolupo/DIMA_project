@@ -34,7 +34,6 @@ class EditGroupPageState extends State<EditGroupPage> {
   Uint8List? selectedImagePath;
   String? defaultImage;
   bool isPublic = true;
-  bool notify = true;
   List<String> uuids = [];
   List<String> selectedCategories = [];
   int index = 0;
@@ -50,7 +49,6 @@ class EditGroupPageState extends State<EditGroupPage> {
     super.initState();
     setState(() {
       isPublic = widget.group.isPublic;
-      notify = widget.group.notify;
       selectedCategories = widget.group.categories!;
       _groupNameController.text = widget.group.name;
       _groupDescriptionController.text = widget.group.description!;
@@ -283,24 +281,6 @@ class EditGroupPageState extends State<EditGroupPage> {
                       color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
-                      title: const Text('Notifications'),
-                      leading: notify
-                          ? const Icon(CupertinoIcons.bell_fill)
-                          : const Icon(CupertinoIcons.bell_slash_fill),
-                      trailing: CupertinoSwitch(
-                        value: notify,
-                        onChanged: (bool value) {
-                          setState(() {
-                            notify = value;
-                          });
-                        },
-                      ),
-                    ),
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
                       leading: isPublic
                           ? const Icon(CupertinoIcons.lock_open_fill)
                           : const Icon(CupertinoIcons.lock_fill),
@@ -332,7 +312,6 @@ class EditGroupPageState extends State<EditGroupPage> {
       categories: selectedCategories,
       imagePath: widget.group.imagePath!,
       isPublic: isPublic,
-      notify: notify,
     );
     await DatabaseService.updateGroup(
       group,

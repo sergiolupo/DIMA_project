@@ -185,7 +185,6 @@ class DatabaseService {
         'categories': serializedList,
         'isPublic': group.isPublic,
         'requests': [],
-        'notify': group.notify,
       });
 
       String imageUrl = imagePath.toString() == '[]'

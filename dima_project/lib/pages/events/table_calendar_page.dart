@@ -30,7 +30,8 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   @override
   void initState() {
     super.initState();
-
+    ref.read(joinedEventsProvider(AuthService.uid));
+    ref.read(createdEventsProvider(AuthService.uid));
     _selectedDay = _focusedDay.value;
     _selectedEvents = ValueNotifier(_getEventsForDay(
       _selectedDay!,
@@ -41,8 +42,6 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   void dispose() {
     _focusedDay.dispose();
     _selectedEvents.dispose();
-    ref.read(joinedEventsProvider(AuthService.uid));
-    ref.read(createdEventsProvider(AuthService.uid));
 
     super.dispose();
   }

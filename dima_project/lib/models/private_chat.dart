@@ -33,4 +33,11 @@ class PrivateChat {
       id: documentSnapshot.id,
     );
   }
+
+  static PrivateChat fromMap(Map<String, dynamic> json) {
+    return PrivateChat(
+      members: List<String>.from(json['members']),
+      id: json['id'] as String,
+    );
+  }
 }

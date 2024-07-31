@@ -1,11 +1,27 @@
 {
     "aps":{
         "alert":{
-            "title":"Background",
-            "body":"Hello, world!"
+            "title":"User",
+            "body":"message"
         }
+        
     },
-    "type": "message",
-    "action": "login",
+    "type": "private_chat",
+    "user":{
+        "name": "12",
+        "surname": "12",
+        "username": "12",
+        "email": "ciao@gmail.com",
+        "imagePath": "",
+        "categories": ["Politics"],
+        "uid": "Bhy0kAVFxcfQcPRDhlYjp30Ag4N2",
+        "isPublic": true,
+        "requests": [],
+        "token": "edRGkRE1AUI_spzxL9tHey:APA91bEPs1m0jM72gLjTMFNjopjStIljJHNc2E8vU-JYPVVNbqmNSt8I1OYvzpjnbn_NCzq6YSgRgW7vC21pnMw_onfDY1ZdHwcV3ni1cpkh05eeHrYszLUG0X5eFrLkJvS6dpAkFNoR"
+    },
+    "private_chat":{
+        "id": "XLoSg6EpfHLXRKHatZdl",
+        "members": ["Bhy0kAVFxcfQcPRDhlYjp30Ag4N2", "o8RO1N7FgHYVAM1vpWgM5c7iIaD2"]
+    },
     "gcm.message_id": "123"
 }

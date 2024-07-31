@@ -43,7 +43,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   final FocusNode _descriptionFocus = FocusNode();
   DateTime now = DateTime.now();
   bool isPublic = true;
-  bool notify = true;
   List<String> uids = [];
   List<String> groupIds = [];
   int numInfos = 1;
@@ -89,7 +88,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
         admin: uid,
         description: _eventDescriptionController.text,
         isPublic: isPublic,
-        notify: notify,
         imagePath: selectedImagePath.isNotEmpty ? '' : null,
         details: details.values.toList(),
       );
@@ -323,36 +321,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           CupertinoListTile(
                             title: Row(
                               children: [
-                                notify
-                                    ? const Icon(
-                                        CupertinoIcons.bell_fill,
-                                      )
-                                    : const Icon(
-                                        CupertinoIcons.bell_slash_fill,
-                                      ),
-                                const SizedBox(width: 10),
-                                const Text('Notifications'),
-                              ],
-                            ),
-                            trailing: Transform.scale(
-                              scale: 0.75,
-                              child: CupertinoSwitch(
-                                value: notify,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    notify = value;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 1,
-                            color: CupertinoColors.separator,
-                          ),
-                          CupertinoListTile(
-                            title: Row(
-                              children: [
                                 isPublic
                                     ? const Icon(CupertinoIcons.lock_open_fill)
                                     : const Icon(CupertinoIcons.lock_fill),
@@ -410,7 +378,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     showCupertinoDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext newContext) {
         return CupertinoAlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -434,7 +402,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 child: const Text('OK'),
                 onPressed: () {
                   animationController.reset();
-                  Navigator.of(context).pop();
+
+                  Navigator.of(newContext).pop();
 
                   if (mounted) {
                     setState(() {
@@ -442,7 +411,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       _eventDescriptionController.clear();
                       selectedImagePath = Uint8List(0);
                       isPublic = true;
-                      notify = true;
                       uids = [];
                       groupIds = [];
                       numInfos = 1;

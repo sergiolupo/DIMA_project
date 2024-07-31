@@ -29,7 +29,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   bool isPublic = true;
-  bool notify = true;
   List<String> uids = [];
   Map<int, bool> map = {};
   Map<int, Details> details = {};
@@ -50,7 +49,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       _eventNameController.text = widget.event.name;
       _eventDescriptionController.text = widget.event.description;
       isPublic = widget.event.isPublic;
-      notify = widget.event.notify;
       for (int i = 0; i < widget.event.details!.length; i++) {
         details[i] = widget.event.details![i];
         map[i] = false;
@@ -306,24 +304,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
-                      title: const Text('Notifications'),
-                      leading: notify
-                          ? const Icon(CupertinoIcons.bell_fill)
-                          : const Icon(CupertinoIcons.bell_slash_fill),
-                      trailing: CupertinoSwitch(
-                        value: notify,
-                        onChanged: (bool value) {
-                          setState(() {
-                            notify = value;
-                          });
-                        },
-                      ),
-                    ),
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
                       leading: isPublic
                           ? const Icon(CupertinoIcons.lock_open_fill)
                           : const Icon(CupertinoIcons.lock_fill),
@@ -377,7 +357,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       name: _eventNameController.text,
       description: _eventDescriptionController.text,
       isPublic: isPublic,
-      notify: notify,
       imagePath: widget.event.imagePath,
       details: details.values.toList(),
       createdAt: widget.event.createdAt,

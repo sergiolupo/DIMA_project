@@ -36,7 +36,6 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
   List<String> selectedCategories = [];
   bool isPublic = true;
-  bool notify = true;
 
   List<String> uuids = [];
 
@@ -252,27 +251,6 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 color: CupertinoColors.separator,
               ),
               CupertinoListTile(
-                title: const Text('Notifications'),
-                leading: notify
-                    ? const Icon(CupertinoIcons.bell_fill)
-                    : const Icon(CupertinoIcons.bell_slash_fill),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: CupertinoSwitch(
-                    value: notify,
-                    onChanged: (bool value) {
-                      setState(() {
-                        notify = value;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              Container(
-                height: 1,
-                color: CupertinoColors.separator,
-              ),
-              CupertinoListTile(
                 leading: isPublic
                     ? const Icon(CupertinoIcons.lock_open_fill)
                     : const Icon(CupertinoIcons.lock_fill),
@@ -310,13 +288,13 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
     }
     createGroup(
       Group(
-          name: _groupNameController.text,
-          id: '',
-          admin: FirebaseAuth.instance.currentUser!.uid,
-          description: _groupDescriptionController.text,
-          categories: selectedCategories,
-          isPublic: isPublic,
-          notify: notify),
+        name: _groupNameController.text,
+        id: '',
+        admin: FirebaseAuth.instance.currentUser!.uid,
+        description: _groupDescriptionController.text,
+        categories: selectedCategories,
+        isPublic: isPublic,
+      ),
       selectedImagePath,
     );
     ref.invalidate(groupsProvider(FirebaseAuth.instance.currentUser!.uid));

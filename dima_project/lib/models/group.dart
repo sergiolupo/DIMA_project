@@ -13,7 +13,6 @@ class Group {
   final List<String>? members;
   final bool isPublic;
   final List<String>? requests;
-  final bool notify;
   Group({
     required this.name,
     required this.id,
@@ -25,7 +24,6 @@ class Group {
     this.members,
     required this.isPublic,
     this.requests,
-    required this.notify,
   });
 
   static Map<String, dynamic> toMap(Group group) {
@@ -37,7 +35,6 @@ class Group {
       'categories':
           group.categories?.map((category) => {'value': category}).toList(),
       'isPublic': group.isPublic,
-      'notify': group.notify,
     };
   }
 
@@ -76,7 +73,20 @@ class Group {
           .map((request) => request.toString())
           .toList()
           .cast<String>(),
-      notify: documentSnapshot['notify'],
+    );
+  }
+
+  static Group fromMap(Map<String, dynamic> map) {
+    return Group(
+      name: map['groupName'],
+      id: map['groupId'],
+      admin: map['admin'],
+      imagePath: map['groupImage'],
+      description: map['description'],
+      categories: List<String>.from(map['categories']),
+      members: List<String>.from(map['members']),
+      isPublic: map['isPublic'],
+      requests: List<String>.from(map['requests']),
     );
   }
 }

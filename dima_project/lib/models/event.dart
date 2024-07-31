@@ -61,7 +61,6 @@ class Event {
   List<Details>? details;
   final bool isPublic;
 
-  final bool notify;
   final Timestamp? createdAt;
 
   Event({
@@ -71,7 +70,6 @@ class Event {
     this.imagePath,
     required this.description,
     required this.isPublic,
-    required this.notify,
     this.createdAt,
     this.details,
   });
@@ -84,7 +82,6 @@ class Event {
       'imagePath': event.imagePath,
       'description': event.description,
       'isPublic': event.isPublic,
-      'notify': event.notify,
       'createdAt': event.createdAt,
     };
   }
@@ -102,7 +99,6 @@ class Event {
       imagePath: documentSnapshot['imagePath'],
       description: documentSnapshot['description'],
       isPublic: documentSnapshot['isPublic'],
-      notify: documentSnapshot['notify'],
       createdAt: documentSnapshot['createdAt'],
       details: details,
     );
@@ -116,7 +112,6 @@ class Event {
       imagePath: imagePath,
       description: description,
       isPublic: isPublic,
-      notify: notify,
       createdAt: createdAt,
       details: details,
     );

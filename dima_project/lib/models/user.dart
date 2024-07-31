@@ -32,7 +32,6 @@ class UserData {
       surname: documentSnapshot['surname'],
       username: documentSnapshot['username'],
       email: documentSnapshot['email'],
-      password: '',
       imagePath: documentSnapshot['imageUrl'],
       categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
           .map((categoryMap) => categoryMap['value'].toString())
@@ -45,6 +44,21 @@ class UserData {
           .toList()
           .cast<String>(),
       token: documentSnapshot['token'],
+    );
+  }
+
+  static UserData fromMap(Map<String, dynamic> json) {
+    return UserData(
+      name: json['name'],
+      surname: json['surname'],
+      username: json['username'],
+      email: json['email'],
+      imagePath: json['imagePath'],
+      categories: List<String>.from(json['categories']),
+      uid: json['uid'],
+      isPublic: json['isPublic'],
+      requests: List<String>.from(json['requests']),
+      token: json['token'],
     );
   }
 }
