@@ -53,6 +53,7 @@ class DatabaseService {
   }
 
   static Future<void> updateToken(String token) async {
+    debugPrint('Updating token... $token');
     await usersRef.doc(AuthService.uid).update({
       'token': token,
     });
@@ -1646,5 +1647,13 @@ class DatabaseService {
 
     //delete user
     await usersRef.doc(AuthService.uid).delete();
+  }
+
+  static Future<String> getDeviceTokenPrivateChat(PrivateChat chat) {
+    final String otherUID =
+        chat.members[0] == AuthService.uid ? chat.members[1] : chat.members[0];
+    return usersRef.doc(otherUID).get().then((value) {
+      return value['token'];
+    });
   }
 }

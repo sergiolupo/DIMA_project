@@ -70,8 +70,10 @@ dependencies:
   shimmer: ^3.0.0
   image_gallery_saver: ^2.0.3
   flutter_local_notifications: ^17.2.1+2
+  googleapis: ^13.2.0
+  googleapis_auth: ^1.6.0
   flutter_svg:  # to use icons as they are svgs
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -8,6 +8,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -332,7 +333,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       widget.privateChat.id ??=
           await DatabaseService.createPrivateChat(widget.privateChat);
       DatabaseService.sendMessage(widget.privateChat.id!, message);
-
+      NotificationService.sendNotificationForPrivateChat(
+        widget.privateChat,
+        message,
+      );
       setState(() {
         messageEditingController.clear();
       });
