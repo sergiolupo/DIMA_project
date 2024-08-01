@@ -195,7 +195,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         });
       }
     }
-    _optionsMenuOverlay?.remove();
+    if (_optionsMenuOverlay?.mounted ?? false) {
+      _optionsMenuOverlay?.remove();
+    }
   }
 
   Widget chatMessages() {

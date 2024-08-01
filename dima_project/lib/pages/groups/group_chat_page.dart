@@ -190,7 +190,9 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void onTapCreateEvent() async {
-    _optionsMenuOverlay?.remove();
+    if (_optionsMenuOverlay?.mounted ?? false) {
+      _optionsMenuOverlay?.remove();
+    }
     if (widget.canNavigate) {
       widget.navigateToPage!(
         CreateEventPage(
@@ -253,7 +255,11 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
     }
-    _optionsMenuOverlay?.remove();
+    try {
+      _optionsMenuOverlay?.remove();
+    } catch (e) {
+      debugPrint("Overlay already removed");
+    }
   }
 
   Widget chatMessages() {

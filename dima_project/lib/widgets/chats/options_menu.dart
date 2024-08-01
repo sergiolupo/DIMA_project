@@ -63,7 +63,7 @@ class OptionsMenu extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     onTapCamera();
-                    overlayEntry?.remove();
+                    if (overlayEntry?.mounted ?? false) overlayEntry?.remove();
                   },
                   child: Column(
                     children: [
