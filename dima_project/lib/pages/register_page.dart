@@ -28,7 +28,7 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPassword = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   List<String> selectedCategories = [];
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isEnteredWithGoogle = false;
   Uint8List selectedImagePath = Uint8List(0);
   String pageName = 'Credentials Information';

@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController;
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   LoginForm(this._usernameController, {super.key});
 
   @override

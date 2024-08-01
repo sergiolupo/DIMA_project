@@ -15,22 +15,49 @@ class PersonalInformationForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CupertinoTextFormFieldRow(
-            controller: nameController,
+    return Container(
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.3),
+      child: Column(
+        children: [
+          CupertinoTextFormFieldRow(
+              controller: nameController,
+              padding: const EdgeInsets.all(12.0),
+              placeholder: 'Name',
+              decoration: BoxDecoration(
+                color: CupertinoTheme.of(context).primaryContrastingColor,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your name';
+                }
+                if (value.length > 20) {
+                  return 'Name is too long';
+                }
+                return null; // Return null if the input is valid
+              },
+              prefix: const Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: Icon(
+                  CupertinoIcons.person_crop_circle_fill,
+                  color: CupertinoColors.systemGrey,
+                ),
+              )),
+          CupertinoTextFormFieldRow(
+            controller: surnameController,
             padding: const EdgeInsets.all(12.0),
-            placeholder: 'Name',
+            placeholder: 'Surname',
             decoration: BoxDecoration(
               color: CupertinoTheme.of(context).primaryContrastingColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             validator: (String? value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your name';
+                return 'Please enter your surname';
               }
               if (value.length > 20) {
-                return 'Name is too long';
+                return 'Surname is too long';
               }
               return null; // Return null if the input is valid
             },
@@ -40,34 +67,11 @@ class PersonalInformationForm extends StatelessWidget {
                 CupertinoIcons.person_crop_circle_fill,
                 color: CupertinoColors.systemGrey,
               ),
-            )),
-        CupertinoTextFormFieldRow(
-          controller: surnameController,
-          padding: const EdgeInsets.all(12.0),
-          placeholder: 'Surname',
-          decoration: BoxDecoration(
-            color: CupertinoTheme.of(context).primaryContrastingColor,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          validator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your surname';
-            }
-            if (value.length > 20) {
-              return 'Surname is too long';
-            }
-            return null; // Return null if the input is valid
-          },
-          prefix: const Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Icon(
-              CupertinoIcons.person_crop_circle_fill,
-              color: CupertinoColors.systemGrey,
             ),
           ),
-        ),
-        UsernameInputTextField(usernameController),
-      ],
+          UsernameInputTextField(usernameController),
+        ],
+      ),
     );
   }
 }
@@ -122,7 +126,7 @@ class CredentialsInformationForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.5),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.3),
       child: Column(
         children: [
           EmailInputField(emailController),
