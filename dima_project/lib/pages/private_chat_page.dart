@@ -151,9 +151,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
     final XFile? image =
         await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
     if (image != null) {
-      setState(() {
-        isUploading = true;
-      });
+      if (mounted) {
+        setState(() {
+          isUploading = true;
+        });
+      }
       final bytes = await image.readAsBytes();
 
       widget.privateChat.id ??=
@@ -165,9 +167,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         false,
         Uint8List.fromList(bytes),
       );
-      setState(() {
-        isUploading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isUploading = false;
+        });
+      }
     }
   }
 
@@ -177,9 +181,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
     if (images.isNotEmpty) {
       for (var image in images) {
-        setState(() {
-          isUploading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isUploading = true;
+          });
+        }
         final bytes = await image.readAsBytes();
         widget.privateChat.id ??=
             await DatabaseService.createPrivateChat(widget.privateChat);
@@ -190,9 +196,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           false,
           Uint8List.fromList(bytes),
         );
-        setState(() {
-          isUploading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isUploading = false;
+          });
+        }
       }
     }
     if (_optionsMenuOverlay?.mounted ?? false) {

@@ -218,9 +218,11 @@ class GroupChatPageState extends State<GroupChatPage> {
     final XFile? image =
         await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
     if (image != null) {
-      setState(() {
-        isUploading = true;
-      });
+      if (mounted) {
+        setState(() {
+          isUploading = true;
+        });
+      }
       final bytes = await image.readAsBytes();
       await DatabaseService.sendChatImage(
         group.id,
@@ -228,9 +230,11 @@ class GroupChatPageState extends State<GroupChatPage> {
         true,
         Uint8List.fromList(bytes),
       );
-      setState(() {
-        isUploading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isUploading = false;
+        });
+      }
     }
   }
 
@@ -240,9 +244,11 @@ class GroupChatPageState extends State<GroupChatPage> {
 
     if (images.isNotEmpty) {
       for (var image in images) {
-        setState(() {
-          isUploading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isUploading = true;
+          });
+        }
         final bytes = await image.readAsBytes();
         await DatabaseService.sendChatImage(
           group.id,
@@ -250,15 +256,15 @@ class GroupChatPageState extends State<GroupChatPage> {
           true,
           Uint8List.fromList(bytes),
         );
-        setState(() {
-          isUploading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isUploading = false;
+          });
+        }
       }
     }
-    try {
+    if (_optionsMenuOverlay?.mounted ?? false) {
       _optionsMenuOverlay?.remove();
-    } catch (e) {
-      debugPrint("Overlay already removed");
     }
   }
 
