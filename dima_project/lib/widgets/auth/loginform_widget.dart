@@ -7,9 +7,10 @@ import 'package:go_router/go_router.dart';
 
 class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController;
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  LoginForm(this._usernameController, {super.key});
+  const LoginForm(this._usernameController, this._passwordController,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +78,6 @@ class LoginForm extends StatelessWidget {
         email,
         password,
       );
-
       if (!context.mounted) return;
       Navigator.of(context).pop();
       debugPrint("Navigating to Home Page");

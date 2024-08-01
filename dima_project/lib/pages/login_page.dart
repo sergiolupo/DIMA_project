@@ -13,6 +13,8 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   bool _showLogin = true;
 
   @override
@@ -68,7 +70,7 @@ class LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     _showLogin
-                        ? LoginForm(_usernameController)
+                        ? LoginForm(_usernameController, _passwordController)
                         : ForgotPasswordForm(_usernameController),
                     CupertinoButton(
                       onPressed: () {
