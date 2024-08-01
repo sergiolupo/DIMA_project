@@ -274,6 +274,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
+            physics: const ClampingScrollPhysics(),
             shrinkWrap: true,
             reverse: true,
             itemCount: snapshot.data!.length,
