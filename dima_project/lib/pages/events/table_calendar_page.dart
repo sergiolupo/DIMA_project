@@ -51,6 +51,9 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
     for (final event in events) {
       List<Details> details = [];
       for (final detail in event.details!) {
+        if (!detail.members!.contains(AuthService.uid)) {
+          continue;
+        }
         DateTime start = DateTime(
           detail.startDate!.year,
           detail.startDate!.month,
