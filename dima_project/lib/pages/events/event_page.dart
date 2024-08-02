@@ -250,9 +250,6 @@ class EventPageState extends ConsumerState<EventPage> {
                                                         createdEventsProvider(
                                                             uid));
                                                     ref.invalidate(
-                                                        joinedEventsProvider(
-                                                            uid));
-                                                    ref.invalidate(
                                                         eventProvider(
                                                             widget.eventId));
                                                     if (buildContext.mounted) {

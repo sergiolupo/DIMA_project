@@ -11,18 +11,6 @@ class DatePicker extends StatelessWidget {
     required this.onDateTimeChanged,
   });
 
-  /*@override
-  Widget build(BuildContext context) {
-    return CupertinoButton(
-      color: CupertinoColors.activeBlue,
-      child: Text('Pick a date'),
-      onPressed: () => showSheet(
-        context,
-        initialDateTime: initialDateTime,
-        onDateTimeChanged: onDateTimeChanged,
-      ),
-    );
-  }*/
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(

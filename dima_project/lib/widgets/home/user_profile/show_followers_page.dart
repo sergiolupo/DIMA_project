@@ -21,6 +21,12 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   final String uid = AuthService.uid;
+  @override
+  void initState() {
+    ref.read(followerProvider(widget.user));
+    ref.read(followingProvider(uid));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

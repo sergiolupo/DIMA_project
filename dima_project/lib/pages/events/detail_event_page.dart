@@ -203,8 +203,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
                         context: context,
                         builder: (BuildContext newContext) {
                           return CupertinoAlertDialog(
-                            title: const Text('Event has already started'),
-                            content: const Text('You cannot join this event.'),
+                            title: const Text('Event in progress'),
+                            content: const Text('Event has already started.'),
                             actions: <Widget>[
                               CupertinoDialogAction(
                                 child: const Text('OK'),

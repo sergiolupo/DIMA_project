@@ -20,11 +20,19 @@ class ShowFollowingPage extends ConsumerStatefulWidget {
 class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  final String uid = AuthService.uid;
+
+  @override
+  void initState() {
+    ref.read(followingProvider(widget.user));
+    ref.read(followingProvider(uid));
+    super.initState();
+  }
+
   @override
   Widget build(
     BuildContext context,
   ) {
-    final String uid = AuthService.uid;
     final AsyncValue<List<UserData>> asyncUsers =
         ref.watch(followingProvider(widget.user));
     final AsyncValue<List<UserData>> asyncFollowing =

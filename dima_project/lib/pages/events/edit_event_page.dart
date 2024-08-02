@@ -369,7 +369,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       uids,
     );
     ref.invalidate(eventProvider(widget.event.id!));
-    ref.invalidate(joinedEventsProvider(uid));
     ref.invalidate(createdEventsProvider(uid));
   }
 

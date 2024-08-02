@@ -22,6 +22,11 @@ class CustomSelectOptionState extends State<CustomSelectOption> {
   int idx = 0;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -129,5 +134,10 @@ class CustomSelectOptionState extends State<CustomSelectOption> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

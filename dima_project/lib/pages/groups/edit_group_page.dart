@@ -5,14 +5,17 @@ import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/pages/groups/group_helper.dart';
 import 'package:dima_project/pages/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class EditGroupPage extends StatefulWidget {
+class EditGroupPage extends ConsumerStatefulWidget {
   final Group group;
   final bool canNavigate;
   final Function? navigateToPage;
@@ -27,7 +30,7 @@ class EditGroupPage extends StatefulWidget {
   EditGroupPageState createState() => EditGroupPageState();
 }
 
-class EditGroupPageState extends State<EditGroupPage> {
+class EditGroupPageState extends ConsumerState<EditGroupPage> {
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupDescriptionController =
       TextEditingController();
@@ -114,7 +117,7 @@ class EditGroupPageState extends State<EditGroupPage> {
                       },
                     );
                     await updateGroup();
-
+                    ref.invalidate(groupsProvider(AuthService.uid));
                     Group newGroup =
                         await DatabaseService.getGroupFromId(widget.group.id);
 
