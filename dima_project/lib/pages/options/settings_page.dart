@@ -4,6 +4,7 @@ import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
@@ -140,11 +141,19 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   )
                 },
-                child: selectedImagePath == null
-                    ? CreateImageWidget.getUserImage(user.imagePath!)
-                    : CreateImageWidget.getUserImageMemory(selectedImagePath!),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: selectedImagePath == null
+                      ? CreateImageWidget.getUserImage(user.imagePath!,
+                          isTablet: MediaQuery.of(context).size.width >
+                              Constants.limitWidth)
+                      : CreateImageWidget.getUserImageMemory(
+                          selectedImagePath!,
+                          MediaQuery.of(context).size.width >
+                              Constants.limitWidth),
+                ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               _buildTextField('Name', user.name, _nameController),
               _buildTextField('Surname', user.surname, _surnameController),
               _buildTextField('Username', user.username, _usernameController),

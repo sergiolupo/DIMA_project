@@ -89,11 +89,11 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getUserImageMemory(Uint8List image) {
+  static Widget getUserImageMemory(Uint8List image, bool isTablet) {
     return ClipOval(
       child: Container(
-        width: 100,
-        height: 100,
+        width: isTablet ? 200 : 100,
+        height: isTablet ? 200 : 100,
         color: CupertinoColors.lightBackgroundGray,
         child: image.isNotEmpty
             ? Image.memory(
