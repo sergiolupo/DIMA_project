@@ -15,6 +15,7 @@ import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/private_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatTabletPage extends StatefulWidget {
   const ChatTabletPage({
@@ -154,11 +155,6 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             return const SizedBox.shrink();
           }
           int i = 0;
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          }
 
           if (snapshot.hasData) {
             var data = snapshot.data!;
@@ -292,11 +288,18 @@ class ChatTabletPageState extends State<ChatTabletPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Shimmer.fromColors(
+              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+              highlightColor:
+                  CupertinoTheme.of(context).primaryContrastingColor,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                width: MediaQuery.of(context).size.width * 0.4,
+                color: CupertinoTheme.of(context).primaryColor,
+              ),
             );
           } else {
-            return Container(); // Return an empty container or handle other cases as needed
+            return Container();
           }
         },
       ),
@@ -470,7 +473,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             privateChat: privateChat,
                           );
                         }
-                        return Container(); // Return an empty container or handle other cases as needed
+                        return Container();
                       }
                     },
                   );
@@ -480,11 +483,18 @@ class ChatTabletPageState extends State<ChatTabletPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Shimmer.fromColors(
+              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+              highlightColor:
+                  CupertinoTheme.of(context).primaryContrastingColor,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                width: MediaQuery.of(context).size.width * 0.4,
+                color: CupertinoTheme.of(context).primaryColor,
+              ),
             );
           } else {
-            return Container(); // Return an empty container or handle other cases as needed
+            return Container();
           }
         },
       ),

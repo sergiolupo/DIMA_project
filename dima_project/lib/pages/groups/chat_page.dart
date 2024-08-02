@@ -10,6 +10,7 @@ import 'package:dima_project/widgets/group_chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:dima_project/widgets/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -108,12 +109,6 @@ class ListChatPageState extends State<ChatPage> {
             return const SizedBox.shrink();
           }
           int i = 0;
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          }
-
           if (snapshot.hasData) {
             var data = snapshot.data!;
             if (data.isNotEmpty) {
@@ -174,8 +169,14 @@ class ListChatPageState extends State<ChatPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Shimmer.fromColors(
+              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+              highlightColor:
+                  CupertinoTheme.of(context).primaryContrastingColor,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                color: CupertinoTheme.of(context).primaryColor,
+              ),
             );
           } else {
             return Container(); // Return an empty container or handle other cases as needed
@@ -316,8 +317,14 @@ class ListChatPageState extends State<ChatPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Shimmer.fromColors(
+              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+              highlightColor:
+                  CupertinoTheme.of(context).primaryContrastingColor,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                color: CupertinoTheme.of(context).primaryColor,
+              ),
             );
           } else {
             return Container(); // Return an empty container or handle other cases as needed
