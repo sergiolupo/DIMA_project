@@ -138,9 +138,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       children: [
                         Column(
                           children: [
-                            CreateImageWidget.getUserImage(
-                              user.imagePath!,
-                            ),
+                            CreateImageWidget.getUserImage(user.imagePath!, 1),
                             Padding(
                               padding: const EdgeInsets.only(top: 10.0),
                               child: Text(

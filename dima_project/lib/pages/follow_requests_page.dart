@@ -47,7 +47,8 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                         width: 100,
                         height: 100,
                         color: CupertinoColors.lightBackgroundGray,
-                        child: CreateImageWidget.getUserImage(user.imagePath!),
+                        child:
+                            CreateImageWidget.getUserImage(user.imagePath!, 1),
                       ),
                     ),
                     title: Text(

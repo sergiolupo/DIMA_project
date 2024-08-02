@@ -89,7 +89,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
             children: [
               CreateImageWidget.getUserImage(
                 widget.user.imagePath!,
-                small: true,
+                0,
               ),
               const SizedBox(width: 10),
               Container(

@@ -144,9 +144,12 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: selectedImagePath == null
-                      ? CreateImageWidget.getUserImage(user.imagePath!,
-                          isTablet: MediaQuery.of(context).size.width >
-                              Constants.limitWidth)
+                      ? CreateImageWidget.getUserImage(
+                          user.imagePath!,
+                          MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? 2
+                              : 1)
                       : CreateImageWidget.getUserImageMemory(
                           selectedImagePath!,
                           MediaQuery.of(context).size.width >

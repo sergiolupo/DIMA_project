@@ -73,7 +73,7 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                         const SizedBox(height: 240),
                         CreateImageWidget.getUserImage(
                           widget.message.senderImage!,
-                          small: true,
+                          0,
                         ),
                       ],
                     ),

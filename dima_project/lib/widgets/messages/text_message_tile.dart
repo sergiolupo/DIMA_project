@@ -57,7 +57,7 @@ class TextMessageTileState extends State<TextMessageTile> {
                         children: [
                           CreateImageWidget.getUserImage(
                             widget.message.senderImage!,
-                            small: true,
+                            0,
                           ),
                         ]),
                   ),

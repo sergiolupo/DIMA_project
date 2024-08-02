@@ -75,8 +75,10 @@ class PrivateChatTileState extends State<PrivateChatTile> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getUserImage(widget.other.imagePath!,
-                      small: true),
+                  CreateImageWidget.getUserImage(
+                    widget.other.imagePath!,
+                    0,
+                  ),
                   const SizedBox(width: 16),
                   Container(
                     constraints: BoxConstraints(

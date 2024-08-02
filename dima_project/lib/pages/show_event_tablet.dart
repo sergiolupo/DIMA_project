@@ -80,8 +80,7 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             CreateImageWidget.getUserImage(
-                                widget.userData.imagePath!,
-                                small: true),
+                                widget.userData.imagePath!, 0),
                             const SizedBox(width: 10.0),
                             Text(
                               widget.userData.username,

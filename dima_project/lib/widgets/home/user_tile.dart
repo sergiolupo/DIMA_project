@@ -66,8 +66,8 @@ class UserTileState extends ConsumerState<UserTile> {
                     width: 100,
                     height: 100,
                     color: CupertinoColors.lightBackgroundGray,
-                    child:
-                        CreateImageWidget.getUserImage(widget.user.imagePath!),
+                    child: CreateImageWidget.getUserImage(
+                        widget.user.imagePath!, 1),
                   ),
                 ),
               ),

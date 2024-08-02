@@ -4,20 +4,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 
 class CreateImageWidget {
-  static Widget getUserImage(String imagePath,
-      {bool small = false, bool isTablet = false}) {
+  static Widget getUserImage(String imagePath, int size) {
     return ClipOval(
       child: Container(
-        width: small
+        width: size == 0
             ? 30
-            : isTablet
-                ? 200
-                : 100,
-        height: small
+            : size == 1
+                ? 100
+                : 200,
+        height: size == 0
             ? 30
-            : isTablet
-                ? 200
-                : 100,
+            : size == 1
+                ? 100
+                : 200,
         color: CupertinoColors.lightBackgroundGray,
         child: imagePath != ''
             ? Image.network(

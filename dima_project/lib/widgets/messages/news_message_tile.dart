@@ -59,7 +59,7 @@ class NewsMessageTileState extends State<NewsMessageTile> {
                         const SizedBox(height: 295),
                         CreateImageWidget.getUserImage(
                           widget.message.senderImage!,
-                          small: true,
+                          0,
                         ),
                       ],
                     ),

@@ -54,7 +54,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                       children: [
                         CreateImageWidget.getUserImage(
                           widget.message.senderImage!,
-                          small: true,
+                          0,
                         ),
                       ]),
                 ),

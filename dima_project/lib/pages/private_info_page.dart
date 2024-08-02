@@ -77,8 +77,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               CreateImageWidget.getUserImage(
-                                  widget.user.imagePath!,
-                                  small: false),
+                                  widget.user.imagePath!, 1),
                               const SizedBox(width: 20),
                               Text(
                                 widget.user.username,

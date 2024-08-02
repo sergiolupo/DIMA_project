@@ -67,7 +67,8 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
               Row(
                 children: [
                   CreateImageWidget.getUserImage(widget.other.imagePath!,
-                      small: true),
+                                               0,
+),
                   const SizedBox(width: 16),
                   Container(
                     constraints: BoxConstraints(
