@@ -273,7 +273,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const CupertinoActivityIndicator();
+                              return const SizedBox.shrink();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
