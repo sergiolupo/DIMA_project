@@ -32,6 +32,12 @@ class HomePageState extends ConsumerState<HomePage> {
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
     notificationServices.setupToken(ref);
+    ref.read(userProvider(AuthService.uid));
+    ref.read(followerProvider(AuthService.uid));
+    ref.read(followingProvider(AuthService.uid));
+    ref.read(groupsProvider(AuthService.uid));
+    ref.read(joinedEventsProvider(AuthService.uid));
+    ref.read(createdEventsProvider(AuthService.uid));
 
     super.initState();
     _currentIndex = widget.index ?? 0;
