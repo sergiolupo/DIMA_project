@@ -26,7 +26,8 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  List<Event> events = [];
+  List<Event> joinedEvents = [];
+  List<Event> createdEvents = [];
   @override
   void initState() {
     super.initState();
@@ -46,9 +47,46 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<Event> _getEventsForDay(DateTime d) {
     List<Event> result = [];
-    for (final event in events) {
+    result.addAll(_getJoinedEventsForDay(d));
+    result.addAll(_getCreatedEventsForDay(d));
+    return result;
+  }
+
+  List<Event> _getJoinedEventsForDay(DateTime day) {
+    List<Event> result = [];
+    for (final event in joinedEvents) {
+      List<Details> details = [];
+      for (final detail in event.details!) {
+        if (!detail.members!.contains(AuthService.uid)) {
+          continue;
+        }
+
+        DateTime start = DateTime(
+          detail.startDate!.year,
+          detail.startDate!.month,
+          detail.startDate!.day,
+        );
+        DateTime end = DateTime(
+            detail.endDate!.year, detail.endDate!.month, detail.endDate!.day);
+        if (((day.isAfter(start) && day.isBefore(end)) ||
+            isSameDay(start, day) ||
+            isSameDay(end, day))) {
+          details.add(detail);
+        }
+      }
+      if (details.isNotEmpty) {
+        Event e = event.copyWith(details: details);
+        result.add(e);
+      }
+    }
+    return result;
+  }
+
+  List<Event> _getCreatedEventsForDay(DateTime day) {
+    List<Event> result = [];
+    for (final event in createdEvents) {
       List<Details> details = [];
       for (final detail in event.details!) {
         if (!detail.members!.contains(AuthService.uid)) {
@@ -132,54 +170,50 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
     }
   }
 
+  void _updateEvents(List<Event> newEvents, bool joined) {
+    if (mounted) {
+      setState(() {
+        if (joined) {
+          // Remove events that no longer exist
+
+          joinedEvents.removeWhere((event) => !newEvents.contains(event));
+
+          for (Event newEvent in newEvents) {
+            final existingIndex =
+                joinedEvents.indexWhere((event) => event.id == newEvent.id);
+            if (existingIndex != -1) {
+              joinedEvents[existingIndex] = newEvent;
+            } else {
+              joinedEvents.add(newEvent);
+            }
+          }
+        } else {
+          // Remove events that no longer exist
+          createdEvents.removeWhere((event) => !newEvents.contains(event));
+          for (Event newEvent in newEvents) {
+            final existingIndex =
+                createdEvents.indexWhere((event) => event.id == newEvent.id);
+            if (existingIndex != -1) {
+              createdEvents[existingIndex] = newEvent;
+            } else {
+              createdEvents.add(newEvent);
+            }
+          }
+        }
+        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final joinedEvents = ref.watch(joinedEventsProvider(AuthService.uid));
-    final createdEvents = ref.watch(createdEventsProvider(AuthService.uid));
-    return joinedEvents.when(
-      data: (joinedEvents) {
-        return createdEvents.when(
-          data: (createdEvents) {
-            events = [];
-
-            setState(() {
-              for (final event in joinedEvents) {
-                for (final detail in event.details!) {
-                  if (detail.members!.contains(AuthService.uid)) {
-                    events.add(event);
-                    break;
-                  }
-                }
-              }
-              for (final event in createdEvents) {
-                for (final detail in event.details!) {
-                  if (detail.members!.contains(AuthService.uid)) {
-                    events.add(event);
-                    break;
-                  }
-                }
-              }
-              _selectedEvents = ValueNotifier(_getEventsForDay(
-                _selectedDay!,
-              ));
-            });
-            return _buildCalendar();
-          },
-          loading: () {
-            return const Center(child: CupertinoActivityIndicator());
-          },
-          error: (error, stackTrace) {
-            return const Center(child: Text('Error loading created events'));
-          },
-        );
-      },
-      loading: () {
-        return const Center(child: CupertinoActivityIndicator());
-      },
-      error: (error, stackTrace) {
-        return const Center(child: Text('Error loading joined events'));
-      },
-    );
+    ref.listen(joinedEventsProvider(AuthService.uid), (_, next) {
+      if (next is AsyncData) _updateEvents(next.value!, true);
+    });
+    ref.listen(createdEventsProvider(AuthService.uid), (_, next) {
+      if (next is AsyncData) _updateEvents(next.value!, false);
+    });
+    return _buildCalendar();
   }
 
   Widget _buildCalendar() {
