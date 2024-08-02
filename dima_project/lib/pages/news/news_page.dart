@@ -12,6 +12,7 @@ import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class NewsPage extends ConsumerStatefulWidget {
@@ -58,185 +59,296 @@ class NewsPageState extends ConsumerState<NewsPage> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider(uid));
 
-    return sliders == null || articles == null
-        ? const CupertinoActivityIndicator()
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              transitionBetweenRoutes: false,
-              trailing: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => const SearchNewsPage()));
-                },
-                child: Icon(
-                  CupertinoIcons.search,
-                  color: CupertinoTheme.of(context).primaryColor,
-                ),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
+        trailing: GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const SearchNewsPage()));
+          },
+          child: Icon(
+            CupertinoIcons.search,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
+        middle: Text(
+          "News",
+          style: TextStyle(
+            fontSize: 25.0,
+            fontWeight: FontWeight.bold,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20.0),
+              Container(
+                margin: const EdgeInsets.only(left: 10.0),
+                height: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 140
+                    : 70,
+                child: user.when(
+                    data: (user) {
+                      final List<String> categories = user.categories;
+                      final newsCategories = News.getCategories(categories);
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: categories.length,
+                          itemBuilder: (context, index) {
+                            return CategoryTile(
+                              image: newsCategories[index].image,
+                              categoryName: newsCategories[index].categoryName,
+                            );
+                          });
+                    },
+                    loading: () => Shimmer.fromColors(
+                        baseColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        highlightColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 16),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    color: CupertinoTheme.of(context)
+                                        .primaryContrastingColor,
+                                    width: MediaQuery.of(context).size.width >
+                                            Constants.limitWidth
+                                        ? 240
+                                        : 120,
+                                    height: MediaQuery.of(context).size.width >
+                                            Constants.limitWidth
+                                        ? 140
+                                        : 70,
+                                  )),
+                            ],
+                          ),
+                        )),
+                    error: (error, _) => Text('Error: $error')),
               ),
-              middle: Text(
-                "News",
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: CupertinoTheme.of(context).primaryColor,
-                ),
+              const SizedBox(
+                height: 30.0,
               ),
-              backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(height: 20.0),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      height: MediaQuery.of(context).size.width >
-                              Constants.limitWidth
-                          ? 140
-                          : 70,
-                      child: user.when(
-                          data: (user) {
-                            final List<String> categories = user.categories;
-                            final newsCategories =
-                                News.getCategories(categories);
-                            return ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: categories.length,
-                                itemBuilder: (context, index) {
-                                  return CategoryTile(
-                                    image: newsCategories[index].image,
-                                    categoryName:
-                                        newsCategories[index].categoryName,
-                                  );
-                                });
-                          },
-                          loading: () => const CupertinoActivityIndicator(),
-                          error: (error, _) => Text('Error: $error')),
+                    Text(
+                      "Breaking News",
+                      style: TextStyle(
+                          color: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Breaking News",
-                            style: TextStyle(
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18.0),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => AllNews(
-                                            news: "Breaking",
-                                            articles: sliders!
-                                                .sublist(0, numberOfNews),
-                                          )));
-                            },
-                            child: Text(
-                              "View All",
-                              style: TextStyle(
-                                color: CupertinoTheme.of(context).primaryColor,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        if (sliders == null) {
+                          return;
+                        }
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => AllNews(
+                                      news: "Breaking",
+                                      articles:
+                                          sliders!.sublist(0, numberOfNews),
+                                    )));
+                      },
+                      child: Text(
+                        "View All",
+                        style: TextStyle(
+                          color: CupertinoTheme.of(context).primaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.0,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-                    CarouselSlider.builder(
-                        itemCount: numberOfNews,
-                        itemBuilder: (context, index, realIndex) {
-                          String? image = sliders![index].urlToImage;
-                          String? title = sliders![index].title;
-                          return buildNews(image, index, title);
-                        },
-                        options: CarouselOptions(
-                            height: MediaQuery.of(context).size.width >
-                                    Constants.limitWidth
-                                ? 400
-                                : 200,
-                            autoPlay: true,
-                            enlargeCenterPage: false,
-                            enlargeStrategy: CenterPageEnlargeStrategy.height,
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                activeIndex = index;
-                              });
-                            })),
-                    const SizedBox(height: 30.0),
-                    Center(
-                      child: buildIndicator(),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Trending News",
-                            style: TextStyle(
-                                color: CupertinoTheme.of(context)
-                                    .textTheme
-                                    .textStyle
-                                    .color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18.0),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => AllNews(
-                                        news: "Trending",
-                                        articles: articles!))),
-                            child: Text(
-                              "View All",
-                              style: TextStyle(
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16.0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: const ClampingScrollPhysics(),
-                        itemCount: articles!.length,
-                        itemBuilder: (context, index) {
-                          return BlogTile(
-                              url: articles![index].url,
-                              description: articles![index].description,
-                              imageUrl: articles![index].urlToImage,
-                              title: articles![index].title);
-                        })
                   ],
                 ),
               ),
-            ),
-          );
+              const SizedBox(height: 20.0),
+              if (sliders == null)
+                Shimmer.fromColors(
+                  baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+                  highlightColor:
+                      CupertinoTheme.of(context).primaryContrastingColor,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular((10)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: CupertinoTheme.of(context)
+                                .primaryContrastingColor),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 400
+                            : 200,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                CarouselSlider.builder(
+                    itemCount: numberOfNews,
+                    itemBuilder: (context, index, realIndex) {
+                      String? image = sliders![index].urlToImage;
+                      String? title = sliders![index].title;
+                      return buildNews(image, index, title);
+                    },
+                    options: CarouselOptions(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? 400
+                            : 200,
+                        autoPlay: true,
+                        enlargeCenterPage: false,
+                        enlargeStrategy: CenterPageEnlargeStrategy.height,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            activeIndex = index;
+                          });
+                        })),
+              const SizedBox(height: 30.0),
+              Center(
+                child: buildIndicator(),
+              ),
+              const SizedBox(
+                height: 30.0,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Trending News",
+                      style: TextStyle(
+                          color: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        if (articles == null) {
+                          return;
+                        }
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => AllNews(
+                                    news: "Trending", articles: articles!)));
+                      },
+                      child: Text(
+                        "View All",
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context).primaryColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              if (articles == null)
+                ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return Shimmer.fromColors(
+                        baseColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        highlightColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: PhysicalModel(
+                              elevation: 3.0,
+                              borderRadius: BorderRadius.circular(10),
+                              color: CupertinoTheme.of(context)
+                                  .primaryContrastingColor,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 5.0),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor,
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? 230
+                                                : 100,
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    3
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2.5,
+                                          )),
+                                    ]),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    })
+              else
+                ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: articles!.length,
+                    itemBuilder: (context, index) {
+                      return BlogTile(
+                          url: articles![index].url,
+                          description: articles![index].description,
+                          imageUrl: articles![index].urlToImage,
+                          title: articles![index].title);
+                    })
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   //carousel slider
