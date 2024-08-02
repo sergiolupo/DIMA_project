@@ -38,7 +38,7 @@ class GroupChatPage extends StatefulWidget {
 }
 
 class GroupChatPageState extends State<GroupChatPage> {
-  Stream<List<Message>>? chats;
+  late final Stream<List<Message>> chats;
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
   OverlayEntry? _optionsMenuOverlay;
@@ -62,109 +62,102 @@ class GroupChatPageState extends State<GroupChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return chats == null
-        ? const Center(child: CupertinoActivityIndicator())
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              key: _navigationBarKey,
-              middle: CupertinoButton(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        key: _navigationBarKey,
+        middle: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () async {
+            if (!widget.canNavigate) {
+              final Group? newGroup = await Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => GroupInfoPage(
+                    group: group,
+                    canNavigate: widget.canNavigate,
+                    navigateToPage: widget.navigateToPage,
+                  ),
+                ),
+              );
+              if (newGroup != null) {
+                setState(() {
+                  group = newGroup;
+                });
+              }
+            } else {
+              widget.navigateToPage!(
+                GroupInfoPage(
+                  group: group,
+                  canNavigate: widget.canNavigate,
+                  navigateToPage: widget.navigateToPage,
+                ),
+              );
+              return;
+            }
+          },
+          child: Row(
+            children: [
+              CreateImageWidget.getGroupImage(group.imagePath!, small: true),
+              const SizedBox(width: 10),
+              Container(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.6),
+                child: Text(group.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
+                    ),
+                    overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
+        leading: widget.canNavigate
+            ? null
+            : CupertinoButton(
                 padding: const EdgeInsets.all(0),
-                onPressed: () async {
-                  if (!widget.canNavigate) {
-                    final Group? newGroup = await Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => GroupInfoPage(
-                          group: group,
-                          canNavigate: widget.canNavigate,
-                          navigateToPage: widget.navigateToPage,
-                        ),
-                      ),
-                    );
-                    if (newGroup != null) {
-                      setState(() {
-                        group = newGroup;
-                      });
-                    }
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
                   } else {
-                    widget.navigateToPage!(
-                      GroupInfoPage(
-                        group: group,
-                        canNavigate: widget.canNavigate,
-                        navigateToPage: widget.navigateToPage,
-                      ),
-                    );
-                    return;
+                    context.go("/home", extra: 1);
                   }
                 },
-                child: Row(
-                  children: [
-                    CreateImageWidget.getGroupImage(group.imagePath!,
-                        small: true),
-                    const SizedBox(width: 10),
-                    Container(
-                      constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.6),
-                      child: Text(group.name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: CupertinoTheme.of(context)
-                                .textTheme
-                                .textStyle
-                                .color,
-                          ),
-                          overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
               ),
-              backgroundColor:
-                  CupertinoTheme.of(context).scaffoldBackgroundColor,
-              leading: widget.canNavigate
-                  ? null
-                  : CupertinoButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        } else {
-                          context.go("/home", extra: 1);
-                        }
-                      },
-                      child: Icon(CupertinoIcons.back,
-                          color: CupertinoTheme.of(context).primaryColor),
-                    ),
-            ),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: chatMessages(),
-                ),
-                isUploading
-                    ? const Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: CupertinoActivityIndicator(),
-                        ),
-                      )
-                    : Container(),
-                InputBar(
-                  key: _inputBarKey,
-                  focusNode: _focusNode,
-                  messageEditingController: messageEditingController,
-                  onTapCamera: onTapCamera,
-                  sendMessage: sendMessage,
-                  showOverlay: () => showOverlay(context),
-                  padding: const EdgeInsets.only(
-                      left: 15, right: 25, bottom: 25, top: 5),
-                  height: 50,
-                  buttonColor: CupertinoTheme.of(context).primaryColor,
-                  isGroupChat: true,
+      ),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: chatMessages(),
+          ),
+          isUploading
+              ? const Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: CupertinoActivityIndicator(),
+                  ),
                 )
-              ],
-            ),
-          );
+              : Container(),
+          InputBar(
+            key: _inputBarKey,
+            focusNode: _focusNode,
+            messageEditingController: messageEditingController,
+            onTapCamera: onTapCamera,
+            sendMessage: sendMessage,
+            showOverlay: () => showOverlay(context),
+            padding:
+                const EdgeInsets.only(left: 15, right: 25, bottom: 25, top: 5),
+            height: 50,
+            buttonColor: CupertinoTheme.of(context).primaryColor,
+            isGroupChat: true,
+          )
+        ],
+      ),
+    );
   }
 
   void showCustomSnackbar(bool isCopy) {

@@ -4,6 +4,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ReadTile extends StatefulWidget {
   final ReadBy user;
@@ -32,7 +33,29 @@ class ReadTileState extends State<ReadTile> {
   @override
   Widget build(BuildContext context) {
     return _userData == null
-        ? const CupertinoActivityIndicator()
+        ? Shimmer.fromColors(
+            baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+            highlightColor: CupertinoTheme.of(context).primaryContrastingColor,
+            child: CupertinoListTile(
+              leading: ClipOval(
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
+                ),
+              ),
+              title: Container(
+                width: 100,
+                height: 50,
+                color: CupertinoTheme.of(context).primaryContrastingColor,
+              ),
+              subtitle: Container(
+                width: 100,
+                height: 50,
+                color: CupertinoTheme.of(context).primaryContrastingColor,
+              ),
+            ),
+          )
         : CupertinoListTile(
             leading: CreateImageWidget.getUserImage(_userData!.imagePath!,
                 small: true),
