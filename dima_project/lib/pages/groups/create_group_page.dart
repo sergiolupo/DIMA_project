@@ -9,6 +9,7 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +56,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
         trailing: _currentPage == 1
             ? CupertinoButton(
                 padding: const EdgeInsets.all(3),
@@ -68,23 +70,32 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               )
             : null,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CupertinoButton(
-          onPressed: () {
-            if (_currentPage == 1) {
-              if (widget.canNavigate) {
-                widget.navigateToPage!(const SizedBox());
-                return;
-              }
-              Navigator.of(context).pop();
-            } else {
-              setState(() {
-                _currentPage = 1;
-              });
-            }
-          },
-          child: Icon(CupertinoIcons.back,
-              color: CupertinoTheme.of(context).primaryColor),
-        ),
+        leading: (widget.canNavigate && _currentPage == 1)
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(3),
+                onPressed: () {
+                  widget.navigateToPage!(const StartMessagingWidget());
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : CupertinoButton(
+                onPressed: () {
+                  if (_currentPage == 1) {
+                    Navigator.of(context).pop();
+                  } else {
+                    setState(() {
+                      _currentPage = 1;
+                    });
+                  }
+                },
+                child: Icon(CupertinoIcons.back,
+                    color: CupertinoTheme.of(context).primaryColor),
+              ),
         middle: Text(
           'Create Group',
           style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
