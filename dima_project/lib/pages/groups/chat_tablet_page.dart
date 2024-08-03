@@ -254,7 +254,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             username = "Deleted Account";
                           }
                           if (snapshot.hasData) {
-                            username = snapshot.data!.username;
+                            username =
+                                UserData.fromSnapshot(snapshot.data!).username;
                           }
                           return GroupChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
@@ -329,20 +330,14 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     return const SizedBox();
                   }
 
-                  return StreamBuilder<UserData>(
+                  return StreamBuilder(
                     stream: DatabaseService.getUserDataFromUID(
                         privateChat.members[0] == uid
                             ? privateChat.members[1]
                             : privateChat.members[0]),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CupertinoActivityIndicator(),
-                        );
-                      }
-
                       if (snapshot.hasData) {
-                        final other = snapshot.data!;
+                        final other = UserData.fromSnapshot(snapshot.data!);
 
                         if (!other.username
                             .toLowerCase()

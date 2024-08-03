@@ -121,10 +121,9 @@ class DatabaseService {
     }
   }
 
-  static Stream<UserData> getUserDataFromUID(String uid) {
-    return usersRef.doc(uid).snapshots().map((snapshot) {
-      return UserData.fromSnapshot(snapshot);
-    });
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getUserDataFromUID(
+      String uid) {
+    return usersRef.doc(uid).snapshots();
   }
 
   static Stream<Group> getGroupFromIdStream(String id) {

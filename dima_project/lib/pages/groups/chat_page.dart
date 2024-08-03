@@ -156,7 +156,8 @@ class ListChatPageState extends State<ChatPage> {
                           username = "Deleted Account";
                         }
                         if (snapshot.hasData) {
-                          username = snapshot.data!.username;
+                          username =
+                              UserData.fromSnapshot(snapshot.data!).username;
                         }
                         return GroupChatTile(
                           group: group,
@@ -254,20 +255,14 @@ class ListChatPageState extends State<ChatPage> {
                     return const SizedBox();
                   }
 
-                  return StreamBuilder<UserData>(
+                  return StreamBuilder(
                     stream: DatabaseService.getUserDataFromUID(
                         privateChat.members[0] == uid
                             ? privateChat.members[1]
                             : privateChat.members[0]),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CupertinoActivityIndicator(),
-                        );
-                      }
-
                       if (snapshot.hasData) {
-                        final other = snapshot.data!;
+                        final other = UserData.fromSnapshot(snapshot.data!);
 
                         if (!other.username
                             .toLowerCase()
@@ -307,7 +302,7 @@ class ListChatPageState extends State<ChatPage> {
                             ),
                           );
                         }
-                        return Container(); // Return an empty container or handle other cases as needed
+                        return Container();
                       }
                     },
                   );
