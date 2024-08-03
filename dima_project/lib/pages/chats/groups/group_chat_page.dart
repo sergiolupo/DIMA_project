@@ -12,7 +12,7 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';

@@ -1,7 +1,7 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/home/option_item.dart';
+import 'package:dima_project/widgets/option_item.dart';
 import 'package:dima_project/widgets/chats/read_tile.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';

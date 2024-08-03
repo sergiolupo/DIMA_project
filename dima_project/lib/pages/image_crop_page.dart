@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 

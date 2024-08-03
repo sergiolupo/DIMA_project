@@ -1,7 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

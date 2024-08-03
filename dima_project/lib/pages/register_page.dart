@@ -7,7 +7,7 @@ import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/categoriesform_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';

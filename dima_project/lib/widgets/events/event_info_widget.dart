@@ -1,6 +1,6 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/widgets/events/date_picker.dart';
-import 'package:dima_project/widgets/events/time_picker.dart';
+import 'package:dima_project/widgets/events/time_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 

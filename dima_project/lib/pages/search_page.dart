@@ -9,8 +9,8 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/events/event_tile.dart';
 import 'package:dima_project/widgets/group_tile.dart';
-import 'package:dima_project/widgets/home/selectoption_widget.dart';
-import 'package:dima_project/widgets/home/user_tile.dart';
+import 'package:dima_project/widgets/selectoption_widget.dart';
+import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

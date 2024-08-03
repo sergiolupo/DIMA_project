@@ -1,6 +1,6 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/home/user_tile.dart';
+import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

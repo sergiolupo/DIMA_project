@@ -1,7 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:intl/intl.dart';

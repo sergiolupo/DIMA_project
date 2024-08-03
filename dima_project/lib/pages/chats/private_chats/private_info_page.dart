@@ -7,7 +7,7 @@ import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/image_widget.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class PrivateInfoPage extends StatefulWidget {

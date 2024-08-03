@@ -3,7 +3,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/user_profile/show_event_members_page.dart';
-import 'package:dima_project/widgets/events/show_date.dart';
+import 'package:dima_project/widgets/events/show_date_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
