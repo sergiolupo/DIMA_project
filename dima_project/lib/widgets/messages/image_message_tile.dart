@@ -6,7 +6,7 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
 import 'package:flutter/cupertino.dart';
 
-class ImageMessageTile extends StatefulWidget {
+class ImageMessageTile extends StatelessWidget {
   final Message message;
   final String? senderUsername;
   final VoidCallback showCustomSnackbar;
@@ -18,31 +18,21 @@ class ImageMessageTile extends StatefulWidget {
   });
 
   @override
-  ImageMessageTileState createState() => ImageMessageTileState();
-}
-
-class ImageMessageTileState extends State<ImageMessageTile> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
-        widget.message,
-        showCustomSnackbar: widget.showCustomSnackbar,
+        message,
+        showCustomSnackbar: showCustomSnackbar,
       ),
       onTap: () {
         Navigator.of(context).push(
           CupertinoPageRoute(
             builder: (context) => MediaViewPage(
               canNavigate: false,
-              isGroup: widget.message.isGroupMessage,
-              media: widget.message,
-              messages: [widget.message],
+              isGroup: message.isGroupMessage,
+              media: message,
+              messages: [message],
             ),
           ),
         );
@@ -53,38 +43,38 @@ class ImageMessageTileState extends State<ImageMessageTile> {
             padding: EdgeInsets.only(
               top: 8,
               bottom: 8,
-              left: widget.message.sentByMe! ? 24 : 0,
-              right: widget.message.sentByMe! ? 0 : 24,
+              left: message.sentByMe! ? 24 : 0,
+              right: message.sentByMe! ? 0 : 24,
             ),
-            alignment: widget.message.sentByMe!
+            alignment: message.sentByMe!
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: widget.message.sentByMe!
+              mainAxisAlignment: message.sentByMe!
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               children: [
-                if (!widget.message.sentByMe! && widget.message.isGroupMessage)
+                if (!message.sentByMe! && message.isGroupMessage)
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
                     child: Column(
                       children: [
                         const SizedBox(height: 240),
                         CreateImageWidget.getUserImage(
-                          widget.message.senderImage!,
+                          message.senderImage!,
                           0,
                         ),
                       ],
                     ),
                   ),
                 Container(
-                  margin: widget.message.sentByMe!
+                  margin: message.sentByMe!
                       ? const EdgeInsets.only(left: 30)
                       : const EdgeInsets.only(right: 30),
                   padding: const EdgeInsets.only(top: 2, right: 2, left: 2),
                   decoration: BoxDecoration(
-                    borderRadius: widget.message.sentByMe!
+                    borderRadius: message.sentByMe!
                         ? const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
@@ -95,7 +85,7 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                             topRight: Radius.circular(20),
                             bottomRight: Radius.circular(20),
                           ),
-                    color: widget.message.sentByMe!
+                    color: message.sentByMe!
                         ? CupertinoTheme.of(context).primaryColor
                         : CupertinoColors.systemGrey,
                   ),
@@ -103,18 +93,17 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (!widget.message.sentByMe! &&
-                          widget.message.isGroupMessage)
+                      if (!message.sentByMe! && message.isGroupMessage)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const SizedBox(width: 8),
                             Text(
-                              widget.senderUsername!,
+                              senderUsername!,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: widget.message.sentByMe!
+                                color: message.sentByMe!
                                     ? CupertinoColors.white
                                     : CupertinoColors.black,
                                 letterSpacing: -0.5,
@@ -126,8 +115,8 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CreateImageWidget.getImage(
-                            widget.message.content,
-                            widget.message.sentByMe!,
+                            message.content,
+                            message.sentByMe!,
                             small: false,
                           ),
                           const SizedBox(height: 20),
@@ -141,8 +130,8 @@ class ImageMessageTileState extends State<ImageMessageTile> {
           ),
           Positioned(
             bottom: 10,
-            right: widget.message.sentByMe! ? 2 : null,
-            left: widget.message.sentByMe!
+            right: message.sentByMe! ? 2 : null,
+            left: message.sentByMe!
                 ? null
                 : MediaQuery.of(context).size.width > Constants.limitWidth
                     ? 150
@@ -152,10 +141,9 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                 Text(
                   DateUtil.getFormattedTime(
                       context: context,
-                      time: widget.message.time.microsecondsSinceEpoch
-                          .toString()),
+                      time: message.time.microsecondsSinceEpoch.toString()),
                   style: TextStyle(
-                    color: widget.message.sentByMe!
+                    color: message.sentByMe!
                         ? CupertinoColors.white
                         : CupertinoColors.black,
                     fontSize: 9,
@@ -163,7 +151,7 @@ class ImageMessageTileState extends State<ImageMessageTile> {
                 ),
                 const SizedBox(width: 8),
                 MessageUtils.buildReadByIcon(
-                  widget.message,
+                  message,
                 ),
               ],
             ),

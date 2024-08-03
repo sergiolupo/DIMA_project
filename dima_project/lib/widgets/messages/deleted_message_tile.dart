@@ -2,28 +2,15 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
-class DeletedMessageTile extends StatefulWidget {
+class DeletedMessageTile extends StatelessWidget {
   final Message message;
 
   const DeletedMessageTile({
     required this.message,
     super.key,
   });
-
-  @override
-  DeletedMessageTileState createState() => DeletedMessageTileState();
-}
-
-class DeletedMessageTileState extends State<DeletedMessageTile> {
-  final String uuid = FirebaseAuth.instance.currentUser!.uid;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,27 +20,26 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
           padding: EdgeInsets.only(
             top: 8,
             bottom: 8,
-            left: widget.message.sentByMe! ? 24 : 0,
-            right: widget.message.sentByMe! ? 0 : 24,
+            left: message.sentByMe! ? 24 : 0,
+            right: message.sentByMe! ? 0 : 24,
           ),
-          alignment: widget.message.sentByMe!
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+          alignment:
+              message.sentByMe! ? Alignment.centerRight : Alignment.centerLeft,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: widget.message.sentByMe!
+            mainAxisAlignment: message.sentByMe!
                 ? MainAxisAlignment.end
                 : MainAxisAlignment.start,
             children: [
-              if (!widget.message.sentByMe! && widget.message.isGroupMessage)
+              if (!message.sentByMe! && message.isGroupMessage)
                 Padding(
                   padding: const EdgeInsets.only(right: 3.0),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         CreateImageWidget.getUserImage(
-                          widget.message.senderImage!,
+                          message.senderImage!,
                           0,
                         ),
                       ]),
@@ -68,7 +54,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                     padding: const EdgeInsets.only(
                         top: 8.0, right: 8.0, left: 8.0, bottom: 24.0),
                     decoration: BoxDecoration(
-                      borderRadius: widget.message.sentByMe!
+                      borderRadius: message.sentByMe!
                           ? const BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20),
@@ -79,7 +65,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                               topRight: Radius.circular(20),
                               bottomRight: Radius.circular(20),
                             ),
-                      color: widget.message.sentByMe!
+                      color: message.sentByMe!
                           ? CupertinoTheme.of(context).primaryColor
                           : CupertinoColors.systemGrey,
                     ),
@@ -88,7 +74,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                       children: [
                         Icon(
                           CupertinoIcons.trash,
-                          color: widget.message.sentByMe!
+                          color: message.sentByMe!
                               ? CupertinoColors.white.withOpacity(0.5)
                               : CupertinoColors.black.withOpacity(0.3),
                         ),
@@ -97,7 +83,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                           'Event deleted',
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            color: widget.message.sentByMe!
+                            color: message.sentByMe!
                                 ? CupertinoColors.white.withOpacity(0.5)
                                 : CupertinoColors.black.withOpacity(0.3),
                             fontSize: 16,
@@ -120,10 +106,10 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                           Text(
                             DateUtil.getFormattedTime(
                                 context: context,
-                                time: widget.message.time.microsecondsSinceEpoch
+                                time: message.time.microsecondsSinceEpoch
                                     .toString()),
                             style: TextStyle(
-                              color: widget.message.sentByMe!
+                              color: message.sentByMe!
                                   ? CupertinoColors.white
                                   : CupertinoColors.black,
                               fontSize: 9,
@@ -135,7 +121,7 @@ class DeletedMessageTileState extends State<DeletedMessageTile> {
                   ),
                   Visibility(
                     visible: false,
-                    child: MessageUtils.buildReadByIcon(widget.message),
+                    child: MessageUtils.buildReadByIcon(message),
                   ),
                 ],
               ),

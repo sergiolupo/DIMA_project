@@ -328,7 +328,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                         }
 
                         if (snapshot.hasData) {
-                          final user = snapshot.data as UserData;
+                          final user = UserData.fromSnapshot(snapshot.data!);
                           message.senderImage = user.imagePath;
                           return _buildMessageTile(message, user.username);
                         }
