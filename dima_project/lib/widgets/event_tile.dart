@@ -7,7 +7,7 @@ import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventTile extends ConsumerStatefulWidget {
+class EventTile extends ConsumerWidget {
   final Event event;
   const EventTile({
     super.key,
@@ -15,25 +15,21 @@ class EventTile extends ConsumerStatefulWidget {
   });
 
   @override
-  EventTileState createState() => EventTileState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String uid = AuthService.uid;
 
-class EventTileState extends ConsumerState<EventTile> {
-  final String uid = AuthService.uid;
-  @override
-  Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: GestureDetector(
             onTap: () {
-              ref.invalidate(eventProvider(widget.event.id!));
+              ref.invalidate(eventProvider(event.id!));
               ref.invalidate(joinedEventsProvider(uid));
               ref.invalidate(createdEventsProvider(uid));
               Navigator.of(context).push(
                 CupertinoPageRoute(
                   builder: (context) => EventPage(
-                    eventId: widget.event.id!,
+                    eventId: event.id!,
                   ),
                 ),
               );
@@ -49,10 +45,9 @@ class EventTileState extends ConsumerState<EventTile> {
                         MediaQuery.of(context).size.width > Constants.limitWidth
                             ? 1.3
                             : 1,
-                    child: CreateImageWidget.getEventImage(
-                        widget.event.imagePath!)),
+                    child: CreateImageWidget.getEventImage(event.imagePath!)),
                 title: Text(
-                  widget.event.name,
+                  event.name,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: MediaQuery.of(context).size.width >
@@ -60,7 +55,7 @@ class EventTileState extends ConsumerState<EventTile> {
                           ? 20
                           : 17),
                 ),
-                subtitle: Text("Description: ${widget.event.description}",
+                subtitle: Text("Description: ${event.description}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

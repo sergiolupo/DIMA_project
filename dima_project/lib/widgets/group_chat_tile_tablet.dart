@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:intl/intl.dart';
 
-class GroupChatTileTablet extends StatefulWidget {
+class GroupChatTileTablet extends StatelessWidget {
   final Group group;
   final Function(Group) onPressed;
   final String username;
   final Function(DismissDirection) onDismissed;
-  const GroupChatTileTablet({
+  GroupChatTileTablet({
     super.key,
     required this.group,
     required this.onPressed,
@@ -17,12 +17,7 @@ class GroupChatTileTablet extends StatefulWidget {
     required this.onDismissed,
   });
 
-  @override
-  GroupChatTileTabletState createState() => GroupChatTileTabletState();
-}
-
-class GroupChatTileTabletState extends State<GroupChatTileTablet> {
-  Map<Type, Icon> map = {
+  final Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
     Type.news: const Icon(CupertinoIcons.news,
@@ -30,10 +25,6 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
     Type.image: const Icon(CupertinoIcons.photo,
         color: CupertinoColors.inactiveGray, size: 16),
   };
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +40,11 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
           color: CupertinoColors.white,
         ),
       ),
-      onDismissed: widget.onDismissed,
+      onDismissed: onDismissed,
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
-          widget.onPressed(widget.group);
+          onPressed(group);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -65,7 +56,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getGroupImage(widget.group.imagePath!,
+                  CreateImageWidget.getGroupImage(group.imagePath!,
                       small: true),
                   const SizedBox(width: 16),
                   Column(
@@ -76,7 +67,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                             maxWidth: MediaQuery.of(context).size.width * 0.2),
                         child: Text(
                           maxLines: 2,
-                          widget.group.name,
+                          group.name,
                           style: TextStyle(
                               overflow: TextOverflow.ellipsis,
                               color: CupertinoTheme.of(context)
@@ -88,23 +79,21 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      (widget.group.lastMessage != null)
+                      (group.lastMessage != null)
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.group.lastMessage!.sentByMe == true
+                                  group.lastMessage!.sentByMe == true
                                       ? "You: "
-                                      : "${widget.username}: ",
+                                      : "$username: ",
                                   style: const TextStyle(
                                       fontSize: 14,
                                       color: CupertinoColors.inactiveGray),
                                 ),
-                                if (widget
-                                        .group.lastMessage!.recentMessageType !=
+                                if (group.lastMessage!.recentMessageType !=
                                     Type.text)
-                                  map[widget
-                                      .group.lastMessage!.recentMessageType]!,
+                                  map[group.lastMessage!.recentMessageType]!,
                                 Container(
                                   constraints: BoxConstraints(
                                       maxWidth:
@@ -112,7 +101,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                                               0.15),
                                   child: Text(
                                     maxLines: 2,
-                                    widget.group.lastMessage!.recentMessage,
+                                    group.lastMessage!.recentMessage,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,
@@ -131,7 +120,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                   ),
                 ],
               ),
-              (widget.group.lastMessage != null)
+              (group.lastMessage != null)
                   ? Container(
                       constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.05),
@@ -140,32 +129,30 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                            DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                         .isBefore(DateTime.now()) &&
-                                    DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                    DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                         .isAfter(DateTime.now()
                                             .subtract(const Duration(days: 1)))
                                 ? DateFormat.jm().format(
-                                    DateTime.fromMicrosecondsSinceEpoch(widget
-                                        .group
+                                    DateTime.fromMicrosecondsSinceEpoch(group
                                         .lastMessage!
                                         .recentMessageTimestamp
                                         .microsecondsSinceEpoch))
-                                : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                        DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                        DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                             .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                    ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                    : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                    ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                    : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                             style: TextStyle(
                               fontSize: 12,
-                              color:
-                                  widget.group.lastMessage!.unreadMessages! > 0
-                                      ? CupertinoTheme.of(context).primaryColor
-                                      : CupertinoColors.inactiveGray,
+                              color: group.lastMessage!.unreadMessages! > 0
+                                  ? CupertinoTheme.of(context).primaryColor
+                                  : CupertinoColors.inactiveGray,
                             ),
                           ),
                           const SizedBox(height: 1),
-                          widget.group.lastMessage!.unreadMessages! > 0
+                          group.lastMessage!.unreadMessages! > 0
                               ? Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
@@ -174,7 +161,7 @@ class GroupChatTileTabletState extends State<GroupChatTileTablet> {
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   child: Text(
-                                    widget.group.lastMessage!.unreadMessages
+                                    group.lastMessage!.unreadMessages
                                         .toString(),
                                     style: const TextStyle(
                                         color: CupertinoColors.white,

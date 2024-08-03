@@ -1,18 +1,13 @@
 import 'package:dima_project/models/event.dart';
 import 'package:flutter/cupertino.dart';
 
-class EventGrid extends StatefulWidget {
+class EventGrid extends StatelessWidget {
   final Event event;
   const EventGrid({
     super.key,
     required this.event,
   });
 
-  @override
-  EventGridState createState() => EventGridState();
-}
-
-class EventGridState extends State<EventGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,9 +16,9 @@ class EventGridState extends State<EventGrid> {
       ),
       width: 30,
       height: 30,
-      child: widget.event.imagePath != ''
+      child: event.imagePath != ''
           ? Image.network(
-              widget.event.imagePath!,
+              event.imagePath!,
               fit: BoxFit.cover,
             )
           : Image.asset(

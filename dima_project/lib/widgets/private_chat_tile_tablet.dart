@@ -5,12 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:intl/intl.dart';
 
-class PrivateChatTileTablet extends StatefulWidget {
+class PrivateChatTileTablet extends StatelessWidget {
   final PrivateChat privateChat;
   final Function(PrivateChat) onPressed;
   final UserData other;
   final Function(DismissDirection) onDismissed;
-  const PrivateChatTileTablet({
+  PrivateChatTileTablet({
     super.key,
     required this.privateChat,
     required this.onPressed,
@@ -18,12 +18,7 @@ class PrivateChatTileTablet extends StatefulWidget {
     required this.onDismissed,
   });
 
-  @override
-  PrivateChatTileTabletState createState() => PrivateChatTileTabletState();
-}
-
-class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
-  Map<Type, Icon> map = {
+  final Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
     Type.news: const Icon(CupertinoIcons.news,
@@ -31,10 +26,6 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
     Type.image: const Icon(CupertinoIcons.photo,
         color: CupertinoColors.inactiveGray, size: 16),
   };
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +41,11 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
           color: CupertinoColors.white,
         ),
       ),
-      onDismissed: widget.onDismissed,
+      onDismissed: onDismissed,
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
-          widget.onPressed(widget.privateChat);
+          onPressed(privateChat);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -66,9 +57,10 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getUserImage(widget.other.imagePath!,
-                                               0,
-),
+                  CreateImageWidget.getUserImage(
+                    other.imagePath!,
+                    0,
+                  ),
                   const SizedBox(width: 16),
                   Container(
                     constraints: BoxConstraints(
@@ -77,7 +69,7 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.other.username,
+                          other.username,
                           style: TextStyle(
                               color: CupertinoTheme.of(context)
                                   .textTheme
@@ -87,24 +79,23 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
                               fontSize: 16),
                         ),
                         const SizedBox(height: 2),
-                        (widget.privateChat.lastMessage != null)
+                        (privateChat.lastMessage != null)
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.privateChat.lastMessage!.sentByMe ==
-                                            true
+                                    privateChat.lastMessage!.sentByMe == true
                                         ? "You: "
-                                        : "${widget.other.username}: ",
+                                        : "${other.username}: ",
                                     style: const TextStyle(
                                         fontSize: 14,
                                         color: CupertinoColors.inactiveGray),
                                   ),
-                                  if (widget.privateChat.lastMessage!
-                                          .recentMessageType !=
+                                  if (privateChat
+                                          .lastMessage!.recentMessageType !=
                                       Type.text)
-                                    map[widget.privateChat.lastMessage!
-                                        .recentMessageType]!,
+                                    map[privateChat
+                                        .lastMessage!.recentMessageType]!,
                                   Container(
                                     constraints: BoxConstraints(
                                         maxWidth:
@@ -112,8 +103,7 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
                                                 0.15),
                                     child: Text(
                                       maxLines: 2,
-                                      widget.privateChat.lastMessage!
-                                          .recentMessage,
+                                      privateChat.lastMessage!.recentMessage,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                           fontSize: 14,
@@ -133,39 +123,37 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
                   ),
                 ],
               ),
-              (widget.privateChat.lastMessage != null)
+              (privateChat.lastMessage != null)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                          DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                       .isBefore(DateTime.now()) &&
-                                  DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                  DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                       .isAfter(DateTime.now()
                                           .subtract(const Duration(days: 1)))
                               ? DateFormat.jm().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(widget
-                                      .privateChat
-                                      .lastMessage!
-                                      .recentMessageTimestamp
-                                      .microsecondsSinceEpoch))
-                              : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                      DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                  DateTime.fromMicrosecondsSinceEpoch(
+                                      privateChat
+                                          .lastMessage!
+                                          .recentMessageTimestamp
+                                          .microsecondsSinceEpoch))
+                              : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                      DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                           .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                           style: TextStyle(
                             fontSize: 12,
-                            color: widget.privateChat.lastMessage!
-                                        .unreadMessages! >
-                                    0
+                            color: privateChat.lastMessage!.unreadMessages! > 0
                                 ? CupertinoTheme.of(context).primaryColor
                                 : CupertinoColors.inactiveGray,
                           ),
                         ),
                         const SizedBox(height: 1),
-                        widget.privateChat.lastMessage!.unreadMessages! > 0
+                        privateChat.lastMessage!.unreadMessages! > 0
                             ? Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
@@ -174,7 +162,7 @@ class PrivateChatTileTabletState extends State<PrivateChatTileTablet> {
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 child: Text(
-                                  widget.privateChat.lastMessage!.unreadMessages
+                                  privateChat.lastMessage!.unreadMessages
                                       .toString(),
                                   style: const TextStyle(
                                       color: CupertinoColors.white,
