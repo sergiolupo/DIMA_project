@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/auth/image_crop_page.dart';
+import 'package:dima_project/widgets/events/event_info.dart';
 import 'package:dima_project/widgets/events/location_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -196,51 +196,49 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   map.putIfAbsent(index, () => true);
                   details.putIfAbsent(index, () => EventDetails());
 
-                  return Container(
-                    child: CreateEventPageState.getEventInfo(
-                      fixedIndex: widget.event.details!.length,
-                      location: () => _selectLocation(context, index),
-                      startDate: (DateTime selectedDate, int index) {
-                        setState(() {
-                          details[index]!.startDate = selectedDate;
-                        });
-                      },
-                      endDate: (DateTime selectedDate, int index) {
-                        setState(() {
-                          details[index]!.endDate = selectedDate;
-                        });
-                      },
-                      startTime: (DateTime selectedTime, int index) {
-                        setState(() {
-                          details[index]!.startTime = selectedTime;
-                        });
-                      },
-                      endTime: (DateTime selectedTime, int index) {
-                        setState(() {
-                          details[index]!.endTime = selectedTime;
-                        });
-                      },
-                      add: () {
-                        setState(() {
-                          numInfos++;
-                        });
-                      },
-                      numInfos: numInfos,
-                      context: context,
-                      index: index,
-                      detailsList: details,
-                      boolMap: map,
-                      onTap: () {
-                        setState(() {
-                          map[index] = !map[index]!;
-                        });
-                      },
-                      delete: (int index) {
-                        setState(() {
-                          delete(index);
-                        });
-                      },
-                    ),
+                  return EventInfo(
+                    fixedIndex: widget.event.details!.length,
+                    location: () => _selectLocation(context, index),
+                    startDate: (DateTime selectedDate, int index) {
+                      setState(() {
+                        details[index]!.startDate = selectedDate;
+                      });
+                    },
+                    endDate: (DateTime selectedDate, int index) {
+                      setState(() {
+                        details[index]!.endDate = selectedDate;
+                      });
+                    },
+                    startTime: (DateTime selectedTime, int index) {
+                      setState(() {
+                        details[index]!.startTime = selectedTime;
+                      });
+                    },
+                    endTime: (DateTime selectedTime, int index) {
+                      setState(() {
+                        details[index]!.endTime = selectedTime;
+                      });
+                    },
+                    add: () {
+                      setState(() {
+                        numInfos++;
+                      });
+                    },
+                    numInfos: numInfos,
+                    context: context,
+                    index: index,
+                    detailsList: details,
+                    boolMap: map,
+                    onTap: () {
+                      setState(() {
+                        map[index] = !map[index]!;
+                      });
+                    },
+                    delete: (int index) {
+                      setState(() {
+                        delete(index);
+                      });
+                    },
                   );
                 }),
             if (widget.event.details!.length == numInfos)

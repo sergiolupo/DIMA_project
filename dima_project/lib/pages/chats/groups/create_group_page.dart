@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
-import 'package:dima_project/pages/groups/group_helper.dart';
+import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';

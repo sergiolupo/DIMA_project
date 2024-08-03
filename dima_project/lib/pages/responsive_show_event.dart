@@ -1,6 +1,6 @@
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/show_event.dart';
-import 'package:dima_project/pages/show_event_tablet.dart';
+import 'package:dima_project/pages/events/show_event.dart';
+import 'package:dima_project/pages/events/show_event_tablet.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
