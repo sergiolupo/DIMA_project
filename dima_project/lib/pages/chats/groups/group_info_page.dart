@@ -108,6 +108,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
       ),
       child: CupertinoScrollbar(
         child: SingleChildScrollView(
+          primary: false,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -530,6 +531,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
   Widget memberList() {
     return ListView.builder(
+      primary: false,
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: group.members!.length,
       itemBuilder: (context, index) {

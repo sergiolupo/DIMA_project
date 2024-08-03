@@ -5,7 +5,6 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +23,6 @@ class SettingsPage extends ConsumerStatefulWidget {
 class SettingsPageState extends ConsumerState<SettingsPage> {
   bool isObscure = true;
   Uint8List? selectedImagePath;
-  int _currentPage = 1;
   List<String> selectedCategories = [];
   late TextEditingController _nameController;
   late TextEditingController _surnameController;
@@ -51,66 +49,52 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     final user = ref.watch(userProvider(uid));
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
-          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-          middle: const Text('Settings'),
-          leading: CupertinoButton(
-            onPressed: () => _currentPage == 1
-                ? Navigator.of(context).pop()
-                : selectedCategories.isEmpty
-                    ? _showDialog(
-                        'Invalid choice', 'Please select at least one category')
-                    : setState(() {
-                        _currentPage = 1;
-                      }),
-            padding: const EdgeInsets.only(left: 10),
-            child: Icon(
-              CupertinoIcons.back,
-              color: CupertinoTheme.of(context).primaryColor,
+            backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+            middle: const Text('Settings'),
+            leading: CupertinoButton(
+              onPressed: () => Navigator.of(context).pop(),
+              padding: const EdgeInsets.only(left: 10),
+              child: Icon(
+                CupertinoIcons.back,
+                color: CupertinoTheme.of(context).primaryColor,
+              ),
             ),
-          ),
-          trailing: _currentPage == 1
-              ? CupertinoButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () async {
-                    if (await _validatePage()) {
-                      if (!context.mounted) return;
-                      BuildContext buildContext = context;
-                      // Show the loading dialog
-                      showCupertinoDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext newContext) {
-                          buildContext = newContext;
-                          return const CupertinoAlertDialog(
-                            content: CupertinoActivityIndicator(),
-                          );
-                        },
-                      );
-                      await _saveUserData();
-                      // Close the loading dialog
-                      if (buildContext.mounted) {
-                        Navigator.of(buildContext).pop();
-                      }
-                      if (context.mounted) Navigator.of(context).pop();
+            trailing: CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () async {
+                  if (await _validatePage()) {
+                    if (!context.mounted) return;
+                    BuildContext buildContext = context;
+                    // Show the loading dialog
+                    showCupertinoDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext newContext) {
+                        buildContext = newContext;
+                        return const CupertinoAlertDialog(
+                          content: CupertinoActivityIndicator(),
+                        );
+                      },
+                    );
+                    await _saveUserData();
+                    // Close the loading dialog
+                    if (buildContext.mounted) {
+                      Navigator.of(buildContext).pop();
                     }
-                  },
-                  child: Text(
-                    'Done',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: CupertinoTheme.of(context).primaryColor,
-                    ),
-                  ))
-              : null,
-        ),
-        child: _currentPage == 1
-            ? _buildMainPage(user)
-            : CategoriesForm(
-                selectedCategories: selectedCategories,
-              ));
+                    if (context.mounted) Navigator.of(context).pop();
+                  }
+                },
+                child: Text(
+                  'Done',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoTheme.of(context).primaryColor,
+                  ),
+                ))),
+        child: _buildSettingsPage(user));
   }
 
-  Widget _buildMainPage(AsyncValue<UserData> user) {
+  Widget _buildSettingsPage(AsyncValue<UserData> user) {
     return user.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) => Text('Error: $error'),
