@@ -1,6 +1,6 @@
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/auth/forgotpassword_widget.dart';
-import 'package:dima_project/widgets/auth/loginform_widget.dart';
+import 'package:dima_project/widgets/auth/forgot_password_widget.dart';
+import 'package:dima_project/widgets/auth/login_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
