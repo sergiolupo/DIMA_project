@@ -65,8 +65,8 @@ class EventService {
       BuildContext context,
       String name,
       String description,
-      List<Details> detailsList,
-      List<Details>? oldDetailsList) {
+      List<EventDetails> detailsList,
+      List<EventDetails>? oldDetailsList) {
     if (name.isEmpty) {
       _showErrorDialog(context, 'Event name is required');
       return false;
@@ -84,7 +84,7 @@ class EventService {
       return false;
     }
     for (int i = 0; i < detailsList.length; i++) {
-      final Details detail = detailsList[i];
+      final EventDetails detail = detailsList[i];
       if (oldDetailsList != null && oldDetailsList.length > i) {
         continue;
       }

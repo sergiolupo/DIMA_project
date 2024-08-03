@@ -47,7 +47,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   List<String> groupIds = [];
   int numInfos = 1;
   Map<int, bool> map = {};
-  Map<int, Details> details = {};
+  Map<int, EventDetails> details = {};
 
   final String uid = AuthService.uid;
   @override
@@ -203,7 +203,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           map.putIfAbsent(index, () => true);
-                          details.putIfAbsent(index, () => Details());
+                          details.putIfAbsent(index, () => EventDetails());
 
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -472,7 +472,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
 
   static Widget getEventInfo({
     required int index,
-    required Map<int, Details> detailsList,
+    required Map<int, EventDetails> detailsList,
     required Map<int, bool> boolMap,
     required Function onTap,
     required Function delete,

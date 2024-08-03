@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:dima_project/models/news/category_model.dart';
+import 'package:dima_project/models/category_model.dart';
 import 'package:dima_project/utils/categories_icon_mapper.dart';
-import 'package:dima_project/models/news/article_model.dart';
+import 'package:dima_project/models/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

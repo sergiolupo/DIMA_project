@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
 
-class Details {
+class EventDetails {
   DateTime? startDate;
   DateTime? endDate;
   String? location;
@@ -12,7 +12,7 @@ class Details {
   List<String>? members;
   final List<String>? requests;
 
-  Details({
+  EventDetails({
     this.startDate,
     this.endDate,
     this.location,
@@ -24,7 +24,7 @@ class Details {
     this.requests,
   });
 
-  static Map<String, dynamic> toMap(Details details) {
+  static Map<String, dynamic> toMap(EventDetails details) {
     return {
       'startDate': details.startDate,
       'endDate': details.endDate,
@@ -37,8 +37,9 @@ class Details {
     };
   }
 
-  static Details fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    return Details(
+  static EventDetails fromSnapshot(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return EventDetails(
       startDate: snapshot['startDate'].toDate(),
       endDate: snapshot['endDate'].toDate(),
       location: snapshot['location'],
@@ -58,7 +59,7 @@ class Event {
   final String admin;
   final String? imagePath;
   final String description;
-  List<Details>? details;
+  List<EventDetails>? details;
   final bool isPublic;
 
   final Timestamp? createdAt;
@@ -89,9 +90,11 @@ class Event {
   static Future<Event> fromSnapshot(DocumentSnapshot documentSnapshot) async {
     var detailsQuery =
         await documentSnapshot.reference.collection('details').get();
-    List<Details> details = detailsQuery.docs.isEmpty
+    List<EventDetails> details = detailsQuery.docs.isEmpty
         ? []
-        : detailsQuery.docs.map((doc) => Details.fromSnapshot(doc)).toList();
+        : detailsQuery.docs
+            .map((doc) => EventDetails.fromSnapshot(doc))
+            .toList();
     return Event(
       name: documentSnapshot['name'],
       id: documentSnapshot.id,
@@ -104,7 +107,7 @@ class Event {
     );
   }
 
-  Event copyWith({required List<Details> details}) {
+  Event copyWith({required List<EventDetails> details}) {
     return Event(
       name: name,
       id: id,

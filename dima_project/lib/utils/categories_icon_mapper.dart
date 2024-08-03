@@ -1,4 +1,4 @@
-import 'package:dima_project/models/news/category_model.dart';
+import 'package:dima_project/models/category_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

@@ -57,7 +57,7 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   List<Event> _getJoinedEventsForDay(DateTime day) {
     List<Event> result = [];
     for (final event in joinedEvents) {
-      List<Details> details = [];
+      List<EventDetails> details = [];
       for (final detail in event.details!) {
         if (!detail.members!.contains(AuthService.uid)) {
           continue;
@@ -87,7 +87,7 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
   List<Event> _getCreatedEventsForDay(DateTime day) {
     List<Event> result = [];
     for (final event in createdEvents) {
-      List<Details> details = [];
+      List<EventDetails> details = [];
       for (final detail in event.details!) {
         if (!detail.members!.contains(AuthService.uid)) {
           continue;

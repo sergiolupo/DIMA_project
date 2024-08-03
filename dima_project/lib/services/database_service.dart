@@ -1134,8 +1134,8 @@ class DatabaseService {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
 
-      for (Details details in event.details!) {
-        await docRef.collection('details').add(Details.toMap(details));
+      for (EventDetails details in event.details!) {
+        await docRef.collection('details').add(EventDetails.toMap(details));
       }
 
       //get ids from the details
@@ -1465,18 +1465,18 @@ class DatabaseService {
       bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
-    for (Details detail in event.details!) {
+    for (EventDetails detail in event.details!) {
       if (detail.id == null) {
         await eventsRef
             .doc(event.id)
             .collection('details')
-            .add(Details.toMap(detail));
+            .add(EventDetails.toMap(detail));
       } else {
         await eventsRef
             .doc(event.id)
             .collection('details')
             .doc(detail.id)
-            .update(Details.toMap(detail));
+            .update(EventDetails.toMap(detail));
       }
     }
 
@@ -1491,7 +1491,7 @@ class DatabaseService {
     }
 
     List<String> members = [];
-    for (Details detail in event.details!) {
+    for (EventDetails detail in event.details!) {
       members.addAll(detail.members!);
     }
 

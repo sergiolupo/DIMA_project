@@ -31,7 +31,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   bool isPublic = true;
   List<String> uids = [];
   Map<int, bool> map = {};
-  Map<int, Details> details = {};
+  Map<int, EventDetails> details = {};
   int numInfos = 1;
   String? defaultImage;
   final String uid = AuthService.uid;
@@ -194,7 +194,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   map.putIfAbsent(index, () => true);
-                  details.putIfAbsent(index, () => Details());
+                  details.putIfAbsent(index, () => EventDetails());
 
                   return Container(
                     child: CreateEventPageState.getEventInfo(
