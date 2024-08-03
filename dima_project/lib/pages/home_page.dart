@@ -1,6 +1,6 @@
 import 'package:dima_project/pages/events/table_calendar_page.dart';
-import 'package:dima_project/pages/groups/chat_page.dart';
-import 'package:dima_project/pages/groups/chat_tablet_page.dart';
+import 'package:dima_project/pages/chats/chat_page.dart';
+import 'package:dima_project/pages/chats/chat_tablet_page.dart';
 import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/pages/news/news_page.dart';

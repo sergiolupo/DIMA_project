@@ -1,10 +1,10 @@
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
-import 'package:dima_project/pages/private_chat_page.dart';
-import 'package:dima_project/pages/show_events_page.dart';
-import 'package:dima_project/pages/show_medias_page.dart';
-import 'package:dima_project/pages/show_news_page.dart';
+import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
+import 'package:dima_project/pages/chats/show_events_page.dart';
+import 'package:dima_project/pages/chats/show_medias_page.dart';
+import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/image_widget.dart';

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/events/share_event_page.dart';
-import 'package:dima_project/pages/groups/group_chat_page.dart';
+import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';

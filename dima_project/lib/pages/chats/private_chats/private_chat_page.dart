@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/private_info_page.dart';
+import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';

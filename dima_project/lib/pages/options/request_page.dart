@@ -1,7 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/follow_requests_page.dart';
-import 'package:dima_project/pages/groups_requests_page.dart';
+import 'package:dima_project/pages/options/follow_requests_page.dart';
+import 'package:dima_project/pages/options/groups_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';

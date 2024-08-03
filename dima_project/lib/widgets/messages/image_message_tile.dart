@@ -1,5 +1,5 @@
 import 'package:dima_project/models/message.dart';
-import 'package:dima_project/pages/media_view_page.dart';
+import 'package:dima_project/pages/chats/media_view_page.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';

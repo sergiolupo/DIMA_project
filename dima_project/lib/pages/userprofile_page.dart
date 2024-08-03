@@ -1,6 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/options_page.dart';
-import 'package:dima_project/pages/private_chat_page.dart';
+import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/responsive_show_event.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';

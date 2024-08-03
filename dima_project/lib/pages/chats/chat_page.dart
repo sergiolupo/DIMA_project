@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/groups/create_group_page.dart';
+import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/group_chat_tile.dart';
