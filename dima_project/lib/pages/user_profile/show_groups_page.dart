@@ -1,7 +1,7 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/home/group_tile.dart';
-import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
+import 'package:dima_project/widgets/group_tile.dart';
+import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

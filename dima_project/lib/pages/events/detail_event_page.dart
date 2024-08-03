@@ -2,8 +2,8 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/home/show_event_members.dart';
-import 'package:dima_project/widgets/show_date.dart';
+import 'package:dima_project/pages/user_profile/show_event_members_page.dart';
+import 'package:dima_project/widgets/events/show_date.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,11 +65,12 @@ class DetailPageState extends ConsumerState<DetailPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ShowDate(date: detail.startDate!, time: detail.startTime!),
+                ShowDateWidget(
+                    date: detail.startDate!, time: detail.startTime!),
                 const Text(
                   ' - ',
                 ),
-                ShowDate(date: detail.endDate!, time: detail.endTime!)
+                ShowDateWidget(date: detail.endDate!, time: detail.endTime!)
               ],
             ),
             Text(

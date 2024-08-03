@@ -1,7 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/responsive_layout.dart';
-import 'package:dima_project/pages/userprofile_page.dart';
-import 'package:dima_project/pages/userprofile_tablet_page.dart';
+import 'package:dima_project/pages/user_profile/user_profile_page.dart';
+import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';

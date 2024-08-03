@@ -6,9 +6,9 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/auth/image_crop_page.dart';
+import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/events/event_info.dart';
-import 'package:dima_project/widgets/events/location_page.dart';
+import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -196,7 +196,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   map.putIfAbsent(index, () => true);
                   details.putIfAbsent(index, () => EventDetails());
 
-                  return EventInfo(
+                  return EventInfoWidget(
                     fixedIndex: widget.event.details!.length,
                     location: () => _selectLocation(context, index),
                     startDate: (DateTime selectedDate, int index) {

@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class ShowDate extends StatelessWidget {
+class ShowDateWidget extends StatelessWidget {
   final DateTime date;
   final DateTime time;
-  const ShowDate({super.key, required this.date, required this.time});
+  const ShowDateWidget({super.key, required this.date, required this.time});
 
   @override
   Widget build(BuildContext context) {

@@ -6,9 +6,9 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/group_chat_tile.dart';
+import 'package:dima_project/widgets/chats/group_chat_tile.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
-import 'package:dima_project/widgets/private_chat_tile.dart';
+import 'package:dima_project/widgets/chats/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
 

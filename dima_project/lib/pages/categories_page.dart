@@ -1,4 +1,4 @@
-import 'package:dima_project/widgets/auth/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categoriesform_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class CategoriesPage extends StatelessWidget {

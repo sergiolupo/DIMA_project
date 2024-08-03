@@ -9,9 +9,9 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/auth/image_crop_page.dart';
+import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/events/event_info.dart';
-import 'package:dima_project/widgets/events/location_page.dart';
+import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -205,7 +205,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
 
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: EventInfo(
+                            child: EventInfoWidget(
                               location: () => _selectLocation(context, index),
                               startDate: (DateTime selectedDate, int index) {
                                 setState(() {

@@ -4,7 +4,7 @@ import 'package:dima_project/widgets/events/time_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class EventInfo extends StatelessWidget {
+class EventInfoWidget extends StatelessWidget {
   final int index;
   final Map<int, EventDetails> detailsList;
   final Map<int, bool> boolMap;
@@ -20,7 +20,7 @@ class EventInfo extends StatelessWidget {
   final Function location;
   final int fixedIndex;
 
-  const EventInfo({
+  const EventInfoWidget({
     super.key,
     required this.index,
     required this.detailsList,

@@ -1,37 +1,40 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/home/user_profile/deleted_account_page.dart';
+import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShowFollowersPage extends ConsumerStatefulWidget {
+class ShowFollowingPage extends ConsumerStatefulWidget {
   final String user;
-  const ShowFollowersPage({
+  const ShowFollowingPage({
     super.key,
     required this.user,
   });
 
   @override
-  ShowFollowersPageState createState() => ShowFollowersPageState();
+  ShowFollowingPageState createState() => ShowFollowingPageState();
 }
 
-class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
+class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   final String uid = AuthService.uid;
+
   @override
   void initState() {
-    ref.read(followerProvider(widget.user));
+    ref.read(followingProvider(widget.user));
     ref.read(followingProvider(uid));
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final AsyncValue<List<UserData>> asyncUsers =
-        ref.watch(followerProvider(widget.user));
+        ref.watch(followingProvider(widget.user));
     final AsyncValue<List<UserData>> asyncFollowing =
         ref.watch(followingProvider(uid));
 
@@ -48,7 +51,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
           loading: () => const CupertinoActivityIndicator(),
           error: (err, stack) => const SizedBox.shrink(),
         ),
-        middle: const Text('Followers'),
+        middle: const Text('Following'),
       ),
       child: SafeArea(
         child: asyncUsers.when(
@@ -74,10 +77,10 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                       MediaQuery.of(context).platformBrightness ==
                               Brightness.dark
                           ? Image.asset(
-                              'assets/darkMode/no_followers_found.png')
-                          : Image.asset('assets/images/no_followers_found.png'),
+                              'assets/darkMode/no_following_found.png')
+                          : Image.asset('assets/images/no_following_found.png'),
                       const Center(
-                        child: Text('No followers'),
+                        child: Text('Not following anyone'),
                       ),
                     ],
                   )
@@ -97,11 +100,11 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                               MediaQuery.of(context).platformBrightness ==
                                       Brightness.dark
                                   ? Image.asset(
-                                      'assets/darkMode/search_followers.png')
+                                      'assets/darkMode/search_following.png')
                                   : Image.asset(
-                                      'assets/images/search_followers.png'),
+                                      'assets/images/search_following.png'),
                               const Center(
-                                child: Text('No followers'),
+                                child: Text('Not following anyone'),
                               ),
                             ],
                           );
