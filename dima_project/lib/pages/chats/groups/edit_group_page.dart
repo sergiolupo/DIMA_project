@@ -8,7 +8,7 @@ import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -153,7 +153,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
       child: index == 0
           ? buildPage1(context)
           : SafeArea(
-              child: CategorySelectionForm(
+              child: CategoriesForm(
                 selectedCategories: selectedCategories,
               ),
             ),

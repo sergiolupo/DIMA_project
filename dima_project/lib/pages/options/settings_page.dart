@@ -5,7 +5,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -105,7 +105,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         ),
         child: _currentPage == 1
             ? _buildMainPage(user)
-            : CategorySelectionForm(
+            : CategoriesForm(
                 selectedCategories: selectedCategories,
               ));
   }

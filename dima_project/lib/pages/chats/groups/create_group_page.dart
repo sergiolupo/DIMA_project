@@ -6,7 +6,7 @@ import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
@@ -287,7 +287,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
 
   Widget pageTwoCreateGroup() {
     return SafeArea(
-        child: CategorySelectionForm(
+        child: CategoriesForm(
       selectedCategories: selectedCategories,
     ));
   }

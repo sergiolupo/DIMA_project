@@ -2,14 +2,14 @@ import 'package:dima_project/widgets/category_item_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/utils/category_util.dart';
 
-class CategorySelectionForm extends StatefulWidget {
+class CategoriesForm extends StatefulWidget {
   final List<String>? selectedCategories;
-  const CategorySelectionForm({super.key, this.selectedCategories});
+  const CategoriesForm({super.key, this.selectedCategories});
   @override
-  CategorySelectionFormState createState() => CategorySelectionFormState();
+  CategoriesFormState createState() => CategoriesFormState();
 }
 
-class CategorySelectionFormState extends State<CategorySelectionForm> {
+class CategoriesFormState extends State<CategoriesForm> {
   late List<String> selectedCategories;
 
   @override

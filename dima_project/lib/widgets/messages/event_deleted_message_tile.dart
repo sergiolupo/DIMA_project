@@ -4,10 +4,10 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
 import 'package:flutter/cupertino.dart';
 
-class DeletedMessageTile extends StatelessWidget {
+class EventDeletedMessageTile extends StatelessWidget {
   final Message message;
 
-  const DeletedMessageTile({
+  const EventDeletedMessageTile({
     required this.message,
     super.key,
   });

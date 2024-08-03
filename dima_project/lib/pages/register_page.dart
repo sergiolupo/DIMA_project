@@ -4,7 +4,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/auth/registrationform_widget.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -78,7 +78,7 @@ class RegisterPageState extends State<RegisterPage> {
         pageName = 'Image Selection';
         break;
       case 4:
-        page = CategorySelectionForm(
+        page = CategoriesForm(
           selectedCategories: selectedCategories,
         );
         pageName = 'Category Selection';

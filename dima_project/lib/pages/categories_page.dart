@@ -1,4 +1,4 @@
-import 'package:dima_project/widgets/categoriesform_widget.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 class CategoriesPage extends StatelessWidget {
@@ -22,7 +22,7 @@ class CategoriesPage extends StatelessWidget {
             style: TextStyle(
                 color: CupertinoTheme.of(context).primaryColor, fontSize: 18)),
       ),
-      child: CategorySelectionForm(
+      child: CategoriesForm(
         selectedCategories: selectedCategories,
       ),
     );

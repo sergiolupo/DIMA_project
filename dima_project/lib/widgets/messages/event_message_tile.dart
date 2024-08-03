@@ -4,7 +4,7 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
-import 'package:dima_project/widgets/messages/deleted_message_tile.dart';
+import 'package:dima_project/widgets/messages/event_deleted_message_tile.dart';
 import 'package:dima_project/widgets/messages/message_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -245,7 +245,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                 ),
               ),
             )),
-        error: (error, stack) => DeletedMessageTile(
+        error: (error, stack) => EventDeletedMessageTile(
               message: widget.message,
             ));
   }
