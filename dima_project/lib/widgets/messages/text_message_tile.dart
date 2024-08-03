@@ -122,7 +122,7 @@ class TextMessageTile extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text(
-                                DateUtil.getFormattedTime(
+                                DateUtils.getFormattedTime(
                                     context: context,
                                     time: message.time.microsecondsSinceEpoch
                                         .toString()),

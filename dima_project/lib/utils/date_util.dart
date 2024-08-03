@@ -1,7 +1,8 @@
+import 'package:dima_project/models/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class DateUtil {
+class DateUtils {
   static String getFormattedTime(
       {required BuildContext context, required String time}) {
     final date = DateTime.fromMicrosecondsSinceEpoch(int.parse(time));
@@ -97,5 +98,25 @@ class DateUtil {
       default:
         return "";
     }
+  }
+
+  static Map<String, List<Message>> groupMediasByDate(List<dynamic> medias) {
+    Map<String, List<Message>> groupedMedias = {};
+
+    for (var media in medias) {
+      final DateTime messageDate =
+          DateTime.fromMillisecondsSinceEpoch(media.time.seconds * 1000);
+
+      // Format the date
+      final String dateKey = DateUtils.formatDateBasedOnToday(messageDate);
+
+      if (groupedMedias.containsKey(dateKey)) {
+        groupedMedias[dateKey]!.add(media);
+      } else {
+        groupedMedias[dateKey] = [media];
+      }
+    }
+
+    return groupedMedias;
   }
 }

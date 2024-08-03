@@ -281,11 +281,11 @@ class GroupChatPageState extends State<GroupChatPage> {
                   message.time.seconds * 1000);
 
               // Format the date
-              final String date = DateUtil.formatDateBasedOnToday(messageDate);
+              final String date = DateUtils.formatDateBasedOnToday(messageDate);
               if (index == snapshot.data!.length - 1) {
                 newDate = date;
               } else {
-                final String prevDate = DateUtil.formatDateBasedOnToday(
+                final String prevDate = DateUtils.formatDateBasedOnToday(
                     DateTime.fromMillisecondsSinceEpoch(
                         snapshot.data![index + 1].time.seconds * 1000));
                 isSameDate = date == prevDate;

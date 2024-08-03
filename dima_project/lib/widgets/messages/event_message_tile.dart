@@ -191,7 +191,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        DateUtil.getFormattedTime(
+                        DateUtils.getFormattedTime(
                             context: context,
                             time: widget.message.time.microsecondsSinceEpoch
                                 .toString()),

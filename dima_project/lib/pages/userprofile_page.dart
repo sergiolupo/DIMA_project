@@ -1,7 +1,9 @@
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/events/show_event.dart';
+import 'package:dima_project/pages/events/show_event_tablet.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
-import 'package:dima_project/pages/responsive_show_event.dart';
+import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/event_grid.dart';
@@ -372,10 +374,17 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       onTap: () => Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => ResponsiveShowEvent(
-                            eventId: event.id!,
-                            userData: user,
-                            createdEvents: false,
+                          builder: (context) => ResponsiveLayout(
+                            tabletLayout: ShowEventTablet(
+                              eventId: event.id!,
+                              userData: user,
+                              createdEvents: false,
+                            ),
+                            mobileLayout: ShowEvent(
+                              eventId: event.id!,
+                              userData: user,
+                              createdEvents: false,
+                            ),
                           ),
                         ),
                       ),
@@ -421,10 +430,17 @@ class UserProfileState extends ConsumerState<UserProfile> {
                       onTap: () => Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => ResponsiveShowEvent(
-                            eventId: event.id!,
-                            createdEvents: true,
-                            userData: user,
+                          builder: (context) => ResponsiveLayout(
+                            tabletLayout: ShowEventTablet(
+                              eventId: event.id!,
+                              userData: user,
+                              createdEvents: true,
+                            ),
+                            mobileLayout: ShowEvent(
+                              eventId: event.id!,
+                              userData: user,
+                              createdEvents: true,
+                            ),
                           ),
                         ),
                       ),

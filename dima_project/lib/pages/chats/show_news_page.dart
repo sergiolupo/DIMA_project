@@ -74,7 +74,7 @@ class ShowNewsPageState extends State<ShowNewsPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = _groupMediasByDate(_news);
+            final groupedMedias = DateUtils.groupMediasByDate(_news);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
@@ -126,25 +126,5 @@ class ShowNewsPageState extends State<ShowNewsPage> {
         ),
       ),
     );
-  }
-
-  Map<String, List<Message>> _groupMediasByDate(List<dynamic> medias) {
-    Map<String, List<Message>> groupedMedias = {};
-
-    for (var media in medias) {
-      final DateTime messageDate =
-          DateTime.fromMillisecondsSinceEpoch(media.time.seconds * 1000);
-
-      // Format the date
-      final String dateKey = DateUtil.formatDateBasedOnToday(messageDate);
-
-      if (groupedMedias.containsKey(dateKey)) {
-        groupedMedias[dateKey]!.add(media);
-      } else {
-        groupedMedias[dateKey] = [media];
-      }
-    }
-
-    return groupedMedias;
   }
 }

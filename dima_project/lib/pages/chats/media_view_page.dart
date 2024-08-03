@@ -138,7 +138,7 @@ class MediaViewPageState extends State<MediaViewPage> {
         ),
         const SizedBox(width: 10),
         Text(
-          DateUtil.getFormattedDateAndTime(context: context, time: timestamp),
+          DateUtils.getFormattedDateAndTime(context: context, time: timestamp),
           style: TextStyle(
             color: CupertinoTheme.of(context).textTheme.textStyle.color,
             fontSize: 16,
