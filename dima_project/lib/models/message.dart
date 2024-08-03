@@ -22,6 +22,20 @@ class ReadBy {
       'readAt': readAt,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ReadBy &&
+        other.username == username &&
+        other.readAt == readAt;
+  }
+
+  @override
+  int get hashCode {
+    return username.hashCode ^ readAt.hashCode;
+  }
 }
 
 class Message {
