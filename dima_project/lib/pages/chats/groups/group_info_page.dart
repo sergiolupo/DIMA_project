@@ -9,7 +9,7 @@ import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/home/user_tile.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
@@ -146,8 +146,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Icon(
-                                        CategoryIconMapper.iconForCategory(
-                                            category),
+                                        CategoryUtil.iconForCategory(category),
                                         size: 24,
                                         color: CupertinoTheme.of(context)
                                             .primaryColor,

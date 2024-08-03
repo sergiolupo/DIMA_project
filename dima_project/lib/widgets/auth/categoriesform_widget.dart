@@ -1,5 +1,6 @@
+import 'package:dima_project/widgets/category_item_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/utils/category_util.dart';
 
 class CategorySelectionForm extends StatefulWidget {
   final List<String>? selectedCategories;
@@ -22,11 +23,11 @@ class CategorySelectionFormState extends State<CategorySelectionForm> {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
-        children: CategoryIconMapper.categories.map((category) {
-          return CategoryIconMapper.buildCategoryItem(
+        children: CategoryUtil.categories.map((category) {
+          return CategoryItemWidget(
             context: context,
             title: category,
-            icon: CategoryIconMapper.iconForCategory(category),
+            icon: CategoryUtil.iconForCategory(category),
             onTap: () {
               setState(() {
                 if (selectedCategories.contains(category)) {

@@ -139,7 +139,7 @@ class ImageMessageTile extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  DateUtils.getFormattedTime(
+                  DateUtil.getFormattedTime(
                       context: context,
                       time: message.time.microsecondsSinceEpoch.toString()),
                   style: TextStyle(

@@ -78,7 +78,7 @@ class ShowEventsPageState extends State<ShowEventsPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtils.groupMediasByDate(_events);
+            final groupedMedias = DateUtil.groupMediasByDate(_events);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),

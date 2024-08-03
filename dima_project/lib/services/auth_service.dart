@@ -10,7 +10,7 @@ class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static String uid = _firebaseAuth.currentUser!.uid;
 
-  static Future<void> signInWithEmailandPassword(
+  static Future<void> signInWithEmailAndPassword(
       String email, String password) async {
     debugPrint("Trying to Login...");
     await _firebaseAuth.signInWithEmailAndPassword(

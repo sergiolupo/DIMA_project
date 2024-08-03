@@ -177,7 +177,7 @@ class NewsMessageTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  DateUtils.getFormattedTime(
+                  DateUtil.getFormattedTime(
                       context: context,
                       time: message.time.microsecondsSinceEpoch.toString()),
                   style: TextStyle(

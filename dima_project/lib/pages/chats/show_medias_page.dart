@@ -77,7 +77,7 @@ class ShowMediasPageState extends State<ShowMediasPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtils.groupMediasByDate(_medias);
+            final groupedMedias = DateUtil.groupMediasByDate(_medias);
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: groupedMedias.keys.length,

@@ -2,7 +2,7 @@ import 'package:dima_project/models/category_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CategoryIconMapper {
+class CategoryUtil {
   static List<String> categories = [
     'Environment',
     'Cooking',
@@ -113,47 +113,5 @@ class CategoryIconMapper {
       default:
         return CupertinoIcons.question_circle;
     }
-  }
-
-  static Widget buildCategoryItem(
-      {required String title,
-      required IconData icon,
-      required onTap,
-      required selectedCategories,
-      required context}) {
-    final isSelected = selectedCategories.contains(title);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 24.0),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: CupertinoColors.separator,
-              width: 0.5,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(icon),
-                const SizedBox(width: 16.0),
-                Text(title),
-              ],
-            ),
-            isSelected
-                ? Icon(
-                    CupertinoIcons.check_mark_circled_solid,
-                    color: CupertinoTheme.of(context).primaryColor,
-                  )
-                : const SizedBox(),
-          ],
-        ),
-      ),
-    );
   }
 }

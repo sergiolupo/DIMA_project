@@ -15,7 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/image_widget.dart';
 import 'package:dima_project/widgets/home/selectoption_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,7 +186,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              CategoryIconMapper.iconForCategory(category),
+                              CategoryUtil.iconForCategory(category),
                               size: 18,
                               color: CupertinoTheme.of(context).primaryColor,
                             ),

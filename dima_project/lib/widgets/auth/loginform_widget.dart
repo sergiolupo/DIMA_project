@@ -74,7 +74,7 @@ class LoginForm extends StatelessWidget {
     );
 
     try {
-      await AuthService.signInWithEmailandPassword(
+      await AuthService.signInWithEmailAndPassword(
         email,
         password,
       );

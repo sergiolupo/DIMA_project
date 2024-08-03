@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dima_project/models/category_model.dart';
-import 'package:dima_project/utils/categories_icon_mapper.dart';
+import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/models/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -90,7 +90,7 @@ class News {
     List<CategoryModel> categories = [];
 
     for (String category in userCategories) {
-      categories.add(CategoryIconMapper.getCategoryModel(category));
+      categories.add(CategoryUtil.getCategoryModel(category));
     }
 
     return categories;

@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'package:dima_project/utils/table_calendar_utils.dart';
+import 'package:dima_project/utils/table_calendar_util.dart';
 
 class TableCalendarPage extends ConsumerStatefulWidget {
   const TableCalendarPage({super.key});

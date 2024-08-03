@@ -74,7 +74,7 @@ class ShowNewsPageState extends State<ShowNewsPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtils.groupMediasByDate(_news);
+            final groupedMedias = DateUtil.groupMediasByDate(_news);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),

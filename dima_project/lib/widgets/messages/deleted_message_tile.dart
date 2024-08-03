@@ -104,7 +104,7 @@ class DeletedMessageTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            DateUtils.getFormattedTime(
+                            DateUtil.getFormattedTime(
                                 context: context,
                                 time: message.time.microsecondsSinceEpoch
                                     .toString()),
