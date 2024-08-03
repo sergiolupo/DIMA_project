@@ -8,7 +8,7 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
 
-class ShowNewsPage extends StatefulWidget {
+class ShowNewsPage extends StatelessWidget {
   final bool isGroup;
   final List<Message> news;
   final Group? group;
@@ -27,19 +27,6 @@ class ShowNewsPage extends StatefulWidget {
       this.navigateToPage});
 
   @override
-  ShowNewsPageState createState() => ShowNewsPageState();
-}
-
-class ShowNewsPageState extends State<ShowNewsPage> {
-  late List<Message> _news;
-
-  @override
-  void initState() {
-    _news = widget.news;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -51,18 +38,18 @@ class ShowNewsPageState extends State<ShowNewsPage> {
           ),
           leading: CupertinoButton(
             onPressed: () {
-              if (widget.canNavigate) {
-                if (widget.isGroup) {
-                  widget.navigateToPage!(GroupInfoPage(
-                      group: widget.group!,
-                      canNavigate: widget.canNavigate,
-                      navigateToPage: widget.navigateToPage));
+              if (canNavigate) {
+                if (isGroup) {
+                  navigateToPage!(GroupInfoPage(
+                      group: group!,
+                      canNavigate: canNavigate,
+                      navigateToPage: navigateToPage));
                 } else {
-                  widget.navigateToPage!(PrivateInfoPage(
-                    privateChat: widget.privateChat!,
-                    canNavigate: widget.canNavigate,
-                    navigateToPage: widget.navigateToPage,
-                    user: widget.user!,
+                  navigateToPage!(PrivateInfoPage(
+                    privateChat: privateChat!,
+                    canNavigate: canNavigate,
+                    navigateToPage: navigateToPage,
+                    user: user!,
                   ));
                 }
               }
@@ -74,7 +61,7 @@ class ShowNewsPageState extends State<ShowNewsPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtil.groupMediasByDate(_news);
+            final groupedMedias = DateUtil.groupMediasByDate(news);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),

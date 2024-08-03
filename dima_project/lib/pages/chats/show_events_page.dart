@@ -10,7 +10,7 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
-class ShowEventsPage extends StatefulWidget {
+class ShowEventsPage extends StatelessWidget {
   final bool isGroup;
   final List<Message> events;
   final Group? group;
@@ -29,19 +29,6 @@ class ShowEventsPage extends StatefulWidget {
       this.group});
 
   @override
-  ShowEventsPageState createState() => ShowEventsPageState();
-}
-
-class ShowEventsPageState extends State<ShowEventsPage> {
-  late List<Message> _events;
-
-  @override
-  void initState() {
-    _events = widget.events;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -53,18 +40,18 @@ class ShowEventsPageState extends State<ShowEventsPage> {
           ),
           leading: CupertinoButton(
             onPressed: () {
-              if (widget.canNavigate) {
-                if (widget.isGroup) {
-                  widget.navigateToPage!(GroupInfoPage(
-                      group: widget.group!,
-                      canNavigate: widget.canNavigate,
-                      navigateToPage: widget.navigateToPage));
+              if (canNavigate) {
+                if (isGroup) {
+                  navigateToPage!(GroupInfoPage(
+                      group: group!,
+                      canNavigate: canNavigate,
+                      navigateToPage: navigateToPage));
                 } else {
-                  widget.navigateToPage!(PrivateInfoPage(
-                    privateChat: widget.privateChat!,
-                    navigateToPage: widget.navigateToPage,
-                    canNavigate: widget.canNavigate,
-                    user: widget.user!,
+                  navigateToPage!(PrivateInfoPage(
+                    privateChat: privateChat!,
+                    navigateToPage: navigateToPage,
+                    canNavigate: canNavigate,
+                    user: user!,
                   ));
                 }
               } else {
@@ -78,7 +65,7 @@ class ShowEventsPageState extends State<ShowEventsPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtil.groupMediasByDate(_events);
+            final groupedMedias = DateUtil.groupMediasByDate(events);
 
             return ListView.builder(
               physics: const BouncingScrollPhysics(),

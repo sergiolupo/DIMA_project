@@ -9,7 +9,7 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 
-class ShowMediasPage extends StatefulWidget {
+class ShowMediasPage extends StatelessWidget {
   final bool isGroup;
   final List<Message> medias;
   final bool canNavigate;
@@ -28,19 +28,6 @@ class ShowMediasPage extends StatefulWidget {
       this.navigateToPage});
 
   @override
-  ShowMediasPageState createState() => ShowMediasPageState();
-}
-
-class ShowMediasPageState extends State<ShowMediasPage> {
-  late List<Message> _medias;
-
-  @override
-  void initState() {
-    _medias = widget.medias;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -52,18 +39,18 @@ class ShowMediasPageState extends State<ShowMediasPage> {
           ),
           leading: CupertinoButton(
             onPressed: () {
-              if (widget.canNavigate) {
-                if (widget.isGroup) {
-                  widget.navigateToPage!(GroupInfoPage(
-                      group: widget.group!,
-                      canNavigate: widget.canNavigate,
-                      navigateToPage: widget.navigateToPage));
+              if (canNavigate) {
+                if (isGroup) {
+                  navigateToPage!(GroupInfoPage(
+                      group: group!,
+                      canNavigate: canNavigate,
+                      navigateToPage: navigateToPage));
                 } else {
-                  widget.navigateToPage!(PrivateInfoPage(
-                    privateChat: widget.privateChat!,
-                    canNavigate: widget.canNavigate,
-                    navigateToPage: widget.navigateToPage,
-                    user: widget.user!,
+                  navigateToPage!(PrivateInfoPage(
+                    privateChat: privateChat!,
+                    canNavigate: canNavigate,
+                    navigateToPage: navigateToPage,
+                    user: user!,
                   ));
                 }
               } else {
@@ -77,7 +64,7 @@ class ShowMediasPageState extends State<ShowMediasPage> {
       child: SafeArea(
         child: Builder(
           builder: (context) {
-            final groupedMedias = DateUtil.groupMediasByDate(_medias);
+            final groupedMedias = DateUtil.groupMediasByDate(medias);
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: groupedMedias.keys.length,
@@ -133,13 +120,13 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                             ),
                           ),
                           onTap: () {
-                            if (widget.canNavigate) {
-                              widget.navigateToPage!(MediaViewPage(
-                                isGroup: widget.isGroup,
-                                group: widget.group,
-                                privateChat: widget.privateChat,
-                                canNavigate: widget.canNavigate,
-                                navigateToPage: widget.navigateToPage,
+                            if (canNavigate) {
+                              navigateToPage!(MediaViewPage(
+                                isGroup: isGroup,
+                                group: group,
+                                privateChat: privateChat,
+                                canNavigate: canNavigate,
+                                navigateToPage: navigateToPage,
                                 media: message,
                                 messages: groupedMedias.values
                                     .expand((element) => element)
@@ -149,11 +136,11 @@ class ShowMediasPageState extends State<ShowMediasPage> {
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
                                   builder: (context) => MediaViewPage(
-                                    isGroup: widget.isGroup,
-                                    group: widget.group,
-                                    privateChat: widget.privateChat,
-                                    canNavigate: widget.canNavigate,
-                                    navigateToPage: widget.navigateToPage,
+                                    isGroup: isGroup,
+                                    group: group,
+                                    privateChat: privateChat,
+                                    canNavigate: canNavigate,
+                                    navigateToPage: navigateToPage,
                                     media: message,
                                     messages: groupedMedias.values
                                         .expand((element) => element)
