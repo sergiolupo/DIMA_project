@@ -5,7 +5,6 @@ class CategoryItemWidget extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final List<String> selectedCategories;
-  final BuildContext context;
 
   const CategoryItemWidget({
     super.key,
@@ -13,7 +12,6 @@ class CategoryItemWidget extends StatelessWidget {
     required this.icon,
     required this.onTap,
     required this.selectedCategories,
-    required this.context,
   });
 
   @override

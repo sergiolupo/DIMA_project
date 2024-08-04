@@ -25,7 +25,6 @@ class CategoriesFormState extends State<CategoriesForm> {
       child: Column(
         children: CategoryUtil.categories.map((category) {
           return CategoryItemWidget(
-            context: context,
             title: category,
             icon: CategoryUtil.iconForCategory(category),
             onTap: () {
