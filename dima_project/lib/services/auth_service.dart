@@ -8,7 +8,12 @@ import 'package:dima_project/services/database_service.dart';
 
 class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static String uid = _firebaseAuth.currentUser!.uid;
+  static String? _uid;
+  static String get uid => _uid ?? _firebaseAuth.currentUser!.uid;
+
+  static void setUid(String uid) {
+    _uid = uid; // Method to set the UID for testing
+  }
 
   static Future<void> signInWithEmailAndPassword(
       String email, String password) async {
@@ -16,7 +21,7 @@ class AuthService {
     await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
 
-    uid = _firebaseAuth.currentUser!.uid;
+    setUid(_firebaseAuth.currentUser!.uid);
     debugPrint("Signed In with uuid: ${_firebaseAuth.currentUser!.uid}");
     return;
   }
@@ -43,7 +48,7 @@ class AuthService {
 
       final UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(credential);
-      uid = _firebaseAuth.currentUser!.uid;
+      setUid(_firebaseAuth.currentUser!.uid);
 
       return userCredential.user;
     } else {
