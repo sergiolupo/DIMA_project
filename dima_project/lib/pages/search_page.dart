@@ -9,7 +9,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/events/event_tile.dart';
 import 'package:dima_project/widgets/group_tile.dart';
-import 'package:dima_project/widgets/select_option_widget.dart';
+import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,7 +97,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
                   "Search${searchIdx == 0 ? " users" : searchIdx == 1 ? " groups" : " events"}...",
             ),
           ),
-          CustomSelectOption(
+          CustomSelectionOption(
             textLeft: "Users",
             textRight: "Events",
             textMiddle: "Groups",

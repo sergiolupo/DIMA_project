@@ -7,7 +7,7 @@ import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile.dart';
-import 'package:dima_project/widgets/select_option_widget.dart';
+import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
@@ -77,7 +77,7 @@ class ListChatPageState extends State<ChatPage> {
               },
             ),
           ),
-          CustomSelectOption(
+          CustomSelectionOption(
             textLeft: "Groups",
             textRight: "Private",
             onChanged: (value) {

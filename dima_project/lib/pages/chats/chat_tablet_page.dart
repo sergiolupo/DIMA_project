@@ -11,7 +11,7 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile_tablet.dart';
-import 'package:dima_project/widgets/select_option_widget.dart';
+import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -121,7 +121,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             ),
             SizedBox(
               height: 50,
-              child: CustomSelectOption(
+              child: CustomSelectionOption(
                 textLeft: "Groups",
                 textRight: "Private",
                 onChanged: (value) {

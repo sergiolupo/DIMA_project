@@ -17,7 +17,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
-import 'package:dima_project/widgets/select_option_widget.dart';
+import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
@@ -283,7 +283,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                             .any((element) => element.uid! == widget.user))
                     ? Column(
                         children: [
-                          CustomSelectOption(
+                          CustomSelectionOption(
                             textLeft: 'Events created',
                             textRight: 'Events joined',
                             onChanged: (value) {

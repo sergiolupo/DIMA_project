@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 
-class CustomSelectOption extends StatefulWidget {
+class CustomSelectionOption extends StatefulWidget {
   final String textLeft;
   final String? textMiddle;
   final String textRight;
   final void Function(int idx) onChanged;
 
-  const CustomSelectOption({
+  const CustomSelectionOption({
     required this.textLeft,
     required this.textRight,
     this.textMiddle,
@@ -15,10 +15,10 @@ class CustomSelectOption extends StatefulWidget {
   });
 
   @override
-  CustomSelectOptionState createState() => CustomSelectOptionState();
+  CustomSelectionOptionState createState() => CustomSelectionOptionState();
 }
 
-class CustomSelectOptionState extends State<CustomSelectOption> {
+class CustomSelectionOptionState extends State<CustomSelectionOption> {
   int idx = 0;
 
   @override
