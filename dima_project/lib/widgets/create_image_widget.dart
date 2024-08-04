@@ -149,6 +149,7 @@ class CreateImageWidget {
             fit: BoxFit.cover,
             alignment: Alignment.topCenter,
           ),
+          errorListener: (error) {},
           imageUrl: content,
           fit: BoxFit.cover,
           width: size,
