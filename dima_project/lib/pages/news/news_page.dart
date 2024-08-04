@@ -27,7 +27,7 @@ class NewsPage extends ConsumerStatefulWidget {
 class NewsPageState extends ConsumerState<NewsPage> {
   List<ArticleModel>? sliders;
   List<ArticleModel>? articles;
-  News news = News();
+  NewsService news = NewsService();
 
   int numberOfNews =
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
@@ -98,7 +98,8 @@ class NewsPageState extends ConsumerState<NewsPage> {
                 child: user.when(
                     data: (user) {
                       final List<String> categories = user.categories;
-                      final newsCategories = News.getCategories(categories);
+                      final newsCategories =
+                          NewsService.getCategories(categories);
                       return ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,

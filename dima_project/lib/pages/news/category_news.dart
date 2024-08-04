@@ -21,7 +21,7 @@ class _CategoryNewsState extends State<CategoryNews> {
   }
 
   getCategories() async {
-    News showCategoryNews = News();
+    NewsService showCategoryNews = NewsService();
     await showCategoryNews.getCategoriesNews(widget.name.toLowerCase());
     categories = showCategoryNews.categories;
     setState(() {

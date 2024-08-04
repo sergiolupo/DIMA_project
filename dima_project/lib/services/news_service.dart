@@ -6,7 +6,7 @@ import 'package:dima_project/models/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class News {
+class NewsService {
   List<ArticleModel> news = [];
   List<ArticleModel> categories = [];
   List<ArticleModel> sliders = [];
