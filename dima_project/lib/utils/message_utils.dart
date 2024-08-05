@@ -209,7 +209,10 @@ class MessageUtils {
                               reader.username == AuthService.uid) {
                             return const SizedBox.shrink();
                           }
-                          return ReadTile(user: reader);
+                          return ReadTile(
+                            user: reader,
+                            databaseService: DatabaseService(),
+                          );
                         },
                       ),
                     ),

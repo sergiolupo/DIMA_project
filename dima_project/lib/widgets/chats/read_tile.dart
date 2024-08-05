@@ -8,7 +8,9 @@ import 'package:shimmer/shimmer.dart';
 
 class ReadTile extends StatefulWidget {
   final ReadBy user;
-  const ReadTile({super.key, required this.user});
+  final DatabaseService databaseService;
+  const ReadTile(
+      {super.key, required this.user, required this.databaseService});
 
   @override
   ReadTileState createState() => ReadTileState();
@@ -24,7 +26,7 @@ class ReadTileState extends State<ReadTile> {
 
   void getUserData() async {
     final userData =
-        await (DatabaseService()).getUserData(widget.user.username);
+        await (widget.databaseService).getUserData(widget.user.username);
 
     setState(() {
       _userData = userData;
