@@ -3,7 +3,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ArticleView extends StatefulWidget {
+class ArticleView extends StatelessWidget {
   final String description, imageUrl, title, blogUrl;
   const ArticleView(
       {super.key,
@@ -12,11 +12,6 @@ class ArticleView extends StatefulWidget {
       required this.imageUrl,
       required this.title});
 
-  @override
-  State<ArticleView> createState() => _ArticleViewState();
-}
-
-class _ArticleViewState extends State<ArticleView> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -37,21 +32,21 @@ class _ArticleViewState extends State<ArticleView> {
                       builder: (context) => const ShareNewsPage()));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
-                  await DatabaseService.shareNewsOnGroups(widget.title,
-                      widget.description, widget.imageUrl, widget.blogUrl, id);
+                  await DatabaseService.shareNewsOnGroups(
+                      title, description, imageUrl, blogUrl, id);
                 }
               }
               if (ids is Map && ids['users'].isNotEmpty) {
                 for (var id in ids['users']) {
-                  await DatabaseService.shareNewsOnFollower(widget.title,
-                      widget.description, widget.imageUrl, widget.blogUrl, id);
+                  await DatabaseService.shareNewsOnFollower(
+                      title, description, imageUrl, blogUrl, id);
                 }
               }
             },
           ),
         ),
         child: WebView(
-          initialUrl: widget.blogUrl,
+          initialUrl: blogUrl,
           javascriptMode: JavascriptMode.unrestricted,
         ));
   }
