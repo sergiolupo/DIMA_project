@@ -233,7 +233,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                 });
                               },
                               numInfos: numInfos,
-                              context: context,
                               index: index,
                               detailsList: details,
                               boolMap: map,

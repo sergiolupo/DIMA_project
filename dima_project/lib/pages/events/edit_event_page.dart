@@ -225,7 +225,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       });
                     },
                     numInfos: numInfos,
-                    context: context,
                     index: index,
                     detailsList: details,
                     boolMap: map,

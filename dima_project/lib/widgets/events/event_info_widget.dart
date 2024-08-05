@@ -10,7 +10,6 @@ class EventInfoWidget extends StatelessWidget {
   final Map<int, bool> boolMap;
   final Function onTap;
   final Function delete;
-  final BuildContext context;
   final int numInfos;
   final Function startDate;
   final Function endDate;
@@ -27,7 +26,6 @@ class EventInfoWidget extends StatelessWidget {
     required this.boolMap,
     required this.onTap,
     required this.delete,
-    required this.context,
     required this.numInfos,
     required this.startDate,
     required this.endDate,

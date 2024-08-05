@@ -20,20 +20,13 @@ class DatePicker extends StatelessWidget {
         FontAwesomeIcons.calendar,
         color: CupertinoTheme.of(context).primaryColor,
       ),
-      onPressed: () => showSheet(
-        context,
-        initialDateTime: initialDateTime,
-        onDateTimeChanged: onDateTimeChanged,
-      ),
+      onPressed: () => _showDatePickerSheet(context),
     );
   }
 
-  static void showSheet(
-    BuildContext context, {
-    required DateTime initialDateTime,
-    required ValueChanged<DateTime> onDateTimeChanged,
-  }) {
-    DateTime tempDateTime = initialDateTime;
+  void _showDatePickerSheet(BuildContext context) {
+    DateTime selectedDateTime = initialDateTime;
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -42,10 +35,10 @@ class DatePicker extends StatelessWidget {
             height: 180,
             child: CupertinoDatePicker(
               minimumYear: DateTime.now().year,
-              initialDateTime: tempDateTime,
+              initialDateTime: selectedDateTime,
               mode: CupertinoDatePickerMode.date,
               onDateTimeChanged: (dateTime) {
-                tempDateTime = dateTime;
+                selectedDateTime = dateTime;
               },
             ),
           ),
@@ -53,7 +46,7 @@ class DatePicker extends StatelessWidget {
         cancelButton: CupertinoActionSheetAction(
           child: const Text('Done'),
           onPressed: () {
-            onDateTimeChanged(tempDateTime);
+            onDateTimeChanged(selectedDateTime);
             Navigator.of(context).pop();
           },
         ),
