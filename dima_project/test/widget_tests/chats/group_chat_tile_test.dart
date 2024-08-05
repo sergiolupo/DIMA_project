@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   testWidgets('GroupChatTile displays group name', (WidgetTester tester) async {
     Group testGroup = Group(
@@ -20,6 +22,7 @@ void main() {
           child: GroupChatTile(
             group: testGroup,
             username: "",
+            databaseService: MockDatabaseService(),
           ),
         ),
       ),
@@ -54,6 +57,7 @@ void main() {
           child: GroupChatTile(
             group: testGroup,
             username: username,
+            databaseService: MockDatabaseService(),
           ),
         ),
       ),

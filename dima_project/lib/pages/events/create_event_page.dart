@@ -69,7 +69,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     );
   }
 
-  Future<void> _createEvent() async {
+  Future<void> _createEvent(DatabaseService databaseService) async {
     if (EventService.validateForm(
       context,
       _eventNameController.text,
@@ -90,7 +90,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
         details: details.values.toList(),
       );
 
-      await DatabaseService.createEvent(
+      await databaseService.createEvent(
           event, selectedImagePath, uids, groupIds);
 
       ref.invalidate(createdEventsProvider(uid));
@@ -99,6 +99,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = DatabaseService();
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -345,7 +346,9 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CupertinoButton(
-                          onPressed: _createEvent,
+                          onPressed: () async {
+                            await _createEvent(databaseService);
+                          },
                           padding: const EdgeInsets.symmetric(horizontal: 50),
                           color: CupertinoTheme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(20),

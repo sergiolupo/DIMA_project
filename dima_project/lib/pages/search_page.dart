@@ -25,15 +25,16 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class SearchPageState extends ConsumerState<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  final StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+  final StreamController<List<QueryDocumentSnapshot<Object?>>>
       _searchStreamController =
-      StreamController<List<QueryDocumentSnapshot<Map<String, dynamic>>>>();
+      StreamController<List<QueryDocumentSnapshot<Object?>>>();
 
-  StreamSubscription<List<QueryDocumentSnapshot<Map<String, dynamic>>>>?
+  StreamSubscription<List<QueryDocumentSnapshot<Object?>>>?
       _searchStreamSubscription;
 
   int searchIdx = 0;
   final String uid = AuthService.uid;
+  final DatabaseService databaseService = DatabaseService();
   @override
   void initState() {
     ref.read(followingProvider(uid));
@@ -47,21 +48,21 @@ class SearchPageState extends ConsumerState<SearchPage> {
       _searchStreamSubscription?.cancel();
 
       if (searchIdx == 0) {
-        _searchStreamSubscription =
-            DatabaseService.searchByUsernameStream(searchText)
-                .listen((snapshot) {
+        _searchStreamSubscription = databaseService
+            .searchByUsernameStream(searchText)
+            .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
       } else if (searchIdx == 1) {
-        _searchStreamSubscription =
-            DatabaseService.searchByGroupNameStream(searchText)
-                .listen((snapshot) {
+        _searchStreamSubscription = databaseService
+            .searchByGroupNameStream(searchText)
+            .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
       } else {
-        _searchStreamSubscription =
-            DatabaseService.searchByEventNameStream(searchText)
-                .listen((snapshot) {
+        _searchStreamSubscription = databaseService
+            .searchByEventNameStream(searchText)
+            .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
       }
@@ -109,8 +110,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
             },
           ),
           Expanded(
-            child: StreamBuilder<
-                List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+            child: StreamBuilder<List<QueryDocumentSnapshot<Object?>>>(
               stream: _searchStreamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -230,12 +230,13 @@ class SearchPageState extends ConsumerState<SearchPage> {
                     ),
                   ]);
                 }
-
+                final data =
+                    docs as List<QueryDocumentSnapshot<Map<String, dynamic>>>;
                 return ListView.builder(
-                  itemCount: docs.length,
+                  itemCount: data.length,
                   itemBuilder: (context, index) {
                     if (searchIdx == 0 &&
-                        (docs[index].data()).containsKey('email')) {
+                        (data[index].data()).containsKey('email')) {
                       final userData = UserData.fromSnapshot(docs[index]);
                       return followings.when(
                           data: (followingData) {
@@ -255,7 +256,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             return Text('Error: $error');
                           });
                     } else if (searchIdx == 1 &&
-                        (docs[index].data()).containsKey('groupId')) {
+                        (data[index].data()).containsKey('groupId')) {
                       final group = Group.fromSnapshot(docs[index]);
 
                       return GroupTile(
@@ -267,7 +268,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
                                 : 0,
                       );
                     } else if (searchIdx == 2 &&
-                        (docs[index].data()).containsKey('eventId')) {
+                        (data[index].data()).containsKey('eventId')) {
                       return FutureBuilder(
                           future: Event.fromSnapshot(docs[index]),
                           builder: (context, snapshot) {
@@ -277,6 +278,9 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
+                              if (snapshot.data == null || snapshot is! Event) {
+                                return const SizedBox.shrink();
+                              }
                               final event = snapshot.data as Event;
                               return EventTile(
                                 event: event,

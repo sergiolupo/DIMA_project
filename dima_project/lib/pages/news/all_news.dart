@@ -1,4 +1,5 @@
 import 'package:dima_project/models/article_model.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/news/show_all.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -42,10 +43,12 @@ class _AllNewsState extends State<AllNews> {
               itemCount: widget.articles.length,
               itemBuilder: (context, index) {
                 return ShowAll(
-                    url: widget.articles[index].url,
-                    description: widget.articles[index].description,
-                    image: widget.articles[index].urlToImage,
-                    title: widget.articles[index].title);
+                  url: widget.articles[index].url,
+                  description: widget.articles[index].description,
+                  image: widget.articles[index].urlToImage,
+                  title: widget.articles[index].title,
+                  databaseService: DatabaseService(),
+                );
               })),
     );
   }

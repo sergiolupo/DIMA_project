@@ -1,4 +1,5 @@
 import 'package:dima_project/models/article_model.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -122,10 +123,12 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                       itemBuilder: (context, index) {
                         final article = articles[index];
                         return BlogTile(
-                            description: article.description,
-                            imageUrl: article.urlToImage,
-                            title: article.title,
-                            url: article.url);
+                          description: article.description,
+                          imageUrl: article.urlToImage,
+                          title: article.title,
+                          url: article.url,
+                          databaseService: DatabaseService(),
+                        );
                       },
                     );
                   }

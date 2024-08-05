@@ -60,6 +60,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final databaseService = ref.read(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -116,10 +117,10 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                         );
                       },
                     );
-                    await updateGroup();
+                    await updateGroup(databaseService);
                     ref.invalidate(groupsProvider(AuthService.uid));
                     Group newGroup =
-                        await DatabaseService.getGroupFromId(widget.group.id);
+                        await databaseService.getGroupFromId(widget.group.id);
 
                     if (buildContext.mounted) {
                       Navigator.of(buildContext).pop();
@@ -307,7 +308,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
     );
   }
 
-  Future<void> updateGroup() async {
+  Future<void> updateGroup(DatabaseService databaseService) async {
     final group = Group(
       id: widget.group.id,
       name: _groupNameController.text,
@@ -316,7 +317,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
       imagePath: widget.group.imagePath!,
       isPublic: isPublic,
     );
-    await DatabaseService.updateGroup(
+    await databaseService.updateGroup(
       group,
       selectedImagePath,
       selectedImagePath == null,

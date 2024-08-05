@@ -14,14 +14,23 @@ import 'package:flutter/foundation.dart';
 import '../models/event.dart';
 
 class DatabaseService {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static final groupsRef = _firestore.collection('groups');
-  static final usersRef = _firestore.collection('users');
-  static final followersRef = _firestore.collection('followers');
-  static final privateChatRef = _firestore.collection('private_chats');
-  static final eventsRef = _firestore.collection('events');
+  late final FirebaseFirestore _firestore;
+  late final CollectionReference groupsRef;
+  late final CollectionReference usersRef;
+  late final CollectionReference followersRef;
+  late final CollectionReference privateChatRef;
+  late final CollectionReference eventsRef;
 
-  static Future<void> registerUserWithUUID(
+  DatabaseService() {
+    _firestore = FirebaseFirestore.instance;
+    groupsRef = _firestore.collection('groups');
+    usersRef = _firestore.collection('users');
+    followersRef = _firestore.collection('followers');
+    privateChatRef = _firestore.collection('private_chats');
+    eventsRef = _firestore.collection('events');
+  }
+
+  Future<void> registerUserWithUUID(
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
         ? ''
@@ -52,14 +61,14 @@ class DatabaseService {
     });
   }
 
-  static Future<void> updateToken(String token) async {
+  Future<void> updateToken(String token) async {
     debugPrint('Updating token... $token');
     await usersRef.doc(AuthService.uid).update({
       'token': token,
     });
   }
 
-  static Future<void> updateUserInformation(
+  Future<void> updateUserInformation(
     UserData user,
     Uint8List? imagePath,
     bool imageHasChanged,
@@ -105,7 +114,7 @@ class DatabaseService {
     }
   }
 
-  static Future<UserData> getUserData(String uid) async {
+  Future<UserData> getUserData(String uid) async {
     try {
       DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
       UserData user = UserData.fromSnapshot(documentSnapshot);
@@ -121,24 +130,23 @@ class DatabaseService {
     }
   }
 
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getUserDataFromUID(
-      String uid) {
+  Stream<DocumentSnapshot<Object?>> getUserDataFromUID(String uid) {
     return usersRef.doc(uid).snapshots();
   }
 
-  static Stream<Group> getGroupFromIdStream(String id) {
+  Stream<Group> getGroupFromIdStream(String id) {
     return groupsRef.doc(id).snapshots().map((snapshot) {
       return Group.fromSnapshot(snapshot);
     });
   }
 
-  static Future<Group> getGroupFromId(String id) {
+  Future<Group> getGroupFromId(String id) {
     return groupsRef.doc(id).get().then((snapshot) {
       return Group.fromSnapshot(snapshot);
     });
   }
 
-  static Future<UserData> getUserDataFromUsername(String username) async {
+  Future<UserData> getUserDataFromUsername(String username) async {
     username = username.replaceAll('[', '').replaceAll(']', '');
 
     QuerySnapshot querySnapshot =
@@ -148,7 +156,7 @@ class DatabaseService {
     return user;
   }
 
-  static Future<bool> checkUserExist(String email) async {
+  Future<bool> checkUserExist(String email) async {
     debugPrint('Checking if user exists... $email');
     final QuerySnapshot result =
         await usersRef.where('email', isEqualTo: email).get();
@@ -161,7 +169,7 @@ class DatabaseService {
   }
 
   //create a group
-  static Future<void> createGroup(
+  Future<void> createGroup(
     Group group,
     Uint8List imagePath,
     List<String> uuids,
@@ -212,7 +220,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<Message>> getChats(String groupId) async* {
+  Stream<List<Message>> getChats(String groupId) async* {
     final chats = await groupsRef
         .doc(groupId)
         .collection('messages')
@@ -250,20 +258,14 @@ class DatabaseService {
     }
   }
 
-  static Future getGroupAdmin(String groupId) async {
-    DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await groupsRef.doc(groupId).get();
-    return groupDoc['admin'];
-  }
-
-  static Stream<List<dynamic>> getGroupMembers(String groupId) {
+  Stream<List<dynamic>> getGroupMembers(String groupId) {
     return groupsRef.doc(groupId).snapshots().map((snapshot) {
       return snapshot['members'];
     });
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      searchByGroupNameStream(String searchText) {
+  Stream<List<QueryDocumentSnapshot<Object?>>> searchByGroupNameStream(
+      String searchText) {
     // Convert the search text to lower case to make the search case-insensitive
     String lowerCaseSearchText = searchText.toLowerCase();
 
@@ -283,8 +285,8 @@ class DatabaseService {
     });
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      searchByUsernameStream(String searchText) {
+  Stream<List<QueryDocumentSnapshot<Object?>>> searchByUsernameStream(
+      String searchText) {
     // Convert the search text to lower case to make the search case-insensitive
     String lowerCaseSearchText = searchText.toLowerCase();
 
@@ -301,9 +303,8 @@ class DatabaseService {
     });
   }
 
-  static Future<void> toggleGroupJoin(String groupId) async {
-    DocumentSnapshot<Map<String, dynamic>> groupDoc =
-        await groupsRef.doc(groupId).get();
+  Future<void> toggleGroupJoin(String groupId) async {
+    DocumentSnapshot<Object?> groupDoc = await groupsRef.doc(groupId).get();
     bool isJoined = groupDoc['members'].contains(AuthService.uid);
 
     if (isJoined) {
@@ -316,8 +317,7 @@ class DatabaseService {
         }),
       ]);
 
-      DocumentSnapshot<Map<String, dynamic>> groupDoc =
-          await groupsRef.doc(groupId).get();
+      DocumentSnapshot<Object?> groupDoc = await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
         await groupsRef.doc(groupId).delete();
       } else if (groupDoc['admin'] == AuthService.uid) {
@@ -352,7 +352,7 @@ class DatabaseService {
     }
   }
 
-  static void sendMessage(String? id, Message message) async {
+  void sendMessage(String? id, Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
     if (message.isGroupMessage) {
@@ -374,8 +374,7 @@ class DatabaseService {
     }
   }
 
-  static Future<PrivateChat> getPrivateChatsFromMember(
-      List<String> members) async {
+  Future<PrivateChat> getPrivateChatsFromMember(List<String> members) async {
     members.sort();
     QuerySnapshot<Object?> value =
         await privateChatRef.where("members", isEqualTo: members).get();
@@ -386,7 +385,7 @@ class DatabaseService {
         await privateChatRef.doc(value.docs.first.id).get());
   }
 
-  static Stream<String?> getPrivateChatIdFromMembers(List<String> members) {
+  Stream<String?> getPrivateChatIdFromMembers(List<String> members) {
     return privateChatRef.snapshots().map((snapshot) {
       for (var doc in snapshot.docs) {
         if (doc['members'].contains(members[0]) &&
@@ -398,12 +397,12 @@ class DatabaseService {
     });
   }
 
-  static Future sendFirstPrivateMessage(Message message, String id) async {
+  Future sendFirstPrivateMessage(Message message, String id) async {
     Map<String, dynamic> messageMap = message.toMap();
     return await privateChatRef.doc(id).collection('messages').add(messageMap);
   }
 
-  static Future<String> createPrivateChat(PrivateChat privateChat) async {
+  Future<String> createPrivateChat(PrivateChat privateChat) async {
     List<String> members = privateChat.members;
     members.sort();
     return await privateChatRef.add({
@@ -424,7 +423,7 @@ class DatabaseService {
     });
   }
 
-  static Future<List<Group>> getGroups(String uuid) async {
+  Future<List<Group>> getGroups(String uuid) async {
     final groupIds = await usersRef.doc(uuid).get().then((value) {
       return value['groups'];
     });
@@ -439,7 +438,7 @@ class DatabaseService {
     return groupsList;
   }
 
-  static Stream<List<Group>> getGroupsStream() async* {
+  Stream<List<Group>> getGroupsStream() async* {
     final groupIds = await usersRef.doc(AuthService.uid).get().then((value) {
       return value['groups'];
     });
@@ -524,7 +523,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<PrivateChat>> getPrivateChatsStream() async* {
+  Stream<List<PrivateChat>> getPrivateChatsStream() async* {
     try {
       final privateChats =
           await usersRef.doc(AuthService.uid).get().then((value) {
@@ -566,7 +565,9 @@ class DatabaseService {
       await for (var snapshot in snapshots) {
         for (var change in snapshot.docChanges) {
           final id = change.doc.id;
-          if (!change.doc.data()!['members'].contains(AuthService.uid)) {
+          if (!(((change.doc.data()! as Map<String, dynamic>)['members']!
+                  as List)
+              .contains(AuthService.uid))) {
             continue;
           }
           privateChat = PrivateChat.fromSnapshot(change.doc);
@@ -612,12 +613,11 @@ class DatabaseService {
     }
   }
 
-  static Future<DocumentSnapshot<Map<String, dynamic>>> getFollowersUser(
-      String uuid) async {
+  Future<DocumentSnapshot<Object?>> getFollowersUser(String uuid) async {
     return await followersRef.doc(uuid).get();
   }
 
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
       String eventId, String detailId) {
     final stream =
         eventsRef.doc(eventId).collection('details').doc(detailId).snapshots();
@@ -627,7 +627,7 @@ class DatabaseService {
     });
   }
 
-  static Future<bool> isUsernameTaken(String username) async {
+  Future<bool> isUsernameTaken(String username) async {
     final QuerySnapshot result =
         await usersRef.where('username', isEqualTo: username).get();
     final List<DocumentSnapshot> documents = result.docs;
@@ -638,7 +638,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> toggleFollowUnfollow(String user, String visitor) async {
+  Future<void> toggleFollowUnfollow(String user, String visitor) async {
     debugPrint('Toggling follow/unfollow');
 
     debugPrint('User: $user');
@@ -683,7 +683,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<Message>> getPrivateChats(String? privateChatId) async* {
+  Stream<List<Message>> getPrivateChats(String? privateChatId) async* {
     if (privateChatId == null) {
       yield [];
       return;
@@ -734,7 +734,7 @@ class DatabaseService {
     }
   }
 
-  static Future<int> getUnreadMessages(bool isGroup, String id) async {
+  Future<int> getUnreadMessages(bool isGroup, String id) async {
     if (!isGroup) {
       var snapshot = await privateChatRef.doc(id).collection('messages').get();
       int unreadCount = 0;
@@ -774,7 +774,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> updateMessageReadStatus(Message message) async {
+  Future<void> updateMessageReadStatus(Message message) async {
     ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: AuthService.uid);
 
     if (message.isGroupMessage) {
@@ -798,7 +798,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deleteMessage(Message message) async {
+  Future<void> deleteMessage(Message message) async {
     if (message.isGroupMessage) {
       await groupsRef
           .doc(message.chatID)
@@ -873,7 +873,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> updateMessageContent(
+  Future<void> updateMessageContent(
       Message message, String updatedMessage) async {
     Timestamp time = Timestamp.now();
     if (message.isGroupMessage) {
@@ -903,18 +903,8 @@ class DatabaseService {
     }
   }
 
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getUserInfo(
-      String uuid) {
-    try {
-      return usersRef.doc(uuid).snapshots();
-    } catch (e) {
-      debugPrint(e.toString());
-      return const Stream.empty();
-    }
-  }
-
-  static Future<void> sendChatImage(String chatID, File file,
-      bool isGroupMessage, Uint8List imagePath) async {
+  Future<void> sendChatImage(String chatID, File file, bool isGroupMessage,
+      Uint8List imagePath) async {
     final String imageUrl = await StorageService.uploadImageToStorage(
         'chat_images/$chatID/${AuthService.uid}/${Timestamp.now()}.jpg',
         imagePath);
@@ -938,7 +928,7 @@ class DatabaseService {
     sendMessage(chatID, message);
   }
 
-  static Future<bool> isEmailTaken(String email) async {
+  Future<bool> isEmailTaken(String email) async {
     final QuerySnapshot result =
         await usersRef.where('email', isEqualTo: email).get();
     final List<DocumentSnapshot> documents = result.docs;
@@ -949,13 +939,13 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<dynamic>> getGroupRequestsStream(String id) {
+  Stream<List<dynamic>> getGroupRequestsStream(String id) {
     return groupsRef.doc(id).snapshots().map((snapshot) {
       return snapshot['requests'];
     });
   }
 
-  static Future<List<UserData>> getGroupRequestsForGroup(String id) async {
+  Future<List<UserData>> getGroupRequestsForGroup(String id) async {
     final docs = await groupsRef.doc(id).get();
     List<UserData> users = [];
     for (var user in docs['requests']) {
@@ -964,11 +954,11 @@ class DatabaseService {
     return users;
   }
 
-  static Future<List<String>> getGroupRequests(String id) async {
+  Future<List<String>> getGroupRequests(String id) async {
     return (await groupsRef.doc(id).get())['requests'];
   }
 
-  static Future<List<Group>> getUserGroupRequests(String id) async {
+  Future<List<Group>> getUserGroupRequests(String id) async {
     final doc = await usersRef.doc(id).get();
     List<Group> groups = [];
     for (var group in doc['groupsRequests']) {
@@ -977,7 +967,7 @@ class DatabaseService {
     return groups;
   }
 
-  static Future<List<UserData>> getFollowRequests(String id) async {
+  Future<List<UserData>> getFollowRequests(String id) async {
     final docs = await usersRef.doc(id).get();
     List<UserData> users = [];
     for (var user in docs['requests']) {
@@ -986,7 +976,7 @@ class DatabaseService {
     return users;
   }
 
-  static Future<Map<String, List<String>>> getEventRequests(String id) async {
+  Future<Map<String, List<String>>> getEventRequests(String id) async {
     Map<String, List<String>> requests = {};
     final det = await eventsRef.doc(id).collection('details').get();
     for (var detail in det.docs) {
@@ -995,13 +985,13 @@ class DatabaseService {
     return requests;
   }
 
-  static Future<void> denyGroupRequest(String groupId, String uuid) async {
+  Future<void> denyGroupRequest(String groupId, String uuid) async {
     return await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])
     });
   }
 
-  static Future<void> acceptGroupRequest(String groupId, String uuid) async {
+  Future<void> acceptGroupRequest(String groupId, String uuid) async {
     await Future.wait([
       groupsRef.doc(groupId).update({
         'members': FieldValue.arrayUnion([uuid]),
@@ -1017,8 +1007,7 @@ class DatabaseService {
     ]);
   }
 
-  static Future<List<Message>> getGroupMessagesType(
-      String id, Type type) async {
+  Future<List<Message>> getGroupMessagesType(String id, Type type) async {
     final docs = (await groupsRef
             .doc(id)
             .collection('messages')
@@ -1042,8 +1031,7 @@ class DatabaseService {
     return messages;
   }
 
-  static Future<List<Message>> getPrivateMessagesType(
-      String id, Type type) async {
+  Future<List<Message>> getPrivateMessagesType(String id, Type type) async {
     try {
       final docs = (await privateChatRef
               .doc(id)
@@ -1063,7 +1051,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> acceptUserRequest(
+  Future<void> acceptUserRequest(
     String user,
   ) async {
     await Future.wait([
@@ -1079,7 +1067,7 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> denyUserRequest(
+  Future<void> denyUserRequest(
     String user,
   ) async {
     await usersRef.doc(AuthService.uid).update({
@@ -1087,7 +1075,7 @@ class DatabaseService {
     });
   }
 
-  static Future<void> acceptEventRequest(
+  Future<void> acceptEventRequest(
       String eventId, String detailId, String uuid) async {
     await Future.wait([
       eventsRef.doc(eventId).collection('details').doc(detailId).update({
@@ -1105,13 +1093,13 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> denyUserGroupRequest(String groupId, String uuid) async {
+  Future<void> denyUserGroupRequest(String groupId, String uuid) async {
     await usersRef.doc(uuid).update({
       'groupsRequests': FieldValue.arrayRemove([groupId])
     });
   }
 
-  static Future<void> acceptUserGroupRequest(
+  Future<void> acceptUserGroupRequest(
     String groupId,
   ) async {
     await Future.wait([
@@ -1129,8 +1117,8 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> createEvent(Event event, Uint8List imagePath,
-      List<String> uuids, List<String> groupIds) async {
+  Future<void> createEvent(Event event, Uint8List imagePath, List<String> uuids,
+      List<String> groupIds) async {
     try {
       DocumentReference docRef = await eventsRef.add(Event.toMap(event));
 
@@ -1166,8 +1154,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> sendEventsOnGroups(
-      String eventId, List<String> groupIds) async {
+  Future<void> sendEventsOnGroups(String eventId, List<String> groupIds) async {
     Message message = Message(
       content: eventId,
       sender: AuthService.uid,
@@ -1195,7 +1182,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> sendEventsOnPrivateChat(
+  Future<void> sendEventsOnPrivateChat(
       String eventId, List<String> uuids) async {
     Message message = Message(
       content: eventId,
@@ -1232,8 +1219,8 @@ class DatabaseService {
     }
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      searchByEventNameStream(String searchText) {
+  Stream<List<QueryDocumentSnapshot<Object?>>> searchByEventNameStream(
+      String searchText) {
     // Convert the search text to lower case to make the search case-insensitive
     String lowerCaseSearchText = searchText.toLowerCase();
 
@@ -1253,12 +1240,11 @@ class DatabaseService {
     });
   }
 
-  static Future<void> toggleEventJoin(
+  Future<void> toggleEventJoin(
     String eventId,
     String detailId,
   ) async {
-    DocumentSnapshot<Map<String, dynamic>> eventDoc =
-        await eventsRef.doc(eventId).get();
+    DocumentSnapshot<Object?> eventDoc = await eventsRef.doc(eventId).get();
     DocumentSnapshot<Map<String, dynamic>> detailDoc =
         await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
@@ -1315,7 +1301,7 @@ class DatabaseService {
     }
   }
 
-  static Stream<Event> getEventStream(String eventId) {
+  Stream<Event> getEventStream(String eventId) {
     // Assuming you're using Firestore or any other database service
     return FirebaseFirestore.instance
         .collection('events')
@@ -1330,7 +1316,7 @@ class DatabaseService {
     });
   }
 
-  static Future<List<Event>> getCreatedEvents(String uuid) async {
+  Future<List<Event>> getCreatedEvents(String uuid) async {
     final ids = await usersRef.doc(uuid).get().then((value) {
       return value['events'];
     });
@@ -1355,7 +1341,7 @@ class DatabaseService {
     return eventsList;
   }
 
-  static Future<List<Event>> getJoinedEvents(String uuid) async {
+  Future<List<Event>> getJoinedEvents(String uuid) async {
     final ids = await usersRef.doc(uuid).get().then((value) {
       return value['events'];
     });
@@ -1379,8 +1365,7 @@ class DatabaseService {
     return eventsList;
   }
 
-  static Future<bool> checkIfJoined(
-      bool isGroup, String? id, String uuid) async {
+  Future<bool> checkIfJoined(bool isGroup, String? id, String uuid) async {
     if (id == null) return false;
     if (isGroup) {
       final doc = await groupsRef.doc(id).get();
@@ -1393,7 +1378,7 @@ class DatabaseService {
     }
   }
 
-  static shareNewsOnGroups(String title, String description, String imageUrl,
+  Future shareNewsOnGroups(String title, String description, String imageUrl,
       String blogUrl, String id) async {
     Message message = Message(
       content: '$title\n$description\n$blogUrl\n$imageUrl',
@@ -1421,7 +1406,7 @@ class DatabaseService {
     ]);
   }
 
-  static shareNewsOnFollower(
+  Future shareNewsOnFollower(
     String title,
     String description,
     String imageUrl,
@@ -1461,8 +1446,8 @@ class DatabaseService {
     ]);
   }
 
-  static Future<void> updateEvent(Event event, Uint8List? uint8list,
-      bool sameImage, bool visibilityHasChanged, List<String> uuids) async {
+  Future<void> updateEvent(Event event, Uint8List? uint8list, bool sameImage,
+      bool visibilityHasChanged, List<String> uuids) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
     for (EventDetails detail in event.details!) {
@@ -1507,13 +1492,13 @@ class DatabaseService {
     }
   }
 
-  static Future<Event> getEvent(String id) {
+  Future<Event> getEvent(String id) {
     return eventsRef.doc(id).get().then((value) {
       return Event.fromSnapshot(value);
     });
   }
 
-  static updateGroup(Group group, Uint8List? uint8list, bool sameImage,
+  updateGroup(Group group, Uint8List? uint8list, bool sameImage,
       bool visibilityHasChanged, List<String> uuids) async {
     await groupsRef.doc(group.id).update(Group.toMap(group));
 
@@ -1545,7 +1530,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deletePrivateChat(PrivateChat chat) async {
+  Future<void> deletePrivateChat(PrivateChat chat) async {
     await privateChatRef.doc(chat.id!).delete();
     try {
       await usersRef.doc(chat.members[0]).update({
@@ -1563,7 +1548,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deleteDetail(String eventId, String detailId) async {
+  Future<void> deleteDetail(String eventId, String detailId) async {
     final details =
         await eventsRef.doc(eventId).collection('details').doc(detailId).get();
 
@@ -1584,7 +1569,7 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deleteEvent(String eventId) async {
+  Future<void> deleteEvent(String eventId) async {
     final details = await eventsRef.doc(eventId).collection('details').get();
     for (var detail in details.docs) {
       await deleteDetail(eventId, detail.id);
@@ -1592,7 +1577,7 @@ class DatabaseService {
     await eventsRef.doc(eventId).delete();
   }
 
-  static Future<void> deleteUser() async {
+  Future<void> deleteUser() async {
     final userDoc = await usersRef.doc(AuthService.uid).get();
     //exit all groups
     for (var group in userDoc['groups']) {
@@ -1647,7 +1632,7 @@ class DatabaseService {
     await usersRef.doc(AuthService.uid).delete();
   }
 
-  static Future<String> getDeviceTokenPrivateChat(PrivateChat chat) {
+  Future<String> getDeviceTokenPrivateChat(PrivateChat chat) {
     final String otherUID =
         chat.members[0] == AuthService.uid ? chat.members[1] : chat.members[0];
     return usersRef.doc(otherUID).get().then((value) {

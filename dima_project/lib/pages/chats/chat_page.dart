@@ -27,11 +27,12 @@ class ListChatPageState extends State<ChatPage> {
   final String uid = AuthService.uid;
   String searchedText = "";
   int idx = 0;
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
-    _privateChatsStream = DatabaseService.getPrivateChatsStream();
-    _groupsStream = DatabaseService.getGroupsStream();
+    _privateChatsStream = _databaseService.getPrivateChatsStream();
+    _groupsStream = _databaseService.getGroupsStream();
   }
 
   @override
@@ -141,10 +142,11 @@ class ListChatPageState extends State<ChatPage> {
                     return GroupChatTile(
                       username: '',
                       group: group,
+                      databaseService: _databaseService,
                     );
                   }
                   return StreamBuilder(
-                      stream: DatabaseService.getUserDataFromUID(
+                      stream: DatabaseService().getUserDataFromUID(
                           group.lastMessage!.recentMessageSender),
                       builder: (context, snapshot) {
                         String username = "";
@@ -162,6 +164,7 @@ class ListChatPageState extends State<ChatPage> {
                         return GroupChatTile(
                           group: group,
                           username: username,
+                          databaseService: _databaseService,
                         );
                       });
                 },
@@ -256,7 +259,7 @@ class ListChatPageState extends State<ChatPage> {
                   }
 
                   return StreamBuilder(
-                    stream: DatabaseService.getUserDataFromUID(
+                    stream: _databaseService.getUserDataFromUID(
                         privateChat.members[0] == uid
                             ? privateChat.members[1]
                             : privateChat.members[0]),
@@ -287,6 +290,7 @@ class ListChatPageState extends State<ChatPage> {
                         return PrivateChatTile(
                           privateChat: privateChat,
                           other: other,
+                          databaseService: _databaseService,
                         );
                       } else {
                         if (snapshot.hasError) {
@@ -300,6 +304,7 @@ class ListChatPageState extends State<ChatPage> {
                               name: '',
                               surname: '',
                             ),
+                            databaseService: _databaseService,
                           );
                         }
                         return Container();

@@ -24,6 +24,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('Requests'),
@@ -61,7 +62,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                 GestureDetector(
                   onTap: () async {
                     try {
-                      await DatabaseService.acceptUserRequest(
+                      await databaseService.acceptUserRequest(
                         user.uid!,
                       );
                       setState(() {
@@ -91,7 +92,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                 GestureDetector(
                   onTap: () async {
                     try {
-                      await DatabaseService.denyUserRequest(
+                      await databaseService.denyUserRequest(
                         user.uid!,
                       );
                       setState(() {

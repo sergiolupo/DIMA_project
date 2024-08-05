@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -33,12 +34,14 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
   @override
   Widget build(BuildContext context) {
     final event = ref.watch(eventProvider(widget.message.content));
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return event.when(
         data: (event) {
           return GestureDetector(
             onLongPress: () => MessageUtils.showBottomSheet(
               context,
               widget.message,
+              databaseService,
               showCustomSnackbar: null,
             ),
             child: Stack(
@@ -205,6 +208,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                       const SizedBox(width: 8),
                       MessageUtils.buildReadByIcon(
                         widget.message,
+                        databaseService,
                       ),
                     ],
                   ),
@@ -247,6 +251,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
             )),
         error: (error, stack) => EventDeletedMessageTile(
               message: widget.message,
+              databaseService: databaseService,
             ));
   }
 }

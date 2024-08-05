@@ -1,9 +1,12 @@
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/widgets/user_tile.dart';
+
+import '../mocks/mock_database_service.dart';
 
 void main() {
   final UserData testUser = UserData(
@@ -18,6 +21,9 @@ void main() {
 
   Widget createWidgetForTesting({required Widget child}) {
     return ProviderScope(
+      overrides: [
+        databaseServiceProvider.overrideWithValue(MockDatabaseService()),
+      ],
       child: CupertinoApp(
         home: CupertinoPageScaffold(
           child: Center(child: child),

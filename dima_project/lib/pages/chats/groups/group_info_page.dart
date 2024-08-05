@@ -35,6 +35,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   late Group group;
 
   final String uid = AuthService.uid;
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -201,8 +202,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       const SizedBox(height: 10),
                       if (!group.isPublic && group.admin == uid)
                         FutureBuilder(
-                          future: DatabaseService.getGroupRequestsForGroup(
-                              group.id),
+                          future: _databaseService
+                              .getGroupRequestsForGroup(group.id),
                           builder: (context, snapshot) {
                             return CupertinoListTile(
                               padding: const EdgeInsets.all(0),
@@ -276,7 +277,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                           },
                         ),
                       FutureBuilder(
-                        future: DatabaseService.getGroupMessagesType(
+                        future: _databaseService.getGroupMessagesType(
                             group.id, Type.image),
                         builder: (context, snapshot) {
                           return CupertinoListTile(
@@ -348,7 +349,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder(
-                        future: DatabaseService.getGroupMessagesType(
+                        future: _databaseService.getGroupMessagesType(
                             group.id, Type.event),
                         builder: (context, snapshot) {
                           return CupertinoListTile(
@@ -401,6 +402,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   events: events,
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
+                                  databaseService: _databaseService,
                                 ));
                                 return;
                               }
@@ -411,6 +413,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     canNavigate: false,
                                     isGroup: true,
                                     events: events,
+                                    databaseService: _databaseService,
                                   ),
                                 ),
                               );
@@ -420,7 +423,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder(
-                        future: DatabaseService.getGroupMessagesType(
+                        future: _databaseService.getGroupMessagesType(
                             group.id, Type.news),
                         builder: (context, snapshot) {
                           return CupertinoListTile(
@@ -537,7 +540,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
       itemCount: group.members!.length,
       itemBuilder: (context, index) {
         return FutureBuilder(
-            future: DatabaseService.getUserData(group.members![index]),
+            future: _databaseService.getUserData(group.members![index]),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
@@ -622,7 +625,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
             ),
             CupertinoDialogAction(
               onPressed: () async {
-                await DatabaseService.toggleGroupJoin(
+                await _databaseService.toggleGroupJoin(
                   group.id,
                 );
                 if (!context.mounted) return;

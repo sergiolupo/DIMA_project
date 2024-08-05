@@ -29,6 +29,8 @@ class PrivateInfoPage extends StatefulWidget {
 
 class PrivateInfoPageState extends State<PrivateInfoPage> {
   final String uid = AuthService.uid;
+  final DatabaseService _databaseService = DatabaseService();
+
   @override
   void initState() {
     super.initState();
@@ -99,7 +101,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder(
-                        future: DatabaseService.getPrivateMessagesType(
+                        future: _databaseService.getPrivateMessagesType(
                             widget.privateChat.id!, Type.image),
                         builder: (context, snapshot) {
                           return CupertinoListTile(
@@ -175,7 +177,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder(
-                        future: DatabaseService.getPrivateMessagesType(
+                        future: _databaseService.getPrivateMessagesType(
                             widget.privateChat.id!, Type.event),
                         builder: (context, snapshot) {
                           return CupertinoListTile(
@@ -231,6 +233,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
                                   user: widget.user,
+                                  databaseService: _databaseService,
                                 ));
                                 return;
                               }
@@ -243,6 +246,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     isGroup: false,
                                     events: events,
                                     user: widget.user,
+                                    databaseService: _databaseService,
                                   ),
                                 ),
                               );
@@ -252,7 +256,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder(
-                        future: DatabaseService.getPrivateMessagesType(
+                        future: _databaseService.getPrivateMessagesType(
                             widget.privateChat.id!, Type.news),
                         builder: (context, snapshot) {
                           return CupertinoListTile(

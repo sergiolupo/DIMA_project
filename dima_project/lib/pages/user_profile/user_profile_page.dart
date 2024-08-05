@@ -81,6 +81,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
   }
 
   Widget _buildProfile(UserData user) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -216,7 +217,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 8),
                             onPressed: () async {
-                              await DatabaseService.toggleFollowUnfollow(
+                              await databaseService.toggleFollowUnfollow(
                                   widget.user, uid);
                               ref.invalidate(followingProvider(uid));
                               ref.invalidate(followerProvider(widget.user));

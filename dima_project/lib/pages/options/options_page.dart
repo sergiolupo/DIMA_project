@@ -24,6 +24,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -84,13 +85,13 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.trash),
                   title: const Text('Delete Account'),
-                  onTap: () => deleteAccount(),
+                  onTap: () => deleteAccount(databaseService),
                 ),
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
                   title: const Text('Exit'),
                   onTap: () async {
-                    await _signOut(context);
+                    await _signOut(context, databaseService);
                   },
                 ),
               ],
@@ -101,7 +102,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     );
   }
 
-  Future<void> _signOut(BuildContext context) async {
+  Future<void> _signOut(
+      BuildContext context, DatabaseService databaseService) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -111,7 +113,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       },
     );
     try {
-      await DatabaseService.updateToken('');
+      await databaseService.updateToken('');
       await SharedPreferencesHelper.clearNotification();
       AuthService.signOut();
       ref.invalidate(userProvider);
@@ -128,7 +130,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     }
   }
 
-  void deleteAccount() {
+  void deleteAccount(DatabaseService databaseService) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext newContext) {
@@ -154,9 +156,9 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                     );
                   },
                 );
-                await DatabaseService.updateToken('');
+                await databaseService.updateToken('');
                 await SharedPreferencesHelper.clearNotification();
-                await DatabaseService.deleteUser();
+                await databaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
                 ref.invalidate(followingProvider);

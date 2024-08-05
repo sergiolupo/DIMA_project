@@ -42,6 +42,8 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final databaseService = ref.read(databaseServiceProvider);
+
     Widget page;
     switch (_currentPage) {
       case 1:
@@ -60,7 +62,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
         trailing: _currentPage == 1
             ? CupertinoButton(
                 padding: const EdgeInsets.all(3),
-                onPressed: () => {managePage()},
+                onPressed: () => {managePage(databaseService)},
                 child: Text(
                   'Create',
                   style: TextStyle(
@@ -115,7 +117,8 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
     );
   }
 
-  void createGroup(Group group, Uint8List imagePath) async {
+  void createGroup(
+      Group group, Uint8List imagePath, DatabaseService databaseService) async {
     BuildContext buildContext = context;
     // Show the loading dialog
     showCupertinoDialog(
@@ -128,7 +131,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
         );
       },
     );
-    await DatabaseService.createGroup(group, imagePath, uuids);
+    await databaseService.createGroup(group, imagePath, uuids);
     if (buildContext.mounted) {
       Navigator.of(buildContext).pop();
     }
@@ -292,7 +295,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
     ));
   }
 
-  void managePage() {
+  void managePage(DatabaseService databaseService) {
     if (!GroupHelper.validateNameAndDescription(
         context, _groupNameController.text, _groupDescriptionController.text)) {
       return;
@@ -307,6 +310,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
         isPublic: isPublic,
       ),
       selectedImagePath,
+      databaseService,
     );
     ref.invalidate(groupsProvider(FirebaseAuth.instance.currentUser!.uid));
   }

@@ -25,6 +25,11 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  late final DatabaseService databaseService;
+
+  NotificationService() {
+    databaseService = DatabaseService();
+  }
 
   void requestNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
@@ -77,13 +82,13 @@ class NotificationService {
 
   void setupToken(WidgetRef ref) async {
     String? token = await FirebaseMessaging.instance.getToken();
-    await DatabaseService.updateToken(token!);
+    await databaseService.updateToken(token!);
 
     messaging.onTokenRefresh.listen((event) async {
       if (FirebaseAuth.instance.currentUser == null) {
         return;
       }
-      await DatabaseService.updateToken(event);
+      await databaseService.updateToken(event);
       ref.invalidate(userProvider(AuthService.uid));
     });
   }
@@ -205,10 +210,10 @@ class NotificationService {
     return credentials.accessToken.data;
   }
 
-  static sendNotificationForPrivateChat(
+  sendNotificationForPrivateChat(
       PrivateChat privateChat, chat_message.Message chatMessage) async {
     String deviceToken =
-        await DatabaseService.getDeviceTokenPrivateChat(privateChat);
+        await databaseService.getDeviceTokenPrivateChat(privateChat);
     if (deviceToken == '') return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =

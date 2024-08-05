@@ -24,6 +24,7 @@ class GroupRequestsPage extends StatefulWidget {
 
 class GroupRequestsPageState extends State<GroupRequestsPage> {
   late List<UserData> users;
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     users = widget.requests;
@@ -75,7 +76,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
               GestureDetector(
                 onTap: () async {
                   try {
-                    await DatabaseService.acceptGroupRequest(
+                    await _databaseService.acceptGroupRequest(
                         widget.group.id, user.uid!);
                     setState(() {
                       users.removeAt(index);
@@ -104,7 +105,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
               GestureDetector(
                 onTap: () async {
                   try {
-                    await DatabaseService.denyGroupRequest(
+                    await _databaseService.denyGroupRequest(
                         widget.group.id, user.uid!);
                     setState(() {
                       users.removeAt(index);

@@ -11,7 +11,8 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class MessageUtils {
-  static void showBottomSheet(BuildContext context, Message message,
+  static void showBottomSheet(
+      BuildContext context, Message message, DatabaseService databaseService,
       {required VoidCallback? showCustomSnackbar}) {
     showCupertinoModalPopup(
       context: context,
@@ -40,7 +41,8 @@ class MessageUtils {
                 icon: CupertinoIcons.delete,
                 color: CupertinoColors.systemRed,
                 text: 'Delete Message',
-                onPressed: () => _deleteMessage(context, message),
+                onPressed: () =>
+                    _deleteMessage(context, message, databaseService),
                 context: newContext,
               ),
             if (message.sentByMe!)
@@ -82,11 +84,12 @@ class MessageUtils {
 
   static Widget buildReadByIcon(
     Message message,
+    DatabaseService databaseService,
   ) {
     bool hasRead =
         message.readBy!.any((element) => element.username == AuthService.uid);
     if (!hasRead) {
-      DatabaseService.updateMessageReadStatus(message);
+      databaseService.updateMessageReadStatus(message);
     }
 
     return message.sentByMe == true
@@ -117,7 +120,8 @@ class MessageUtils {
         quality: 60, name: const Uuid().v4());
   }
 
-  static void _deleteMessage(BuildContext context, Message message) {
+  static void _deleteMessage(
+      BuildContext context, Message message, DatabaseService databaseService) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext newContext) {
@@ -128,7 +132,7 @@ class MessageUtils {
             CupertinoDialogAction(
               child: const Text('Yes'),
               onPressed: () async {
-                await DatabaseService.deleteMessage(message);
+                await databaseService.deleteMessage(message);
                 if (newContext.mounted) Navigator.pop(newContext);
               },
             ),

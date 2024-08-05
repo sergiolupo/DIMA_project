@@ -9,8 +9,9 @@ class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController;
   final TextEditingController _passwordController;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  const LoginForm(this._usernameController, this._passwordController,
-      {super.key});
+  final DatabaseService databaseService = DatabaseService();
+
+  LoginForm(this._usernameController, this._passwordController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +123,7 @@ class LoginForm extends StatelessWidget {
       if (user == null) {
         throw Exception("Failed to login with Google");
       }
-      final bool userExists = await DatabaseService.checkUserExist(user.email!);
+      final bool userExists = await databaseService.checkUserExist(user.email!);
 
       if (!userExists) {
         if (!context.mounted) return;

@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/pages/news/article_view.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowAll extends StatelessWidget {
   final String image, description, title, url;
+  final DatabaseService databaseService;
   const ShowAll(
       {super.key,
       required this.image,
       required this.description,
+      required this.databaseService,
       required this.title,
       required this.url});
 
@@ -20,10 +23,12 @@ class ShowAll extends StatelessWidget {
             context,
             CupertinoPageRoute(
                 builder: (context) => ArticleView(
-                    blogUrl: url,
-                    description: description,
-                    imageUrl: image,
-                    title: title)));
+                      blogUrl: url,
+                      description: description,
+                      imageUrl: image,
+                      title: title,
+                      databaseService: databaseService,
+                    )));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

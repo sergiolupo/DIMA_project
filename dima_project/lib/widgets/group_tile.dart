@@ -21,7 +21,7 @@ class GroupTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String uid = AuthService.uid;
-
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return Row(
       children: [
         Expanded(
@@ -66,7 +66,7 @@ class GroupTile extends ConsumerWidget {
         GestureDetector(
           onTap: () async {
             try {
-              await DatabaseService.toggleGroupJoin(group.id);
+              await databaseService.toggleGroupJoin(group.id);
               ref.invalidate(groupsProvider(uid));
             } catch (error) {
               debugPrint("Error occurred: $error");

@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/news/article_view.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -9,9 +10,11 @@ import 'package:flutter/cupertino.dart';
 class NewsMessageTile extends StatelessWidget {
   final Message message;
   final String? senderUsername;
+  final DatabaseService databaseService;
   const NewsMessageTile({
     required this.message,
     this.senderUsername,
+    required this.databaseService,
     super.key,
   });
 
@@ -21,6 +24,7 @@ class NewsMessageTile extends StatelessWidget {
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
         message,
+        databaseService,
         showCustomSnackbar: null,
       ),
       child: Stack(
@@ -109,6 +113,7 @@ class NewsMessageTile extends StatelessWidget {
                                     description: news[1],
                                     imageUrl: news[3],
                                     title: news[0],
+                                    databaseService: databaseService,
                                   ),
                                 ),
                               );
@@ -190,6 +195,7 @@ class NewsMessageTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 MessageUtils.buildReadByIcon(
                   message,
+                  databaseService,
                 ),
               ],
             ),

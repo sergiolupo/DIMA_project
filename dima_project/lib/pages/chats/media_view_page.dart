@@ -33,7 +33,7 @@ class MediaViewPage extends StatefulWidget {
 class MediaViewPageState extends State<MediaViewPage> {
   late PageController _pageController;
   late int initialPage;
-
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -74,7 +74,7 @@ class MediaViewPageState extends State<MediaViewPage> {
               ),
               middle: SingleChildScrollView(
                 child: FutureBuilder<UserData>(
-                  future: DatabaseService.getUserData(message.sender),
+                  future: _databaseService.getUserData(message.sender),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CupertinoActivityIndicator());

@@ -26,7 +26,7 @@ class ShareEventPageState extends State<ShareEventPage> {
 
   void fetchGroups() async {
     final List<Group> userGroups =
-        await DatabaseService.getGroups(AuthService.uid);
+        await DatabaseService().getGroups(AuthService.uid);
     setState(() {
       groups = userGroups;
       groupsIds = widget.groupIds;

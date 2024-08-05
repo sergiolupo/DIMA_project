@@ -14,7 +14,6 @@ import 'package:dima_project/pages/user_profile/show_groups_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
@@ -90,6 +89,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
   }
 
   Widget _buildProfile(UserData user) {
+    final databaseService = ref.read(databaseServiceProvider);
     final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -213,7 +213,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 8),
                             onPressed: () async {
-                              await DatabaseService.toggleFollowUnfollow(
+                              await databaseService.toggleFollowUnfollow(
                                   widget.user, uid);
                               ref.invalidate(followingProvider(uid));
                               ref.invalidate(followerProvider(widget.user));

@@ -25,6 +25,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   List<UserData>? users;
   String _searchText = "";
   final String uid = AuthService.uid;
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -33,16 +34,19 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   }
 
   void fetchGroups() async {
-    groups = await DatabaseService.getGroups(uid);
+    groups = await _databaseService.getGroups(uid);
     setState(() {});
   }
 
   void fetchUsers() async {
-    final doc = await DatabaseService.getFollowersUser(uid);
-    if (doc.exists && doc.data() != null && doc.data()!['followers'] != null) {
-      final followers = List<String>.from(doc.data()!['followers']);
+    final doc = await _databaseService.getFollowersUser(uid);
+    if (doc.exists &&
+        doc.data() != null &&
+        (doc.data() as Map<String, dynamic>)['followers'] != null) {
+      final followers =
+          List<String>.from((doc.data() as Map<String, dynamic>)['followers']);
       users = await Future.wait(
-          followers.map((uuid) => DatabaseService.getUserData(uuid)).toList());
+          followers.map((uuid) => _databaseService.getUserData(uuid)).toList());
       setState(() {});
     }
   }

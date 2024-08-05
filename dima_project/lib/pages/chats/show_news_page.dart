@@ -4,6 +4,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -102,6 +103,7 @@ class ShowNewsPage extends StatelessWidget {
                           description: news[1],
                           imageUrl: news[3],
                           title: news[0],
+                          databaseService: DatabaseService(),
                         );
                       },
                     ),

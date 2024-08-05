@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   testWidgets('BlogTile displays correctly', (WidgetTester tester) async {
     const imageUrl = 'https://via.placeholder.com/150';
@@ -14,7 +16,7 @@ void main() {
 
     await mockNetworkImagesFor(() async {
       await tester.pumpWidget(
-        const CupertinoApp(
+        CupertinoApp(
           home: Column(
             children: [
               BlogTile(
@@ -22,6 +24,7 @@ void main() {
                 title: title,
                 description: description,
                 url: url,
+                databaseService: MockDatabaseService(),
               ),
             ],
           ),

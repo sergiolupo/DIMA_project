@@ -10,10 +10,12 @@ import 'package:intl/intl.dart';
 class PrivateChatTile extends StatefulWidget {
   final PrivateChat privateChat;
   final UserData other;
+  final DatabaseService databaseService;
   const PrivateChatTile({
     super.key,
     required this.privateChat,
     required this.other,
+    required this.databaseService,
   });
 
   @override
@@ -49,7 +51,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
         ),
       ),
       onDismissed: (direction) async {
-        await DatabaseService.deletePrivateChat(widget.privateChat);
+        await widget.databaseService.deletePrivateChat(widget.privateChat);
       },
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),

@@ -1,4 +1,5 @@
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/utils/message_utils.dart';
@@ -6,9 +7,10 @@ import 'package:flutter/cupertino.dart';
 
 class EventDeletedMessageTile extends StatelessWidget {
   final Message message;
-
+  final DatabaseService databaseService;
   const EventDeletedMessageTile({
     required this.message,
+    required this.databaseService,
     super.key,
   });
 
@@ -121,7 +123,8 @@ class EventDeletedMessageTile extends StatelessWidget {
                   ),
                   Visibility(
                     visible: false,
-                    child: MessageUtils.buildReadByIcon(message),
+                    child:
+                        MessageUtils.buildReadByIcon(message, databaseService),
                   ),
                 ],
               ),

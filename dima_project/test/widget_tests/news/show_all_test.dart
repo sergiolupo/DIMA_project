@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   testWidgets('ShowAll widget displays correctly and navigates on tap',
       (WidgetTester tester) async {
@@ -15,13 +17,14 @@ void main() {
     // Use the mockNetworkImagesFor function to mock network images
     await mockNetworkImagesFor(() async {
       await tester.pumpWidget(
-        const CupertinoApp(
+        CupertinoApp(
           home: CupertinoPageScaffold(
             child: ShowAll(
               image: image,
               description: description,
               title: title,
               url: url,
+              databaseService: MockDatabaseService(),
             ),
           ),
         ),

@@ -36,11 +36,13 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   PrivateChat? selectedPrivateChat;
   int idx = 0;
   Widget page = const StartMessagingWidget();
+  final DatabaseService databaseService = DatabaseService();
+
   @override
   void initState() {
     super.initState();
-    _privateChatsStream = DatabaseService.getPrivateChatsStream();
-    _groupsStream = DatabaseService.getGroupsStream();
+    _privateChatsStream = databaseService.getPrivateChatsStream();
+    _groupsStream = databaseService.getGroupsStream();
   }
 
   void _navigateToPage(Widget newPage) {
@@ -217,7 +219,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     if (group.lastMessage == null) {
                       return GroupChatTileTablet(
                         onDismissed: (DismissDirection direction) async {
-                          await DatabaseService.toggleGroupJoin(group.id);
+                          await databaseService.toggleGroupJoin(group.id);
                           setState(() {
                             if (selectedGroup != null &&
                                 selectedGroup!.id == group.id) {
@@ -242,7 +244,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                       );
                     }
                     return StreamBuilder(
-                        stream: DatabaseService.getUserDataFromUID(
+                        stream: databaseService.getUserDataFromUID(
                             group.lastMessage!.recentMessageSender),
                         builder: (context, snapshot) {
                           String username = "";
@@ -259,7 +261,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           }
                           return GroupChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
-                              await DatabaseService.toggleGroupJoin(group.id);
+                              await databaseService.toggleGroupJoin(group.id);
                               setState(() {
                                 if (selectedGroup != null &&
                                     selectedGroup!.id == group.id) {
@@ -331,7 +333,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                   }
 
                   return StreamBuilder(
-                    stream: DatabaseService.getUserDataFromUID(
+                    stream: databaseService.getUserDataFromUID(
                         privateChat.members[0] == uid
                             ? privateChat.members[1]
                             : privateChat.members[0]),
@@ -392,8 +394,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
 
                         return PrivateChatTileTablet(
                           onDismissed: (DismissDirection direction) async {
-                            await DatabaseService.deletePrivateChat(
-                                privateChat);
+                            await databaseService
+                                .deletePrivateChat(privateChat);
                             setState(() {
                               if (selectedUser != null &&
                                   selectedUser!.uid == other.uid) {
@@ -424,8 +426,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         if (snapshot.hasError) {
                           return PrivateChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
-                              await DatabaseService.deletePrivateChat(
-                                  privateChat);
+                              await databaseService
+                                  .deletePrivateChat(privateChat);
 
                               setState(() {
                                 if (selectedPrivateChat != null &&

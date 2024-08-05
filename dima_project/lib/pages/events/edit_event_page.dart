@@ -59,6 +59,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.read(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -98,7 +99,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 );
 
                 try {
-                  await updateEvent();
+                  await updateEvent(databaseService);
                 } catch (e) {
                   debugPrint('Error: $e');
                 } finally {
@@ -343,7 +344,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
     }
   }
 
-  Future<void> updateEvent() async {
+  Future<void> updateEvent(DatabaseService databaseService) async {
     for (int i = 0; i < details.length; i++) {
       details[i]!.members = [uid];
     }
@@ -358,7 +359,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       details: details.values.toList(),
       createdAt: widget.event.createdAt,
     );
-    await DatabaseService.updateEvent(
+    await databaseService.updateEvent(
       event,
       selectedImagePath,
       selectedImagePath == null,

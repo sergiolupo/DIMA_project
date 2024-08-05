@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/message.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   group('EventDeletedMessageTile Tests', () {
     testWidgets(
@@ -34,7 +36,9 @@ void main() {
           home: CupertinoPageScaffold(
             child: Column(
               children: [
-                EventDeletedMessageTile(message: testMessage),
+                EventDeletedMessageTile(
+                    message: testMessage,
+                    databaseService: MockDatabaseService()),
               ],
             ),
           ),
@@ -79,7 +83,9 @@ void main() {
           home: CupertinoPageScaffold(
             child: Column(
               children: [
-                EventDeletedMessageTile(message: testMessage),
+                EventDeletedMessageTile(
+                    message: testMessage,
+                    databaseService: MockDatabaseService()),
               ],
             ),
           ),

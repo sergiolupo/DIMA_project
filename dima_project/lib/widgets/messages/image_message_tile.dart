@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/chats/media_view_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -10,11 +11,13 @@ class ImageMessageTile extends StatelessWidget {
   final Message message;
   final String? senderUsername;
   final VoidCallback showCustomSnackbar;
+  final DatabaseService databaseService;
   const ImageMessageTile({
     required this.message,
     this.senderUsername,
     super.key,
     required this.showCustomSnackbar,
+    required this.databaseService,
   });
 
   @override
@@ -23,6 +26,7 @@ class ImageMessageTile extends StatelessWidget {
       onLongPress: () => MessageUtils.showBottomSheet(
         context,
         message,
+        databaseService,
         showCustomSnackbar: showCustomSnackbar,
       ),
       onTap: () {
@@ -152,6 +156,7 @@ class ImageMessageTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 MessageUtils.buildReadByIcon(
                   message,
+                  databaseService,
                 ),
               ],
             ),

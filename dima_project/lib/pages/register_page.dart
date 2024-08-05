@@ -33,6 +33,7 @@ class RegisterPageState extends State<RegisterPage> {
   bool _isEnteredWithGoogle = false;
   Uint8List selectedImagePath = Uint8List(0);
   String pageName = 'Credentials Information';
+  final DatabaseService databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -198,7 +199,7 @@ class RegisterPageState extends State<RegisterPage> {
   Future<void> managePage() async {
     if (_currentPage == 1) {
       bool isEmailTaken =
-          await DatabaseService.isEmailTaken(_emailController.text);
+          await databaseService.isEmailTaken(_emailController.text);
 
       if (isEmailTaken) {
         debugPrint('Email is already taken');
@@ -222,7 +223,7 @@ class RegisterPageState extends State<RegisterPage> {
 
     if (_currentPage == 2) {
       bool isUsernameTaken =
-          await DatabaseService.isUsernameTaken(_usernameController.text);
+          await databaseService.isUsernameTaken(_usernameController.text);
       if (isUsernameTaken) {
         debugPrint('Username is already taken');
         if (!mounted) return;
@@ -327,7 +328,7 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
     try {
-      await DatabaseService.registerUserWithUUID(userData, uuid, imagePath);
+      await databaseService.registerUserWithUUID(userData, uuid, imagePath);
     } catch (e) {
       return;
     }

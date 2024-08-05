@@ -33,6 +33,7 @@ class UserTileState extends ConsumerState<UserTile> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return Row(
       children: [
         Expanded(
@@ -93,7 +94,7 @@ class UserTileState extends ConsumerState<UserTile> {
             ? GestureDetector(
                 onTap: () async {
                   try {
-                    await DatabaseService.toggleFollowUnfollow(
+                    await databaseService.toggleFollowUnfollow(
                       widget.user.uid!,
                       uid,
                     );

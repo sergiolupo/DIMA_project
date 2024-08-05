@@ -63,8 +63,8 @@ class AuthService {
             email: user.email, password: user.password!);
 
     debugPrint('User Registered: ${userCredential.user!.uid}');
-    await DatabaseService.registerUserWithUUID(
-        user, userCredential.user!.uid, imagePath);
+    await DatabaseService()
+        .registerUserWithUUID(user, userCredential.user!.uid, imagePath);
   }
 
   static Future<void> deleteUser() {

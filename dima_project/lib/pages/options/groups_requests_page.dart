@@ -24,6 +24,7 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('Group Requests'),
@@ -55,7 +56,7 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                   GestureDetector(
                     onTap: () async {
                       try {
-                        await DatabaseService.acceptUserGroupRequest(
+                        await databaseService.acceptUserGroupRequest(
                           group.id,
                         );
                         setState(() {
@@ -85,7 +86,7 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                   GestureDetector(
                     onTap: () async {
                       try {
-                        await DatabaseService.denyUserGroupRequest(
+                        await databaseService.denyUserGroupRequest(
                             group.id, uid);
                         setState(() {
                           groupsRequests.removeAt(index);

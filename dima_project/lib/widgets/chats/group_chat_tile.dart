@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 class GroupChatTile extends StatefulWidget {
   final Group group;
   final String? username;
+  final DatabaseService databaseService;
   const GroupChatTile({
     super.key,
     required this.group,
     this.username,
+    required this.databaseService,
   });
 
   @override
@@ -48,7 +50,7 @@ class GroupChatTileState extends State<GroupChatTile> {
         ),
       ),
       onDismissed: (direction) async {
-        await DatabaseService.toggleGroupJoin(
+        await widget.databaseService.toggleGroupJoin(
           widget.group.id,
         );
       },

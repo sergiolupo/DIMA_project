@@ -1,16 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 
 class BlogTile extends StatelessWidget {
   final String imageUrl, title, description, url;
+  final DatabaseService databaseService;
   const BlogTile(
       {super.key,
       required this.description,
       required this.imageUrl,
       required this.title,
-      required this.url});
+      required this.url,
+      required this.databaseService});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +23,12 @@ class BlogTile extends StatelessWidget {
             context,
             CupertinoPageRoute(
                 builder: (context) => ArticleView(
-                    blogUrl: url,
-                    description: description,
-                    imageUrl: imageUrl,
-                    title: title)));
+                      blogUrl: url,
+                      description: description,
+                      imageUrl: imageUrl,
+                      title: title,
+                      databaseService: databaseService,
+                    )));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),

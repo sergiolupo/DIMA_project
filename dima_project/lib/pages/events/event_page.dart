@@ -32,6 +32,7 @@ class EventPageState extends ConsumerState<EventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = DatabaseService();
     final event = ref.watch(eventProvider(widget.eventId));
     return event.when(
       data: (event) {
@@ -243,7 +244,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                                         );
                                                       },
                                                     );
-                                                    await DatabaseService
+                                                    await databaseService
                                                         .deleteEvent(
                                                             widget.eventId);
                                                     ref.invalidate(

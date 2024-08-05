@@ -5,12 +5,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticleView extends StatelessWidget {
   final String description, imageUrl, title, blogUrl;
-  const ArticleView(
-      {super.key,
-      required this.blogUrl,
-      required this.description,
-      required this.imageUrl,
-      required this.title});
+  final DatabaseService databaseService;
+  const ArticleView({
+    super.key,
+    required this.blogUrl,
+    required this.description,
+    required this.imageUrl,
+    required this.title,
+    required this.databaseService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +35,13 @@ class ArticleView extends StatelessWidget {
                       builder: (context) => const ShareNewsPage()));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
-                  await DatabaseService.shareNewsOnGroups(
+                  await databaseService.shareNewsOnGroups(
                       title, description, imageUrl, blogUrl, id);
                 }
               }
               if (ids is Map && ids['users'].isNotEmpty) {
                 for (var id in ids['users']) {
-                  await DatabaseService.shareNewsOnFollower(
+                  await databaseService.shareNewsOnFollower(
                       title, description, imageUrl, blogUrl, id);
                 }
               }

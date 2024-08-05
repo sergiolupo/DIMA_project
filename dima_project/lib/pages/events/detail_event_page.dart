@@ -34,6 +34,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
+
     final event = ref.watch(eventProvider(widget.eventId));
     return event.when(data: (event) {
       final detail = event.details!.firstWhere(
@@ -224,7 +226,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       return;
                     }
                     debugPrint('Joining event');
-                    await DatabaseService.toggleEventJoin(
+                    await databaseService.toggleEventJoin(
                       event.id!,
                       detail.id!,
                     );
@@ -300,7 +302,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                       );
                                     },
                                   );
-                                  await DatabaseService.deleteDetail(
+                                  await databaseService.deleteDetail(
                                       event.id!, widget.detailId);
                                   ref.invalidate(eventProvider(event.id!));
                                   ref.invalidate(createdEventsProvider(uid));

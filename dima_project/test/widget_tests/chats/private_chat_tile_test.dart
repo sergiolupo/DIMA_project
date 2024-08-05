@@ -7,6 +7,8 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',
       (WidgetTester tester) async {
@@ -39,6 +41,7 @@ void main() {
           child: PrivateChatTile(
             privateChat: privateChat,
             other: user,
+            databaseService: MockDatabaseService(),
           ),
         ),
       ),
@@ -83,6 +86,7 @@ void main() {
           child: PrivateChatTile(
             privateChat: privateChatEvent,
             other: user,
+            databaseService: MockDatabaseService(),
           ),
         ),
       ),

@@ -39,6 +39,7 @@ class InvitePageState extends ConsumerState<InvitePage> {
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     final AsyncValue<List<UserData>> asyncUsers =
         ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
@@ -125,7 +126,7 @@ class InvitePageState extends ConsumerState<InvitePage> {
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
                     return FutureBuilder(
-                      future: DatabaseService.checkIfJoined(
+                      future: databaseService.checkIfJoined(
                           widget.isGroup, widget.id, userData.uid!),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {

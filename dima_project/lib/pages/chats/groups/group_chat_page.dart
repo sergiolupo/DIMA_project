@@ -46,7 +46,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   final GlobalKey _navigationBarKey = GlobalKey();
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
-
+  final DatabaseService _databaseService = DatabaseService();
   late Group group;
 
   @override
@@ -57,7 +57,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void getChats() {
-    chats = DatabaseService.getChats(group.id);
+    chats = _databaseService.getChats(group.id);
   }
 
   @override
@@ -217,7 +217,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
       final bytes = await image.readAsBytes();
-      await DatabaseService.sendChatImage(
+      await _databaseService.sendChatImage(
         group.id,
         File(image.path),
         true,
@@ -243,7 +243,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           });
         }
         final bytes = await image.readAsBytes();
-        await DatabaseService.sendChatImage(
+        await _databaseService.sendChatImage(
           group.id,
           File(image.path),
           true,
@@ -320,7 +320,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                         : Container(),
                     StreamBuilder(
                       stream:
-                          DatabaseService.getUserDataFromUID(message.sender),
+                          _databaseService.getUserDataFromUID(message.sender),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           message.senderImage = '';
@@ -364,7 +364,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         type: Type.text,
       );
 
-      DatabaseService.sendMessage(group.id, message);
+      _databaseService.sendMessage(group.id, message);
 
       setState(() {
         messageEditingController.clear();
@@ -403,9 +403,11 @@ class GroupChatPageState extends State<GroupChatPage> {
           },
           message: message,
           senderUsername: senderUsername,
+          databaseService: _databaseService,
         );
       case Type.image:
         return ImageMessageTile(
+          databaseService: _databaseService,
           message: message,
           senderUsername: senderUsername,
           showCustomSnackbar: () {
@@ -414,6 +416,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         );
       case Type.news:
         return NewsMessageTile(
+          databaseService: _databaseService,
           message: message,
           senderUsername: senderUsername,
         );

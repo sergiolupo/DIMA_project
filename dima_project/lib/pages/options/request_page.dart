@@ -18,6 +18,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   List<UserData>? _followRequests;
   List<Group>? _groupRequests;
   final String uid = AuthService.uid;
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     init();
@@ -27,11 +28,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   init() async {
     List<UserData>? followRequests;
     List<Group>? groupRequests;
-    followRequests = (await DatabaseService.getFollowRequests(uid));
+    followRequests = (await _databaseService.getFollowRequests(uid));
     setState(() {
       _followRequests = followRequests;
     });
-    groupRequests = (await DatabaseService.getUserGroupRequests(uid));
+    groupRequests = (await _databaseService.getUserGroupRequests(uid));
     setState(() {
       _groupRequests = groupRequests;
     });

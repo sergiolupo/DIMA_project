@@ -18,6 +18,7 @@ class ShowEventsPage extends StatelessWidget {
   final bool canNavigate;
   final PrivateChat? privateChat;
   final UserData? user;
+  final DatabaseService databaseService;
   const ShowEventsPage(
       {super.key,
       required this.isGroup,
@@ -25,6 +26,7 @@ class ShowEventsPage extends StatelessWidget {
       this.navigateToPage,
       required this.canNavigate,
       this.privateChat,
+      required this.databaseService,
       this.user,
       this.group});
 
@@ -112,7 +114,7 @@ class ShowEventsPage extends StatelessWidget {
                             color: CupertinoTheme.of(context)
                                 .primaryContrastingColor,
                             child: FutureBuilder(
-                              future: DatabaseService.getEvent(message.content),
+                              future: databaseService.getEvent(message.content),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {

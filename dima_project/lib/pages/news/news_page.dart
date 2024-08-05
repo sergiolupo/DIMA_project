@@ -3,6 +3,7 @@ import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -340,10 +341,12 @@ class NewsPageState extends ConsumerState<NewsPage> {
                     itemCount: articles!.length,
                     itemBuilder: (context, index) {
                       return BlogTile(
-                          url: articles![index].url,
-                          description: articles![index].description,
-                          imageUrl: articles![index].urlToImage,
-                          title: articles![index].title);
+                        url: articles![index].url,
+                        description: articles![index].description,
+                        imageUrl: articles![index].urlToImage,
+                        title: articles![index].title,
+                        databaseService: DatabaseService(),
+                      );
                     })
             ],
           ),
@@ -361,10 +364,12 @@ class NewsPageState extends ConsumerState<NewsPage> {
                 context,
                 CupertinoPageRoute(
                     builder: (context) => ArticleView(
-                        blogUrl: sliders![index].url,
-                        description: sliders![index].description,
-                        imageUrl: sliders![index].urlToImage,
-                        title: sliders![index].title)));
+                          blogUrl: sliders![index].url,
+                          description: sliders![index].description,
+                          imageUrl: sliders![index].urlToImage,
+                          title: sliders![index].title,
+                          databaseService: DatabaseService(),
+                        )));
           },
           child: Stack(children: [
             ClipRRect(

@@ -1,4 +1,5 @@
 import 'package:dima_project/models/article_model.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/widgets/news/show_category.dart';
@@ -61,6 +62,7 @@ class _CategoryNewsState extends State<CategoryNews> {
                           url: categories[index].url,
                           description: categories[index].description,
                           image: categories[index].urlToImage,
+                          databaseService: DatabaseService(),
                           title: categories[index].title);
                     })));
   }

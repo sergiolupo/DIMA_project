@@ -1,4 +1,5 @@
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/utils/message_utils.dart';
@@ -8,17 +9,20 @@ class TextMessageTile extends StatelessWidget {
   final Message message;
   final String? senderUsername;
   final VoidCallback showCustomSnackbar;
+  final DatabaseService databaseService;
   const TextMessageTile({
     required this.message,
     this.senderUsername,
     required this.showCustomSnackbar,
+    required this.databaseService,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () => MessageUtils.showBottomSheet(context, message,
+      onLongPress: () => MessageUtils.showBottomSheet(
+          context, message, databaseService,
           showCustomSnackbar: () => showCustomSnackbar()),
       child: Stack(
         children: [
@@ -136,6 +140,7 @@ class TextMessageTile extends StatelessWidget {
                               const SizedBox(width: 8),
                               MessageUtils.buildReadByIcon(
                                 message,
+                                databaseService,
                               ),
                             ],
                           ),

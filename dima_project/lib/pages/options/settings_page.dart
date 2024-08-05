@@ -47,6 +47,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider(uid));
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
             backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -62,7 +63,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             trailing: CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () async {
-                  if (await _validatePage()) {
+                  if (await _validatePage(databaseService)) {
                     if (!context.mounted) return;
                     BuildContext buildContext = context;
                     // Show the loading dialog
@@ -76,7 +77,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         );
                       },
                     );
-                    await _saveUserData();
+                    await _saveUserData(databaseService);
                     // Close the loading dialog
                     if (buildContext.mounted) {
                       Navigator.of(buildContext).pop();
@@ -235,7 +236,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Future<bool> _validatePage() async {
+  Future<bool> _validatePage(DatabaseService databaseService) async {
     if (_nameController.text.isEmpty ||
         _surnameController.text.isEmpty ||
         _usernameController.text.isEmpty) {
@@ -245,15 +246,16 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     debugPrint('Validating first page');
 
     if (_oldUsername != _usernameController.text &&
-        !await _validateUsername(_usernameController.text)) {
+        !await _validateUsername(_usernameController.text, databaseService)) {
       _showDialog('Invalid choice', 'Username is already taken.');
       return false;
     }
     return true;
   }
 
-  Future<bool> _validateUsername(String username) async {
-    final isUsernameTaken = await DatabaseService.isUsernameTaken(username);
+  Future<bool> _validateUsername(
+      String username, DatabaseService databaseService) async {
+    final isUsernameTaken = await databaseService.isUsernameTaken(username);
     if (isUsernameTaken) {
       debugPrint('Username is already taken');
       return false;
@@ -261,8 +263,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     return true;
   }
 
-  Future<void> _saveUserData() async {
-    await DatabaseService.updateUserInformation(
+  Future<void> _saveUserData(DatabaseService databaseService) async {
+    await databaseService.updateUserInformation(
       UserData(
         categories: selectedCategories,
         email: '',

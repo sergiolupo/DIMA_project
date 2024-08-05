@@ -48,7 +48,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   OverlayEntry? _clipboardOverlay;
   OverlayEntry? _optionsMenuOverlay;
   final FocusNode _focusNode = FocusNode();
-
+  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     _checkPrivateChatId();
@@ -159,9 +159,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       final bytes = await image.readAsBytes();
 
       widget.privateChat.id ??=
-          await DatabaseService.createPrivateChat(widget.privateChat);
+          await _databaseService.createPrivateChat(widget.privateChat);
 
-      await DatabaseService.sendChatImage(
+      await _databaseService.sendChatImage(
         widget.privateChat.id!,
         File(image.path),
         false,
@@ -188,9 +188,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         }
         final bytes = await image.readAsBytes();
         widget.privateChat.id ??=
-            await DatabaseService.createPrivateChat(widget.privateChat);
+            await _databaseService.createPrivateChat(widget.privateChat);
 
-        await DatabaseService.sendChatImage(
+        await _databaseService.sendChatImage(
           widget.privateChat.id!,
           File(image.path),
           false,
@@ -271,6 +271,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                             tag: message.id!,
                             child: TextMessageTile(
                               message: message,
+                              databaseService: _databaseService,
                               showCustomSnackbar: () {
                                 showCustomSnackbar(true);
                               },
@@ -278,6 +279,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                           )
                         : (message.type == Type.image)
                             ? ImageMessageTile(
+                                databaseService: _databaseService,
                                 message: message,
                                 showCustomSnackbar: () {
                                   showCustomSnackbar(false);
@@ -285,6 +287,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                               )
                             : message.type == Type.news
                                 ? NewsMessageTile(
+                                    databaseService: _databaseService,
                                     message: message,
                                   )
                                 : EventMessageTile(
@@ -341,9 +344,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       );
 
       widget.privateChat.id ??=
-          await DatabaseService.createPrivateChat(widget.privateChat);
-      DatabaseService.sendMessage(widget.privateChat.id!, message);
-      NotificationService.sendNotificationForPrivateChat(
+          await _databaseService.createPrivateChat(widget.privateChat);
+      _databaseService.sendMessage(widget.privateChat.id!, message);
+      NotificationService().sendNotificationForPrivateChat(
         widget.privateChat,
         message,
       );
@@ -354,14 +357,14 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   _checkPrivateChatId() async {
-    final idStream =
-        DatabaseService.getPrivateChatIdFromMembers(widget.privateChat.members);
+    final idStream = _databaseService
+        .getPrivateChatIdFromMembers(widget.privateChat.members);
 
     await for (final id in idStream) {
       if (mounted) {
         setState(() {
           widget.privateChat.id = id;
-          chats = DatabaseService.getPrivateChats(widget.privateChat.id);
+          chats = _databaseService.getPrivateChats(widget.privateChat.id);
         });
       }
     }

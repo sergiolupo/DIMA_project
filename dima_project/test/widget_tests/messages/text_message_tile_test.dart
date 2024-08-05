@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/message.dart';
 
+import '../../mocks/mock_database_service.dart';
+
 void main() {
   testWidgets('TextMessageTile displays correctly',
       (WidgetTester tester) async {
@@ -33,6 +35,7 @@ void main() {
           message: message,
           senderUsername: 'Sender Username',
           showCustomSnackbar: () {},
+          databaseService: MockDatabaseService(),
         ),
       ),
     );
