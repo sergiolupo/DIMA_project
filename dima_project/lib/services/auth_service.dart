@@ -70,4 +70,8 @@ class AuthService {
   static Future<void> deleteUser() {
     return _firebaseAuth.currentUser!.delete();
   }
+
+  Future<void> sendPasswordResetEmail(String email) {
+    return _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
 }

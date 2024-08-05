@@ -6,8 +6,9 @@ import 'package:go_router/go_router.dart';
 class ForgotPasswordForm extends StatelessWidget {
   final TextEditingController _usernameController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  ForgotPasswordForm(this._usernameController, {super.key});
+  final FirebaseAuth firebaseAuth;
+  ForgotPasswordForm(this._usernameController,
+      {super.key, required this.firebaseAuth});
 
   @override
   Widget build(BuildContext context) {
@@ -46,71 +47,71 @@ class ForgotPasswordForm extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<void> resetPassword(BuildContext context, String email) async {
-  showCupertinoDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return const CupertinoAlertDialog(
-        content: CupertinoActivityIndicator(),
+  Future<void> resetPassword(BuildContext context, String email) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+      debugPrint("Password reset email sent");
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+
+      // Show success dialog
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('Success'),
+            content: const Text(
+                'A password reset email has been sent to the email address provided.'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  context.go('/login');
+                },
+              ),
+            ],
+          );
+        },
       );
-    },
-  );
-
-  try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    debugPrint("Password reset email sent");
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
-
-    // Show success dialog
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Success'),
-          content: const Text(
-              'A password reset email has been sent to the email address provided.'),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                context.go('/login');
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } catch (error) {
-    String errorMessage = error.toString();
-    int errorCodeIndex =
-        errorMessage.indexOf(']') + 1; // Find the index after the error code
-    String errorMessageSubstring =
-        errorMessage.substring(errorCodeIndex).trim();
-    debugPrint("Error sending password reset email: $error");
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
-    // Show error dialog
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: Text(
-              'Failed to send password reset email: ${errorMessageSubstring.toString()}'),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+    } catch (error) {
+      String errorMessage = error.toString();
+      int errorCodeIndex =
+          errorMessage.indexOf(']') + 1; // Find the index after the error code
+      String errorMessageSubstring =
+          errorMessage.substring(errorCodeIndex).trim();
+      debugPrint("Error sending password reset email: $error");
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      // Show error dialog
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('Error'),
+            content: Text(
+                'Failed to send password reset email: ${errorMessageSubstring.toString()}'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

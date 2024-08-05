@@ -1,6 +1,7 @@
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/auth/forgot_password_widget.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,7 +72,10 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     _showLogin
                         ? LoginForm(_usernameController, _passwordController)
-                        : ForgotPasswordForm(_usernameController),
+                        : ForgotPasswordForm(
+                            _usernameController,
+                            firebaseAuth: FirebaseAuth.instance,
+                          ),
                     CupertinoButton(
                       onPressed: () {
                         setState(() {
