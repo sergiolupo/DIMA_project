@@ -8,7 +8,6 @@ class BannerMessage extends StatelessWidget {
   const BannerMessage(
       {super.key,
       required this.size,
-      required,
       required this.canNavigate,
       required this.isCopy});
 
