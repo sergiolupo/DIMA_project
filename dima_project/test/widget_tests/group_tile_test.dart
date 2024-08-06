@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/widgets/group_tile.dart';
 
-import '../mocks/mock_database_service.dart';
+import '../mocks/mock_database_service.mocks.dart';
 
 void main() {
   final Group testGroup = Group(

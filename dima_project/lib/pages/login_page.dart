@@ -1,3 +1,5 @@
+import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/auth/forgot_password_widget.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
@@ -71,7 +73,9 @@ class LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     _showLogin
-                        ? LoginForm(_usernameController, _passwordController)
+                        ? LoginForm(_usernameController, _passwordController,
+                            authService: AuthService(),
+                            databaseService: DatabaseService())
                         : ForgotPasswordForm(
                             _usernameController,
                             firebaseAuth: FirebaseAuth.instance,

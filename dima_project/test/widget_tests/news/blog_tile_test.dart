@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('BlogTile displays correctly', (WidgetTester tester) async {

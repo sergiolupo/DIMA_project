@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('ShowCategory widget displays correctly and navigates on tap',

@@ -9,9 +9,15 @@ class LoginForm extends StatelessWidget {
   final TextEditingController _usernameController;
   final TextEditingController _passwordController;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final DatabaseService databaseService = DatabaseService();
-
-  LoginForm(this._usernameController, this._passwordController, {super.key});
+  final DatabaseService databaseService;
+  final AuthService authService;
+  const LoginForm(
+    this._usernameController,
+    this._passwordController, {
+    super.key,
+    required this.authService,
+    required this.databaseService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +81,7 @@ class LoginForm extends StatelessWidget {
     );
 
     try {
-      await AuthService.signInWithEmailAndPassword(
+      await authService.signInWithEmailAndPassword(
         email,
         password,
       );
@@ -118,7 +124,7 @@ class LoginForm extends StatelessWidget {
     );
 
     try {
-      final User? user = await AuthService.signInWithGoogle();
+      final User? user = await authService.signInWithGoogle();
 
       if (user == null) {
         throw Exception("Failed to login with Google");

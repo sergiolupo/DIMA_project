@@ -115,7 +115,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     try {
       await databaseService.updateToken('');
       await SharedPreferencesHelper.clearNotification();
-      AuthService.signOut();
+      AuthService().signOut();
       ref.invalidate(userProvider);
       ref.invalidate(followerProvider);
       ref.invalidate(followingProvider);
@@ -166,7 +166,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 ref.invalidate(joinedEventsProvider);
                 ref.invalidate(createdEventsProvider);
                 ref.invalidate(eventProvider);
-                await AuthService.deleteUser();
+                await AuthService().deleteUser();
                 if (!mounted) return;
                 Navigator.of(context).pop();
                 context.go('/login');

@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/message.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('TextMessageTile displays correctly',

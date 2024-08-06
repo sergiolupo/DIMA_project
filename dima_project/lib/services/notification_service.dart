@@ -27,9 +27,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   late final DatabaseService databaseService;
 
-  NotificationService() {
-    databaseService = DatabaseService();
-  }
+  NotificationService({required this.databaseService});
 
   void requestNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
@@ -176,7 +174,7 @@ class NotificationService {
     );
   }
 
-  static Future<String> getAccessToken() async {
+  Future<String> getAccessToken() async {
     final serviceAccountJson = {
       "type": "service_account",
       "project_id": "dima-58cb8",
@@ -210,7 +208,7 @@ class NotificationService {
     return credentials.accessToken.data;
   }
 
-  sendNotificationForPrivateChat(
+  Future<void> sendNotificationForPrivateChat(
       PrivateChat privateChat, chat_message.Message chatMessage) async {
     String deviceToken =
         await databaseService.getDeviceTokenPrivateChat(privateChat);

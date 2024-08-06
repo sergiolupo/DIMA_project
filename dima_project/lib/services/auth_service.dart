@@ -15,8 +15,7 @@ class AuthService {
     _uid = uid; // Method to set the UID for testing
   }
 
-  static Future<void> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
     debugPrint("Trying to Login...");
     await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
@@ -26,7 +25,7 @@ class AuthService {
     return;
   }
 
-  static Future<void> signOut() async {
+  Future<void> signOut() async {
     try {
       return await _firebaseAuth.signOut();
     } catch (e) {
@@ -34,7 +33,7 @@ class AuthService {
     }
   }
 
-  static Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     final GoogleSignInAuthentication? googleAuth =
@@ -56,7 +55,7 @@ class AuthService {
     }
   }
 
-  static Future<void> registerUser(UserData user, Uint8List imagePath) async {
+  Future<void> registerUser(UserData user, Uint8List imagePath) async {
     // Register the user
     UserCredential userCredential =
         await _firebaseAuth.createUserWithEmailAndPassword(
@@ -67,7 +66,7 @@ class AuthService {
         .registerUserWithUUID(user, userCredential.user!.uid, imagePath);
   }
 
-  static Future<void> deleteUser() {
+  Future<void> deleteUser() {
     return _firebaseAuth.currentUser!.delete();
   }
 

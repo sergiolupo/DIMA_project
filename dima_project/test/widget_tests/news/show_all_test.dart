@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('ShowAll widget displays correctly and navigates on tap',

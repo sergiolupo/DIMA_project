@@ -23,10 +23,13 @@ class HomePage extends ConsumerStatefulWidget {
 class HomePageState extends ConsumerState<HomePage> {
   late int? _currentIndex;
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
-  NotificationService notificationServices = NotificationService();
+  late final NotificationService notificationServices;
 
   @override
   void initState() {
+    notificationServices = NotificationService(
+      databaseService: ref.read(databaseServiceProvider),
+    );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 
-import '../mocks/mock_database_service.dart';
+import '../mocks/mock_database_service.mocks.dart';
 
 void main() {
   final UserData testUser = UserData(

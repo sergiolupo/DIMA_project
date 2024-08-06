@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('ImageMessageTile displays correctly',

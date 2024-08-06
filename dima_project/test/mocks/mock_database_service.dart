@@ -1,4 +1,5 @@
 import 'package:dima_project/services/database_service.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 
-class MockDatabaseService extends Mock implements DatabaseService {}
+@GenerateMocks([DatabaseService])
+void main() {}

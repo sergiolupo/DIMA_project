@@ -7,7 +7,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
 
-import '../../mocks/mock_database_service.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',

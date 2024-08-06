@@ -308,7 +308,7 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
 
-    await AuthService.registerUser(
+    await AuthService().registerUser(
       user,
       imagePath,
     );
