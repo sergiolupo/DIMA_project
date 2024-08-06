@@ -14,7 +14,9 @@ import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatefulWidget {
   final User? user;
-  const RegisterPage({super.key, required this.user});
+  final DatabaseService databaseService;
+  const RegisterPage(
+      {super.key, required this.user, required this.databaseService});
 
   @override
   RegisterPageState createState() => RegisterPageState();
@@ -33,7 +35,6 @@ class RegisterPageState extends State<RegisterPage> {
   bool _isEnteredWithGoogle = false;
   Uint8List selectedImagePath = Uint8List(0);
   String pageName = 'Credentials Information';
-  final DatabaseService databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -199,7 +200,7 @@ class RegisterPageState extends State<RegisterPage> {
   Future<void> managePage() async {
     if (_currentPage == 1) {
       bool isEmailTaken =
-          await databaseService.isEmailTaken(_emailController.text);
+          await widget.databaseService.isEmailTaken(_emailController.text);
 
       if (isEmailTaken) {
         debugPrint('Email is already taken');
@@ -222,8 +223,8 @@ class RegisterPageState extends State<RegisterPage> {
     }
 
     if (_currentPage == 2) {
-      bool isUsernameTaken =
-          await databaseService.isUsernameTaken(_usernameController.text);
+      bool isUsernameTaken = await widget.databaseService
+          .isUsernameTaken(_usernameController.text);
       if (isUsernameTaken) {
         debugPrint('Username is already taken');
         if (!mounted) return;
@@ -328,7 +329,8 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
     try {
-      await databaseService.registerUserWithUUID(userData, uuid, imagePath);
+      await widget.databaseService
+          .registerUserWithUUID(userData, uuid, imagePath);
     } catch (e) {
       return;
     }

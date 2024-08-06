@@ -1,7 +1,10 @@
+import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
+import 'package:dima_project/widgets/auth/registration_form_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dima_project/services/auth_service.dart';
 
@@ -11,7 +14,9 @@ import '../../mocks/mock_database_service.mocks.dart';
 class MockUser extends Mock implements User {
   @override
   late final String uid;
-  MockUser(this.uid);
+  @override
+  late final String email;
+  MockUser(this.uid, this.email);
 }
 
 void main() {
@@ -95,21 +100,37 @@ void main() {
       (WidgetTester tester) async {
     // Mocking the signInWithGoogle method to return a MockUser
     when(mockAuthService.signInWithGoogle())
-        .thenAnswer((_) async => MockUser("test-uuid"));
-
-    await tester.pumpWidget(CupertinoApp(
-      home: LoginForm(
-        usernameController,
-        passwordController,
-        authService: mockAuthService,
-        databaseService: mockDatabaseService,
+        .thenAnswer((_) async => MockUser("test-uuid", "mail@mail.com"));
+    when(mockDatabaseService.checkUserExist("mail@mail.com"))
+        .thenAnswer((_) async => false);
+    await tester.pumpWidget(CupertinoApp.router(
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+              path: '/',
+              builder: (BuildContext context, GoRouterState state) {
+                return LoginForm(
+                  usernameController,
+                  passwordController,
+                  authService: mockAuthService,
+                  databaseService: mockDatabaseService,
+                );
+              }),
+          GoRoute(
+              path: '/register',
+              builder: (BuildContext context, GoRouterState state) {
+                User? user = state.extra as User?;
+                return RegisterPage(
+                    user: user, databaseService: mockDatabaseService);
+              }),
+        ],
       ),
     ));
-    // Tap the Google sign-in button
     await tester.tap(find.text('Sign In with Google'));
-    await tester.pumpAndSettle(); // Wait for the UI to settle
+    await tester.pumpAndSettle();
 
-    // Verify that the signInWithGoogle method was called
     verify(mockAuthService.signInWithGoogle()).called(1);
+
+    expect(find.byType(PersonalInformationForm), findsOneWidget);
   });
 }

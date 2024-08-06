@@ -6,6 +6,7 @@ import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/register_page.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -58,7 +59,10 @@ final GoRouter _router = GoRouter(
         path: '/register',
         builder: (BuildContext context, GoRouterState state) {
           User? user = state.extra as User?;
-          return RegisterPage(user: user);
+          return RegisterPage(
+            user: user,
+            databaseService: DatabaseService(),
+          );
         }),
     GoRoute(
       path: '/home',
