@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/events/event_tile.dart';
+import 'package:dima_project/widgets/group_tile.dart';
+import 'package:dima_project/widgets/user_tile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -177,6 +179,7 @@ void main() {
 
       expect(find.text(usernameTest), findsNWidgets(2));
       expect(find.text('name surname'), findsOneWidget);
+      expect(find.byType(UserTile), findsOneWidget);
     });
 
     testWidgets('SearchPage performs group search and displays results',
@@ -216,6 +219,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), groupName);
       await tester.pump();
       expect(find.text(groupName), findsNWidgets(2));
+      expect(find.byType(GroupTile), findsOneWidget);
     });
     testWidgets('SearchPage performs event search and displays results',
         (WidgetTester tester) async {
@@ -229,6 +233,7 @@ void main() {
         'imagePath': '',
         'isPublic': true,
         'createdAt': Timestamp.fromDate(DateTime(2021, 1, 1)),
+        'eventId': 'eventId',
       });
       await fakeFirestore
           .collection('events')
@@ -262,6 +267,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), eventName);
       await tester.pumpAndSettle();
 
+      expect(find.byType(EventTile), findsOneWidget);
       expect(find.text('Description: description'), findsOneWidget);
       expect(find.text(eventName), findsNWidgets(2));
     });
