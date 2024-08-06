@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/search_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -261,6 +262,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), eventName);
       await tester.pumpAndSettle();
 
+      expect(find.text('Description: description'), findsOneWidget);
       expect(find.text(eventName), findsNWidgets(2));
     });
   });

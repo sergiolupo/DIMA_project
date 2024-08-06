@@ -279,7 +279,8 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
-                              if (snapshot.data == null || snapshot is! Event) {
+                              if (snapshot.data == null ||
+                                  snapshot.data is! Event) {
                                 return const SizedBox.shrink();
                               }
                               final event = snapshot.data as Event;
