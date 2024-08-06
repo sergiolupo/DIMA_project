@@ -75,7 +75,8 @@ void main() {
 
       expect(find.text('Search for users'), findsOneWidget);
     });
-    testWidgets('Displays search for groups when search field is empty',
+    testWidgets(
+        'SearchPage displays search for groups when search field is empty',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
@@ -85,7 +86,8 @@ void main() {
       expect(find.text('Search for groups'), findsOneWidget);
     });
 
-    testWidgets('Displays search for events when search field is empty',
+    testWidgets(
+        'SearchPage displays search for events when search field is empty',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
