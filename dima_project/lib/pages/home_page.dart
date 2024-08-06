@@ -7,6 +7,7 @@ import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/pages/user_profile/user_profile_page.dart';
 import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,11 +25,12 @@ class HomePageState extends ConsumerState<HomePage> {
   late int? _currentIndex;
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
   late final NotificationService notificationServices;
-
+  late final DatabaseService databaseService;
   @override
   void initState() {
+    databaseService = ref.read(databaseServiceProvider);
     notificationServices = NotificationService(
-      databaseService: ref.read(databaseServiceProvider),
+      databaseService: databaseService,
     );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
@@ -110,7 +112,9 @@ class HomePageState extends ConsumerState<HomePage> {
             page = const TableCalendarPage();
             break;
           case 3:
-            page = const SearchPage();
+            page = SearchPage(
+              databaseService: databaseService,
+            );
             break;
           case 4:
             page = ResponsiveLayout(

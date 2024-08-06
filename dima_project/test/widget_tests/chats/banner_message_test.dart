@@ -33,7 +33,6 @@ void main() {
 
   testWidgets('BannerMessage displays saved image message correctly',
       (WidgetTester tester) async {
-    // Build the widget
     await tester.pumpWidget(
       const CupertinoApp(
         home: CupertinoPageScaffold(

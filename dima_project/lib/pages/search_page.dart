@@ -15,8 +15,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
+  final DatabaseService databaseService;
   const SearchPage({
     super.key,
+    required this.databaseService,
   });
 
   @override
@@ -34,7 +36,6 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   int searchIdx = 0;
   final String uid = AuthService.uid;
-  final DatabaseService databaseService = DatabaseService();
   @override
   void initState() {
     ref.read(followingProvider(uid));
@@ -48,19 +49,19 @@ class SearchPageState extends ConsumerState<SearchPage> {
       _searchStreamSubscription?.cancel();
 
       if (searchIdx == 0) {
-        _searchStreamSubscription = databaseService
+        _searchStreamSubscription = widget.databaseService
             .searchByUsernameStream(searchText)
             .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
       } else if (searchIdx == 1) {
-        _searchStreamSubscription = databaseService
+        _searchStreamSubscription = widget.databaseService
             .searchByGroupNameStream(searchText)
             .listen((snapshot) {
           _searchStreamController.add(snapshot);
         });
       } else {
-        _searchStreamSubscription = databaseService
+        _searchStreamSubscription = widget.databaseService
             .searchByEventNameStream(searchText)
             .listen((snapshot) {
           _searchStreamController.add(snapshot);
