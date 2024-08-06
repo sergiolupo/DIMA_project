@@ -64,7 +64,7 @@ class InvitePageState extends ConsumerState<InvitePage> {
             padding: const EdgeInsets.all(8.0),
             child: CupertinoSearchTextField(
               controller: _searchController,
-              placeholder: "Search followers ...",
+              placeholder: "Search followers...",
               onChanged: (_) {
                 setState(() {
                   searchText = _searchController.text;
@@ -113,7 +113,7 @@ class InvitePageState extends ConsumerState<InvitePage> {
                               'assets/darkMode/no_followers_found.png')
                           : Image.asset('assets/images/no_followers_found.png'),
                       const Center(
-                        child: Text('Not results found'),
+                        child: Text('No results found'),
                       ),
                     ],
                   );
