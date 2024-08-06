@@ -69,6 +69,7 @@ class InvitationTileState extends State<InvitationTile> {
         widget.isJoining
             ? const SizedBox.shrink()
             : GestureDetector(
+                key: const Key('invite_button'),
                 onTap: () {
                   widget.invitePageKey(widget.user.uid!);
                   setState(() {

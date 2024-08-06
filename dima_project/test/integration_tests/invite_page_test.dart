@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 
@@ -32,21 +33,28 @@ void main() {
         email: ''),
   ];
 
-  testWidgets('displays no followers message when no followers are found',
+  testWidgets('InvitePage interaction and search functionality',
       (WidgetTester tester) async {
     AuthService.setUid('test');
+    List<String> users = [];
+    when(mockDatabaseService.checkIfJoined(false, null, '1'))
+        .thenAnswer((_) => Future.value(false));
+    when(mockDatabaseService.checkIfJoined(false, null, '2'))
+        .thenAnswer((_) => Future.value(false));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           databaseServiceProvider.overrideWithValue(mockDatabaseService),
-          followingProvider.overrideWith(
+          followerProvider.overrideWith(
             (ref, uid) => Future.value(testUsers),
           ),
         ],
         child: CupertinoApp(
           home: InvitePage(
-            invitePageKey: (String key) {},
-            invitedUsers: const [],
+            invitePageKey: (String key) {
+              users.add(key);
+            },
+            invitedUsers: users,
             isGroup: false,
             id: null,
           ),
@@ -64,7 +72,7 @@ void main() {
     await tester.enterText(find.byType(CupertinoSearchTextField), 'test_user1');
     await tester.pumpAndSettle();
     expect(find.text("Invite"), findsOneWidget);
-    await tester.tap(find.byType(InvitationTile).first);
+    await tester.tap(find.byKey(const Key('invite_button')).last);
     await tester.pumpAndSettle();
     expect(find.text("Invited"), findsOneWidget);
   });

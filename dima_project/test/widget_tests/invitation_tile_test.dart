@@ -14,8 +14,8 @@ void main() {
     email: 'email',
   );
 
-  group('InvitationTile Widget Tests', () {
-    testWidgets('renders correctly when invited is false',
+  group('InvitationTile Tests', () {
+    testWidgets('InvitationTile renders correctly when invited is false',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
@@ -33,7 +33,8 @@ void main() {
       expect(find.text('Invite'), findsOneWidget);
     });
 
-    testWidgets('invites the user when the invite button is tapped',
+    testWidgets(
+        'InvitationTile invites the user when the invite button is tapped',
         (WidgetTester tester) async {
       bool wasInvited = false;
 
@@ -54,13 +55,14 @@ void main() {
       expect(wasInvited, isFalse);
 
       await tester.tap(find.text('Invite'));
-      await tester.pump(); // Rebuild the widget
+      await tester.pump();
 
       expect(find.text('Invited'), findsOneWidget);
       expect(wasInvited, isTrue);
     });
 
-    testWidgets('does not show invite button when isJoining is true',
+    testWidgets(
+        'InvitationTile does not show invite button when isJoining is true',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
