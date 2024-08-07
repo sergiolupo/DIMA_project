@@ -4,6 +4,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
+import 'package:dima_project/widgets/option_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,24 +45,25 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       child: SafeArea(
         child: ListView(
           children: [
-            CupertinoListSection(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.heart),
                   title: const Text('Favorites'),
                   onTap: () => {},
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.person),
                   title: const Text('Friends'),
                   onTap: () => {},
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.share),
                   title: const Text('Share'),
                   onTap: () => {},
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.bell),
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true).push(
@@ -70,24 +72,24 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   },
                   title: const Text('Request'),
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.settings),
                   title: const Text('Settings'),
                   onTap: () => Navigator.of(context, rootNavigator: true).push(
                       CupertinoPageRoute(
                           builder: (context) => const SettingsPage())),
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.doc),
                   title: const Text('Policies'),
                   onTap: () => {},
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.trash),
                   title: const Text('Delete Account'),
                   onTap: () => deleteAccount(databaseService),
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
                   title: const Text('Exit'),
                   onTap: () async {
@@ -175,47 +177,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
           ],
         );
       },
-    );
-  }
-}
-
-class CupertinoListTile extends StatelessWidget {
-  final Widget leading;
-  final Widget title;
-  final VoidCallback? onTap;
-
-  const CupertinoListTile(
-      {super.key, required this.leading, required this.title, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            leading,
-            const SizedBox(width: 16),
-            Expanded(child: title),
-            const Icon(CupertinoIcons.forward),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CupertinoListSection extends StatelessWidget {
-  final List<Widget> children;
-
-  const CupertinoListSection({super.key, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
     );
   }
 }
