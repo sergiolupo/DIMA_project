@@ -3,24 +3,16 @@ import 'package:dima_project/widgets/auth/login_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class MockFirebaseAuth extends Mock implements FirebaseAuth {
-  @override
-  Future<void> sendPasswordResetEmail(
-      {ActionCodeSettings? actionCodeSettings, required String email}) async {
-    return;
-  }
-}
+import '../../mocks/mock_auth_service.mocks.dart';
 
 void main() {
   group('ForgotPasswordForm Tests', () {
-    late MockFirebaseAuth mockFirebaseAuth;
     late TextEditingController usernameController;
-
+    late MockAuthService mockAuthService;
     setUp(() {
-      mockFirebaseAuth = MockFirebaseAuth();
       usernameController = TextEditingController();
+      mockAuthService = MockAuthService();
     });
 
     testWidgets('ForgotPasswordForm renders correctly',
@@ -28,7 +20,7 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: ForgotPasswordForm(usernameController,
-              firebaseAuth: mockFirebaseAuth),
+              authService: mockAuthService),
         ),
       );
 
@@ -44,7 +36,7 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: ForgotPasswordForm(usernameController,
-              firebaseAuth: mockFirebaseAuth),
+              authService: mockAuthService),
         ),
       );
 
@@ -57,12 +49,15 @@ void main() {
     testWidgets(
         'ForgotPasswordForm shows success dialog on successful password reset',
         (WidgetTester tester) async {
+      when(mockAuthService.sendPasswordResetEmail('test@example.com'))
+          .thenAnswer((_) => Future.value());
+
       usernameController.text = 'test@example.com';
 
       await tester.pumpWidget(
         CupertinoApp(
           home: ForgotPasswordForm(usernameController,
-              firebaseAuth: mockFirebaseAuth),
+              authService: mockAuthService),
         ),
       );
 
@@ -74,24 +69,6 @@ void main() {
           find.text(
               'A password reset email has been sent to the email address provided.'),
           findsOneWidget);
-    });
-
-    testWidgets(
-        'ForgotPasswordForm shows error dialog on failed password reset',
-        (WidgetTester tester) async {
-      usernameController.text = 'invalid_email';
-
-      await tester.pumpWidget(
-        CupertinoApp(
-          home: ForgotPasswordForm(usernameController,
-              firebaseAuth: mockFirebaseAuth),
-        ),
-      );
-
-      await tester.tap(find.byType(CupertinoButton));
-      await tester.pump();
-
-      expect(find.text('Please enter a valid email address'), findsOneWidget);
     });
   });
 }

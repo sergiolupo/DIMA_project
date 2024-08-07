@@ -1,14 +1,17 @@
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class ForgotPasswordForm extends StatelessWidget {
   final TextEditingController _usernameController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final FirebaseAuth firebaseAuth;
-  ForgotPasswordForm(this._usernameController,
-      {super.key, required this.firebaseAuth});
+  final AuthService authService;
+  ForgotPasswordForm(
+    this._usernameController, {
+    super.key,
+    required this.authService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +62,7 @@ class ForgotPasswordForm extends StatelessWidget {
     );
 
     try {
-      await firebaseAuth.sendPasswordResetEmail(email: email);
+      await authService.sendPasswordResetEmail(email);
       debugPrint("Password reset email sent");
       if (!context.mounted) return;
       Navigator.of(context).pop();
