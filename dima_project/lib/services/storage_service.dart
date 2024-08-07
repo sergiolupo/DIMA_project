@@ -25,9 +25,4 @@ class StorageService {
     }
     return data;
   }
-
-  static Future<void> deleteImageFromStorage(String url) {
-    final Reference ref = _storage.refFromURL(url);
-    return ref.delete();
-  }
 }

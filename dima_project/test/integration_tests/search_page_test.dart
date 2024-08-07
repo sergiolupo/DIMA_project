@@ -41,6 +41,9 @@ void main() {
         followingProvider.overrideWith(
           (ref, uid) => Future.value([]),
         ),
+        followingsStreamProvider.overrideWith(
+          (ref, uid) => Stream.value([]),
+        ),
         databaseServiceProvider.overrideWithValue(MockDatabaseService()),
       ],
       child: CupertinoApp(
@@ -179,8 +182,8 @@ void main() {
           find.byType(CupertinoSearchTextField), usernameTest);
       await tester.pumpAndSettle();
 
-      expect(find.text(usernameTest), findsNWidgets(2));
       expect(find.text('name surname'), findsOneWidget);
+      expect(find.text(usernameTest), findsNWidgets(2));
       expect(find.byType(UserTile), findsOneWidget);
     });
 

@@ -38,8 +38,6 @@ class SearchPageState extends ConsumerState<SearchPage> {
   final String uid = AuthService.uid;
   @override
   void initState() {
-    ref.read(followingProvider(uid));
-
     super.initState();
   }
 
@@ -74,7 +72,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final followings = ref.watch(followingStreamProvider(uid));
+    final followings = ref.watch(followingsStreamProvider(uid));
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(

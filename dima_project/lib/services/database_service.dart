@@ -1645,11 +1645,6 @@ class DatabaseService {
     await deleteFollowRequests();
     await followersRef.doc(AuthService.uid).delete();
 
-    //delete photo
-    if (userDoc['imageUrl'] != '') {
-      await StorageService.deleteImageFromStorage(userDoc['imageUrl']);
-    }
-
     //delete user
     await usersRef.doc(AuthService.uid).delete();
   }
