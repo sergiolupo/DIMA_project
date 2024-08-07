@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
-import 'package:nock/nock.dart';
 
 import '../mocks/mock_auth_service.mocks.dart';
 import '../mocks/mock_database_service.mocks.dart';
@@ -28,8 +27,7 @@ void main() {
   late final MockDatabaseService mockDatabaseService;
   late final MockAuthService mockAuthService;
   late final MockNewsService mockNewsService;
-  setUp(() {
-    nock.cleanAll();
+  setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockAuthService = MockAuthService();
     mockNewsService = MockNewsService();
@@ -238,7 +236,10 @@ void main() {
       await tester.tap(find.text('Login'));
       await tester.pumpAndSettle();
 
-      expect(find.text("Trending News"), findsOneWidget); // Home page
+      expect(find.text("Trending News"), findsOneWidget);
+      expect(find.text("Breaking News"), findsOneWidget);
+
+      expect(find.text("title1"), findsNWidgets(2));
     });
   });
 }
