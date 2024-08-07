@@ -30,9 +30,11 @@ class ArticleView extends StatelessWidget {
           trailing: GestureDetector(
             child: const Icon(CupertinoIcons.share),
             onTap: () async {
-              final ids = await Navigator.of(context, rootNavigator: true).push(
-                  CupertinoPageRoute(
-                      builder: (context) => const ShareNewsPage()));
+              final ids = await Navigator.of(context, rootNavigator: true)
+                  .push(CupertinoPageRoute(
+                      builder: (context) => ShareNewsPage(
+                            databaseService: databaseService,
+                          )));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
                   await databaseService.shareNewsOnGroups(

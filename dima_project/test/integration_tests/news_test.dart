@@ -1,14 +1,19 @@
 import 'package:dima_project/models/article_model.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mockito/mockito.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_news_service.mocks.dart';
@@ -140,6 +145,97 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Trending News"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+    });
+    testWidgets(
+        "ArticleView and ShareNewsPage display correctly and navigations work",
+        (WidgetTester tester) async {
+      AuthService.setUid("test");
+      final firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('followers').doc('test').set({
+        'followers': ['user'],
+        'following': ['user'],
+      });
+
+      final follower =
+          await firestore.collection('followers').doc('test').get();
+
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([
+          Group(
+              name: "name",
+              id: "id",
+              isPublic: true,
+              members: ["test", "user"],
+              imagePath: "",
+              description: "description",
+              admin: "test"),
+        ]),
+      );
+      when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
+        (_) => Future.value(follower),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserData(any)).thenAnswer(
+        (_) => Future.value(UserData(
+            uid: 'user',
+            email: 'mail',
+            username: 'username',
+            imagePath: '',
+            categories: [CategoryUtil.categories.first],
+            name: 'name',
+            surname: 'surname')),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp(
+            home: ArticleView(
+              blogUrl: 'https://example.com',
+              description: 'Test Description',
+              imageUrl: 'https://example.com/image.png',
+              title: 'Test Title',
+              databaseService: mockDatabaseService,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.share));
+      await tester.pumpAndSettle();
+      expect(find.text("Send To"), findsOneWidget);
+      expect(find.text("Groups"), findsOneWidget);
+      expect(find.text("Followers"), findsOneWidget);
+      expect(find.text("name"), findsOneWidget);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("username"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
+      await tester.pumpAndSettle();
     });
   });
 }

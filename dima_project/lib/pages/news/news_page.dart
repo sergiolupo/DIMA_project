@@ -365,7 +365,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
     );
   }
 
-  //carousel slider
+  //Carousel slider
   Widget buildNews(String image, int index, String name) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 5.0),
         child: GestureDetector(

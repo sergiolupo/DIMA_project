@@ -8,9 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ShareNewsPage extends StatefulWidget {
+  final DatabaseService databaseService;
   @override
   const ShareNewsPage({
     super.key,
+    required this.databaseService,
   });
 
   @override
@@ -25,7 +27,6 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   List<UserData>? users;
   String _searchText = "";
   final String uid = AuthService.uid;
-  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     super.initState();
@@ -34,19 +35,20 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   }
 
   void fetchGroups() async {
-    groups = await _databaseService.getGroups(uid);
+    groups = await widget.databaseService.getGroups(uid);
     setState(() {});
   }
 
   void fetchUsers() async {
-    final doc = await _databaseService.getFollowersUser(uid);
+    final doc = await widget.databaseService.getFollowersUser(uid);
     if (doc.exists &&
         doc.data() != null &&
         (doc.data() as Map<String, dynamic>)['followers'] != null) {
       final followers =
           List<String>.from((doc.data() as Map<String, dynamic>)['followers']);
-      users = await Future.wait(
-          followers.map((uuid) => _databaseService.getUserData(uuid)).toList());
+      users = await Future.wait(followers
+          .map((uuid) => widget.databaseService.getUserData(uuid))
+          .toList());
       setState(() {});
     }
   }
