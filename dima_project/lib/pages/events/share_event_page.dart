@@ -1,7 +1,7 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/pages/news/share_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/widgets/news/share_group_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShareEventPage extends StatefulWidget {
