@@ -45,6 +45,7 @@ class UserTileState extends ConsumerState<UserTile> {
               ref.invalidate(joinedEventsProvider(widget.user.uid!));
               ref.invalidate(createdEventsProvider(widget.user.uid!));
               ref.invalidate(userProvider(widget.user.uid!));
+              ref.invalidate(followingProvider(uid));
 
               Navigator.push(context, CupertinoPageRoute(builder: (context) {
                 return ResponsiveLayout(

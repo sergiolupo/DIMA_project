@@ -86,3 +86,9 @@ final eventProvider =
   final event = await DatabaseService().getEvent(eventId);
   return event;
 });
+
+final followingStreamProvider =
+    StreamProvider.family<List<dynamic>, String>((ref, uuid) {
+  final stream = DatabaseService().getFollowingsStream(uuid);
+  return stream;
+});

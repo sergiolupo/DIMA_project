@@ -303,6 +303,26 @@ class DatabaseService {
     });
   }
 
+  Future<void> deleteGroupRequests(String groupId) async {
+    QuerySnapshot<Object?> value =
+        await usersRef.where("requests", arrayContains: groupId).get();
+    for (var doc in value.docs) {
+      await usersRef.doc(doc.id).update({
+        'groupsRequests': FieldValue.arrayRemove([groupId])
+      });
+    }
+  }
+
+  Future<void> deleteFollowRequests() async {
+    QuerySnapshot<Object?> value =
+        await usersRef.where("requests", arrayContains: AuthService.uid).get();
+    for (var doc in value.docs) {
+      await usersRef.doc(doc.id).update({
+        'requests': FieldValue.arrayRemove([AuthService.uid])
+      });
+    }
+  }
+
   Future<void> toggleGroupJoin(String groupId) async {
     DocumentSnapshot<Object?> groupDoc = await groupsRef.doc(groupId).get();
     bool isJoined = groupDoc['members'].contains(AuthService.uid);
@@ -319,6 +339,7 @@ class DatabaseService {
 
       DocumentSnapshot<Object?> groupDoc = await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
+        await deleteGroupRequests(groupId);
         await groupsRef.doc(groupId).delete();
       } else if (groupDoc['admin'] == AuthService.uid) {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
@@ -1621,6 +1642,7 @@ class DatabaseService {
     for (var follower in followerDoc['followers']) {
       await toggleFollowUnfollow(AuthService.uid, follower);
     }
+    await deleteFollowRequests();
     await followersRef.doc(AuthService.uid).delete();
 
     //delete photo
@@ -1637,6 +1659,12 @@ class DatabaseService {
         chat.members[0] == AuthService.uid ? chat.members[1] : chat.members[0];
     return usersRef.doc(otherUID).get().then((value) {
       return value['token'];
+    });
+  }
+
+  Stream<List<dynamic>> getFollowingsStream(String uuid) {
+    return followersRef.doc(uuid).snapshots().map((snapshot) {
+      return snapshot['following'];
     });
   }
 }

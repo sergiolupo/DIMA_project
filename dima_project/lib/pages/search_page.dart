@@ -74,7 +74,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final followings = ref.watch(followingProvider(uid));
+    final followings = ref.watch(followingStreamProvider(uid));
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -241,8 +241,8 @@ class SearchPageState extends ConsumerState<SearchPage> {
                       final userData = UserData.fromSnapshot(docs[index]);
                       return followings.when(
                           data: (followingData) {
-                            final int isFollowing = followingData.any(
-                                    (element) => element.uid! == userData.uid)
+                            final int isFollowing = followingData
+                                    .any((element) => element == userData.uid)
                                 ? 1
                                 : userData.requests!.contains(uid)
                                     ? 2
