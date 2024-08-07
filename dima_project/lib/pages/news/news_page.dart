@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dima_project/pages/news/all_news.dart';
 import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/pages/news/search_news.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/article_model.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -35,9 +35,11 @@ class NewsPageState extends ConsumerState<NewsPage> {
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
   int activeIndex = 0;
   final String uid = AuthService.uid;
+  late final DatabaseService databaseService;
   @override
   void initState() {
     ref.read(userProvider(uid));
+    databaseService = ref.read(databaseServiceProvider);
     getSliders();
     getNews();
     super.initState();
@@ -346,7 +348,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
                         description: articles![index].description,
                         imageUrl: articles![index].urlToImage,
                         title: articles![index].title,
-                        databaseService: DatabaseService(),
+                        databaseService: databaseService,
                       );
                     })
             ],
@@ -369,7 +371,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
                           description: sliders![index].description,
                           imageUrl: sliders![index].urlToImage,
                           title: sliders![index].title,
-                          databaseService: DatabaseService(),
+                          databaseService: databaseService,
                         )));
           },
           child: Stack(children: [

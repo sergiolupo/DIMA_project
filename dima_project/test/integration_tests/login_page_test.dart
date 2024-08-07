@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
-import 'package:network_image_mock/network_image_mock.dart';
 import 'package:nock/nock.dart';
 
 import '../mocks/mock_auth_service.mocks.dart';
@@ -96,143 +95,142 @@ void main() {
             title: 'title1',
             description: 'description1',
             url: 'url1',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title2',
             description: 'description2',
             url: 'url2',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title3',
             description: 'description3',
             url: 'url3',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title4',
             description: 'description4',
             url: 'url4',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title5',
             description: 'description5',
             url: 'url5',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title6',
             description: 'description6',
             url: 'url6',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title7',
             description: 'description7',
             url: 'url7',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title8',
             description: 'description8',
             url: 'url8',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title9',
             description: 'description9',
             url: 'url9',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title10',
             description: 'description10',
             url: 'url10',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
       ]);
       when(mockNewsService.sliders).thenReturn([
         ArticleModel(
             title: 'title1',
             description: 'description1',
             url: 'url1',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title2',
             description: 'description2',
             url: 'url2',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title3',
             description: 'description3',
             url: 'url3',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title4',
             description: 'description4',
             url: 'url4',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title5',
             description: 'description5',
             url: 'url5',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
         ArticleModel(
             title: 'title6',
             description: 'description6',
             url: 'url6',
-            urlToImage: ''),
+            urlToImage: 'https://example.com/news.png'),
       ]);
 
       AuthService.setUid('test');
-      await mockNetworkImagesFor(() async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              databaseServiceProvider.overrideWithValue(mockDatabaseService),
-              userProvider.overrideWith(
-                (ref, uid) => Future.value(UserData(
-                    uid: 'test',
-                    email: 'mail',
-                    username: 'username',
-                    imagePath: '',
-                    categories: [],
-                    name: 'name',
-                    surname: 'surname')),
-              ),
-              followingProvider.overrideWith(
-                (ref, uid) => Future.value([]),
-              ),
-              groupsProvider.overrideWith(
-                (ref, uid) => Future.value([]),
-              ),
-              joinedEventsProvider.overrideWith(
-                (ref, uid) => Future.value([]),
-              ),
-              createdEventsProvider.overrideWith(
-                (ref, uid) => Future.value([]),
-              ),
-              followerProvider.overrideWith(
-                (ref, uid) => Future.value([]),
-              ),
-            ],
-            child: CupertinoApp.router(
-              routerConfig: GoRouter(
-                routes: [
-                  GoRoute(
-                      path: '/',
-                      builder: (BuildContext context, GoRouterState state) {
-                        return LoginPage(
-                          databaseService: mockDatabaseService,
-                          authService: mockAuthService,
-                        );
-                      }),
-                  GoRoute(
-                      path: '/home',
-                      builder: (BuildContext context, GoRouterState state) {
-                        return HomePage(
-                          index: 0,
-                          newsService: mockNewsService,
-                        );
-                      }),
-                ],
-              ),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            followingProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+          ],
+          child: CupertinoApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                    path: '/',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return LoginPage(
+                        databaseService: mockDatabaseService,
+                        authService: mockAuthService,
+                      );
+                    }),
+                GoRoute(
+                    path: '/home',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return HomePage(
+                        index: 0,
+                        newsService: mockNewsService,
+                      );
+                    }),
+              ],
             ),
           ),
-        );
-      });
+        ),
+      );
+
       await tester.enterText(
           find.byType(CupertinoTextField).first, 'test@example.com');
       await tester.enterText(
@@ -240,7 +238,7 @@ void main() {
       await tester.tap(find.text('Login'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(CupertinoTabView), findsOneWidget); // Home page
+      expect(find.text("Trending News"), findsOneWidget); // Home page
     });
   });
 }
