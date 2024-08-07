@@ -15,8 +15,12 @@ import 'package:go_router/go_router.dart';
 class RegisterPage extends StatefulWidget {
   final User? user;
   final DatabaseService databaseService;
+  final AuthService authService;
   const RegisterPage(
-      {super.key, required this.user, required this.databaseService});
+      {super.key,
+      required this.user,
+      required this.databaseService,
+      required this.authService});
 
   @override
   RegisterPageState createState() => RegisterPageState();
@@ -309,7 +313,7 @@ class RegisterPageState extends State<RegisterPage> {
       },
     );
 
-    await AuthService().registerUser(
+    await widget.authService.registerUser(
       user,
       imagePath,
     );

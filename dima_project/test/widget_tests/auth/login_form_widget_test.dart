@@ -121,7 +121,9 @@ void main() {
               builder: (BuildContext context, GoRouterState state) {
                 User? user = state.extra as User?;
                 return RegisterPage(
-                    user: user, databaseService: mockDatabaseService);
+                    user: user,
+                    databaseService: mockDatabaseService,
+                    authService: mockAuthService);
               }),
         ],
       ),

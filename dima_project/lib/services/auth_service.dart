@@ -12,7 +12,7 @@ class AuthService {
   static String get uid => _uid ?? _firebaseAuth.currentUser!.uid;
 
   static void setUid(String uid) {
-    _uid = uid; // Method to set the UID for testing
+    _uid = uid;
   }
 
   Future<void> signInWithEmailAndPassword(String email, String password) async {

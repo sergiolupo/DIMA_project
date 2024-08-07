@@ -8,7 +8,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final DatabaseService databaseService;
+  final AuthService authService;
+  const LoginPage({
+    super.key,
+    required this.databaseService,
+    required this.authService,
+  });
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -74,8 +80,8 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     _showLogin
                         ? LoginForm(_usernameController, _passwordController,
-                            authService: AuthService(),
-                            databaseService: DatabaseService())
+                            authService: widget.authService,
+                            databaseService: widget.databaseService)
                         : ForgotPasswordForm(
                             _usernameController,
                             firebaseAuth: FirebaseAuth.instance,

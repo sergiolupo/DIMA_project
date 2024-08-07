@@ -6,6 +6,7 @@ import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/register_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
@@ -53,7 +54,10 @@ final GoRouter _router = GoRouter(
     GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
+          return LoginPage(
+            databaseService: DatabaseService(),
+            authService: AuthService(),
+          );
         }),
     GoRoute(
         path: '/register',
@@ -62,6 +66,7 @@ final GoRouter _router = GoRouter(
           return RegisterPage(
             user: user,
             databaseService: DatabaseService(),
+            authService: AuthService(),
           );
         }),
     GoRoute(
