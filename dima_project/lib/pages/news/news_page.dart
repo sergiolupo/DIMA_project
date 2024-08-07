@@ -71,7 +71,9 @@ class NewsPageState extends ConsumerState<NewsPage> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => const SearchNewsPage()));
+                    builder: (context) => SearchNewsPage(
+                        newsService: widget.newsService,
+                        databaseService: databaseService)));
           },
           child: Icon(
             CupertinoIcons.search,
@@ -112,6 +114,8 @@ class NewsPageState extends ConsumerState<NewsPage> {
                             return CategoryTile(
                               image: newsCategories[index].image,
                               categoryName: newsCategories[index].categoryName,
+                              newsService: widget.newsService,
+                              databaseService: databaseService,
                             );
                           });
                     },
@@ -173,6 +177,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
                                       news: "Breaking",
                                       articles:
                                           sliders!.sublist(0, numberOfNews),
+                                      databaseService: databaseService,
                                     )));
                       },
                       child: Text(
@@ -263,7 +268,9 @@ class NewsPageState extends ConsumerState<NewsPage> {
                             context,
                             CupertinoPageRoute(
                                 builder: (context) => AllNews(
-                                    news: "Trending", articles: articles!)));
+                                    news: "Trending",
+                                    articles: articles!,
+                                    databaseService: databaseService)));
                       },
                       child: Text(
                         "View All",

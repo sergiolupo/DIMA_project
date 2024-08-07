@@ -6,7 +6,12 @@ import 'package:flutter/cupertino.dart';
 class AllNews extends StatefulWidget {
   final String news;
   final List<ArticleModel> articles;
-  const AllNews({super.key, required this.news, required this.articles});
+  final DatabaseService databaseService;
+  const AllNews(
+      {super.key,
+      required this.news,
+      required this.articles,
+      required this.databaseService});
 
   @override
   State<AllNews> createState() => _AllNewsState();
@@ -47,7 +52,7 @@ class _AllNewsState extends State<AllNews> {
                   description: widget.articles[index].description,
                   image: widget.articles[index].urlToImage,
                   title: widget.articles[index].title,
-                  databaseService: DatabaseService(),
+                  databaseService: widget.databaseService,
                 );
               })),
     );

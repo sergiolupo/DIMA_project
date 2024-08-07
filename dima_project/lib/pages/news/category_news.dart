@@ -6,7 +6,13 @@ import 'package:dima_project/widgets/news/show_category.dart';
 
 class CategoryNews extends StatefulWidget {
   final String name;
-  const CategoryNews({super.key, required this.name});
+  final NewsService newsService;
+  final DatabaseService databaseService;
+  const CategoryNews(
+      {super.key,
+      required this.name,
+      required this.newsService,
+      required this.databaseService});
   @override
   State<CategoryNews> createState() => _CategoryNewsState();
 }
@@ -22,9 +28,8 @@ class _CategoryNewsState extends State<CategoryNews> {
   }
 
   getCategories() async {
-    NewsService showCategoryNews = NewsService();
-    await showCategoryNews.getCategoriesNews(widget.name.toLowerCase());
-    categories = showCategoryNews.categories;
+    await widget.newsService.getCategoriesNews(widget.name.toLowerCase());
+    categories = widget.newsService.categories;
     setState(() {
       _loading = false;
     });
@@ -62,7 +67,7 @@ class _CategoryNewsState extends State<CategoryNews> {
                           url: categories[index].url,
                           description: categories[index].description,
                           image: categories[index].urlToImage,
-                          databaseService: DatabaseService(),
+                          databaseService: widget.databaseService,
                           title: categories[index].title);
                     })));
   }

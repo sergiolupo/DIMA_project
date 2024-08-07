@@ -1,12 +1,20 @@
 import 'package:dima_project/pages/news/category_news.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class CategoryTile extends StatelessWidget {
   final String categoryName;
   final String image;
+  final NewsService newsService;
+  final DatabaseService databaseService;
   const CategoryTile(
-      {super.key, required this.image, required this.categoryName});
+      {super.key,
+      required this.image,
+      required this.categoryName,
+      required this.newsService,
+      required this.databaseService});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +23,10 @@ class CategoryTile extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => CategoryNews(name: categoryName)));
+                builder: (context) => CategoryNews(
+                    name: categoryName,
+                    newsService: newsService,
+                    databaseService: databaseService)));
       },
       child: Container(
         width: MediaQuery.of(context).size.width > Constants.limitWidth

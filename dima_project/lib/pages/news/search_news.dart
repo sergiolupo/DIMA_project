@@ -5,7 +5,10 @@ import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class SearchNewsPage extends StatefulWidget {
-  const SearchNewsPage({super.key});
+  final NewsService newsService;
+  final DatabaseService databaseService;
+  const SearchNewsPage(
+      {super.key, required this.newsService, required this.databaseService});
 
   @override
   SearchNewsPageState createState() => SearchNewsPageState();
@@ -17,7 +20,8 @@ class SearchNewsPageState extends State<SearchNewsPage> {
 
   void _startSearch() {
     setState(() {
-      _searchResults = NewsService().getSearchedNews(_searchController.text);
+      _searchResults =
+          widget.newsService.getSearchedNews(_searchController.text);
     });
   }
 
@@ -127,7 +131,7 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                           imageUrl: article.urlToImage,
                           title: article.title,
                           url: article.url,
-                          databaseService: DatabaseService(),
+                          databaseService: widget.databaseService,
                         );
                       },
                     );
