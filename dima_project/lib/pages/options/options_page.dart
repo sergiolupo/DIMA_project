@@ -49,21 +49,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 OptionTile(
-                  leading: const Icon(CupertinoIcons.heart),
-                  title: const Text('Favorites'),
-                  onTap: () => {},
-                ),
-                OptionTile(
-                  leading: const Icon(CupertinoIcons.person),
-                  title: const Text('Friends'),
-                  onTap: () => {},
-                ),
-                OptionTile(
-                  leading: const Icon(CupertinoIcons.share),
-                  title: const Text('Share'),
-                  onTap: () => {},
-                ),
-                OptionTile(
                   leading: const Icon(CupertinoIcons.bell),
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true).push(
@@ -78,11 +63,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   onTap: () => Navigator.of(context, rootNavigator: true).push(
                       CupertinoPageRoute(
                           builder: (context) => const SettingsPage())),
-                ),
-                OptionTile(
-                  leading: const Icon(CupertinoIcons.doc),
-                  title: const Text('Policies'),
-                  onTap: () => {},
                 ),
                 OptionTile(
                   leading: const Icon(CupertinoIcons.trash),
