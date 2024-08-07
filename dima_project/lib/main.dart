@@ -8,6 +8,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -73,7 +74,7 @@ final GoRouter _router = GoRouter(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
         int? index = state.extra as int?;
-        return HomePage(index: index);
+        return HomePage(index: index, newsService: NewsService());
       },
     ),
     GoRoute(

@@ -8,6 +8,7 @@ import 'package:dima_project/pages/user_profile/user_profile_page.dart';
 import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final int? index;
-  const HomePage({super.key, this.index});
+  final NewsService newsService;
+
+  const HomePage({super.key, this.index, required this.newsService});
 
   @override
   HomePageState createState() => HomePageState();
@@ -29,14 +32,14 @@ class HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     databaseService = ref.read(databaseServiceProvider);
-    notificationServices = NotificationService(
+    /*notificationServices = NotificationService(
       databaseService: databaseService,
     );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
-    notificationServices.setupToken(ref);
+    notificationServices.setupToken(ref);*/
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
     ref.read(followingProvider(AuthService.uid));
@@ -100,7 +103,9 @@ class HomePageState extends ConsumerState<HomePage> {
         late Widget page;
         switch (index) {
           case 0:
-            page = const NewsPage();
+            page = NewsPage(
+              newsService: widget.newsService,
+            );
             break;
           case 1:
             page = const ResponsiveLayout(
@@ -127,7 +132,9 @@ class HomePageState extends ConsumerState<HomePage> {
             );
             break;
           default:
-            page = const NewsPage();
+            page = NewsPage(
+              newsService: widget.newsService,
+            );
         }
         // Initialize a GlobalKey for each tab's navigator
         _navigatorKeys.putIfAbsent(index, () => GlobalKey<NavigatorState>());

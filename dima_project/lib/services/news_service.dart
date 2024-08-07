@@ -96,7 +96,7 @@ class NewsService {
     return categories;
   }
 
-  static Stream<List<ArticleModel>> getSearchedNews(String search) async* {
+  Stream<List<ArticleModel>> getSearchedNews(String search) async* {
     List<ArticleModel> news = [];
 
     String url =

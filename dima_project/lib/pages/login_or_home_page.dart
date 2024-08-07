@@ -2,6 +2,7 @@ import 'package:dima_project/pages/home_page.dart';
 import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/news_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -30,7 +31,10 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
           return const Text("ERROR DURING AUTHENTICATION");
         }
         if (snapshot.hasData && FirebaseAuth.instance.currentUser != null) {
-          return const HomePage();
+          return HomePage(
+            index: 0,
+            newsService: NewsService(),
+          );
         } else {
           return LoginPage(
             databaseService: DatabaseService(),

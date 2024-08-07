@@ -17,8 +17,10 @@ import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class NewsPage extends ConsumerStatefulWidget {
+  final NewsService newsService;
   const NewsPage({
     super.key,
+    required this.newsService,
   });
 
   @override
@@ -28,7 +30,6 @@ class NewsPage extends ConsumerStatefulWidget {
 class NewsPageState extends ConsumerState<NewsPage> {
   List<ArticleModel>? sliders;
   List<ArticleModel>? articles;
-  NewsService news = NewsService();
 
   int numberOfNews =
       6; //it's arbitrary, we can put sliders.length (that is 10 for this api)
@@ -43,16 +44,16 @@ class NewsPageState extends ConsumerState<NewsPage> {
   }
 
   getNews() async {
-    await news.getNews();
+    await widget.newsService.getNews();
     setState(() {
-      articles = news.news;
+      articles = widget.newsService.news;
     });
   }
 
   getSliders() async {
-    await news.getSliders();
+    await widget.newsService.getSliders();
     setState(() {
-      sliders = news.sliders;
+      sliders = widget.newsService.sliders;
     });
   }
 
