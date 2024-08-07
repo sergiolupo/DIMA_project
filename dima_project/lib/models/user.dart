@@ -27,24 +27,39 @@ class UserData {
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
-    return UserData(
-      name: documentSnapshot['name'],
-      surname: documentSnapshot['surname'],
-      username: documentSnapshot['username'],
-      email: documentSnapshot['email'],
-      imagePath: documentSnapshot['imageUrl'],
-      categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
-          .map((categoryMap) => categoryMap['value'].toString())
-          .toList()
-          .cast<String>(),
-      uid: documentSnapshot.id,
-      isPublic: documentSnapshot['isPublic'],
-      requests: (documentSnapshot['requests'] as List<dynamic>)
-          .map((request) => request.toString())
-          .toList()
-          .cast<String>(),
-      token: documentSnapshot['token'],
-    );
+    try {
+      return UserData(
+        name: documentSnapshot['name'],
+        surname: documentSnapshot['surname'],
+        username: documentSnapshot['username'],
+        email: documentSnapshot['email'],
+        imagePath: documentSnapshot['imageUrl'],
+        categories: (documentSnapshot['selectedCategories'] as List<dynamic>)
+            .map((categoryMap) => categoryMap['value'].toString())
+            .toList()
+            .cast<String>(),
+        uid: documentSnapshot.id,
+        isPublic: documentSnapshot['isPublic'],
+        requests: (documentSnapshot['requests'] as List<dynamic>)
+            .map((request) => request.toString())
+            .toList()
+            .cast<String>(),
+        token: documentSnapshot['token'],
+      );
+    } catch (e) {
+      return UserData(
+        imagePath: '',
+        username: 'Deleted Account',
+        categories: [],
+        email: '',
+        name: '',
+        surname: '',
+        uid: '',
+        isPublic: false,
+        requests: [],
+        token: '',
+      );
+    }
   }
 
   static UserData fromMap(Map<String, dynamic> json) {

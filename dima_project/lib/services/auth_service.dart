@@ -9,7 +9,7 @@ import 'package:dima_project/services/database_service.dart';
 class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static String? _uid;
-  static String get uid => _uid ?? _firebaseAuth.currentUser!.uid;
+  static String get uid => _uid ?? '';
 
   static void setUid(String uid) {
     _uid = uid;
