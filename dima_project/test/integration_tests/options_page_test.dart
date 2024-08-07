@@ -1,5 +1,6 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
+import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -7,15 +8,22 @@ import 'package:dima_project/widgets/option_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 
+import '../mocks/mock_auth_service.mocks.dart';
 import '../mocks/mock_database_service.mocks.dart';
+import '../mocks/mock_shared_preferences_helper.mocks.dart';
 
 void main() {
   late final MockDatabaseService mockDatabaseService;
+  late final MockAuthService mockAuthService;
+  late final MockSharedPreferencesHelper mockSharedPreferencesHelper;
 
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
+    mockAuthService = MockAuthService();
+    mockSharedPreferencesHelper = MockSharedPreferencesHelper();
   });
   group("OptionsPage Tests", () {
     testWidgets('OptionsPage renders correctly and navigator works',
@@ -95,9 +103,12 @@ void main() {
             ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
           ],
-          child: const CupertinoApp(
+          child: CupertinoApp(
             home: CupertinoPageScaffold(
-              child: OptionsPage(),
+              child: OptionsPage(
+                authService: mockAuthService,
+                sharedPreferencesHelper: mockSharedPreferencesHelper,
+              ),
             ),
           ),
         ),
@@ -152,6 +163,123 @@ void main() {
       expect(find.text('Options'), findsOneWidget);
 
       await tester.tap(find.byIcon(CupertinoIcons.back));
+    });
+    testWidgets("Test logout functionality", (WidgetTester tester) async {
+      AuthService.setUid('test-uid');
+      when(mockDatabaseService.updateToken(any))
+          .thenAnswer((_) => Future.value());
+      when(mockAuthService.signOut()).thenAnswer((_) => Future.value());
+      when(mockSharedPreferencesHelper.clearNotification())
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  categories: [],
+                  email: "test_email",
+                  name: "test_name",
+                  surname: "test_surname",
+                  username: "test_username",
+                  isPublic: false,
+                  imagePath: "",
+                  uid: "testUid")),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                    path: '/',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return OptionsPage(
+                        authService: mockAuthService,
+                        sharedPreferencesHelper: mockSharedPreferencesHelper,
+                      );
+                    }),
+                GoRoute(
+                    path: '/login',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return LoginPage(
+                        databaseService: mockDatabaseService,
+                        authService: mockAuthService,
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text("Exit"));
+      await tester.pumpAndSettle();
+      verify(mockAuthService.signOut()).called(1);
+      expect(find.text("Login"), findsOneWidget);
+    });
+    testWidgets("Test delete account functionality",
+        (WidgetTester tester) async {
+      AuthService.setUid('test-uid');
+      when(mockDatabaseService.updateToken(any))
+          .thenAnswer((_) => Future.value());
+      when(mockAuthService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockSharedPreferencesHelper.clearNotification())
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.deleteUser()).thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  categories: [],
+                  email: "test_email",
+                  name: "test_name",
+                  surname: "test_surname",
+                  username: "test_username",
+                  isPublic: false,
+                  imagePath: "",
+                  uid: "testUid")),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                    path: '/',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return OptionsPage(
+                        authService: mockAuthService,
+                        sharedPreferencesHelper: mockSharedPreferencesHelper,
+                      );
+                    }),
+                GoRoute(
+                    path: '/login',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return LoginPage(
+                        databaseService: mockDatabaseService,
+                        authService: mockAuthService,
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Delete Account"), findsNWidgets(2));
+      expect(find.text("Are you sure you want to delete your account?"),
+          findsOneWidget);
+      await tester.tap(find.text("No"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Yes"));
+      await tester.pumpAndSettle();
+      verify(mockAuthService.deleteUser()).called(1);
+      verify(mockDatabaseService.deleteUser()).called(1);
+      expect(find.text("Login"), findsOneWidget);
     });
   });
 }

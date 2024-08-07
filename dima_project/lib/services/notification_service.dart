@@ -101,9 +101,9 @@ class NotificationService {
       handleMessage(context, initialMessage);
     }
     String? notificationType =
-        await SharedPreferencesHelper.getNotificationType();
+        await SharedPreferencesHelper().getNotificationType();
     String? notificationData =
-        await SharedPreferencesHelper.getNotificationData();
+        await SharedPreferencesHelper().getNotificationData();
 
     if (notificationType != null && notificationData != null) {
       debugPrint('notificationType');
@@ -113,7 +113,7 @@ class NotificationService {
       if (!context.mounted) return;
       handleMessage(context, RemoteMessage(data: data));
 
-      await SharedPreferencesHelper.clearNotification();
+      await SharedPreferencesHelper().clearNotification();
     }
 
     //when app is in background

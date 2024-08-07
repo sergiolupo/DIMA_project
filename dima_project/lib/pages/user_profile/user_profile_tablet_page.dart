@@ -6,6 +6,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:dima_project/widgets/events/event_grid.dart';
 import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
 import 'package:dima_project/pages/user_profile/show_followers_page.dart';
@@ -125,7 +126,11 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                 onTap: () => Navigator.push(
                     context,
                     CupertinoPageRoute(
-                        builder: (context) => const OptionsPage())),
+                        builder: (context) => OptionsPage(
+                              authService: AuthService(),
+                              sharedPreferencesHelper:
+                                  SharedPreferencesHelper(),
+                            ))),
                 child: Icon(CupertinoIcons.bars,
                     color:
                         CupertinoTheme.of(context).textTheme.textStyle.color),

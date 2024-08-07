@@ -10,8 +10,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
+  final AuthService authService;
+  final SharedPreferencesHelper sharedPreferencesHelper;
   const OptionsPage({
     super.key,
+    required this.authService,
+    required this.sharedPreferencesHelper,
   });
   @override
   OptionsPageState createState() => OptionsPageState();
@@ -95,22 +99,18 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
         );
       },
     );
-    try {
-      await databaseService.updateToken('');
-      await SharedPreferencesHelper.clearNotification();
-      AuthService().signOut();
-      ref.invalidate(userProvider);
-      ref.invalidate(followerProvider);
-      ref.invalidate(followingProvider);
-      ref.invalidate(groupsProvider);
-      ref.invalidate(joinedEventsProvider);
-      ref.invalidate(createdEventsProvider);
-      ref.invalidate(eventProvider);
-      if (!context.mounted) return;
-      context.go('/login');
-    } catch (e) {
-      debugPrint("Failed to sign out: $e");
-    }
+    await databaseService.updateToken('');
+    await widget.sharedPreferencesHelper.clearNotification();
+    widget.authService.signOut();
+    ref.invalidate(userProvider);
+    ref.invalidate(followerProvider);
+    ref.invalidate(followingProvider);
+    ref.invalidate(groupsProvider);
+    ref.invalidate(joinedEventsProvider);
+    ref.invalidate(createdEventsProvider);
+    ref.invalidate(eventProvider);
+    if (!context.mounted) return;
+    context.go('/login');
   }
 
   void deleteAccount(DatabaseService databaseService) {
@@ -122,13 +122,13 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
           content: const Text('Are you sure you want to delete your account?'),
           actions: <CupertinoDialogAction>[
             CupertinoDialogAction(
-              child: const Text('Cancel'),
+              child: const Text('No'),
               onPressed: () {
                 Navigator.of(newContext).pop();
               },
             ),
             CupertinoDialogAction(
-              child: const Text('Delete'),
+              child: const Text('Yes'),
               onPressed: () async {
                 Navigator.of(newContext).pop();
                 showCupertinoDialog(
@@ -140,7 +140,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   },
                 );
                 await databaseService.updateToken('');
-                await SharedPreferencesHelper.clearNotification();
+                await widget.sharedPreferencesHelper.clearNotification();
                 await databaseService.deleteUser();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
@@ -149,7 +149,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 ref.invalidate(joinedEventsProvider);
                 ref.invalidate(createdEventsProvider);
                 ref.invalidate(eventProvider);
-                await AuthService().deleteUser();
+                await widget.authService.deleteUser();
                 if (!mounted) return;
                 Navigator.of(context).pop();
                 context.go('/login');

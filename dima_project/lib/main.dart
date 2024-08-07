@@ -42,7 +42,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await SharedPreferencesHelper.saveNotification(message);
+  await SharedPreferencesHelper().saveNotification(message);
 }
 
 final GoRouter _router = GoRouter(
