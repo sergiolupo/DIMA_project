@@ -55,17 +55,13 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      try {
-                        await databaseService.acceptUserGroupRequest(
-                          group.id,
-                        );
-                        setState(() {
-                          groupsRequests.removeAt(index);
-                        });
-                        ref.invalidate(groupsProvider(uid));
-                      } catch (error) {
-                        debugPrint("Error occurred: $error");
-                      }
+                      await databaseService.acceptUserGroupRequest(
+                        group.id,
+                      );
+                      setState(() {
+                        groupsRequests.removeAt(index);
+                      });
+                      ref.invalidate(groupsProvider(uid));
                     },
                     child: Container(
                       padding: const EdgeInsets.only(right: 20),
@@ -85,15 +81,10 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      try {
-                        await databaseService.denyUserGroupRequest(
-                            group.id, uid);
-                        setState(() {
-                          groupsRequests.removeAt(index);
-                        });
-                      } catch (error) {
-                        debugPrint("Error occurred: $error");
-                      }
+                      await databaseService.denyUserGroupRequest(group.id);
+                      setState(() {
+                        groupsRequests.removeAt(index);
+                      });
                     },
                     child: Container(
                       padding: const EdgeInsets.only(right: 20),

@@ -815,17 +815,10 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
       ) as _i8.Future<void>);
 
   @override
-  _i8.Future<void> denyUserGroupRequest(
-    String? groupId,
-    String? uuid,
-  ) =>
-      (super.noSuchMethod(
+  _i8.Future<void> denyUserGroupRequest(String? groupId) => (super.noSuchMethod(
         Invocation.method(
           #denyUserGroupRequest,
-          [
-            groupId,
-            uuid,
-          ],
+          [groupId],
         ),
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),

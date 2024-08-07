@@ -61,17 +61,13 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    try {
-                      await databaseService.acceptUserRequest(
-                        user.uid!,
-                      );
-                      setState(() {
-                        followRequests.removeAt(index);
-                      });
-                      ref.invalidate(followerProvider(uid));
-                    } catch (error) {
-                      debugPrint("Error occurred: $error");
-                    }
+                    await databaseService.acceptUserRequest(
+                      user.uid!,
+                    );
+                    setState(() {
+                      followRequests.removeAt(index);
+                    });
+                    ref.invalidate(followerProvider(uid));
                   },
                   child: Container(
                     padding: const EdgeInsets.only(right: 20),
@@ -91,16 +87,12 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    try {
-                      await databaseService.denyUserRequest(
-                        user.uid!,
-                      );
-                      setState(() {
-                        followRequests.removeAt(index);
-                      });
-                    } catch (error) {
-                      debugPrint("Error occurred: $error");
-                    }
+                    await databaseService.denyUserRequest(
+                      user.uid!,
+                    );
+                    setState(() {
+                      followRequests.removeAt(index);
+                    });
                   },
                   child: Container(
                     padding: const EdgeInsets.only(right: 20),

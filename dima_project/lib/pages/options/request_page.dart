@@ -4,11 +4,14 @@ import 'package:dima_project/pages/options/follow_requests_page.dart';
 import 'package:dima_project/pages/options/groups_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/widgets/option_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShowRequestPage extends StatefulWidget {
+  final DatabaseService databaseService;
   const ShowRequestPage({
     super.key,
+    required this.databaseService,
   });
   @override
   ShowRequestPageState createState() => ShowRequestPageState();
@@ -18,7 +21,6 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   List<UserData>? _followRequests;
   List<Group>? _groupRequests;
   final String uid = AuthService.uid;
-  final DatabaseService _databaseService = DatabaseService();
   @override
   void initState() {
     init();
@@ -28,11 +30,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   init() async {
     List<UserData>? followRequests;
     List<Group>? groupRequests;
-    followRequests = (await _databaseService.getFollowRequests(uid));
+    followRequests = (await widget.databaseService.getFollowRequests(uid));
     setState(() {
       _followRequests = followRequests;
     });
-    groupRequests = (await _databaseService.getUserGroupRequests(uid));
+    groupRequests = (await widget.databaseService.getUserGroupRequests(uid));
     setState(() {
       _groupRequests = groupRequests;
     });
@@ -53,9 +55,10 @@ class ShowRequestPageState extends State<ShowRequestPage> {
       child: SafeArea(
         child: ListView(
           children: [
-            CupertinoListSection(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.person),
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true)
@@ -90,7 +93,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     ],
                   ),
                 ),
-                CupertinoListTile(
+                OptionTile(
                   leading: const Icon(CupertinoIcons.person_2_square_stack),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,47 +132,6 @@ class ShowRequestPageState extends State<ShowRequestPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class CupertinoListTile extends StatelessWidget {
-  final Widget leading;
-  final Widget title;
-  final VoidCallback? onTap;
-
-  const CupertinoListTile(
-      {super.key, required this.leading, required this.title, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            leading,
-            const SizedBox(width: 16),
-            Expanded(child: title),
-            const Icon(CupertinoIcons.forward),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CupertinoListSection extends StatelessWidget {
-  final List<Widget> children;
-
-  const CupertinoListSection({super.key, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
     );
   }
 }

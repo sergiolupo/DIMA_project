@@ -1093,8 +1093,8 @@ class DatabaseService {
     ]);
   }
 
-  Future<void> denyUserGroupRequest(String groupId, String uuid) async {
-    await usersRef.doc(uuid).update({
+  Future<void> denyUserGroupRequest(String groupId) async {
+    await usersRef.doc(AuthService.uid).update({
       'groupsRequests': FieldValue.arrayRemove([groupId])
     });
   }

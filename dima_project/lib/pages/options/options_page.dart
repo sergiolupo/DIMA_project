@@ -53,7 +53,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true).push(
                         CupertinoPageRoute(
-                            builder: (context) => const ShowRequestPage()))
+                            builder: (context) => ShowRequestPage(
+                                databaseService: databaseService)))
                   },
                   title: const Text('Request'),
                 ),
