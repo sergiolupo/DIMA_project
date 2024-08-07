@@ -19,8 +19,14 @@ class CreateImageWidget {
                 : 200,
         color: CupertinoColors.lightBackgroundGray,
         child: imagePath != ''
-            ? Image.network(
-                imagePath,
+            ? CachedNetworkImage(
+                errorWidget: (context, url, error) => Image.asset(
+                  'assets/default_user_image.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
+                errorListener: (error) {},
+                imageUrl: imagePath,
                 fit: BoxFit.cover,
               )
             : Image.asset(
@@ -38,8 +44,14 @@ class CreateImageWidget {
         height: small ? 30 : 100,
         color: CupertinoColors.lightBackgroundGray,
         child: imagePath != ''
-            ? Image.network(
-                imagePath,
+            ? CachedNetworkImage(
+                errorWidget: (context, url, error) => Image.asset(
+                  'assets/default_group_image.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
+                errorListener: (error) {},
+                imageUrl: imagePath,
                 fit: BoxFit.cover,
               )
             : Image.asset(

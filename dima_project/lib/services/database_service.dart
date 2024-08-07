@@ -1054,10 +1054,10 @@ class DatabaseService {
   Future<void> acceptUserRequest(
     String user,
   ) async {
+    await usersRef.doc(AuthService.uid).update({
+      'requests': FieldValue.arrayRemove([user])
+    });
     await Future.wait([
-      usersRef.doc(AuthService.uid).update({
-        'requests': FieldValue.arrayRemove([user])
-      }),
       followersRef.doc(AuthService.uid).update({
         'followers': FieldValue.arrayUnion([user])
       }),

@@ -55,13 +55,32 @@ class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      await databaseService.acceptUserGroupRequest(
-                        group.id,
-                      );
+                      try {
+                        await databaseService.acceptUserGroupRequest(
+                          group.id,
+                        );
+                        ref.invalidate(groupsProvider(uid));
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        showCupertinoDialog(
+                            context: context,
+                            builder: (context) {
+                              return CupertinoAlertDialog(
+                                title: const Text("Error"),
+                                content: const Text("Group has been deleted"),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: const Text("Ok"),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                  ),
+                                ],
+                              );
+                            });
+                      }
                       setState(() {
                         groupsRequests.removeAt(index);
                       });
-                      ref.invalidate(groupsProvider(uid));
                     },
                     child: Container(
                       padding: const EdgeInsets.only(right: 20),

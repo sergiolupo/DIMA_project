@@ -31,6 +31,8 @@ class ShowRequestPageState extends State<ShowRequestPage> {
     List<UserData>? followRequests;
     List<Group>? groupRequests;
     followRequests = (await widget.databaseService.getFollowRequests(uid));
+    followRequests.removeWhere(
+        (user) => user.email == "" && user.username == "Deleted Account");
     setState(() {
       _followRequests = followRequests;
     });

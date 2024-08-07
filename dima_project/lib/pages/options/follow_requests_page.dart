@@ -39,6 +39,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
           itemCount: followRequests.length,
           itemBuilder: (context, index) {
             final user = followRequests[index];
+
             return Row(
               children: [
                 Expanded(
@@ -61,13 +62,31 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    await databaseService.acceptUserRequest(
-                      user.uid!,
-                    );
+                    try {
+                      await databaseService.acceptUserRequest(
+                        user.uid!,
+                      );
+                      ref.invalidate(followerProvider(uid));
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      showCupertinoDialog(
+                          context: context,
+                          builder: (context) {
+                            return CupertinoAlertDialog(
+                              title: const Text("Error"),
+                              content: const Text("User deleted his account"),
+                              actions: [
+                                CupertinoDialogAction(
+                                  child: const Text("Ok"),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                              ],
+                            );
+                          });
+                    }
                     setState(() {
                       followRequests.removeAt(index);
                     });
-                    ref.invalidate(followerProvider(uid));
                   },
                   child: Container(
                     padding: const EdgeInsets.only(right: 20),
@@ -90,6 +109,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
                     await databaseService.denyUserRequest(
                       user.uid!,
                     );
+
                     setState(() {
                       followRequests.removeAt(index);
                     });
