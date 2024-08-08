@@ -303,7 +303,7 @@ class DatabaseService {
     });
   }
 
-  Future<void> deleteGroupRequests(String groupId) async {
+  Future<void> deleteUserGroupRequests(String groupId) async {
     QuerySnapshot<Object?> value =
         await usersRef.where("requests", arrayContains: groupId).get();
     for (var doc in value.docs) {
@@ -319,6 +319,16 @@ class DatabaseService {
     for (var doc in value.docs) {
       await usersRef.doc(doc.id).update({
         'requests': FieldValue.arrayRemove([AuthService.uid])
+      });
+    }
+  }
+
+  Future<void> deleteGroupRequests(String uid) async {
+    QuerySnapshot<Object?> value =
+        await groupsRef.where("requests", arrayContains: uid).get();
+    for (var doc in value.docs) {
+      await groupsRef.doc(doc.id).update({
+        'requests': FieldValue.arrayRemove([uid])
       });
     }
   }
@@ -339,7 +349,7 @@ class DatabaseService {
 
       DocumentSnapshot<Object?> groupDoc = await groupsRef.doc(groupId).get();
       if (groupDoc['members'].isEmpty) {
-        await deleteGroupRequests(groupId);
+        await deleteUserGroupRequests(groupId);
         await groupsRef.doc(groupId).delete();
       } else if (groupDoc['admin'] == AuthService.uid) {
         await groupsRef.doc(groupId).update({'admin': groupDoc['members'][0]});
@@ -1607,6 +1617,7 @@ class DatabaseService {
         group,
       );
     }
+    deleteGroupRequests(AuthService.uid);
     //exit all events
     for (var event in userDoc['events']) {
       final eventId = event.split(':')[0];
