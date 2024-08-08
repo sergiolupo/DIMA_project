@@ -346,11 +346,18 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
       _databaseService.sendMessage(widget.privateChat.id!, message);
-      NotificationService(databaseService: DatabaseService())
-          .sendNotificationForPrivateChat(
-        widget.privateChat,
-        message,
-      );
+      debugPrint('Sending message...');
+      try {
+        await NotificationService(databaseService: DatabaseService())
+            .sendNotificationForPrivateChat(
+          widget.privateChat,
+          message,
+        );
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      debugPrint('Message sent');
+
       setState(() {
         messageEditingController.clear();
       });

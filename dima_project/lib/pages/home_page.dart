@@ -32,14 +32,14 @@ class HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     databaseService = ref.read(databaseServiceProvider);
-    /*notificationServices = NotificationService(
+    notificationServices = NotificationService(
       databaseService: databaseService,
     );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
     notificationServices.setUpInteractMessage(context);
-    notificationServices.setupToken(ref);*/
+    notificationServices.setupToken(ref);
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
     ref.read(followingProvider(AuthService.uid));

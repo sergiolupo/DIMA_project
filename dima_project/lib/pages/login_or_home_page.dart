@@ -31,6 +31,7 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
           return const Text("ERROR DURING AUTHENTICATION");
         }
         if (snapshot.hasData && FirebaseAuth.instance.currentUser != null) {
+          AuthService.setUid(FirebaseAuth.instance.currentUser!.uid);
           return HomePage(
             index: 0,
             newsService: NewsService(),

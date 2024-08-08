@@ -212,6 +212,7 @@ class NotificationService {
       PrivateChat privateChat, chat_message.Message chatMessage) async {
     String deviceToken =
         await databaseService.getDeviceTokenPrivateChat(privateChat);
+
     if (deviceToken == '') return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
@@ -231,6 +232,7 @@ class NotificationService {
         "token": deviceToken,
       }
     };
+
     final http.Response response = await http.post(
       Uri.parse(endpoint),
       headers: <String, String>{
