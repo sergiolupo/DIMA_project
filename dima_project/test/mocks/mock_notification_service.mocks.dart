@@ -109,6 +109,7 @@ class MockNotificationService extends _i1.Mock
   void initLocalNotifications(
     _i5.BuildContext? context,
     _i2.RemoteMessage? message,
+    Function? changeIndex,
   ) =>
       super.noSuchMethod(
         Invocation.method(
@@ -116,16 +117,24 @@ class MockNotificationService extends _i1.Mock
           [
             context,
             message,
+            changeIndex,
           ],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  void firebaseInit(_i5.BuildContext? context) => super.noSuchMethod(
+  void firebaseInit(
+    _i5.BuildContext? context,
+    Function? changeIndex,
+  ) =>
+      super.noSuchMethod(
         Invocation.method(
           #firebaseInit,
-          [context],
+          [
+            context,
+            changeIndex,
+          ],
         ),
         returnValueForMissingStub: null,
       );
@@ -155,11 +164,17 @@ class MockNotificationService extends _i1.Mock
       );
 
   @override
-  _i6.Future<void> setUpInteractMessage(_i5.BuildContext? context) =>
+  _i6.Future<void> setUpInteractMessage(
+    _i5.BuildContext? context,
+    Function? changeIndex,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
           #setUpInteractMessage,
-          [context],
+          [
+            context,
+            changeIndex,
+          ],
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
@@ -169,6 +184,7 @@ class MockNotificationService extends _i1.Mock
   _i6.Future<void> handleMessage(
     _i5.BuildContext? context,
     _i2.RemoteMessage? message,
+    Function? changeIndex,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -176,6 +192,7 @@ class MockNotificationService extends _i1.Mock
           [
             context,
             message,
+            changeIndex,
           ],
         ),
         returnValue: _i6.Future<void>.value(),
