@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
@@ -11,8 +12,6 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-
 import '../models/event.dart';
 
 class DatabaseService {
@@ -1226,6 +1225,10 @@ class DatabaseService {
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       });
+      await NotificationService(databaseService: this).sendNotificationOnGroup(
+        id,
+        message,
+      );
     }
   }
 
@@ -1263,10 +1266,9 @@ class DatabaseService {
           'recentMessageType': message.type.toString(),
         }),
         NotificationService(databaseService: this)
-            .sendNotificationForPrivateChat(
+            .sendNotificationOnPrivateChat(
           privateChat,
           message,
-          (await getUserData(AuthService.uid)).username,
         ),
       ]);
     }
@@ -1456,6 +1458,10 @@ class DatabaseService {
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       }),
+      NotificationService(databaseService: this).sendNotificationOnGroup(
+        id,
+        message,
+      ),
     ]);
   }
 
@@ -1496,10 +1502,9 @@ class DatabaseService {
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       }),
-      NotificationService(databaseService: this).sendNotificationForPrivateChat(
+      NotificationService(databaseService: this).sendNotificationOnPrivateChat(
         privateChat,
         message,
-        (await getUserData(AuthService.uid)).username,
       ),
     ]);
   }
@@ -1703,6 +1708,18 @@ class DatabaseService {
       return '';
     }
     return (await usersRef.doc(otherUID).get())['token'];
+  }
+
+  Future<List<String>> getDevicesTokensGroup(String groupId) async {
+    final List<String> notifications =
+        (await groupsRef.doc(groupId).get())['notifications'];
+    final List<String> tokens = [];
+    for (var notification in notifications) {
+      if (notification != AuthService.uid) {
+        tokens.add((await usersRef.doc(notification).get())['token']);
+      }
+    }
+    return tokens;
   }
 
   Future<List<String>> getDevicesTokensDetail(

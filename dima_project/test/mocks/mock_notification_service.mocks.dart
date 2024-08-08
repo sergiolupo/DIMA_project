@@ -206,7 +206,7 @@ class MockNotificationService extends _i1.Mock
       ) as _i6.Future<String>);
 
   @override
-  _i6.Future<void> sendNotificationForPrivateChat(
+  _i6.Future<void> sendNotificationOnPrivateChat(
     _i9.PrivateChat? privateChat,
     _i10.Message? chatMessage,
   ) =>

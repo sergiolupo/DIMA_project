@@ -169,8 +169,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       );
 
       await NotificationService(databaseService: DatabaseService())
-          .sendNotificationForPrivateChat(
-              widget.privateChat, message, widget.user.username);
+          .sendNotificationOnPrivateChat(widget.privateChat, message);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -201,8 +200,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           Uint8List.fromList(bytes),
         );
         await NotificationService(databaseService: DatabaseService())
-            .sendNotificationForPrivateChat(
-                widget.privateChat, message, widget.user.username);
+            .sendNotificationOnPrivateChat(
+          widget.privateChat,
+          message,
+        );
         if (mounted) {
           setState(() {
             isUploading = false;
@@ -354,8 +355,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           await _databaseService.createPrivateChat(widget.privateChat);
       await _databaseService.sendMessage(widget.privateChat.id!, message);
       await NotificationService(databaseService: DatabaseService())
-          .sendNotificationForPrivateChat(
-              widget.privateChat, message, widget.user.username);
+          .sendNotificationOnPrivateChat(
+        widget.privateChat,
+        message,
+      );
 
       setState(() {
         messageEditingController.clear();

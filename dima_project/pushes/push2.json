@@ -7,16 +7,6 @@
         
     },
     "type": "group_chat",
-    "group":{
-        "groupName": "a",
-        "groupId": "uuUmFSvyMwvNin70QAe5",
-        "admin": "o8RO1N7FgHYVAM1vpWgM5c7iIaD2",
-        "groupImage": "",
-        "description": "a",
-        "categories": [],
-        "members": ["o8RO1N7FgHYVAM1vpWgM5c7iIaD2"],
-        "isPublic": true,
-        "requests": []
-    },
+    "group_id": "123",
     "gcm.message_id": "123"
 }

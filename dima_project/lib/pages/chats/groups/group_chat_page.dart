@@ -8,6 +8,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -217,12 +218,14 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
       final bytes = await image.readAsBytes();
-      await _databaseService.sendChatImage(
+      final message = await _databaseService.sendChatImage(
         group.id,
         File(image.path),
         true,
         Uint8List.fromList(bytes),
       );
+      await NotificationService(databaseService: DatabaseService())
+          .sendNotificationOnGroup(widget.group.id, message);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -243,12 +246,14 @@ class GroupChatPageState extends State<GroupChatPage> {
           });
         }
         final bytes = await image.readAsBytes();
-        await _databaseService.sendChatImage(
+        final message = await _databaseService.sendChatImage(
           group.id,
           File(image.path),
           true,
           Uint8List.fromList(bytes),
         );
+        await NotificationService(databaseService: DatabaseService())
+            .sendNotificationOnGroup(widget.group.id, message);
         if (mounted) {
           setState(() {
             isUploading = false;
@@ -365,7 +370,8 @@ class GroupChatPageState extends State<GroupChatPage> {
       );
 
       await _databaseService.sendMessage(group.id, message);
-
+      await NotificationService(databaseService: DatabaseService())
+          .sendNotificationOnGroup(widget.group.id, message);
       setState(() {
         messageEditingController.clear();
       });

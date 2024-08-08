@@ -216,15 +216,16 @@ class NotificationService {
     return credentials.accessToken.data;
   }
 
-  Future<void> sendNotificationForPrivateChat(PrivateChat privateChat,
-      chat_message.Message chatMessage, String username) async {
+  Future<void> sendNotificationOnPrivateChat(
+      PrivateChat privateChat, chat_message.Message chatMessage) async {
     String deviceToken =
         await DatabaseService().getDeviceTokenPrivateChat(privateChat);
     if (deviceToken == '') return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
         'https://fcm.googleapis.com/v1/projects/dima-58cb8/messages:send';
-
+    final String username =
+        (await DatabaseService().getUserData(AuthService.uid)).username;
     final String content = chatMessage.type == chat_message.Type.text
         ? chatMessage.content.length > 20
             ? '${chatMessage.content.substring(0, 20)}...'
@@ -263,6 +264,59 @@ class NotificationService {
       debugPrint('Notification sent');
     } else {
       debugPrint('Notification not sent');
+    }
+  }
+
+  Future<void> sendNotificationOnGroup(
+      String groupId, chat_message.Message chatMessage) async {
+    List<String> devicesTokens =
+        await DatabaseService().getDevicesTokensGroup(groupId);
+    if (devicesTokens == []) return;
+    final String serverAccessTokenKey = await getAccessToken();
+    const endpoint =
+        'https://fcm.googleapis.com/v1/projects/dima-58cb8/messages:send';
+
+    final String username =
+        (await DatabaseService().getUserData(AuthService.uid)).username;
+    final String content = chatMessage.type == chat_message.Type.text
+        ? chatMessage.content.length > 20
+            ? '${chatMessage.content.substring(0, 20)}...'
+            : chatMessage.content
+        : chatMessage.type == chat_message.Type.image
+            ? 'Image'
+            : chatMessage.type == chat_message.Type.event
+                ? 'Event'
+                : 'News';
+    for (String deviceToken in devicesTokens) {
+      if (deviceToken == '') continue;
+      Map<String, dynamic> message = {
+        "message": {
+          "token": deviceToken,
+          "notification": {
+            "title": username,
+            "body": content,
+          },
+          "data": {
+            "type": "group_chat",
+            "group_id": groupId,
+          },
+        }
+      };
+
+      final http.Response response = await http.post(
+        Uri.parse(endpoint),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $serverAccessTokenKey',
+        },
+        body: jsonEncode(message),
+      );
+      debugPrint(response.body);
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent');
+      } else {
+        debugPrint('Notification not sent');
+      }
     }
   }
 

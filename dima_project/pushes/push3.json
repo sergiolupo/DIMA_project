@@ -9,5 +9,6 @@
     },
     "type": "event",
     "event_id": "1pW9rKY6x45Ueks9jKer",
+    "detail_id": "1pW9rKY6x45Ueks9jKer",
     "gcm.message_id": "123"
 }
