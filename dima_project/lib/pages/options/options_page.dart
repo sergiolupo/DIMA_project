@@ -101,7 +101,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     );
     await databaseService.updateToken('');
     await widget.sharedPreferencesHelper.clearNotification();
-    widget.authService.signOut();
+    await widget.authService.signOut();
     ref.invalidate(userProvider);
     ref.invalidate(followerProvider);
     ref.invalidate(followingProvider);
