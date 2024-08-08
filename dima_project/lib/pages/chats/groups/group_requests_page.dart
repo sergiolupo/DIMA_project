@@ -38,14 +38,17 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           child: const Icon(CupertinoIcons.back),
-          onPressed: () {
+          onPressed: () async {
+            Group group =
+                await _databaseService.getGroupFromId(widget.group.id);
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupInfoPage(
-                  group: widget.group,
+                  group: group,
                   canNavigate: widget.canNavigate,
                   navigateToPage: widget.navigateToPage));
             }
-            Navigator.of(context).pop();
+            if (!context.mounted) return;
+            Navigator.of(context).pop(group);
           },
         ),
         middle: const Text('Group Requests'),

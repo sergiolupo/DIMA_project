@@ -265,7 +265,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   return;
                                 }
 
-                                await Navigator.of(context).push(
+                                final Group? newGroup =
+                                    await Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => GroupRequestsPage(
                                       group: group,
@@ -274,6 +275,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     ),
                                   ),
                                 );
+                                if (newGroup != null) {
+                                  group = newGroup;
+                                }
                                 setState(() {});
                               },
                             );
