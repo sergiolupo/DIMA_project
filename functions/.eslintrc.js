@@ -11,10 +11,11 @@ module.exports = {
     "google",
   ],
   rules: {
-    "no-unused-vars": "warn",
     "no-restricted-globals": ["error", "name", "length"],
     "prefer-arrow-callback": "error",
     "quotes": ["error", "double", {"allowTemplateLiterals": true}],
+    "max-len": ["error", {"code": 120}],
+
   },
   overrides: [
     {
