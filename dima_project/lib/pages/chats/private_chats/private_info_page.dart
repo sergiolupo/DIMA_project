@@ -334,7 +334,11 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                       ),
                       const SizedBox(height: 10),
                       NotificationWidget(
-                          notify: notify, notifyFunction: (value) {}),
+                          notify: notify,
+                          notifyFunction: (value) {
+                            _databaseService.updatePrivateChatNotification(
+                                widget.privateChat.id!, value);
+                          }),
                     ],
                   ),
                 ),

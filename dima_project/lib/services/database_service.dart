@@ -438,6 +438,7 @@ class DatabaseService {
     members.sort();
     return await privateChatRef.add({
       'members': members,
+      'notifications': members,
       'recentMessage': "",
       'recentMessageSender': "",
       'recentMessageTime': "",
@@ -1662,12 +1663,15 @@ class DatabaseService {
     await usersRef.doc(AuthService.uid).delete();
   }
 
-  Future<String> getDeviceTokenPrivateChat(PrivateChat chat) {
+  Future<String> getDeviceTokenPrivateChat(PrivateChat chat) async {
+    final List<String> notifications =
+        (await privateChatRef.doc(chat.id).get())['notifications'];
     final String otherUID =
         chat.members[0] == AuthService.uid ? chat.members[1] : chat.members[0];
-    return usersRef.doc(otherUID).get().then((value) {
-      return value['token'];
-    });
+    if (!notifications.contains(otherUID)) {
+      return '';
+    }
+    return (await usersRef.doc(otherUID).get())['token'];
   }
 
   Future<List<String>> getDevicesTokensDetail(
@@ -1709,5 +1713,17 @@ class DatabaseService {
     return followersRef.doc(uuid).snapshots().map((snapshot) {
       return snapshot['following'];
     });
+  }
+
+  Future<void> updatePrivateChatNotification(String id, bool notify) async {
+    if (notify) {
+      await privateChatRef.doc(id).update({
+        'notifications': FieldValue.arrayUnion([AuthService.uid])
+      });
+    } else {
+      await privateChatRef.doc(id).update({
+        'notifications': FieldValue.arrayRemove([AuthService.uid])
+      });
+    }
   }
 }

@@ -280,6 +280,7 @@ class NotificationService {
         detail ? 'A date has been modified' : 'Event has been modified';
 
     for (String deviceToken in devicesTokens) {
+      if (deviceToken == '') continue;
       Map<String, dynamic> message = {
         "message": {
           "token": deviceToken,
