@@ -166,11 +166,11 @@ class MockNotificationService extends _i1.Mock
       ) as _i6.Future<void>);
 
   @override
-  void handleMessage(
+  _i6.Future<void> handleMessage(
     _i5.BuildContext? context,
     _i2.RemoteMessage? message,
   ) =>
-      super.noSuchMethod(
+      (super.noSuchMethod(
         Invocation.method(
           #handleMessage,
           [
@@ -178,8 +178,9 @@ class MockNotificationService extends _i1.Mock
             message,
           ],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 
   @override
   _i6.Future<dynamic> forgroundMessage() => (super.noSuchMethod(
@@ -212,10 +213,48 @@ class MockNotificationService extends _i1.Mock
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #sendNotificationForPrivateChat,
+          #sendNotificationOnPrivateChat,
           [
             privateChat,
             chatMessage,
+          ],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> sendNotificationOnGroup(
+    String? groupId,
+    _i10.Message? chatMessage,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendNotificationOnGroup,
+          [
+            groupId,
+            chatMessage,
+          ],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> sendEventNotification(
+    String? eventName,
+    String? eventId,
+    bool? detail,
+    String? detailId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendEventNotification,
+          [
+            eventName,
+            eventId,
+            detail,
+            detailId,
           ],
         ),
         returnValue: _i6.Future<void>.value(),
