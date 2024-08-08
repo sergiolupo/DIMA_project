@@ -153,8 +153,9 @@ class NotificationService {
       }
     }
     if (message.data['type'] == 'group_chat') {
-      Group group =
-          Group.fromMap(Map<String, dynamic>.from(message.data['group']));
+      final Group group =
+          await DatabaseService().getGroupFromId(message.data['group_id']);
+      if (!context.mounted) return;
       Navigator.push(
           context,
           CupertinoPageRoute(
