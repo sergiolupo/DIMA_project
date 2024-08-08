@@ -229,7 +229,11 @@ class NotificationService {
         ? chatMessage.content.length > 20
             ? '${chatMessage.content.substring(0, 20)}...'
             : chatMessage.content
-        : "Image";
+        : chatMessage.type == chat_message.Type.image
+            ? 'Image'
+            : chatMessage.type == chat_message.Type.event
+                ? 'Event'
+                : 'News';
 
     Map<String, dynamic> message = {
       "message": {

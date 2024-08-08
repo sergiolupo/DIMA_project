@@ -7,8 +7,10 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/event.dart';
@@ -1260,6 +1262,12 @@ class DatabaseService {
           'recentMessageTime': message.time,
           'recentMessageType': message.type.toString(),
         }),
+        NotificationService(databaseService: this)
+            .sendNotificationForPrivateChat(
+          privateChat,
+          message,
+          (await getUserData(AuthService.uid)).username,
+        ),
       ]);
     }
   }
@@ -1488,6 +1496,11 @@ class DatabaseService {
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       }),
+      NotificationService(databaseService: this).sendNotificationForPrivateChat(
+        privateChat,
+        message,
+        (await getUserData(AuthService.uid)).username,
+      ),
     ]);
   }
 
