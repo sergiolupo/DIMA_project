@@ -29,6 +29,29 @@ class HomePageState extends ConsumerState<HomePage> {
   final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {};
   late final NotificationService notificationServices;
   late final DatabaseService databaseService;
+  late CupertinoTabController _tabController;
+
+  changeIndex(int index) {
+    ref.invalidate(userProvider);
+    ref.invalidate(followerProvider);
+    ref.invalidate(followingProvider);
+    ref.invalidate(groupsProvider);
+    ref.invalidate(joinedEventsProvider);
+    ref.invalidate(createdEventsProvider);
+    ref.invalidate(eventProvider);
+    if (_currentIndex == index) {
+      // Get the current tab's navigator key
+      final navigatorKey = _navigatorKeys[index];
+      // Pop to the first route of the current tab's navigator
+      navigatorKey?.currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _currentIndex = index;
+        _tabController.index = index;
+      });
+    }
+  }
+
   @override
   void initState() {
     databaseService = ref.read(databaseServiceProvider);
@@ -37,8 +60,8 @@ class HomePageState extends ConsumerState<HomePage> {
     );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
-    notificationServices.firebaseInit(context);
-    notificationServices.setUpInteractMessage(context);
+    notificationServices.firebaseInit(context, changeIndex);
+    notificationServices.setUpInteractMessage(context, changeIndex);
     notificationServices.setupToken(ref);
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
@@ -49,33 +72,17 @@ class HomePageState extends ConsumerState<HomePage> {
 
     super.initState();
     _currentIndex = widget.index ?? 0;
+    _tabController = CupertinoTabController(initialIndex: _currentIndex!);
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
+      controller: _tabController,
       tabBar: CupertinoTabBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         currentIndex: _currentIndex!,
-        onTap: (index) {
-          ref.invalidate(userProvider);
-          ref.invalidate(followerProvider);
-          ref.invalidate(followingProvider);
-          ref.invalidate(groupsProvider);
-          ref.invalidate(joinedEventsProvider);
-          ref.invalidate(createdEventsProvider);
-          ref.invalidate(eventProvider);
-          if (_currentIndex == index) {
-            // Get the current tab's navigator key
-            final navigatorKey = _navigatorKeys[index];
-            // Pop to the first route of the current tab's navigator
-            navigatorKey?.currentState?.popUntil((route) => route.isFirst);
-          } else {
-            setState(() {
-              _currentIndex = index;
-            });
-          }
-        },
+        onTap: changeIndex,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.news),
@@ -146,5 +153,11 @@ class HomePageState extends ConsumerState<HomePage> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }

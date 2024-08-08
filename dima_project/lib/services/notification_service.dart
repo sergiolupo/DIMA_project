@@ -51,21 +51,21 @@ class NotificationService {
   }
 
   void initLocalNotifications(
-      BuildContext context, RemoteMessage message) async {
+      BuildContext context, RemoteMessage message, Function changeIndex) async {
     var initializationSettings = const InitializationSettings(
       iOS: DarwinInitializationSettings(),
     );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (payload) {
-      handleMessage(context, message);
+      handleMessage(context, message, changeIndex);
     });
   }
 
-  void firebaseInit(BuildContext context) {
+  void firebaseInit(BuildContext context, Function changeIndex) {
     FirebaseMessaging.onMessage.listen((message) {
       forgroundMessage();
-      initLocalNotifications(context, message);
+      initLocalNotifications(context, message, changeIndex);
     });
   }
 
@@ -88,14 +88,15 @@ class NotificationService {
     });
   }
 
-  Future<void> setUpInteractMessage(BuildContext context) async {
+  Future<void> setUpInteractMessage(
+      BuildContext context, Function changeIndex) async {
     //when app is terminated
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       debugPrint('initialMessage');
       if (!context.mounted) return;
-      handleMessage(context, initialMessage);
+      handleMessage(context, initialMessage, changeIndex);
     }
     String? notificationType =
         await SharedPreferencesHelper().getNotificationType();
@@ -108,7 +109,7 @@ class NotificationService {
       Map<String, dynamic> data =
           Map<String, dynamic>.from(json.decode(notificationData));
       if (!context.mounted) return;
-      handleMessage(context, RemoteMessage(data: data));
+      handleMessage(context, RemoteMessage(data: data), changeIndex);
 
       await SharedPreferencesHelper().clearNotification();
     }
@@ -119,43 +120,42 @@ class NotificationService {
       handleMessage(
         context,
         message,
+        changeIndex,
       );
     });
   }
 
   Future<void> handleMessage(
-      BuildContext context, RemoteMessage message) async {
+      BuildContext context, RemoteMessage message, Function changeIndex) async {
     debugPrint('handleMessage');
     //handle notification function
     if (message.data['type'] == 'private_chat') {
-      try {
-        debugPrint(Map<String, dynamic>.from(message.data).toString());
+      debugPrint(Map<String, dynamic>.from(message.data).toString());
 
-        final PrivateChat privateChat =
-            PrivateChat.fromMap(Map<String, dynamic>.from(message.data));
-        debugPrint(privateChat.members.toString());
+      final PrivateChat privateChat =
+          PrivateChat.fromMap(Map<String, dynamic>.from(message.data));
+      debugPrint(privateChat.members.toString());
 
-        final String other = privateChat.members
-            .firstWhere((element) => element != AuthService.uid);
-        final UserData user = await DatabaseService().getUserData(other);
+      final String other = privateChat.members
+          .firstWhere((element) => element != AuthService.uid);
+      final UserData user = await DatabaseService().getUserData(other);
 
-        if (!context.mounted) return;
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (context) => PrivateChatPage(
-                      privateChat: privateChat,
-                      user: user,
-                      canNavigate: false,
-                    )));
-      } catch (e) {
-        debugPrint(e.toString());
-      }
+      if (!context.mounted) return;
+      changeIndex(1);
+      Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => PrivateChatPage(
+                    privateChat: privateChat,
+                    user: user,
+                    canNavigate: false,
+                  )));
     }
     if (message.data['type'] == 'group_chat') {
       final Group group =
           await DatabaseService().getGroupFromId(message.data['group_id']);
       if (!context.mounted) return;
+      changeIndex(1);
       Navigator.push(
           context,
           CupertinoPageRoute(
