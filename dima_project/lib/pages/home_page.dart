@@ -11,6 +11,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,6 +55,8 @@ class HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
+    FirebaseMessaging.instance.subscribeToTopic('news');
+
     databaseService = ref.read(databaseServiceProvider);
     notificationServices = NotificationService(
       databaseService: databaseService,
