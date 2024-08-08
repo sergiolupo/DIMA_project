@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/category_util.dart';
+import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
@@ -36,11 +37,22 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
   final String uid = AuthService.uid;
   final DatabaseService _databaseService = DatabaseService();
+  bool notify = true;
+
   @override
   void initState() {
+    init();
     super.initState();
     setState(() {
       group = widget.group;
+    });
+  }
+
+  init() async {
+    _databaseService.getNotification(widget.group.id, true).then((value) {
+      setState(() {
+        notify = value;
+      });
     });
   }
 
@@ -501,6 +513,13 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                         },
                       ),
                       const SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      NotificationWidget(
+                          notify: notify,
+                          notifyFunction: (value) {
+                            _databaseService.updateNotification(
+                                widget.group.id, value, true);
+                          }),
                     ],
                   ),
                 ),

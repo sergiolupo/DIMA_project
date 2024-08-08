@@ -34,7 +34,18 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
   bool notify = true;
   @override
   void initState() {
+    init();
     super.initState();
+  }
+
+  init() {
+    _databaseService
+        .getNotification(widget.privateChat.id!, false)
+        .then((value) {
+      setState(() {
+        notify = value;
+      });
+    });
   }
 
   @override
@@ -336,8 +347,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                       NotificationWidget(
                           notify: notify,
                           notifyFunction: (value) {
-                            _databaseService.updatePrivateChatNotification(
-                                widget.privateChat.id!, value);
+                            _databaseService.updateNotification(
+                                widget.privateChat.id!, value, false);
                           }),
                     ],
                   ),

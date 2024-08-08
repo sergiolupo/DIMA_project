@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/pages/events/share_event_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -30,6 +31,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       TextEditingController();
   bool isPublic = true;
   List<String> uids = [];
+  List<String> groupIds = [];
+
   Map<int, bool> map = {};
   Map<int, EventDetails> details = {};
   int numInfos = 1;
@@ -302,6 +305,29 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       color: CupertinoColors.separator,
                     ),
                     CupertinoListTile(
+                      title: const Row(
+                        children: [
+                          Icon(CupertinoIcons.person_2_square_stack),
+                          SizedBox(width: 10),
+                          Text('Groups'),
+                        ],
+                      ),
+                      trailing: const Icon(CupertinoIcons.forward),
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          CupertinoPageRoute(
+                            builder: (context) => ShareEventPage(
+                              groupIds: groupIds,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.separator,
+                    ),
+                    CupertinoListTile(
                       leading: isPublic
                           ? const Icon(CupertinoIcons.lock_open_fill)
                           : const Icon(CupertinoIcons.lock_fill),
@@ -360,12 +386,12 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       createdAt: widget.event.createdAt,
     );
     await databaseService.updateEvent(
-      event,
-      selectedImagePath,
-      selectedImagePath == null,
-      widget.event.isPublic != isPublic,
-      uids,
-    );
+        event,
+        selectedImagePath,
+        selectedImagePath == null,
+        widget.event.isPublic != isPublic,
+        uids,
+        groupIds);
     ref.invalidate(eventProvider(widget.event.id!));
     ref.invalidate(createdEventsProvider(uid));
   }

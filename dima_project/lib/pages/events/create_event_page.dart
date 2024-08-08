@@ -92,7 +92,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
 
       await databaseService.createEvent(
           event, selectedImagePath, uids, groupIds);
-
       ref.invalidate(createdEventsProvider(uid));
     }
   }

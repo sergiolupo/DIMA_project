@@ -189,6 +189,7 @@ class DatabaseService {
         'recentMessageTime': "",
         'recentMessageType': "",
         'members': FieldValue.arrayUnion([group.admin]),
+        'notifications': FieldValue.arrayUnion([group.admin]),
         'categories': serializedList,
         'isPublic': group.isPublic,
         'requests': [],
@@ -338,6 +339,12 @@ class DatabaseService {
     bool isJoined = groupDoc['members'].contains(AuthService.uid);
 
     if (isJoined) {
+      bool notify = await getNotification(groupId, false);
+      if (notify) {
+        await groupsRef.doc(groupId).update({
+          'notifications': FieldValue.arrayRemove([AuthService.uid])
+        });
+      }
       await Future.wait([
         groupsRef.doc(groupId).update({
           'members': FieldValue.arrayRemove([AuthService.uid])
@@ -356,6 +363,9 @@ class DatabaseService {
       }
     } else {
       if (groupDoc['isPublic']) {
+        await groupsRef.doc(groupId).update({
+          'notifications': FieldValue.arrayUnion([AuthService.uid])
+        });
         await Future.wait([
           groupsRef.doc(groupId).update({
             'members': FieldValue.arrayUnion([AuthService.uid])
@@ -1033,6 +1043,7 @@ class DatabaseService {
     });
     await groupsRef.doc(groupId).update({
       'members': FieldValue.arrayUnion([uuid]),
+      'notifications': FieldValue.arrayUnion([uuid])
     });
     if ((await usersRef.doc(uuid).get())['groupsRequests'].contains(groupId)) {
       await usersRef.doc(uuid).update({
@@ -1480,8 +1491,13 @@ class DatabaseService {
     ]);
   }
 
-  Future<void> updateEvent(Event event, Uint8List? uint8list, bool sameImage,
-      bool visibilityHasChanged, List<String> uuids) async {
+  Future<void> updateEvent(
+      Event event,
+      Uint8List? uint8list,
+      bool sameImage,
+      bool visibilityHasChanged,
+      List<String> uuids,
+      List<String> groupIds) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
     for (EventDetails detail in event.details!) {
@@ -1524,6 +1540,8 @@ class DatabaseService {
         }
       }
     }
+    await sendEventsOnGroups(event.id!, groupIds);
+    await sendEventsOnPrivateChat(event.id!, uuids);
   }
 
   Future<Event> getEvent(String id) {
@@ -1715,14 +1733,38 @@ class DatabaseService {
     });
   }
 
-  Future<void> updatePrivateChatNotification(String id, bool notify) async {
-    if (notify) {
-      await privateChatRef.doc(id).update({
-        'notifications': FieldValue.arrayUnion([AuthService.uid])
+  Future<void> updateNotification(String id, bool notify, bool isGroup) async {
+    if (!isGroup) {
+      if (notify) {
+        await privateChatRef.doc(id).update({
+          'notifications': FieldValue.arrayUnion([AuthService.uid])
+        });
+      } else {
+        await privateChatRef.doc(id).update({
+          'notifications': FieldValue.arrayRemove([AuthService.uid])
+        });
+      }
+    } else {
+      if (notify) {
+        await groupsRef.doc(id).update({
+          'notifications': FieldValue.arrayUnion([AuthService.uid])
+        });
+      } else {
+        await groupsRef.doc(id).update({
+          'notifications': FieldValue.arrayRemove([AuthService.uid])
+        });
+      }
+    }
+  }
+
+  Future<bool> getNotification(String id, bool isGroup) async {
+    if (isGroup) {
+      return groupsRef.doc(id).get().then((value) {
+        return value['notifications'].contains(AuthService.uid);
       });
     } else {
-      await privateChatRef.doc(id).update({
-        'notifications': FieldValue.arrayRemove([AuthService.uid])
+      return privateChatRef.doc(id).get().then((value) {
+        return value['notifications'].contains(AuthService.uid);
       });
     }
   }
