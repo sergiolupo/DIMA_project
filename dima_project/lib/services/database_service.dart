@@ -1670,6 +1670,41 @@ class DatabaseService {
     });
   }
 
+  Future<List<String>> getDevicesTokensDetail(
+      String eventId, String detailId) async {
+    List<String> tokens = [];
+    final List<String> members = (await eventsRef
+        .doc(eventId)
+        .collection('details')
+        .doc(detailId)
+        .get())["members"];
+    members.remove(AuthService.uid);
+    for (String member in members) {
+      tokens.add((await usersRef.doc(member).get())["token"]);
+    }
+    return tokens;
+  }
+
+  Future<List<String>> getDevicesTokensEvent(String eventId) async {
+    final detailDocs = await eventsRef.doc(eventId).collection('details').get();
+
+    final Set<String> uniqueMembers = {};
+
+    for (var detailDoc in detailDocs.docs) {
+      final List<String> currentMembers = detailDoc['members'] ?? [];
+      uniqueMembers.addAll(currentMembers);
+    }
+
+    final List<String> tokens = await Future.wait(
+      uniqueMembers.map((memberId) async {
+        final userDoc = await usersRef.doc(memberId).get();
+        return userDoc['token'] as String;
+      }),
+    );
+
+    return tokens;
+  }
+
   Stream<List<dynamic>> getFollowingsStream(String uuid) {
     return followersRef.doc(uuid).snapshots().map((snapshot) {
       return snapshot['following'];

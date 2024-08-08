@@ -261,4 +261,54 @@ class NotificationService {
       debugPrint('Notification not sent');
     }
   }
+
+  Future<void> sendEventNotification(
+      String eventName, String eventId, bool detail, String? detailId) async {
+    List<String> devicesTokens = [];
+    if (detail) {
+      devicesTokens =
+          await DatabaseService().getDevicesTokensDetail(eventId, detailId!);
+    } else {
+      devicesTokens = await DatabaseService().getDevicesTokensEvent(eventId);
+    }
+    if (devicesTokens == []) return;
+    final String serverAccessTokenKey = await getAccessToken();
+    const endpoint =
+        'https://fcm.googleapis.com/v1/projects/dima-58cb8/messages:send';
+
+    final String content =
+        detail ? 'A date has been modified' : 'Event has been modified';
+
+    for (String deviceToken in devicesTokens) {
+      Map<String, dynamic> message = {
+        "message": {
+          "token": deviceToken,
+          "notification": {
+            "title": eventName,
+            "body": content,
+          },
+          "data": {
+            "type": "event",
+            "event_id": eventId,
+            "detail_id": detailId,
+          },
+        }
+      };
+
+      final http.Response response = await http.post(
+        Uri.parse(endpoint),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $serverAccessTokenKey',
+        },
+        body: jsonEncode(message),
+      );
+      debugPrint(response.body);
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent');
+      } else {
+        debugPrint('Notification not sent');
+      }
+    }
+  }
 }
