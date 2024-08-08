@@ -207,21 +207,23 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                           builder: (context, snapshot) {
                             return CupertinoListTile(
                               padding: const EdgeInsets.all(0),
-                              title: const Row(
+                              title: Row(
                                 children: [
                                   Icon(
                                     CupertinoIcons.bell,
-                                    color: CupertinoColors.black,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
                                   ),
-                                  SizedBox(width: 10),
-                                  Text("Requests"),
+                                  const SizedBox(width: 10),
+                                  const Text("Requests"),
                                 ],
                               ),
                               trailing: Row(
                                 children: [
                                   (snapshot.connectionState ==
                                               ConnectionState.waiting ||
-                                          snapshot.hasError)
+                                          snapshot.hasError ||
+                                          snapshot.data!.isEmpty)
                                       ? const SizedBox()
                                       : ClipRRect(
                                           borderRadius:
@@ -248,7 +250,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   ),
                                 ],
                               ),
-                              onTap: () {
+                              onTap: () async {
                                 if (snapshot.connectionState ==
                                         ConnectionState.waiting ||
                                     snapshot.hasError) return;
@@ -263,7 +265,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   return;
                                 }
 
-                                Navigator.of(context).push(
+                                await Navigator.of(context).push(
                                   CupertinoPageRoute(
                                     builder: (context) => GroupRequestsPage(
                                       group: group,
@@ -272,6 +274,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     ),
                                   ),
                                 );
+                                setState(() {});
                               },
                             );
                           },

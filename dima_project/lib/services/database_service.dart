@@ -1013,19 +1013,20 @@ class DatabaseService {
   }
 
   Future<void> acceptGroupRequest(String groupId, String uuid) async {
-    await Future.wait([
-      groupsRef.doc(groupId).update({
-        'members': FieldValue.arrayUnion([uuid]),
-        'requests': FieldValue.arrayRemove([uuid])
-      }),
-      usersRef.doc(uuid).update({
-        'groups': FieldValue.arrayUnion([groupId])
-      }),
-      if ((await usersRef.doc(uuid).get())['groupsRequests'].contains(groupId))
-        usersRef.doc(uuid).update({
-          'groupsRequests': FieldValue.arrayRemove([groupId])
-        }),
-    ]);
+    await groupsRef.doc(groupId).update({
+      'requests': FieldValue.arrayRemove([uuid])
+    });
+    await usersRef.doc(uuid).update({
+      'groups': FieldValue.arrayUnion([groupId])
+    });
+    await groupsRef.doc(groupId).update({
+      'members': FieldValue.arrayUnion([uuid]),
+    });
+    if ((await usersRef.doc(uuid).get())['groupsRequests'].contains(groupId)) {
+      await usersRef.doc(uuid).update({
+        'groupsRequests': FieldValue.arrayRemove([groupId])
+      });
+    }
   }
 
   Future<List<Message>> getGroupMessagesType(String id, Type type) async {

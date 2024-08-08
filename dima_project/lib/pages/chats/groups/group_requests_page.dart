@@ -78,12 +78,26 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                   try {
                     await _databaseService.acceptGroupRequest(
                         widget.group.id, user.uid!);
-                    setState(() {
-                      users.removeAt(index);
-                    });
                   } catch (error) {
-                    debugPrint("Error occurred: $error");
+                    if (!context.mounted) return;
+                    showCupertinoDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            title: const Text("Error"),
+                            content: const Text("User deleted his account"),
+                            actions: [
+                              CupertinoDialogAction(
+                                child: const Text("Ok"),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                            ],
+                          );
+                        });
                   }
+                  setState(() {
+                    users.removeAt(index);
+                  });
                 },
                 child: Container(
                   padding: const EdgeInsets.only(right: 20),
@@ -104,15 +118,11 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
               ),
               GestureDetector(
                 onTap: () async {
-                  try {
-                    await _databaseService.denyGroupRequest(
-                        widget.group.id, user.uid!);
-                    setState(() {
-                      users.removeAt(index);
-                    });
-                  } catch (error) {
-                    debugPrint("Error occurred: $error");
-                  }
+                  await _databaseService.denyGroupRequest(
+                      widget.group.id, user.uid!);
+                  setState(() {
+                    users.removeAt(index);
+                  });
                 },
                 child: Container(
                   padding: const EdgeInsets.only(right: 20),
