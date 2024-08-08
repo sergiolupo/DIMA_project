@@ -126,23 +126,34 @@ class NotificationService {
     });
   }
 
-  void handleMessage(BuildContext context, RemoteMessage message) {
+  Future<void> handleMessage(
+      BuildContext context, RemoteMessage message) async {
+    debugPrint('handleMessage');
     //handle notification function
     if (message.data['type'] == 'private_chat') {
-      Map<String, dynamic> map = {
-        'privateChat': PrivateChat.fromMap(
-            Map<String, dynamic>.from(message.data['private_chat'])),
-        'user':
-            UserData.fromMap(Map<String, dynamic>.from(message.data['user'])),
-      };
-      Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) => PrivateChatPage(
-                    privateChat: map['privateChat'],
-                    user: map['user'],
-                    canNavigate: false,
-                  )));
+      try {
+        debugPrint(Map<String, dynamic>.from(message.data).toString());
+
+        final PrivateChat privateChat =
+            PrivateChat.fromMap(Map<String, dynamic>.from(message.data));
+        debugPrint(privateChat.members.toString());
+
+        final String other = privateChat.members
+            .firstWhere((element) => element != AuthService.uid);
+        final UserData user = await DatabaseService().getUserData(other);
+
+        if (!context.mounted) return;
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => PrivateChatPage(
+                      privateChat: privateChat,
+                      user: user,
+                      canNavigate: false,
+                    )));
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
     if (message.data['type'] == 'group_chat') {
       Group group =
@@ -178,9 +189,9 @@ class NotificationService {
     final serviceAccountJson = {
       "type": "service_account",
       "project_id": "dima-58cb8",
-      "private_key_id": "c756bb63326247d468018e5cb6dc12d7ca04781f",
+      "private_key_id": "907497455d3525c930ddd1b9adbb891df78c19d1",
       "private_key":
-          "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCPq56XmuUK7XJ+\nO2dpRw1J15P1oUJDNAPoiypeNt5QeW+YsfbOom/w0WY2Bz3bTMrpMo4qW+Pg+SdZ\n2HDkOxpICXP5vt5TygZqGKNofdDzz1RqIfkTM+5r3C1q3Aw3LwstMVzIJ86XYIGx\nQ0qhgunITb+H81Q1gpQSsc61seAmsAWk7ucNtHFOAL5Q0L2GlEAGWmFODqDY/nJl\nwg7H9XHhBnU1u6fFitT5c08o9/IwSM75+tYBzrjrA7rMEBatLVlsKrTm/O3PzrwS\nS0ysMEfyBCMlM7GTcZFEzVr78x0EVisQb2rnVjRmtO+Xy1YYn7r4U3w1ysAQEvSs\nBQTeqgHzAgMBAAECggEAM0ceyJ+JRlgveCx9oU6xyHxAG/hdbR0AlBwvmAbfXDur\ngAVswJ2rdHlYkMoO4tnKxma75RR9BgwHZoLg8CTEIZf2I9pjAebmWTHICQB29r42\nM9dCTf9IBolEUJKPbZbF13B53BqRGuhgAcOxvGm8RTiytrQ7hwm/DdkWnTUKeuPp\niUqJPuTlmuZofc9tUkta0X7XdhRuzosrZynbjtL0Z2lGz6YNYfQ4dAovieu3Grjk\nH9UD/osKS2fBLtgpleF2QAwMZeoXJJxBpVK5313mLXHxagGxg3W0JMuMA2vVAmjw\n0gsOBfbmmUbFOhgbksZeVA40uFhuSHdKuIpLsNI3eQKBgQDAbU9dIjp5wuZU5ihX\nQt7G6X1nLqsRLPl1wyu5O5RdlDiVg2u4WcKaz8OUzVYrtHvGdNtu8+/UWb/yZmzg\n0oQ4vVu99kx4T0AmS93+kIo73Nctt+u5EfquRE3gR8ckXLW1JU0kzAWG1jszoxmu\nsWeInG87i9xuMGMy9ex/MHZNnQKBgQC/IqzDvscskjS3wQ27Z2QfTgdxE/QEcBPO\nXpvdN+emHnKB+DzFcwKAZqlaHKTtUga5CLSWWYSSFfFl5Btll9KjZZ6/7yQKvjaW\n5WJyNmYxFPdjMxa0Ug/Zh5OvSrlvA/93XQLzR4gBsR5ao8+zK3EjolWxjI34NSUZ\nrFKAw+JAzwKBgHoaYsvkVlrBM8sXqO2GPzrVGoAI+wARG9KAIBSQG9stnKIzHH2E\nZ5o40BByI4XkJs6NhFhpbfu/X69/EwOuUbx3W+m0il2lXD1w0tMgALdvsRMPrAJp\nyDogmZIBufn24k6p9sOsuq0O784aZseVRu9G5MZSP3OkPK4vovwqUkd5AoGBAIzn\nCgePh5MjATwJVI83zAaL5k6FEBmJagBznGF7igjbXzzS/DHu9AQmKmhkv2y4UH5t\nnXtM6L8s7/VWMKA3SS/thRcnOyG0UdfxqB5cXf+G3kzB59XsvQR2vve1lXfysYyU\nA83GiMv+f0sAgegqeVB0psmpvSsiOoRvla6ZORzfAoGBAI+jxQ/9b1u3vrQW7K9M\ne0t+Caf4uPT+bZZhBu0XjuOhUJvcmzgB5fzeXVsM8YYmq1BohOA+Os5BZubXmUTf\noFHkaEi8xNBU4FtE0FFYOOjZBdUGT6+UE8o9XqzoCrBMzYoLn2M03S0YpRUOSjj6\nAFkYsN7hd5wTVtsyQT7tSUqJ\n-----END PRIVATE KEY-----\n",
+          "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCzdO6yIAodmHF2\nfTSW3psoIktQj6qTAlwUThBp2nBNDNiC42IOTJB9CMkYO/F6o/H8BK6FDZqAS7CD\nmQB+HriW3AzH09oN/f1R9hafphxPIlZ9SG+sZm6zBghoeVsuC7WZq440yzRYf20s\n7ubwT7NR2ALUXOJwhIFKm8yzVI6RZNb4zZicbMQaRPMhWmcH/ffxg5lyRVXoNe4d\nYGOUqwBYnR0j89xol+amzficTj+qPvQpOt+HS9UHFVSDLHMus08cz+ZMMfDIqNbT\nfPPk0IpFDSCvqZ8QZHdP2jgxVfpRyRS0gddm1pafGNnKTFRiFiG/rtdJuHJAhdfB\nDOm2dAHpAgMBAAECggEAANIiqxxyrxnOBq+/uL+SYT3r4OsFYpPZ3IuU5xBhv8R5\nc1AvqvoYLYEyXcK+IoNQ7NPgGVV/qQBBaC/zBRASClGmHMLhPwVEkdW6ilZGLtHG\n9Di67FUcGCn/+8pHRv/ySR5tF3kLB3vSP1zXFqNKZIx0A6zJM4QqKWq/vfVli7s8\nTgpVKcQDCDU2BppzhsMlcZ/KaqWK1VYGuiGtrnU6uwiysVxzGgiWaoh/xNARMfB3\nb8yIfRAe/jDjc8C6wyoBk0Eu6/7lramSA3PvmKSc4mCOVrS/hKXYGEk4TZtmK4Ky\nFGGvhVLlUurB8aK3ckMmggkZwsPp8O84pKu4t4hPtQKBgQDWomCwJLUYMV7AfUTS\ned9U8z3dwhUFF3iEhYN6VYz9bLxCEY+dQsiTeo8xVfJY6WtMdIMPbjziwsd/dUhL\nyunsBt0W7/7QMna9m2nUFb2aGd8j3zgQuQFUYx337vFCt6WCGxS11QOehKVCuTSN\nHZ3OgIeVonO2Hyl4ZbJ2GLb7jQKBgQDWCveGGneQxiDugPrAJ9tb55dvvIcThNCe\n74yK3+jxQsMIhSfXt+LySK5kvHPqy9aNYIfWtJTHGFqBC21XT+ZUQhiFBUtjerX8\nKdhcxzem/qw7zTrwOGGwDfAyfX585Wm4gSE9pf7rIxJ04TIOPvR+GpF5xITSTjcB\n2ZMyF7FazQKBgFJJstQVXrDFzNPzsv0W6H7DOwbYMALhurzkC0JNpl5K3+pcnTjn\nr8qLBHcfwmhAJXkMemriEsnFb4L4Th1w0DpDb2Qp4wGjN07+VJaRNz3riVdRb0dK\nBq55ybWSkEDJ89Rr2YbVAiw2Ir3wD6vCnQvczx6ZR8+dJuMX6lHIq+7JAoGAeoAk\nUffr3kvGpTnkSP2Gqf7NyQFZPW6SB6SKByFHLG1NOh8bQnbXyFqYlMbWgNbQoHFS\nzSrky13AzoI/vezYofiCF/+DuheM+Bjq346U51pyMHew97MNFbmkcwEn10tlSld9\nMs9CKkkUUxhfkY+uVk3WXJ6AdeyVxtVDTTQKKTECgYBnoAdZp/2AdCd84gpO4BBs\ndTgbHFbcZYbTUdErh+51XYr8vOBBZHgfMr1YUAg4sym6XLYka+K+8tQEzJco9jyv\nWsGavUhyAtS9gAtCyxeWo0PshWIsg/4uu6H/IGdcuL0pjHypJye+g0O8dkQQlch0\nP4KDVQh0QFmfXYS9UNRMZw==\n-----END PRIVATE KEY-----\n",
       "client_email": "flutter-notification@dima-58cb8.iam.gserviceaccount.com",
       "client_id": "114105969686402355633",
       "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -208,11 +219,10 @@ class NotificationService {
     return credentials.accessToken.data;
   }
 
-  Future<void> sendNotificationForPrivateChat(
-      PrivateChat privateChat, chat_message.Message chatMessage) async {
+  Future<void> sendNotificationForPrivateChat(PrivateChat privateChat,
+      chat_message.Message chatMessage, String username) async {
     String deviceToken =
-        await databaseService.getDeviceTokenPrivateChat(privateChat);
-
+        await DatabaseService().getDeviceTokenPrivateChat(privateChat);
     if (deviceToken == '') return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
@@ -221,15 +231,16 @@ class NotificationService {
     debugPrint(deviceToken);
     Map<String, dynamic> message = {
       "message": {
+        "token": deviceToken,
         "notification": {
-          "title": chatMessage.sender,
+          "title": username,
           "body": chatMessage.content,
         },
         "data": {
           "type": "private_chat",
-          "private_chat": privateChat.id,
+          "private_chat_id": privateChat.id,
+          "private_chat_members": privateChat.members.toString(),
         },
-        "token": deviceToken,
       }
     };
 

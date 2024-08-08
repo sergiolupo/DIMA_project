@@ -350,9 +350,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       try {
         await NotificationService(databaseService: DatabaseService())
             .sendNotificationForPrivateChat(
-          widget.privateChat,
-          message,
-        );
+                widget.privateChat, message, widget.user.username);
       } catch (e) {
         debugPrint(e.toString());
       }

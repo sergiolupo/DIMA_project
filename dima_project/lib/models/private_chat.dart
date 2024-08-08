@@ -36,8 +36,12 @@ class PrivateChat {
 
   static PrivateChat fromMap(Map<String, dynamic> json) {
     return PrivateChat(
-      members: List<String>.from(json['members']),
-      id: json['id'] as String,
+      members: (json['private_chat_members'] as String)
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .replaceAll(' ', '')
+          .split(','),
+      id: json['private_chat_id'] as String,
     );
   }
 }
