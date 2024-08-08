@@ -383,20 +383,20 @@ class DatabaseService {
     }
   }
 
-  void sendMessage(String? id, Message message) async {
+  Future<void> sendMessage(String? id, Message message) async {
     Map<String, dynamic> messageMap = message.toMap();
 
     if (message.isGroupMessage) {
-      groupsRef.doc(id).collection('messages').add(messageMap);
-      groupsRef.doc(id).update({
+      await groupsRef.doc(id).collection('messages').add(messageMap);
+      await groupsRef.doc(id).update({
         'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       });
     } else {
-      privateChatRef.doc(id).collection('messages').add(messageMap);
-      privateChatRef.doc(id).update({
+      await privateChatRef.doc(id).collection('messages').add(messageMap);
+      await privateChatRef.doc(id).update({
         'recentMessage': message.type == Type.text ? message.content : 'Image',
         'recentMessageSender': message.sender,
         'recentMessageTime': message.time,
@@ -934,7 +934,7 @@ class DatabaseService {
     }
   }
 
-  Future<void> sendChatImage(String chatID, File file, bool isGroupMessage,
+  Future<Message> sendChatImage(String chatID, File file, bool isGroupMessage,
       Uint8List imagePath) async {
     final String imageUrl = await StorageService.uploadImageToStorage(
         'chat_images/$chatID/${AuthService.uid}/${Timestamp.now()}.jpg',
@@ -956,7 +956,8 @@ class DatabaseService {
       type: Type.image,
     );
 
-    sendMessage(chatID, message);
+    await sendMessage(chatID, message);
+    return message;
   }
 
   Future<bool> isEmailTaken(String email) async {

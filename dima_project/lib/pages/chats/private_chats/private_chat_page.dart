@@ -161,12 +161,16 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
 
-      await _databaseService.sendChatImage(
+      final message = await _databaseService.sendChatImage(
         widget.privateChat.id!,
         File(image.path),
         false,
         Uint8List.fromList(bytes),
       );
+
+      await NotificationService(databaseService: DatabaseService())
+          .sendNotificationForPrivateChat(
+              widget.privateChat, message, widget.user.username);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -190,12 +194,15 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         widget.privateChat.id ??=
             await _databaseService.createPrivateChat(widget.privateChat);
 
-        await _databaseService.sendChatImage(
+        final message = await _databaseService.sendChatImage(
           widget.privateChat.id!,
           File(image.path),
           false,
           Uint8List.fromList(bytes),
         );
+        await NotificationService(databaseService: DatabaseService())
+            .sendNotificationForPrivateChat(
+                widget.privateChat, message, widget.user.username);
         if (mounted) {
           setState(() {
             isUploading = false;
@@ -345,16 +352,10 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
-      _databaseService.sendMessage(widget.privateChat.id!, message);
-      debugPrint('Sending message...');
-      try {
-        await NotificationService(databaseService: DatabaseService())
-            .sendNotificationForPrivateChat(
-                widget.privateChat, message, widget.user.username);
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-      debugPrint('Message sent');
+      await _databaseService.sendMessage(widget.privateChat.id!, message);
+      await NotificationService(databaseService: DatabaseService())
+          .sendNotificationForPrivateChat(
+              widget.privateChat, message, widget.user.username);
 
       setState(() {
         messageEditingController.clear();

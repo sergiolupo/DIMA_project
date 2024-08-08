@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/category_model.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/models/article_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -12,77 +13,89 @@ class NewsService {
   List<ArticleModel> sliders = [];
 
   Future<void> getNews() async {
-    String url =
-        "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
-    var response = await http.get(Uri.parse(url));
+    try {
+      String url =
+          "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
+      var response = await http.get(Uri.parse(url));
 
-    var jsonData = jsonDecode(response.body);
+      var jsonData = jsonDecode(response.body);
 
-    if (jsonData['status'] == 'ok') {
-      jsonData["articles"].forEach((element) {
-        if (element["title"] != null &&
-            element['description'] != null &&
-            element['url'] != null &&
-            element['urlToImage'] != null) {
-          ArticleModel articleModel = ArticleModel(
-            title: element["title"],
-            description: element["description"],
-            url: element["url"],
-            urlToImage: element["urlToImage"],
-          );
-          news.add(articleModel);
-        }
-      });
+      if (jsonData['status'] == 'ok') {
+        jsonData["articles"].forEach((element) {
+          if (element["title"] != null &&
+              element['description'] != null &&
+              element['url'] != null &&
+              element['urlToImage'] != null) {
+            ArticleModel articleModel = ArticleModel(
+              title: element["title"],
+              description: element["description"],
+              url: element["url"],
+              urlToImage: element["urlToImage"],
+            );
+            news.add(articleModel);
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Not possible to reach the server");
     }
   }
 
   Future<void> getCategoriesNews(String category) async {
-    String url =
-        "https://newsapi.org/v2/everything?q=$category&apiKey=61f777e67a9346cebb7cecf45b243af9";
-    var response = await http.get(Uri.parse(url));
+    try {
+      String url =
+          "https://newsapi.org/v2/everything?q=$category&apiKey=61f777e67a9346cebb7cecf45b243af9";
+      var response = await http.get(Uri.parse(url));
 
-    var jsonData = jsonDecode(response.body);
+      var jsonData = jsonDecode(response.body);
 
-    if (jsonData['status'] == 'ok') {
-      jsonData["articles"].forEach((element) {
-        if (element["title"] != null &&
-            element['description'] != null &&
-            element['url'] != null &&
-            element['urlToImage'] != null) {
-          ArticleModel showCategoryModel = ArticleModel(
-            title: element["title"],
-            description: element["description"],
-            url: element["url"],
-            urlToImage: element["urlToImage"],
-          );
-          categories.add(showCategoryModel);
-        }
-      });
+      if (jsonData['status'] == 'ok') {
+        jsonData["articles"].forEach((element) {
+          if (element["title"] != null &&
+              element['description'] != null &&
+              element['url'] != null &&
+              element['urlToImage'] != null) {
+            ArticleModel showCategoryModel = ArticleModel(
+              title: element["title"],
+              description: element["description"],
+              url: element["url"],
+              urlToImage: element["urlToImage"],
+            );
+            categories.add(showCategoryModel);
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Not possible to reach the server");
     }
   }
 
   Future<void> getSliders() async {
-    String url =
-        "https://newsapi.org/v2/top-headlines?sources=fox-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
-    var response = await http.get(Uri.parse(url));
+    try {
+      String url =
+          "https://newsapi.org/v2/top-headlines?sources=fox-news&apiKey=61f777e67a9346cebb7cecf45b243af9";
+      var response = await http.get(Uri.parse(url));
 
-    var jsonData = jsonDecode(response.body);
+      var jsonData = jsonDecode(response.body);
 
-    if (jsonData['status'] == 'ok') {
-      jsonData["articles"].forEach((element) {
-        if (element["title"] != null &&
-            element['description'] != null &&
-            element['url'] != null &&
-            element['urlToImage'] != null) {
-          ArticleModel sliderModel = ArticleModel(
-            title: element["title"],
-            description: element["description"],
-            url: element["url"],
-            urlToImage: element["urlToImage"],
-          );
-          sliders.add(sliderModel);
-        }
-      });
+      if (jsonData['status'] == 'ok') {
+        jsonData["articles"].forEach((element) {
+          if (element["title"] != null &&
+              element['description'] != null &&
+              element['url'] != null &&
+              element['urlToImage'] != null) {
+            ArticleModel sliderModel = ArticleModel(
+              title: element["title"],
+              description: element["description"],
+              url: element["url"],
+              urlToImage: element["urlToImage"],
+            );
+            sliders.add(sliderModel);
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Not possible to reach the server");
     }
   }
 
@@ -97,30 +110,35 @@ class NewsService {
   }
 
   Stream<List<ArticleModel>> getSearchedNews(String search) async* {
-    List<ArticleModel> news = [];
+    try {
+      List<ArticleModel> news = [];
 
-    String url =
-        "https://newsapi.org/v2/everything?q=$search&apiKey=61f777e67a9346cebb7cecf45b243af9";
-    var response = await http.get(Uri.parse(url));
+      String url =
+          "https://newsapi.org/v2/everything?q=$search&apiKey=61f777e67a9346cebb7cecf45b243af9";
+      var response = await http.get(Uri.parse(url));
 
-    var jsonData = jsonDecode(response.body);
+      var jsonData = jsonDecode(response.body);
 
-    if (jsonData['status'] == 'ok') {
-      jsonData["articles"].forEach((element) {
-        if (element["title"] != null &&
-            element['description'] != null &&
-            element['url'] != null &&
-            element['urlToImage'] != null) {
-          ArticleModel articleModel = ArticleModel(
-            title: element["title"],
-            description: element["description"],
-            url: element["url"],
-            urlToImage: element["urlToImage"],
-          );
-          news.add(articleModel);
-        }
-      });
+      if (jsonData['status'] == 'ok') {
+        jsonData["articles"].forEach((element) {
+          if (element["title"] != null &&
+              element['description'] != null &&
+              element['url'] != null &&
+              element['urlToImage'] != null) {
+            ArticleModel articleModel = ArticleModel(
+              title: element["title"],
+              description: element["description"],
+              url: element["url"],
+              urlToImage: element["urlToImage"],
+            );
+            news.add(articleModel);
+          }
+        });
+      }
+      yield news;
+    } catch (e) {
+      debugPrint("Not possible to reach the server");
+      yield [];
     }
-    yield news;
   }
 }

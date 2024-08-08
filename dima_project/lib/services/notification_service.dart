@@ -64,9 +64,6 @@ class NotificationService {
 
   void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
-      debugPrint(message.notification!.title.toString());
-      debugPrint(message.notification!.body.toString());
-      debugPrint(message.data.toString());
       forgroundMessage();
       initLocalNotifications(context, message);
     });
@@ -228,13 +225,18 @@ class NotificationService {
     const endpoint =
         'https://fcm.googleapis.com/v1/projects/dima-58cb8/messages:send';
 
-    debugPrint(deviceToken);
+    final String content = chatMessage.type == chat_message.Type.text
+        ? chatMessage.content.length > 20
+            ? '${chatMessage.content.substring(0, 20)}...'
+            : chatMessage.content
+        : "Image";
+
     Map<String, dynamic> message = {
       "message": {
         "token": deviceToken,
         "notification": {
           "title": username,
-          "body": chatMessage.content,
+          "body": content,
         },
         "data": {
           "type": "private_chat",

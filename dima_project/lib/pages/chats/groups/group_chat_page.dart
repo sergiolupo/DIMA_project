@@ -364,7 +364,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         type: Type.text,
       );
 
-      _databaseService.sendMessage(group.id, message);
+      await _databaseService.sendMessage(group.id, message);
 
       setState(() {
         messageEditingController.clear();
