@@ -1,6 +1,7 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/user_profile/show_event_members_page.dart';
 import 'package:dima_project/widgets/events/show_date_widget.dart';
@@ -304,8 +305,13 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                   );
                                   await databaseService.deleteDetail(
                                       event.id!, widget.detailId);
+
                                   ref.invalidate(eventProvider(event.id!));
                                   ref.invalidate(createdEventsProvider(uid));
+                                  await NotificationService(
+                                          databaseService: databaseService)
+                                      .sendEventNotification(event.name,
+                                          event.id!, true, widget.detailId);
                                   if (buildContext.mounted) {
                                     Navigator.of(buildContext).pop();
                                   }

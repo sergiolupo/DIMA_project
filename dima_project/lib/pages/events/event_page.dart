@@ -1,6 +1,7 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -215,7 +216,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                                 CupertinoAlertDialog(
                                               title: const Text('Delete Event'),
                                               content: const Text(
-                                                  'Are you sure you want to delete this date?'),
+                                                  'Are you sure you want to delete this event?'),
                                               actions: <Widget>[
                                                 CupertinoDialogAction(
                                                   child: const Text('Cancel'),
@@ -247,6 +248,14 @@ class EventPageState extends ConsumerState<EventPage> {
                                                     await databaseService
                                                         .deleteEvent(
                                                             widget.eventId);
+                                                    await NotificationService(
+                                                            databaseService:
+                                                                databaseService)
+                                                        .sendEventNotification(
+                                                            event.name,
+                                                            widget.eventId,
+                                                            false,
+                                                            "2");
                                                     ref.invalidate(
                                                         createdEventsProvider(
                                                             uid));

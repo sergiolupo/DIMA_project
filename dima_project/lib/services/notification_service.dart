@@ -322,11 +322,11 @@ class NotificationService {
   }
 
   Future<void> sendEventNotification(
-      String eventName, String eventId, bool detail, String? detailId) async {
+      String eventName, String eventId, bool detail, String detailId) async {
     List<String> devicesTokens = [];
     if (detail) {
       devicesTokens =
-          await DatabaseService().getDevicesTokensDetail(eventId, detailId!);
+          await DatabaseService().getDevicesTokensDetail(eventId, detailId);
     } else {
       devicesTokens = await DatabaseService().getDevicesTokensEvent(eventId);
     }
@@ -335,8 +335,11 @@ class NotificationService {
     const endpoint =
         'https://fcm.googleapis.com/v1/projects/dima-58cb8/messages:send';
 
-    final String content =
-        detail ? 'A date has been modified' : 'Event has been modified';
+    final String content = detail
+        ? 'A date has been deleted'
+        : detailId == '1'
+            ? 'Event has been modified'
+            : 'Event has been deleted';
 
     for (String deviceToken in devicesTokens) {
       if (deviceToken == '') continue;
@@ -350,7 +353,6 @@ class NotificationService {
           "data": {
             "type": "event",
             "event_id": eventId,
-            "detail_id": detailId,
           },
         }
       };

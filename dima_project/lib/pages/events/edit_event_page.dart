@@ -6,6 +6,7 @@ import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
@@ -101,16 +102,15 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   },
                 );
 
-                try {
-                  await updateEvent(databaseService);
-                } catch (e) {
-                  debugPrint('Error: $e');
-                } finally {
-                  // Pop the loading dialog
-                  if (buildContext.mounted) {
-                    Navigator.of(buildContext).pop();
-                  }
+                await updateEvent(databaseService);
+                await NotificationService(databaseService: databaseService)
+                    .sendEventNotification(
+                        widget.event.name, widget.event.id!, false, "1");
+                // Pop the loading dialog
+                if (buildContext.mounted) {
+                  Navigator.of(buildContext).pop();
                 }
+
                 // Navigate back if the context is still mounted
                 if (context.mounted) {
                   Navigator.of(context).pop();
