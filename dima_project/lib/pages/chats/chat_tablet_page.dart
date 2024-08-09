@@ -18,8 +18,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ChatTabletPage extends StatefulWidget {
+  final Group? selectedGroup;
+  final PrivateChat? selectedPrivateChat;
+  final UserData? selectedUser;
   const ChatTabletPage({
     super.key,
+    required this.selectedGroup,
+    required this.selectedPrivateChat,
+    required this.selectedUser,
   });
 
   @override
@@ -42,6 +48,32 @@ class ChatTabletPageState extends State<ChatTabletPage> {
     super.initState();
     _privateChatsStream = _databaseService.getPrivateChatsStream();
     _groupsStream = _databaseService.getGroupsStream();
+
+    if (widget.selectedGroup != null) {
+      setState(() {
+        selectedGroup = widget.selectedGroup;
+        page = GroupChatPage(
+          group: selectedGroup!,
+          key: UniqueKey(),
+          navigateToPage: _navigateToPage,
+          canNavigate: true,
+        );
+      });
+    }
+    if (widget.selectedUser != null) {
+      setState(() {
+        idx = 1;
+        selectedUser = widget.selectedUser;
+        selectedPrivateChat = widget.selectedPrivateChat;
+        page = PrivateChatPage(
+          privateChat: selectedPrivateChat!,
+          key: UniqueKey(),
+          navigateToPage: _navigateToPage,
+          canNavigate: true,
+          user: selectedUser!,
+        );
+      });
+    }
   }
 
   void _navigateToPage(Widget newPage) {
@@ -123,6 +155,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             SizedBox(
               height: 50,
               child: CustomSelectionOption(
+                initialIndex: idx,
                 textLeft: "Groups",
                 textRight: "Private",
                 onChanged: (value) {

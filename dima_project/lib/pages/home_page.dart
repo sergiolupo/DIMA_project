@@ -1,3 +1,6 @@
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/pages/chats/chat_tablet_page.dart';
@@ -31,12 +34,15 @@ class HomePageState extends ConsumerState<HomePage> {
   late final NotificationService notificationServices;
   late final DatabaseService databaseService;
   late CupertinoTabController _tabController;
-
+  Group? selectedGroup;
+  PrivateChat? selectedPrivateChat;
+  UserData? selectedUser;
   void clearNavigatorKeys() {
     _navigatorKeys.clear();
   }
 
-  changeIndex(int index) {
+  changeIndex(int index, Group? selectedGroup, PrivateChat? selectedPrivateChat,
+      UserData? selectedUser) {
     ref.invalidate(userProvider);
     ref.invalidate(followerProvider);
     ref.invalidate(followingProvider);
@@ -55,6 +61,11 @@ class HomePageState extends ConsumerState<HomePage> {
         _tabController.index = index;
       });
     }
+    setState(() {
+      this.selectedGroup = selectedGroup;
+      this.selectedPrivateChat = selectedPrivateChat;
+      this.selectedUser = selectedUser;
+    });
   }
 
   @override
@@ -90,7 +101,9 @@ class HomePageState extends ConsumerState<HomePage> {
       tabBar: CupertinoTabBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         currentIndex: _currentIndex!,
-        onTap: changeIndex,
+        onTap: (index) {
+          changeIndex(index, selectedGroup, selectedPrivateChat, selectedUser);
+        },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.news),
@@ -123,9 +136,13 @@ class HomePageState extends ConsumerState<HomePage> {
             );
             break;
           case 1:
-            page = const ResponsiveLayout(
-              mobileLayout: ChatPage(),
-              tabletLayout: ChatTabletPage(),
+            page = ResponsiveLayout(
+              mobileLayout: const ChatPage(),
+              tabletLayout: ChatTabletPage(
+                selectedGroup: selectedGroup,
+                selectedPrivateChat: selectedPrivateChat,
+                selectedUser: selectedUser,
+              ),
             );
             break;
           case 2:

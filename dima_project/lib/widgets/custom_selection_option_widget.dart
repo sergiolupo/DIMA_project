@@ -4,6 +4,7 @@ class CustomSelectionOption extends StatefulWidget {
   final String textLeft;
   final String? textMiddle;
   final String textRight;
+  final int? initialIndex;
   final void Function(int idx) onChanged;
 
   const CustomSelectionOption({
@@ -11,6 +12,7 @@ class CustomSelectionOption extends StatefulWidget {
     required this.textRight,
     this.textMiddle,
     required this.onChanged,
+    this.initialIndex,
     super.key,
   });
 
@@ -19,10 +21,11 @@ class CustomSelectionOption extends StatefulWidget {
 }
 
 class CustomSelectionOptionState extends State<CustomSelectionOption> {
-  int idx = 0;
+  late int idx;
 
   @override
   void initState() {
+    idx = widget.initialIndex ?? 0;
     super.initState();
   }
 

@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -128,20 +129,19 @@ class NotificationService {
     debugPrint('handleMessage');
     //handle notification function
     if (message.data['type'] == 'private_chat') {
-      debugPrint(Map<String, dynamic>.from(message.data).toString());
-
       final PrivateChat privateChat =
           PrivateChat.fromMap(Map<String, dynamic>.from(message.data));
-      debugPrint(privateChat.members.toString());
 
       final String other = privateChat.members
           .firstWhere((element) => element != AuthService.uid);
       final UserData user = await DatabaseService().getUserData(other);
-
       if (!context.mounted) return;
       Navigator.popUntil(context, (route) => route.isFirst);
       clearNavigatorKeys();
-      changeIndex(1);
+      changeIndex(1, null, privateChat, user);
+      if (MediaQuery.of(context).size.width > Constants.limitWidth) {
+        return;
+      }
       Navigator.push(
           context,
           CupertinoPageRoute(
@@ -155,9 +155,15 @@ class NotificationService {
       final Group group =
           await DatabaseService().getGroupFromId(message.data['group_id']);
       if (!context.mounted) return;
+
       Navigator.popUntil(context, (route) => route.isFirst);
       clearNavigatorKeys();
-      changeIndex(1);
+      changeIndex(1, group, null, null);
+
+      if (MediaQuery.of(context).size.width > Constants.limitWidth) {
+        return;
+      }
+
       Navigator.push(
           context,
           CupertinoPageRoute(
