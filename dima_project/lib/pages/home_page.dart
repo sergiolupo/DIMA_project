@@ -73,13 +73,9 @@ class HomePageState extends ConsumerState<HomePage> {
     notificationServices = NotificationService(
       databaseService: databaseService,
     );
-    notificationServices.requestNotificationPermission();
-    notificationServices.forgroundMessage();
-    notificationServices.firebaseInit(context, changeIndex, clearNavigatorKeys);
-    notificationServices.setUpInteractMessage(
-        context, changeIndex, clearNavigatorKeys);
-    notificationServices.setupToken(ref);
-    notificationServices.subscribeToTopics();
+    notificationServices.initialize(
+        context, ref, changeIndex, clearNavigatorKeys);
+
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
     ref.read(followingProvider(AuthService.uid));

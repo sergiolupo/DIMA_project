@@ -1520,16 +1520,29 @@ class DatabaseService {
 
     for (EventDetails detail in event.details!) {
       if (detail.id == null) {
-        await eventsRef
-            .doc(event.id)
-            .collection('details')
-            .add(EventDetails.toMap(detail));
+        await eventsRef.doc(event.id).collection('details').add({
+          'startDate': detail.startDate,
+          'endDate': detail.endDate,
+          'location': detail.location,
+          'startTime': detail.startTime,
+          'endTime': detail.endTime,
+          'latlng': GeoPoint(detail.latlng!.latitude, detail.latlng!.longitude),
+          'members': detail.members,
+          'requests': detail.requests ?? [],
+        });
       } else {
         await eventsRef
             .doc(event.id)
             .collection('details')
             .doc(detail.id)
-            .update(EventDetails.toMap(detail));
+            .update({
+          'startDate': detail.startDate,
+          'endDate': detail.endDate,
+          'location': detail.location,
+          'startTime': detail.startTime,
+          'endTime': detail.endTime,
+          'latlng': GeoPoint(detail.latlng!.latitude, detail.latlng!.longitude),
+        });
       }
     }
 
@@ -1731,15 +1744,19 @@ class DatabaseService {
   Future<List<String>> getDevicesTokensDetail(
       String eventId, String detailId) async {
     List<String> tokens = [];
-    final List<String> members = (await eventsRef
+
+    final List<String> members = List<String>.from((await eventsRef
         .doc(eventId)
         .collection('details')
         .doc(detailId)
-        .get())["members"];
+        .get())["members"]);
+
     members.remove(AuthService.uid);
+
     for (String member in members) {
       tokens.add((await usersRef.doc(member).get())["token"]);
     }
+
     return tokens;
   }
 
@@ -1749,16 +1766,18 @@ class DatabaseService {
     final Set<String> uniqueMembers = {};
 
     for (var detailDoc in detailDocs.docs) {
-      final List<String> currentMembers = detailDoc['members'] ?? [];
+      final List<dynamic> currentMembersDynamic = detailDoc['members'] ?? [];
+
+      final List<String> currentMembers =
+          List<String>.from(currentMembersDynamic);
       uniqueMembers.addAll(currentMembers);
     }
 
-    final List<String> tokens = await Future.wait(
-      uniqueMembers.map((memberId) async {
-        final userDoc = await usersRef.doc(memberId).get();
-        return userDoc['token'] as String;
-      }),
-    );
+    final List<String> tokens = [];
+    uniqueMembers.remove(AuthService.uid);
+    for (var member in uniqueMembers) {
+      tokens.add((await usersRef.doc(member).get())['token']);
+    }
 
     return tokens;
   }

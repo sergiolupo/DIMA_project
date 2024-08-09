@@ -47,7 +47,7 @@ class NotificationService {
   };
   NotificationService({required this.databaseService});
 
-  void requestNotificationPermission() async {
+  Future<void> requestNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: true,
@@ -94,7 +94,7 @@ class NotificationService {
     return token!;
   }
 
-  void setupToken(WidgetRef ref) async {
+  Future<void> setupToken(WidgetRef ref) async {
     String? token = await FirebaseMessaging.instance.getToken();
     await databaseService.updateToken(token!);
 
@@ -190,7 +190,8 @@ class NotificationService {
                     canNavigate: false,
                   )));
     }
-    if (message.data['type'] == 'event') {
+    if (message.data['type'] == 'event' &&
+        message.notification!.body == "Event has been modified") {
       Navigator.popUntil(context, (route) => route.isFirst);
       clearNavigatorKeys();
       changeIndex(4);
@@ -379,6 +380,7 @@ class NotificationService {
     } else {
       devicesTokens = await DatabaseService().getDevicesTokensEvent(eventId);
     }
+    debugPrint(devicesTokens.toString());
     if (devicesTokens == []) return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
@@ -391,6 +393,7 @@ class NotificationService {
             : 'Event has been deleted';
 
     for (String deviceToken in devicesTokens) {
+      debugPrint(deviceToken);
       if (deviceToken == '') continue;
       Map<String, dynamic> message = {
         "message": {
@@ -455,5 +458,16 @@ class NotificationService {
       await messaging.unsubscribeFromTopic(categoryToTopicMap[category]!);
     }
     topics.clear();
+  }
+
+  Future<void> initialize(BuildContext context, WidgetRef ref,
+      Function changeIndex, Function clearNavigatorKeys) async {
+    await requestNotificationPermission();
+    await forgroundMessage();
+    if (!context.mounted) return;
+    firebaseInit(context, changeIndex, clearNavigatorKeys);
+    await setUpInteractMessage(context, changeIndex, clearNavigatorKeys);
+    await setupToken(ref);
+    await subscribeToTopics();
   }
 }

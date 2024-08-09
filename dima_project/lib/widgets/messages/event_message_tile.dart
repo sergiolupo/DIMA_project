@@ -99,26 +99,24 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            widget.message.sentByMe!
-                                ? const Padding(
-                                    padding: EdgeInsets.all(2),
-                                  )
-                                : Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        widget.senderUsername!,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: widget.message.sentByMe!
-                                              ? CupertinoColors.white
-                                              : CupertinoColors.black,
-                                          letterSpacing: -0.5,
-                                        ),
-                                      ),
-                                    ],
+                            if (!widget.message.sentByMe! &&
+                                widget.message.isGroupMessage)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    widget.senderUsername!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: widget.message.sentByMe!
+                                          ? CupertinoColors.white
+                                          : CupertinoColors.black,
+                                      letterSpacing: -0.5,
+                                    ),
                                   ),
+                                ],
+                              ),
                             Column(
                               children: [
                                 GestureDetector(

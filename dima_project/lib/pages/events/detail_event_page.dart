@@ -303,15 +303,16 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                       );
                                     },
                                   );
+                                  await NotificationService(
+                                          databaseService: databaseService)
+                                      .sendEventNotification(event.name,
+                                          event.id!, true, widget.detailId);
                                   await databaseService.deleteDetail(
                                       event.id!, widget.detailId);
 
                                   ref.invalidate(eventProvider(event.id!));
                                   ref.invalidate(createdEventsProvider(uid));
-                                  await NotificationService(
-                                          databaseService: databaseService)
-                                      .sendEventNotification(event.name,
-                                          event.id!, true, widget.detailId);
+
                                   if (buildContext.mounted) {
                                     Navigator.of(buildContext).pop();
                                   }

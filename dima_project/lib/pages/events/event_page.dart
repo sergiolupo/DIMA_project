@@ -245,17 +245,22 @@ class EventPageState extends ConsumerState<EventPage> {
                                                         );
                                                       },
                                                     );
+
+                                                    try {
+                                                      await NotificationService(
+                                                              databaseService:
+                                                                  databaseService)
+                                                          .sendEventNotification(
+                                                              event.name,
+                                                              widget.eventId,
+                                                              false,
+                                                              "2");
+                                                    } catch (e) {
+                                                      debugPrint(e.toString());
+                                                    }
                                                     await databaseService
                                                         .deleteEvent(
                                                             widget.eventId);
-                                                    await NotificationService(
-                                                            databaseService:
-                                                                databaseService)
-                                                        .sendEventNotification(
-                                                            event.name,
-                                                            widget.eventId,
-                                                            false,
-                                                            "2");
                                                     ref.invalidate(
                                                         createdEventsProvider(
                                                             uid));
