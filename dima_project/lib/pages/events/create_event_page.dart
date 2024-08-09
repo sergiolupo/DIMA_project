@@ -77,7 +77,18 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
       details.values.toList(),
       null,
     )) {
-      showDoneDialog();
+      BuildContext buildContext = context;
+      // Show the loading dialog
+      showCupertinoDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext newContext) {
+          buildContext = newContext;
+          return const CupertinoAlertDialog(
+            content: CupertinoActivityIndicator(),
+          );
+        },
+      );
       for (int i = 0; i < details.length; i++) {
         details[i]!.members = [uid];
       }
@@ -93,6 +104,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
       await databaseService.createEvent(
           event, selectedImagePath, uids, groupIds);
       ref.invalidate(createdEventsProvider(uid));
+      if (!buildContext.mounted) return;
+      Navigator.of(buildContext).pop();
+
+      showDoneDialog();
     }
   }
 
