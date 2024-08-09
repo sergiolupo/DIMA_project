@@ -15,7 +15,7 @@ exports.checkNewsUpdate = functions.pubsub.schedule("every 2 minutes").onRun(asy
     const response = await axios.get(NEWS_API_URL);
     console.log("API Response:", response.data); // Log the entire response data
 
-    const latestArticles = response.data.articles;
+    const latestArticles = response.data.articles.slice(0, 20);
     console.log("Called news api");
 
     // Step 2: Get the last saved articles from Firestore

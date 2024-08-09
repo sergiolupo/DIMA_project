@@ -50,22 +50,23 @@ class NotificationService {
     }
   }
 
-  void initLocalNotifications(
-      BuildContext context, RemoteMessage message, Function changeIndex) async {
+  void initLocalNotifications(BuildContext context, RemoteMessage message,
+      Function changeIndex, Function clearNavigatorKeys) async {
     var initializationSettings = const InitializationSettings(
       iOS: DarwinInitializationSettings(),
     );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (payload) {
-      handleMessage(context, message, changeIndex);
+      handleMessage(context, message, changeIndex, clearNavigatorKeys);
     });
   }
 
-  void firebaseInit(BuildContext context, Function changeIndex) {
+  void firebaseInit(
+      BuildContext context, Function changeIndex, Function clearNavigatorKeys) {
     FirebaseMessaging.onMessage.listen((message) {
       forgroundMessage();
-      initLocalNotifications(context, message, changeIndex);
+      initLocalNotifications(context, message, changeIndex, clearNavigatorKeys);
     });
   }
 
@@ -88,15 +89,15 @@ class NotificationService {
     });
   }
 
-  Future<void> setUpInteractMessage(
-      BuildContext context, Function changeIndex) async {
+  Future<void> setUpInteractMessage(BuildContext context, Function changeIndex,
+      Function clearNavigatorKeys) async {
     //when app is terminated
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       debugPrint('initialMessage');
       if (!context.mounted) return;
-      handleMessage(context, initialMessage, changeIndex);
+      handleMessage(context, initialMessage, changeIndex, clearNavigatorKeys);
     }
     String? notificationType =
         await SharedPreferencesHelper().getNotificationType();
@@ -109,7 +110,8 @@ class NotificationService {
       Map<String, dynamic> data =
           Map<String, dynamic>.from(json.decode(notificationData));
       if (!context.mounted) return;
-      handleMessage(context, RemoteMessage(data: data), changeIndex);
+      handleMessage(
+          context, RemoteMessage(data: data), changeIndex, clearNavigatorKeys);
 
       await SharedPreferencesHelper().clearNotification();
     }
@@ -117,16 +119,12 @@ class NotificationService {
     //when app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       debugPrint('onMessageOpenedApp');
-      handleMessage(
-        context,
-        message,
-        changeIndex,
-      );
+      handleMessage(context, message, changeIndex, clearNavigatorKeys);
     });
   }
 
-  Future<void> handleMessage(
-      BuildContext context, RemoteMessage message, Function changeIndex) async {
+  Future<void> handleMessage(BuildContext context, RemoteMessage message,
+      Function changeIndex, Function clearNavigatorKeys) async {
     debugPrint('handleMessage');
     //handle notification function
     if (message.data['type'] == 'private_chat') {
@@ -141,6 +139,8 @@ class NotificationService {
       final UserData user = await DatabaseService().getUserData(other);
 
       if (!context.mounted) return;
+      Navigator.popUntil(context, (route) => route.isFirst);
+      clearNavigatorKeys();
       changeIndex(1);
       Navigator.push(
           context,
@@ -155,6 +155,8 @@ class NotificationService {
       final Group group =
           await DatabaseService().getGroupFromId(message.data['group_id']);
       if (!context.mounted) return;
+      Navigator.popUntil(context, (route) => route.isFirst);
+      clearNavigatorKeys();
       changeIndex(1);
       Navigator.push(
           context,
@@ -165,6 +167,9 @@ class NotificationService {
                   )));
     }
     if (message.data['type'] == 'event') {
+      Navigator.popUntil(context, (route) => route.isFirst);
+      clearNavigatorKeys();
+      changeIndex(4);
       Navigator.push(
           context,
           CupertinoPageRoute(

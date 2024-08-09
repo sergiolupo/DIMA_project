@@ -302,6 +302,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     _searchStreamController.close(); // Close the stream controller
     _searchStreamSubscription?.cancel(); // Cancel the subscription
     super.dispose();

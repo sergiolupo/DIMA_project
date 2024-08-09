@@ -32,6 +32,10 @@ class HomePageState extends ConsumerState<HomePage> {
   late final DatabaseService databaseService;
   late CupertinoTabController _tabController;
 
+  void clearNavigatorKeys() {
+    _navigatorKeys.clear();
+  }
+
   changeIndex(int index) {
     ref.invalidate(userProvider);
     ref.invalidate(followerProvider);
@@ -63,8 +67,9 @@ class HomePageState extends ConsumerState<HomePage> {
     );
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
-    notificationServices.firebaseInit(context, changeIndex);
-    notificationServices.setUpInteractMessage(context, changeIndex);
+    notificationServices.firebaseInit(context, changeIndex, clearNavigatorKeys);
+    notificationServices.setUpInteractMessage(
+        context, changeIndex, clearNavigatorKeys);
     notificationServices.setupToken(ref);
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
