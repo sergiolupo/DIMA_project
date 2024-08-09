@@ -1089,6 +1089,14 @@ class DatabaseService {
       List<Message> messages = [];
       for (var doc in docs) {
         messages.add(Message.fromSnapshot(doc, id, AuthService.uid));
+        if (type == Type.event) {
+          //check if the event is still valid
+          final event = await eventsRef.doc(doc['content']).get();
+          if (!event.exists) {
+            debugPrint('Event does not exist');
+            messages.removeWhere((element) => element.id == doc.id);
+          }
+        }
       }
       return messages;
     } catch (e) {
