@@ -1,6 +1,5 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/user_profile/show_event_members_page.dart';
@@ -333,8 +332,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   Add2Calendar.addEvent2Cal(Event(
                     title: event.name,
                     description: event.description,
-                    location:
-                        await EventService.getAddressFromLatLng(detail.latlng!),
+                    location: detail.location,
                     startDate: DateTime(
                         detail.startDate!.year,
                         detail.startDate!.month,
