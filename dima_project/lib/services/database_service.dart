@@ -340,7 +340,7 @@ class DatabaseService {
     bool isJoined = groupDoc['members'].contains(AuthService.uid);
 
     if (isJoined) {
-      bool notify = await getNotification(groupId, false);
+      bool notify = await getNotification(groupId, true);
       if (notify) {
         await groupsRef.doc(groupId).update({
           'notifications': FieldValue.arrayRemove([AuthService.uid])
