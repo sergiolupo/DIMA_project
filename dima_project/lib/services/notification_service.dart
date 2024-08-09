@@ -7,8 +7,10 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
+import 'package:dima_project/pages/news/category_news.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
@@ -127,6 +129,7 @@ class NotificationService {
   Future<void> handleMessage(BuildContext context, RemoteMessage message,
       Function changeIndex, Function clearNavigatorKeys) async {
     debugPrint('handleMessage');
+    debugPrint(message.data.toString());
     //handle notification function
     if (message.data['type'] == 'private_chat') {
       final PrivateChat privateChat =
@@ -182,6 +185,24 @@ class NotificationService {
               builder: (context) => EventPage(
                     eventId: message.data['event_id'],
                   )));
+    }
+    if (message.data['type'].toString() == 'news') {
+      try {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        clearNavigatorKeys();
+        changeIndex(0, null, null, null);
+
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => CategoryNews(
+                      name: message.data['category'].toString(),
+                      newsService: NewsService(),
+                      databaseService: DatabaseService(),
+                    )));
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
   }
 

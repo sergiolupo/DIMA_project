@@ -70,8 +70,24 @@ class HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
-    FirebaseMessaging.instance.subscribeToTopic('news');
-
+    const categories = [
+      "Environment",
+      "Cooking",
+      "Culture",
+      "Film",
+      "Books",
+      "Gossip",
+      "Music",
+      "Politics",
+      "Health",
+      "School",
+      "Sports",
+      "Technology",
+      "Volunteering"
+    ];
+    for (var category in categories) {
+      FirebaseMessaging.instance.subscribeToTopic(category);
+    }
     databaseService = ref.read(databaseServiceProvider);
     notificationServices = NotificationService(
       databaseService: databaseService,
