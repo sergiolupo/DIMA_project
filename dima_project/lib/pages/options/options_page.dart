@@ -2,6 +2,7 @@ import 'package:dima_project/pages/options/request_page.dart';
 import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:dima_project/widgets/option_tile.dart';
@@ -100,6 +101,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       },
     );
     await databaseService.updateToken('');
+    await NotificationService(databaseService: databaseService)
+        .unsubscribeAndClearTopics();
     await widget.sharedPreferencesHelper.clearNotification();
     await widget.authService.signOut();
     ref.invalidate(userProvider);
@@ -142,6 +145,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 await databaseService.updateToken('');
                 await widget.sharedPreferencesHelper.clearNotification();
                 await databaseService.deleteUser();
+                await NotificationService(databaseService: databaseService)
+                    .unsubscribeAndClearTopics();
                 ref.invalidate(userProvider);
                 ref.invalidate(followerProvider);
                 ref.invalidate(followingProvider);

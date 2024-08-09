@@ -29,7 +29,22 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   late final DatabaseService databaseService;
-
+  static final List<String> topics = [];
+  static const categoryToTopicMap = {
+    "Environment": "Environment",
+    "Cooking": "Cooking",
+    "Culture": "Culture",
+    "Film & TV Series": "Film",
+    "Books": "Books",
+    "Gossip": "Gossip",
+    "Music": "Music",
+    "Politics": "Politics",
+    "Health & Wellness": "Health",
+    "School & Education": "School",
+    "Sports": "Sports",
+    "Technology": "Technology",
+    "Volunteering": "Volunteering"
+  };
   NotificationService({required this.databaseService});
 
   void requestNotificationPermission() async {
@@ -404,5 +419,39 @@ class NotificationService {
         debugPrint('Notification not sent');
       }
     }
+  }
+
+  Future<void> subscribeToTopics() async {
+    List<String> categories =
+        (await databaseService.getUserData(AuthService.uid)).categories;
+    for (String category in categories) {
+      if (!topics.contains(category)) {
+        categories.add(category);
+        await messaging.subscribeToTopic(categoryToTopicMap[category]!);
+      }
+    }
+  }
+
+  Future<void> updateTopicSubscriptions(List<String> newCategories) async {
+    List<String> oldCategories = topics;
+    for (String category in oldCategories) {
+      if (!newCategories.contains(category)) {
+        await messaging.unsubscribeFromTopic(categoryToTopicMap[category]!);
+        topics.remove(category);
+      }
+    }
+    for (String category in newCategories) {
+      if (!oldCategories.contains(category)) {
+        await messaging.subscribeToTopic(categoryToTopicMap[category]!);
+        topics.add(category);
+      }
+    }
+  }
+
+  Future<void> unsubscribeAndClearTopics() async {
+    for (String category in topics) {
+      await messaging.unsubscribeFromTopic(categoryToTopicMap[category]!);
+    }
+    topics.clear();
   }
 }

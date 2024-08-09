@@ -3,6 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
@@ -279,6 +280,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _oldIsPublic != isPublic,
     );
 
+    await NotificationService(databaseService: databaseService)
+        .updateTopicSubscriptions(selectedCategories);
     debugPrint('User data updated');
     ref.invalidate(userProvider(AuthService.uid));
   }

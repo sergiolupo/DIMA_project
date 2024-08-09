@@ -14,7 +14,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,24 +69,6 @@ class HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
-    const categories = [
-      "Environment",
-      "Cooking",
-      "Culture",
-      "Film",
-      "Books",
-      "Gossip",
-      "Music",
-      "Politics",
-      "Health",
-      "School",
-      "Sports",
-      "Technology",
-      "Volunteering"
-    ];
-    for (var category in categories) {
-      FirebaseMessaging.instance.subscribeToTopic(category);
-    }
     databaseService = ref.read(databaseServiceProvider);
     notificationServices = NotificationService(
       databaseService: databaseService,
@@ -98,6 +79,7 @@ class HomePageState extends ConsumerState<HomePage> {
     notificationServices.setUpInteractMessage(
         context, changeIndex, clearNavigatorKeys);
     notificationServices.setupToken(ref);
+    notificationServices.subscribeToTopics();
     ref.read(userProvider(AuthService.uid));
     ref.read(followerProvider(AuthService.uid));
     ref.read(followingProvider(AuthService.uid));
