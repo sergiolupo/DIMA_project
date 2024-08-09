@@ -237,20 +237,13 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                           snapshot.hasError ||
                                           snapshot.data!.isEmpty)
                                       ? const SizedBox()
-                                      : ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                            color: CupertinoTheme.of(context)
-                                                .primaryColor,
-                                            child: Text(
-                                              snapshot.data!.length.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.normal,
-                                                color: CupertinoColors.white,
-                                              ),
-                                            ),
+                                      : Text(
+                                          snapshot.data!.length.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.normal,
+                                            color:
+                                                CupertinoColors.opaqueSeparator,
                                           ),
                                         ),
                                   const SizedBox(width: 10),
