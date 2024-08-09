@@ -319,6 +319,8 @@ class NotificationService {
       String groupId, chat_message.Message chatMessage) async {
     List<String> devicesTokens =
         await DatabaseService().getDevicesTokensGroup(groupId);
+    final String groupName =
+        (await DatabaseService().getGroupFromId(groupId)).name;
     if (devicesTokens == []) return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
@@ -341,8 +343,8 @@ class NotificationService {
         "message": {
           "token": deviceToken,
           "notification": {
-            "title": username,
-            "body": content,
+            "title": groupName,
+            "body": "$username: $content",
           },
           "data": {
             "type": "group_chat",

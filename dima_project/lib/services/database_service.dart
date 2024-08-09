@@ -1700,8 +1700,12 @@ class DatabaseService {
   }
 
   Future<String> getDeviceTokenPrivateChat(PrivateChat chat) async {
-    final List<String> notifications =
-        (await privateChatRef.doc(chat.id).get())['notifications'];
+    final chatDoc = await privateChatRef.doc(chat.id).get();
+
+    // Retrieve and convert notifications to List<String>
+    final List<dynamic> notificationsDynamic = chatDoc['notifications'] ?? [];
+    final List<String> notifications = List<String>.from(notificationsDynamic);
+
     final String otherUID =
         chat.members[0] == AuthService.uid ? chat.members[1] : chat.members[0];
     if (!notifications.contains(otherUID)) {
@@ -1711,8 +1715,10 @@ class DatabaseService {
   }
 
   Future<List<String>> getDevicesTokensGroup(String groupId) async {
-    final List<String> notifications =
-        (await groupsRef.doc(groupId).get())['notifications'];
+    final groupDoc = await groupsRef.doc(groupId).get();
+    final List<dynamic> notificationsDynamic = groupDoc['notifications'];
+    final List<String> notifications = List<String>.from(notificationsDynamic);
+
     final List<String> tokens = [];
     for (var notification in notifications) {
       if (notification != AuthService.uid) {
