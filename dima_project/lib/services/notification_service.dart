@@ -426,7 +426,7 @@ class NotificationService {
         (await databaseService.getUserData(AuthService.uid)).categories;
     for (String category in categories) {
       if (!topics.contains(category)) {
-        categories.add(category);
+        topics.add(category);
         await messaging.subscribeToTopic(categoryToTopicMap[category]!);
       }
     }
