@@ -118,6 +118,8 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                     vertical: 12, horizontal: 24),
                                 borderRadius: BorderRadius.zero,
                                 onPressed: () {
+                                  ref.invalidate(eventProvider(event.id!));
+
                                   Navigator.push(
                                     context,
                                     CupertinoPageRoute(
