@@ -1,3 +1,4 @@
+import 'package:dima_project/pages/options/delete_account_page.dart';
 import 'package:dima_project/pages/options/request_page.dart';
 import 'package:dima_project/pages/options/settings_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -116,53 +117,114 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     context.go('/login');
   }
 
-  void deleteAccount(DatabaseService databaseService) {
+  Future<void> deleteAccount(DatabaseService databaseService) async {
+    BuildContext context1 = context;
     showCupertinoDialog(
       context: context,
-      builder: (BuildContext newContext) {
-        return CupertinoAlertDialog(
-          title: const Text('Delete Account'),
-          content: const Text('Are you sure you want to delete your account?'),
-          actions: <CupertinoDialogAction>[
-            CupertinoDialogAction(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(newContext).pop();
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text('Yes'),
-              onPressed: () async {
-                Navigator.of(newContext).pop();
-                showCupertinoDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CupertinoAlertDialog(
-                      content: CupertinoActivityIndicator(),
-                    );
-                  },
-                );
-                await databaseService.updateToken('');
-                await widget.sharedPreferencesHelper.clearNotification();
-                await databaseService.deleteUser();
-                await NotificationService(databaseService: databaseService)
-                    .unsubscribeAndClearTopics();
-                ref.invalidate(userProvider);
-                ref.invalidate(followerProvider);
-                ref.invalidate(followingProvider);
-                ref.invalidate(groupsProvider);
-                ref.invalidate(joinedEventsProvider);
-                ref.invalidate(createdEventsProvider);
-                ref.invalidate(eventProvider);
-                await widget.authService.deleteUser();
-                if (!mounted) return;
-                Navigator.of(context).pop();
-                context.go('/login');
-              },
-            ),
-          ],
+      builder: (BuildContext newBuildContext) {
+        context1 = newBuildContext;
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
         );
       },
     );
+
+    final bool isSignedInWithGoogle =
+        (await databaseService.getUserData(AuthService.uid))
+            .isSignedInWithGoogle!;
+    if (isSignedInWithGoogle) {
+      if (!context1.mounted) return;
+      Navigator.of(context1).pop();
+      if (!mounted) return;
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext newContext) {
+          return CupertinoAlertDialog(
+            title: const Text('Delete Account'),
+            content:
+                const Text('Are you sure you want to delete your account?'),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(newContext).pop();
+                },
+              ),
+              CupertinoDialogAction(
+                  child: const Text('Yes'),
+                  onPressed: () async {
+                    Navigator.of(newContext).pop();
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (BuildContext newBuildContext) {
+                        context1 = newBuildContext;
+                        return const CupertinoAlertDialog(
+                          content: CupertinoActivityIndicator(),
+                        );
+                      },
+                    );
+                    final bool isReauthenticated =
+                        await widget.authService.reauthenticateUserWithGoogle();
+                    if (isReauthenticated) {
+                      await databaseService.updateToken('');
+                      await widget.sharedPreferencesHelper.clearNotification();
+                      await databaseService.deleteUser();
+                      await NotificationService(
+                              databaseService: databaseService)
+                          .unsubscribeAndClearTopics();
+                      ref.invalidate(userProvider);
+                      ref.invalidate(followerProvider);
+                      ref.invalidate(followingProvider);
+                      ref.invalidate(groupsProvider);
+                      ref.invalidate(joinedEventsProvider);
+                      ref.invalidate(createdEventsProvider);
+                      ref.invalidate(eventProvider);
+                      await widget.authService.deleteUser();
+                      if (!context1.mounted) return;
+                      Navigator.of(context1).pop();
+                      if (!mounted) return;
+                      context.go('/login');
+                    } else {
+                      if (!context1.mounted) return;
+                      Navigator.of(context1).pop();
+                      if (!mounted) return;
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext newContext) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Error'),
+                            content: const Text(
+                                'Failed to reauthenticate with Google account'),
+                            actions: <CupertinoDialogAction>[
+                              CupertinoDialogAction(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(newContext).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }),
+            ],
+          );
+        },
+      );
+    } else {
+      if (!context1.mounted) return;
+      Navigator.of(context1).pop();
+      if (!mounted) return;
+
+      Navigator.of(context).push(
+        CupertinoPageRoute(
+          builder: (context) => DeleteAccountPage(
+            authService: widget.authService,
+            sharedPreferencesHelper: widget.sharedPreferencesHelper,
+          ),
+        ),
+      );
+    }
   }
 }

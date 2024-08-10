@@ -73,4 +73,40 @@ class AuthService {
   Future<void> sendPasswordResetEmail(String email) {
     return _firebaseAuth.sendPasswordResetEmail(email: email);
   }
+
+  Future<bool> reauthenticateUser(String email, String password) {
+    final User user = _firebaseAuth.currentUser!;
+    final AuthCredential credential =
+        EmailAuthProvider.credential(email: email, password: password);
+
+    return user.reauthenticateWithCredential(credential).then((value) {
+      return true;
+    }).catchError((error) {
+      return false;
+    });
+  }
+
+  Future<bool> reauthenticateUserWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      if (googleAuth != null) {
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
+        );
+        await _firebaseAuth.currentUser!
+            .reauthenticateWithCredential(credential);
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

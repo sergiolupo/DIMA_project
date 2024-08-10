@@ -64,7 +64,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
     return user.when(
       data: (user) {
         if (user.username == 'Deleted Account' && user.email == '') {
-          return const DeleteAccountPage();
+          return const DeletedAccountPage();
         }
         return _buildProfile(user);
       },

@@ -121,7 +121,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
             },
             loading: () => const CupertinoActivityIndicator(),
             error: (error, stackTrace) {
-              return const DeleteAccountPage();
+              return const DeletedAccountPage();
             },
           ),
         ),

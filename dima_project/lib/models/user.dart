@@ -12,6 +12,7 @@ class UserData {
   bool? isPublic;
   List<String>? requests;
   String? token;
+  bool? isSignedInWithGoogle;
   UserData({
     required this.categories,
     this.imagePath,
@@ -20,6 +21,7 @@ class UserData {
     required this.name,
     required this.surname,
     required this.username,
+    this.isSignedInWithGoogle,
     this.uid,
     this.isPublic,
     this.requests,
@@ -45,6 +47,7 @@ class UserData {
             .toList()
             .cast<String>(),
         token: documentSnapshot['token'],
+        isSignedInWithGoogle: documentSnapshot['isSignedInWithGoogle'],
       );
     } catch (e) {
       return UserData(
@@ -58,22 +61,8 @@ class UserData {
         isPublic: false,
         requests: [],
         token: '',
+        isSignedInWithGoogle: false,
       );
     }
-  }
-
-  static UserData fromMap(Map<String, dynamic> json) {
-    return UserData(
-      name: json['name'],
-      surname: json['surname'],
-      username: json['username'],
-      email: json['email'],
-      imagePath: json['imagePath'],
-      categories: List<String>.from(json['categories']),
-      uid: json['uid'],
-      isPublic: json['isPublic'],
-      requests: List<String>.from(json['requests']),
-      token: json['token'],
-    );
   }
 }

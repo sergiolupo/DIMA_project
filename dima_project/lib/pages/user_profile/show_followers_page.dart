@@ -53,7 +53,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
       child: SafeArea(
         child: asyncUsers.when(
           loading: () => const CupertinoActivityIndicator(),
-          error: (err, stack) => const DeleteAccountPage(),
+          error: (err, stack) => const DeletedAccountPage(),
           data: (users) {
             return Column(
               children: [

@@ -54,6 +54,7 @@ class DatabaseService {
       'events': [],
       'groupsRequests': [],
       'requests': [],
+      'isSignedInWithGoogle': user.isSignedInWithGoogle,
     });
 
     await followersRef.doc(uuid).set({
