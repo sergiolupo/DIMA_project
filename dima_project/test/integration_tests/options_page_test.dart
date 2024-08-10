@@ -4,6 +4,7 @@ import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/pages/options/options_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/widgets/option_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -141,6 +142,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.settings)); //Settings page
       await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.settings)); //Settings page
+      await tester.pumpAndSettle();
       expect(find.text('Settings'), findsOneWidget);
       await tester.enterText(find.byType(CupertinoTextField).at(2), '');
       await tester.tap(find.text('Done'));
@@ -158,10 +163,17 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(
           find.byType(CupertinoTextField).at(2), 'test_username');
+      await tester.tap(find.byType(CupertinoSwitch));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Categories'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CategoriesForm), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
-      expect(find.text('Options'), findsOneWidget);
 
+      expect(find.text('Options'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
     });
     testWidgets("Test logout functionality", (WidgetTester tester) async {
@@ -217,8 +229,7 @@ void main() {
       verify(mockAuthService.signOut()).called(1);
       expect(find.text("Login"), findsOneWidget);
     });
-    testWidgets("Test delete account functionality",
-        (WidgetTester tester) async {
+    testWidgets("Test delete account with Google", (WidgetTester tester) async {
       AuthService.setUid('test-uid');
       when(mockDatabaseService.updateToken(any))
           .thenAnswer((_) => Future.value());

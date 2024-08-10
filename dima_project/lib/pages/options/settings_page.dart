@@ -41,12 +41,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     ref.read(userProvider(uid));
   }
 
-  void _toggleObscure() {
-    setState(() {
-      isObscure = !isObscure;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider(uid));
@@ -219,16 +213,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             placeholder: placeholder,
             controller: controller,
             padding: const EdgeInsets.all(15),
-            suffix: labelText == 'Password'
-                ? CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: _toggleObscure,
-                    child: Icon(
-                      isObscure ? CupertinoIcons.eye_slash : CupertinoIcons.eye,
-                      color: CupertinoColors.systemGrey,
-                    ),
-                  )
-                : null,
             decoration: BoxDecoration(
               color: CupertinoTheme.of(context).primaryContrastingColor,
               borderRadius: BorderRadius.circular(10),
