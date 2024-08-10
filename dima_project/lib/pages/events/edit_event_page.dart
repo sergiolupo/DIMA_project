@@ -39,6 +39,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   int numInfos = 1;
   String? defaultImage;
   final String uid = AuthService.uid;
+  late final Event oldEvent;
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -49,16 +50,15 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _eventNameController.text = widget.event.name;
-      _eventDescriptionController.text = widget.event.description;
-      isPublic = widget.event.isPublic;
-      for (int i = 0; i < widget.event.details!.length; i++) {
-        details[i] = widget.event.details![i];
-        map[i] = false;
-      }
-      numInfos = widget.event.details!.length;
-    });
+    _eventNameController.text = widget.event.name;
+    _eventDescriptionController.text = widget.event.description;
+    isPublic = widget.event.isPublic;
+    for (int i = 0; i < widget.event.details!.length; i++) {
+      details[i] = widget.event.details![i];
+      map[i] = false;
+    }
+    numInfos = widget.event.details!.length;
+    oldEvent = widget.event;
   }
 
   @override
@@ -103,9 +103,16 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 );
 
                 await updateEvent(databaseService);
-                await NotificationService(databaseService: databaseService)
-                    .sendEventNotification(
-                        widget.event.name, widget.event.id!, false, "1");
+                if (_eventNameController.text != oldEvent.name ||
+                    _eventDescriptionController.text != oldEvent.description ||
+                    details.values.toList() != oldEvent.details! ||
+                    selectedImagePath != null ||
+                    isPublic != oldEvent.isPublic) {
+                  await NotificationService(databaseService: databaseService)
+                      .sendEventNotification(
+                          widget.event.name, widget.event.id!, false, "1");
+                }
+
                 // Pop the loading dialog
                 if (buildContext.mounted) {
                   Navigator.of(buildContext).pop();
