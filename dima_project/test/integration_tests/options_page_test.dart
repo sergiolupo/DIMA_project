@@ -107,7 +107,6 @@ void main() {
             home: CupertinoPageScaffold(
               child: OptionsPage(
                 authService: mockAuthService,
-                sharedPreferencesHelper: mockSharedPreferencesHelper,
               ),
             ),
           ),
@@ -249,7 +248,6 @@ void main() {
                     builder: (BuildContext context, GoRouterState state) {
                       return OptionsPage(
                         authService: mockAuthService,
-                        sharedPreferencesHelper: mockSharedPreferencesHelper,
                       );
                     }),
                 GoRoute(

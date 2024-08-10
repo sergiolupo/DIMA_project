@@ -2,7 +2,6 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,11 +9,9 @@ import 'package:go_router/go_router.dart';
 
 class DeleteAccountPage extends ConsumerStatefulWidget {
   final AuthService authService;
-  final SharedPreferencesHelper sharedPreferencesHelper;
   const DeleteAccountPage({
     super.key,
     required this.authService,
-    required this.sharedPreferencesHelper,
   });
   @override
   DeleteAccountPageState createState() => DeleteAccountPageState();
@@ -85,7 +82,6 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                       },
                     );
                     await databaseService.updateToken('');
-                    await widget.sharedPreferencesHelper.clearNotification();
                     await databaseService.deleteUser();
                     await NotificationService(databaseService: databaseService)
                         .unsubscribeAndClearTopics();

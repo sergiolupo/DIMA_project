@@ -13,7 +13,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -116,22 +115,6 @@ class NotificationService {
       debugPrint('initialMessage');
       if (!context.mounted) return;
       handleMessage(context, initialMessage, changeIndex, clearNavigatorKeys);
-    }
-    String? notificationType =
-        await SharedPreferencesHelper().getNotificationType();
-    String? notificationData =
-        await SharedPreferencesHelper().getNotificationData();
-
-    if (notificationType != null && notificationData != null) {
-      debugPrint('notificationType');
-
-      Map<String, dynamic> data =
-          Map<String, dynamic>.from(json.decode(notificationData));
-      if (!context.mounted) return;
-      handleMessage(
-          context, RemoteMessage(data: data), changeIndex, clearNavigatorKeys);
-
-      await SharedPreferencesHelper().clearNotification();
     }
 
     //when app is in background

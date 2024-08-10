@@ -5,7 +5,6 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:dima_project/widgets/option_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +12,9 @@ import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
   final AuthService authService;
-  final SharedPreferencesHelper sharedPreferencesHelper;
   const OptionsPage({
     super.key,
     required this.authService,
-    required this.sharedPreferencesHelper,
   });
   @override
   OptionsPageState createState() => OptionsPageState();
@@ -104,7 +101,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     await databaseService.updateToken('');
     await NotificationService(databaseService: databaseService)
         .unsubscribeAndClearTopics();
-    await widget.sharedPreferencesHelper.clearNotification();
     await widget.authService.signOut();
     ref.invalidate(userProvider);
     ref.invalidate(followerProvider);
@@ -167,7 +163,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                         await widget.authService.reauthenticateUserWithGoogle();
                     if (isReauthenticated) {
                       await databaseService.updateToken('');
-                      await widget.sharedPreferencesHelper.clearNotification();
                       await databaseService.deleteUser();
                       await NotificationService(
                               databaseService: databaseService)
@@ -221,7 +216,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
         CupertinoPageRoute(
           builder: (context) => DeleteAccountPage(
             authService: widget.authService,
-            sharedPreferencesHelper: widget.sharedPreferencesHelper,
           ),
         ),
       );

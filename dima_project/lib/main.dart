@@ -10,7 +10,6 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,7 +41,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await SharedPreferencesHelper().saveNotification(message);
 }
 
 final GoRouter _router = GoRouter(

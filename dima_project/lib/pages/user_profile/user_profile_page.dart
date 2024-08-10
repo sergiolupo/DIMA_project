@@ -6,7 +6,6 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/utils/shared_preferences_helper.dart';
 import 'package:dima_project/widgets/events/event_grid.dart';
 import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
 import 'package:dima_project/pages/user_profile/show_followers_page.dart';
@@ -120,8 +119,6 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     CupertinoPageRoute(
                         builder: (context) => OptionsPage(
                               authService: AuthService(),
-                              sharedPreferencesHelper:
-                                  SharedPreferencesHelper(),
                             ))),
                 child: Icon(CupertinoIcons.bars,
                     color:
@@ -184,8 +181,8 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 0.0, // Spaziatura orizzontale
-                      mainAxisSpacing: 0.0, // Spaziatura verticale
+                      crossAxisSpacing: 0.0,
+                      mainAxisSpacing: 0.0,
                       childAspectRatio: 9,
                     ),
                     itemCount: user.categories.length,
