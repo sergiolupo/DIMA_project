@@ -3,14 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i5;
 
 import 'package:dima_project/models/message.dart' as _i10;
 import 'package:dima_project/models/private_chat.dart' as _i9;
 import 'package:dima_project/services/database_service.dart' as _i3;
 import 'package:dima_project/services/notification_service.dart' as _i4;
 import 'package:firebase_messaging/firebase_messaging.dart' as _i2;
-import 'package:flutter/cupertino.dart' as _i5;
+import 'package:flutter/cupertino.dart' as _i6;
 import 'package:flutter_riverpod/flutter_riverpod.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i7;
@@ -97,19 +97,21 @@ class MockNotificationService extends _i1.Mock
       );
 
   @override
-  void requestNotificationPermission() => super.noSuchMethod(
+  _i5.Future<void> requestNotificationPermission() => (super.noSuchMethod(
         Invocation.method(
           #requestNotificationPermission,
           [],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
   void initLocalNotifications(
-    _i5.BuildContext? context,
+    _i6.BuildContext? context,
     _i2.RemoteMessage? message,
     Function? changeIndex,
+    Function? clearNavigatorKeys,
   ) =>
       super.noSuchMethod(
         Invocation.method(
@@ -118,6 +120,7 @@ class MockNotificationService extends _i1.Mock
             context,
             message,
             changeIndex,
+            clearNavigatorKeys,
           ],
         ),
         returnValueForMissingStub: null,
@@ -125,8 +128,9 @@ class MockNotificationService extends _i1.Mock
 
   @override
   void firebaseInit(
-    _i5.BuildContext? context,
+    _i6.BuildContext? context,
     Function? changeIndex,
+    Function? clearNavigatorKeys,
   ) =>
       super.noSuchMethod(
         Invocation.method(
@@ -134,39 +138,42 @@ class MockNotificationService extends _i1.Mock
           [
             context,
             changeIndex,
+            clearNavigatorKeys,
           ],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  _i6.Future<String> getDeviceToken() => (super.noSuchMethod(
+  _i5.Future<String> getDeviceToken() => (super.noSuchMethod(
         Invocation.method(
           #getDeviceToken,
           [],
         ),
-        returnValue: _i6.Future<String>.value(_i7.dummyValue<String>(
+        returnValue: _i5.Future<String>.value(_i7.dummyValue<String>(
           this,
           Invocation.method(
             #getDeviceToken,
             [],
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i5.Future<String>);
 
   @override
-  void setupToken(_i8.WidgetRef? ref) => super.noSuchMethod(
+  _i5.Future<void> setupToken(_i8.WidgetRef? ref) => (super.noSuchMethod(
         Invocation.method(
           #setupToken,
           [ref],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i6.Future<void> setUpInteractMessage(
-    _i5.BuildContext? context,
+  _i5.Future<void> setUpInteractMessage(
+    _i6.BuildContext? context,
     Function? changeIndex,
+    Function? clearNavigatorKeys,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -174,17 +181,19 @@ class MockNotificationService extends _i1.Mock
           [
             context,
             changeIndex,
+            clearNavigatorKeys,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i6.Future<void> handleMessage(
-    _i5.BuildContext? context,
+  _i5.Future<void> handleMessage(
+    _i6.BuildContext? context,
     _i2.RemoteMessage? message,
     Function? changeIndex,
+    Function? clearNavigatorKeys,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -193,38 +202,39 @@ class MockNotificationService extends _i1.Mock
             context,
             message,
             changeIndex,
+            clearNavigatorKeys,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i6.Future<dynamic> forgroundMessage() => (super.noSuchMethod(
+  _i5.Future<dynamic> forgroundMessage() => (super.noSuchMethod(
         Invocation.method(
           #forgroundMessage,
           [],
         ),
-        returnValue: _i6.Future<dynamic>.value(),
-      ) as _i6.Future<dynamic>);
+        returnValue: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
 
   @override
-  _i6.Future<String> getAccessToken() => (super.noSuchMethod(
+  _i5.Future<String> getAccessToken() => (super.noSuchMethod(
         Invocation.method(
           #getAccessToken,
           [],
         ),
-        returnValue: _i6.Future<String>.value(_i7.dummyValue<String>(
+        returnValue: _i5.Future<String>.value(_i7.dummyValue<String>(
           this,
           Invocation.method(
             #getAccessToken,
             [],
           ),
         )),
-      ) as _i6.Future<String>);
+      ) as _i5.Future<String>);
 
   @override
-  _i6.Future<void> sendNotificationOnPrivateChat(
+  _i5.Future<void> sendNotificationOnPrivateChat(
     _i9.PrivateChat? privateChat,
     _i10.Message? chatMessage,
   ) =>
@@ -236,12 +246,12 @@ class MockNotificationService extends _i1.Mock
             chatMessage,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i6.Future<void> sendNotificationOnGroup(
+  _i5.Future<void> sendNotificationOnGroup(
     String? groupId,
     _i10.Message? chatMessage,
   ) =>
@@ -253,12 +263,12 @@ class MockNotificationService extends _i1.Mock
             chatMessage,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i6.Future<void> sendEventNotification(
+  _i5.Future<void> sendEventNotification(
     String? eventName,
     String? eventId,
     bool? detail,
@@ -274,7 +284,59 @@ class MockNotificationService extends _i1.Mock
             detailId,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> subscribeToTopics() => (super.noSuchMethod(
+        Invocation.method(
+          #subscribeToTopics,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> updateTopicSubscriptions(List<String>? newCategories) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateTopicSubscriptions,
+          [newCategories],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> unsubscribeAndClearTopics() => (super.noSuchMethod(
+        Invocation.method(
+          #unsubscribeAndClearTopics,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> initialize(
+    _i6.BuildContext? context,
+    _i8.WidgetRef? ref,
+    Function? changeIndex,
+    Function? clearNavigatorKeys,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #initialize,
+          [
+            context,
+            ref,
+            changeIndex,
+            clearNavigatorKeys,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }

@@ -86,31 +86,5 @@ void main() {
       expect(group.members, ['admin']);
       expect(group.requests, []);
     });
-    test('Test fromMap', () {
-      Map<String, dynamic> groupMap = {
-        'groupId': '123',
-        'groupName': 'groupName',
-        'description': 'description',
-        'groupImage': 'imagePath',
-        'categories': [
-          'category1',
-          'category2',
-        ],
-        'members': ['admin'],
-        'requests': [],
-        'isPublic': true,
-        'admin': 'admin',
-      };
-      Group group = Group.fromMap(groupMap);
-      expect(group.id, '123');
-      expect(group.name, 'groupName');
-      expect(group.admin, 'admin');
-      expect(group.description, 'description');
-      expect(group.imagePath, 'imagePath');
-      expect(group.categories, ['category1', 'category2']);
-      expect(group.members, ['admin']);
-      expect(group.requests, []);
-      expect(group.isPublic, true);
-    });
   });
 }

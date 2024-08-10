@@ -164,6 +164,7 @@ void main() {
         'isPublic': true,
         'requests': ['request1', 'request2'],
         'token': 'token',
+        'isSignedInWithGoogle': false,
       });
 
       when(mockDatabaseService.searchByUsernameStream(usernameTest))

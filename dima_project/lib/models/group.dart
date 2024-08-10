@@ -75,18 +75,4 @@ class Group {
           .cast<String>(),
     );
   }
-
-  static Group fromMap(Map<String, dynamic> map) {
-    return Group(
-      name: map['groupName'],
-      id: map['groupId'],
-      admin: map['admin'],
-      imagePath: map['groupImage'],
-      description: map['description'],
-      categories: List<String>.from(map['categories']),
-      members: List<String>.from(map['members']),
-      isPublic: map['isPublic'],
-      requests: List<String>.from(map['requests']),
-    );
-  }
 }

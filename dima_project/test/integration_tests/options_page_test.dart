@@ -13,17 +13,17 @@ import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_auth_service.mocks.dart';
 import '../mocks/mock_database_service.mocks.dart';
-import '../mocks/mock_shared_preferences_helper.mocks.dart';
+import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
   late final MockDatabaseService mockDatabaseService;
   late final MockAuthService mockAuthService;
-  late final MockSharedPreferencesHelper mockSharedPreferencesHelper;
+  late final MockNotificationService mockNotificationService;
 
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockAuthService = MockAuthService();
-    mockSharedPreferencesHelper = MockSharedPreferencesHelper();
+    mockNotificationService = MockNotificationService();
   });
   group("OptionsPage Tests", () {
     testWidgets('OptionsPage renders correctly and navigator works',
@@ -107,6 +107,7 @@ void main() {
             home: CupertinoPageScaffold(
               child: OptionsPage(
                 authService: mockAuthService,
+                notificationService: mockNotificationService,
               ),
             ),
           ),
@@ -168,7 +169,7 @@ void main() {
       when(mockDatabaseService.updateToken(any))
           .thenAnswer((_) => Future.value());
       when(mockAuthService.signOut()).thenAnswer((_) => Future.value());
-      when(mockSharedPreferencesHelper.clearNotification())
+      when(mockNotificationService.unsubscribeAndClearTopics())
           .thenAnswer((_) => Future.value());
       await tester.pumpWidget(
         ProviderScope(
@@ -181,6 +182,7 @@ void main() {
                   surname: "test_surname",
                   username: "test_username",
                   isPublic: false,
+                  isSignedInWithGoogle: false,
                   imagePath: "",
                   uid: "testUid")),
             ),
@@ -194,7 +196,7 @@ void main() {
                     builder: (BuildContext context, GoRouterState state) {
                       return OptionsPage(
                         authService: mockAuthService,
-                        sharedPreferencesHelper: mockSharedPreferencesHelper,
+                        notificationService: mockNotificationService,
                       );
                     }),
                 GoRoute(
@@ -221,9 +223,24 @@ void main() {
       when(mockDatabaseService.updateToken(any))
           .thenAnswer((_) => Future.value());
       when(mockAuthService.deleteUser()).thenAnswer((_) => Future.value());
-      when(mockSharedPreferencesHelper.clearNotification())
+      when(mockAuthService.reauthenticateUserWithGoogle())
+          .thenAnswer((_) => Future.value(true));
+      when(mockNotificationService.unsubscribeAndClearTopics())
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.updateToken(''))
           .thenAnswer((_) => Future.value());
       when(mockDatabaseService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserData(any)).thenAnswer((_) => Future.value(
+          UserData(
+              categories: [],
+              email: "test_email",
+              name: "test_name",
+              surname: "test_surname",
+              username: "test_username",
+              isPublic: false,
+              isSignedInWithGoogle: true,
+              imagePath: "",
+              uid: "testUid")));
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -235,6 +252,7 @@ void main() {
                   surname: "test_surname",
                   username: "test_username",
                   isPublic: false,
+                  isSignedInWithGoogle: true,
                   imagePath: "",
                   uid: "testUid")),
             ),
@@ -248,6 +266,7 @@ void main() {
                     builder: (BuildContext context, GoRouterState state) {
                       return OptionsPage(
                         authService: mockAuthService,
+                        notificationService: mockNotificationService,
                       );
                     }),
                 GoRoute(

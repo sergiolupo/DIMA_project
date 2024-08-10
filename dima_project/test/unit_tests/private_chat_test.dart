@@ -38,8 +38,8 @@ void main() {
     });
     test("Test fromMap", () {
       PrivateChat privateChat = PrivateChat.fromMap({
-        'members': ['member1', 'member2'],
-        'id': '123',
+        'private_chat_members': "[member1, member2]",
+        'private_chat_id': '123',
       });
       expect(privateChat.members, ['member1', 'member2']);
       expect(privateChat.id, '123');

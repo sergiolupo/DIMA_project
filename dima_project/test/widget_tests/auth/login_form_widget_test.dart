@@ -17,6 +17,7 @@ import 'package:dima_project/services/auth_service.dart';
 import '../../mocks/mock_auth_service.mocks.dart';
 import '../../mocks/mock_database_service.mocks.dart';
 import '../../mocks/mock_news_service.mocks.dart';
+import '../../mocks/mock_notification_service.mocks.dart';
 
 class MockUser extends Mock implements User {
   @override
@@ -31,11 +32,16 @@ void main() {
   late TextEditingController passwordController;
   late AuthService mockAuthService;
   late MockDatabaseService mockDatabaseService;
+  late MockNotificationService mockNotificationService;
+  setUpAll(() {
+    mockAuthService = MockAuthService();
+    mockDatabaseService = MockDatabaseService();
+    mockNotificationService = MockNotificationService();
+  });
+
   setUp(() {
     usernameController = TextEditingController();
     passwordController = TextEditingController();
-    mockAuthService = MockAuthService();
-    mockDatabaseService = MockDatabaseService();
   });
 
   tearDown(() {
@@ -150,6 +156,8 @@ void main() {
             (_) async => Future.delayed(const Duration(milliseconds: 1)));
     when(mockNewsService.getNews()).thenAnswer((_) => Future.value());
     when(mockNewsService.getSliders()).thenAnswer((_) => Future.value());
+    when(mockNotificationService.initialize(any, any, any, any))
+        .thenAnswer((_) async => Future.value());
     when(mockNewsService.news).thenReturn([
       ArticleModel(
           title: 'title1',
@@ -283,6 +291,7 @@ void main() {
                     return HomePage(
                       index: 0,
                       newsService: mockNewsService,
+                      notificationService: mockNotificationService,
                     );
                   }),
             ],

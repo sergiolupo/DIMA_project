@@ -20,8 +20,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class HomePage extends ConsumerStatefulWidget {
   final int? index;
   final NewsService newsService;
-
-  const HomePage({super.key, this.index, required this.newsService});
+  final NotificationService notificationService;
+  const HomePage(
+      {super.key,
+      this.index,
+      required this.newsService,
+      required this.notificationService});
 
   @override
   HomePageState createState() => HomePageState();
@@ -70,9 +74,7 @@ class HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     databaseService = ref.read(databaseServiceProvider);
-    notificationServices = NotificationService(
-      databaseService: databaseService,
-    );
+    notificationServices = widget.notificationService;
     notificationServices.initialize(
         context, ref, changeIndex, clearNavigatorKeys);
 

@@ -104,4 +104,29 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<bool> reauthenticateUser(
+    String? email,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #reauthenticateUser,
+          [
+            email,
+            password,
+          ],
+        ),
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
+
+  @override
+  _i3.Future<bool> reauthenticateUserWithGoogle() => (super.noSuchMethod(
+        Invocation.method(
+          #reauthenticateUserWithGoogle,
+          [],
+        ),
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
 }

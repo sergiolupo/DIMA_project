@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import '../mocks/mock_auth_service.mocks.dart';
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_news_service.mocks.dart';
+import '../mocks/mock_notification_service.mocks.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {
   @override
@@ -27,10 +28,12 @@ void main() {
   late final MockDatabaseService mockDatabaseService;
   late final MockAuthService mockAuthService;
   late final MockNewsService mockNewsService;
+  late final MockNotificationService mockNotificationService;
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockAuthService = MockAuthService();
     mockNewsService = MockNewsService();
+    mockNotificationService = MockNotificationService();
   });
 
   group("Login Page Tests ", () {
@@ -88,6 +91,8 @@ void main() {
               (_) async => Future.delayed(const Duration(milliseconds: 1)));
       when(mockNewsService.getNews()).thenAnswer((_) => Future.value());
       when(mockNewsService.getSliders()).thenAnswer((_) => Future.value());
+      when(mockNotificationService.initialize(any, any, any, any))
+          .thenAnswer((_) async => Future.value());
       when(mockNewsService.news).thenReturn([
         ArticleModel(
             title: 'title1',
@@ -221,6 +226,7 @@ void main() {
                       return HomePage(
                         index: 0,
                         newsService: mockNewsService,
+                        notificationService: mockNotificationService,
                       );
                     }),
               ],

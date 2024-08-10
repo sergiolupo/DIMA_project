@@ -13,8 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
+  final NotificationService notificationService;
   const SettingsPage({
     super.key,
+    required this.notificationService,
   });
 
   @override
@@ -280,7 +282,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _oldIsPublic != isPublic,
     );
 
-    await NotificationService(databaseService: databaseService)
+    await widget.notificationService
         .updateTopicSubscriptions(selectedCategories);
     debugPrint('User data updated');
     ref.invalidate(userProvider(AuthService.uid));

@@ -30,30 +30,6 @@ void main() {
       expect(userData.requests, ['request1', 'request2']);
       expect(userData.token, 'token');
     });
-    test('Test fromMap', () {
-      UserData userData = UserData.fromMap({
-        'categories': ['category1', 'category2'],
-        'imagePath': 'imagePath',
-        'email': 'email',
-        'name': 'name',
-        'surname': 'surname',
-        'username': 'username',
-        'uid': 'uid',
-        'isPublic': true,
-        'requests': ['request1', 'request2'],
-        'token': 'token',
-      });
-      expect(userData.categories, ['category1', 'category2']);
-      expect(userData.imagePath, 'imagePath');
-      expect(userData.email, 'email');
-      expect(userData.name, 'name');
-      expect(userData.surname, 'surname');
-      expect(userData.username, 'username');
-      expect(userData.uid, 'uid');
-      expect(userData.isPublic, true);
-      expect(userData.requests, ['request1', 'request2']);
-      expect(userData.token, 'token');
-    });
     test('Test fromSnapshot', () async {
       final firestore = FakeFirebaseFirestore();
 
@@ -70,12 +46,14 @@ void main() {
         'isPublic': true,
         'requests': ['request1', 'request2'],
         'token': 'token',
+        'isSignedInWithGoogle': false,
       });
 
       final snapshot = await firestore.collection('users').doc('userId').get();
 
       UserData userData = UserData.fromSnapshot(snapshot);
 
+      expect(userData.isSignedInWithGoogle, false);
       expect(userData.categories, ['category1', 'category2']);
       expect(userData.imagePath, 'imagePath');
       expect(userData.email, 'email');

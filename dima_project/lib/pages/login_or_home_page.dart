@@ -3,6 +3,7 @@ import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -35,6 +36,9 @@ class LoginOrHomePageState extends State<LoginOrHomePage> {
           return HomePage(
             index: 0,
             newsService: NewsService(),
+            notificationService: NotificationService(
+              databaseService: DatabaseService(),
+            ),
           );
         } else {
           return LoginPage(

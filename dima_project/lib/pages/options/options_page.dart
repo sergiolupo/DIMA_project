@@ -12,9 +12,11 @@ import 'package:go_router/go_router.dart';
 
 class OptionsPage extends ConsumerStatefulWidget {
   final AuthService authService;
+  final NotificationService notificationService;
   const OptionsPage({
     super.key,
     required this.authService,
+    required this.notificationService,
   });
   @override
   OptionsPageState createState() => OptionsPageState();
@@ -64,9 +66,11 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 OptionTile(
                   leading: const Icon(CupertinoIcons.settings),
                   title: const Text('Settings'),
-                  onTap: () => Navigator.of(context, rootNavigator: true).push(
-                      CupertinoPageRoute(
-                          builder: (context) => const SettingsPage())),
+                  onTap: () => Navigator.of(context, rootNavigator: true)
+                      .push(CupertinoPageRoute(
+                          builder: (context) => SettingsPage(
+                                notificationService: widget.notificationService,
+                              ))),
                 ),
                 OptionTile(
                   leading: const Icon(CupertinoIcons.trash),
@@ -99,8 +103,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
       },
     );
     await databaseService.updateToken('');
-    await NotificationService(databaseService: databaseService)
-        .unsubscribeAndClearTopics();
+    await widget.notificationService.unsubscribeAndClearTopics();
     await widget.authService.signOut();
     ref.invalidate(userProvider);
     ref.invalidate(followerProvider);
@@ -164,8 +167,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                     if (isReauthenticated) {
                       await databaseService.updateToken('');
                       await databaseService.deleteUser();
-                      await NotificationService(
-                              databaseService: databaseService)
+                      await widget.notificationService
                           .unsubscribeAndClearTopics();
                       ref.invalidate(userProvider);
                       ref.invalidate(followerProvider);
