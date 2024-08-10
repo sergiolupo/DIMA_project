@@ -26,7 +26,7 @@ void main() {
         title: 'title1',
         description: 'description1',
         url: 'url1',
-        urlToImage: 'https://example.com/news.png'),
+        urlToImage: ''),
     ArticleModel(
         title: 'title2',
         description: 'description2',
@@ -84,12 +84,12 @@ void main() {
         (WidgetTester tester) async {
       when(mockNewsService.getNews()).thenAnswer((_) => Future.value());
       when(mockNewsService.getSliders()).thenAnswer((_) => Future.value());
-      when(mockNewsService.getSearchedNews(any))
+      when(mockNewsService.getSearchedNews("title"))
           .thenAnswer((_) => Stream.value(news));
+      when(mockNewsService.getSearchedNews("no_title"))
+          .thenAnswer((_) => Stream.value([]));
       when(mockNewsService.getCategoriesNews(any))
           .thenAnswer((_) => Future.value());
-      when(mockNewsService.news).thenReturn(news);
-      when(mockNewsService.sliders).thenReturn(news.sublist(0, 6));
       when(mockNewsService.news).thenReturn(news);
       when(mockNewsService.sliders).thenReturn(news.sublist(0, 6));
       when(mockNewsService.categories).thenReturn(news);
@@ -122,10 +122,14 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.search)); // Search page
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoTextField), findsOneWidget);
-      await tester.enterText(find.byType(CupertinoTextField), "title1");
+      await tester.enterText(find.byType(CupertinoTextField), "title");
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
-      expect(find.text("title1"), findsNWidgets(2));
+      expect(find.text("title1"), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoTextField), "no_title");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No news found"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
@@ -144,6 +148,12 @@ void main() {
       await tester.tap(find.text("View All").last); // All news
       await tester.pumpAndSettle();
       expect(find.text("Trending News"), findsOneWidget);
+
+      await tester.tap(find.text("title1")); // Article view
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
     });
     testWidgets(
@@ -230,10 +240,391 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
+      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsOneWidget);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsNothing);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), "no_groups");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No groups found"), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), "");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
       await tester.tap(find.text("Followers"));
       await tester.pumpAndSettle();
       await tester.tap(find.text("username"));
       await tester.pumpAndSettle();
+      await tester.enterText(find.byType(CupertinoSearchTextField), "no_user");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No followers found"), findsOneWidget);
+      await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
+      await tester.pumpAndSettle();
+    });
+    testWidgets("News page renders correctly on tablet",
+        (WidgetTester tester) async {
+      when(mockNewsService.getNews()).thenAnswer((_) => Future.value());
+      when(mockNewsService.getSliders()).thenAnswer((_) => Future.value());
+      when(mockNewsService.getSearchedNews(any))
+          .thenAnswer((_) => Stream.value(news));
+      when(mockNewsService.getCategoriesNews(any))
+          .thenAnswer((_) => Future.value());
+      when(mockNewsService.news).thenReturn(news);
+      when(mockNewsService.sliders).thenReturn(news.sublist(0, 6));
+      when(mockNewsService.categories).thenReturn(news);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: MediaQuery(
+            data: const MediaQueryData(size: Size(768, 1024)),
+            child: CupertinoApp(
+              home: NewsPage(
+                newsService: mockNewsService,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("Trending News"), findsOneWidget);
+      expect(find.text("Breaking News"), findsOneWidget);
+
+      await tester.tap(find.text('title1').first); // Article view
+
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+      await tester.drag(
+          find.byType(SingleChildScrollView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(find.text('title7'), findsOneWidget);
+    });
+    testWidgets("Search page renders correcly on dark Mode",
+        (WidgetTester tester) async {
+      when(mockNewsService.getNews()).thenAnswer((_) => Future.value());
+      when(mockNewsService.getSliders()).thenAnswer((_) => Future.value());
+      when(mockNewsService.getSearchedNews("title"))
+          .thenAnswer((_) => Stream.value(news));
+      when(mockNewsService.getSearchedNews("no_title"))
+          .thenAnswer((_) => Stream.value([]));
+      when(mockNewsService.getCategoriesNews(any))
+          .thenAnswer((_) => Future.value());
+      when(mockNewsService.news).thenReturn(news);
+      when(mockNewsService.sliders).thenReturn(news.sublist(0, 6));
+      when(mockNewsService.categories).thenReturn(news);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: MediaQuery(
+            data: const MediaQueryData(
+              platformBrightness: Brightness.dark,
+            ),
+            child: CupertinoApp(
+              home: NewsPage(
+                newsService: mockNewsService,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("Trending News"), findsOneWidget);
+      expect(find.text("Breaking News"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.search)); // Search page
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoTextField), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoTextField), "title");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("title1"), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoTextField), "no_title");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No news found"), findsOneWidget);
+    });
+    testWidgets(
+        "ShareNewsPage renders correctly with no groups and no followers",
+        (WidgetTester tester) async {
+      AuthService.setUid("test");
+      final firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('followers').doc('test').set({
+        'followers': [],
+        'following': [],
+      });
+
+      final follower =
+          await firestore.collection('followers').doc('test').get();
+
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
+        (_) => Future.value(follower),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp(
+            home: ArticleView(
+              blogUrl: 'https://example.com',
+              description: 'Test Description',
+              imageUrl: 'https://example.com/image.png',
+              title: 'Test Title',
+              databaseService: mockDatabaseService,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.share));
+      await tester.pumpAndSettle();
+      expect(find.text("Send To"), findsOneWidget);
+      expect(find.text("Groups"), findsOneWidget);
+      expect(find.text("Followers"), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text("No groups"), findsOneWidget);
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      expect(find.text("No followers"), findsOneWidget);
+    });
+    testWidgets(
+        "ShareNewsPage renders correctly with no groups and no followers with dark mode",
+        (WidgetTester tester) async {
+      AuthService.setUid("test");
+      final firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('followers').doc('test').set({
+        'followers': [],
+        'following': [],
+      });
+
+      final follower =
+          await firestore.collection('followers').doc('test').get();
+
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
+        (_) => Future.value(follower),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: MediaQuery(
+            data: const MediaQueryData(
+              platformBrightness: Brightness.dark,
+            ),
+            child: CupertinoApp(
+              home: ArticleView(
+                blogUrl: 'https://example.com',
+                description: 'Test Description',
+                imageUrl: 'https://example.com/image.png',
+                title: 'Test Title',
+                databaseService: mockDatabaseService,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.share));
+      await tester.pumpAndSettle();
+      expect(find.text("Send To"), findsOneWidget);
+      expect(find.text("Groups"), findsOneWidget);
+      expect(find.text("Followers"), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text("No groups"), findsOneWidget);
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      expect(find.text("No followers"), findsOneWidget);
+    });
+    testWidgets(
+        "ArticleView and ShareNewsPage display correctly and navigations work with dark mode",
+        (WidgetTester tester) async {
+      AuthService.setUid("test");
+      final firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('followers').doc('test').set({
+        'followers': ['user'],
+        'following': ['user'],
+      });
+
+      final follower =
+          await firestore.collection('followers').doc('test').get();
+
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([
+          Group(
+              name: "name",
+              id: "id",
+              isPublic: true,
+              members: ["test", "user"],
+              imagePath: "",
+              description: "description",
+              admin: "test"),
+        ]),
+      );
+      when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
+        (_) => Future.value(follower),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserData(any)).thenAnswer(
+        (_) => Future.value(UserData(
+            uid: 'user',
+            email: 'mail',
+            username: 'username',
+            imagePath: '',
+            categories: [CategoryUtil.categories.first],
+            name: 'name',
+            surname: 'surname')),
+      );
+      when(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: [CategoryUtil.categories.first],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: MediaQuery(
+            data: const MediaQueryData(
+              platformBrightness: Brightness.dark,
+            ),
+            child: CupertinoApp(
+              home: ArticleView(
+                blogUrl: 'https://example.com',
+                description: 'Test Description',
+                imageUrl: 'https://example.com/image.png',
+                title: 'Test Title',
+                databaseService: mockDatabaseService,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(WebView), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.share));
+      await tester.pumpAndSettle();
+      expect(find.text("Send To"), findsOneWidget);
+      expect(find.text("Groups"), findsOneWidget);
+      expect(find.text("Followers"), findsOneWidget);
+      expect(find.text("name"), findsOneWidget);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsOneWidget);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsNothing);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), "no_groups");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No groups found"), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), "");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("username"));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(CupertinoSearchTextField), "no_user");
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text("No followers found"), findsOneWidget);
       await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
       await tester.pumpAndSettle();
     });

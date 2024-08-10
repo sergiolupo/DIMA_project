@@ -158,7 +158,7 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                   MediaQuery.of(context).platformBrightness == Brightness.dark
                       ? Image.asset('assets/darkMode/no_followers_found.png')
                       : Image.asset('assets/images/no_followers_found.png'),
-                  const Text("No followers"),
+                  const Text("No followers found"),
                 ],
               ),
             );

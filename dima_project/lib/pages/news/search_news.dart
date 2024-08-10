@@ -75,7 +75,7 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                                     )
                                   : Image.asset(
                                       'assets/images/no_news_found.png'),
-                              const Text("No results found",
+                              const Text("No news found",
                                   style: TextStyle(
                                     color: CupertinoColors.systemGrey,
                                     fontSize: 20,
