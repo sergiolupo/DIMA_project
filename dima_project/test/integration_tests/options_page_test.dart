@@ -122,19 +122,28 @@ void main() {
       expect(find.text('Requests'), findsOneWidget); //Request page
       await tester.tap(find.byIcon(CupertinoIcons.person)); //Follow requests
       await tester.pumpAndSettle();
+      expect(find.text('Follow Requests'), findsOneWidget);
+      expect(find.byType(CupertinoListTile), findsNWidgets(2));
       await tester.tap(find.text("Accept").first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Deny").first);
+      expect(find.byType(CupertinoListTile), findsOneWidget);
+      await tester.tap(find.text("Deny"));
       await tester.pumpAndSettle();
+      expect(find.byType(CupertinoListTile), findsNothing);
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
       await tester.tap(
           find.byIcon(CupertinoIcons.person_2_square_stack)); //Group requests
       await tester.pumpAndSettle();
+      expect(find.text('Group Requests'), findsOneWidget);
+      expect(find.byType(CupertinoListTile), findsNWidgets(2));
       await tester.tap(find.text("Accept").first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Deny").first);
+      expect(find.byType(CupertinoListTile), findsOneWidget);
+      await tester.tap(find.text("Deny"));
       await tester.pumpAndSettle();
+      expect(find.byType(CupertinoListTile), findsNothing);
+
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
 
@@ -229,7 +238,184 @@ void main() {
       verify(mockAuthService.signOut()).called(1);
       expect(find.text("Login"), findsOneWidget);
     });
-    testWidgets("Test delete account with Google", (WidgetTester tester) async {
+    testWidgets("Verifies account deletion when signed in with email",
+        (WidgetTester tester) async {
+      AuthService.setUid('test-uid');
+      when(mockDatabaseService.updateToken(any))
+          .thenAnswer((_) => Future.value());
+      when(mockAuthService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockAuthService.reauthenticateUser(
+              'test_email@mail.com', 'test_password'))
+          .thenAnswer((_) => Future.value(true));
+      when(mockAuthService.reauthenticateUser(
+              'wrong_email@mail.com', 'wrong_password'))
+          .thenAnswer((_) => Future.value(false));
+      when(mockNotificationService.unsubscribeAndClearTopics())
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.updateToken(''))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserData(any)).thenAnswer((_) => Future.value(
+          UserData(
+              categories: [],
+              email: "test_email",
+              name: "test_name",
+              surname: "test_surname",
+              username: "test_username",
+              isPublic: false,
+              isSignedInWithGoogle: false,
+              imagePath: "",
+              uid: "testUid")));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  categories: [],
+                  email: "test_email",
+                  name: "test_name",
+                  surname: "test_surname",
+                  username: "test_username",
+                  isPublic: false,
+                  isSignedInWithGoogle: false,
+                  imagePath: "",
+                  uid: "testUid")),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                    path: '/',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return OptionsPage(
+                        authService: mockAuthService,
+                        notificationService: mockNotificationService,
+                      );
+                    }),
+                GoRoute(
+                    path: '/login',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return LoginPage(
+                        databaseService: mockDatabaseService,
+                        authService: mockAuthService,
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      expect(find.text("Confirm Account Deletion"), findsOneWidget);
+      await tester.enterText(
+          find.byType(CupertinoTextField).first, 'wrong_email@mail.com');
+      await tester.enterText(
+          find.byType(CupertinoTextField).last, 'wrong_password');
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("The email or password you entered is incorrect"),
+          findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoTextField).first, 'test_email@mail.com');
+      await tester.enterText(
+          find.byType(CupertinoTextField).last, 'test_password');
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      verify(mockAuthService.deleteUser()).called(1);
+      verify(mockDatabaseService.deleteUser()).called(1);
+      expect(find.text("Login"), findsOneWidget);
+    });
+    testWidgets(
+        "Verifies invalid account deletion attempt when signed in with Google",
+        (WidgetTester tester) async {
+      AuthService.setUid('test-uid');
+      when(mockDatabaseService.updateToken(any))
+          .thenAnswer((_) => Future.value());
+      when(mockAuthService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockAuthService.reauthenticateUserWithGoogle())
+          .thenAnswer((_) => Future.value(false));
+      when(mockNotificationService.unsubscribeAndClearTopics())
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.updateToken(''))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.deleteUser()).thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserData(any)).thenAnswer((_) => Future.value(
+          UserData(
+              categories: [],
+              email: "test_email",
+              name: "test_name",
+              surname: "test_surname",
+              username: "test_username",
+              isPublic: false,
+              isSignedInWithGoogle: true,
+              imagePath: "",
+              uid: "testUid")));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  categories: [],
+                  email: "test_email",
+                  name: "test_name",
+                  surname: "test_surname",
+                  username: "test_username",
+                  isPublic: false,
+                  isSignedInWithGoogle: true,
+                  imagePath: "",
+                  uid: "testUid")),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                    path: '/',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return OptionsPage(
+                        authService: mockAuthService,
+                        notificationService: mockNotificationService,
+                      );
+                    }),
+                GoRoute(
+                    path: '/login',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return LoginPage(
+                        databaseService: mockDatabaseService,
+                        authService: mockAuthService,
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text("Delete Account"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Delete Account"), findsNWidgets(2));
+      expect(find.text("Are you sure you want to delete your account?"),
+          findsOneWidget);
+
+      await tester.tap(find.text("Yes"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Failed to reauthenticate with Google account"),
+          findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+      verifyNever(mockAuthService.deleteUser());
+      verifyNever(mockDatabaseService.deleteUser());
+    });
+    testWidgets("Verifies account deletion when signed in with Google",
+        (WidgetTester tester) async {
       AuthService.setUid('test-uid');
       when(mockDatabaseService.updateToken(any))
           .thenAnswer((_) => Future.value());
@@ -308,6 +494,97 @@ void main() {
       verify(mockAuthService.deleteUser()).called(1);
       verify(mockDatabaseService.deleteUser()).called(1);
       expect(find.text("Login"), findsOneWidget);
+    });
+    testWidgets(
+        "Accept follow request of a deleted user and accept group request of a deleted group",
+        (WidgetTester tester) async {
+      AuthService.setUid('testUid');
+      when(mockDatabaseService.acceptUserRequest(any)).thenAnswer((_) async {
+        throw Exception("User not found");
+      });
+      when(mockDatabaseService.acceptUserGroupRequest(any))
+          .thenAnswer((_) async {
+        throw Exception("Group not found");
+      });
+
+      when(mockDatabaseService.getFollowRequests('testUid'))
+          .thenAnswer((_) async => [
+                UserData(
+                    categories: [],
+                    email: "email",
+                    name: "name",
+                    surname: "surname",
+                    username: "username",
+                    imagePath: "",
+                    isPublic: false,
+                    uid: "uid"),
+              ]);
+      when(mockDatabaseService.getUserGroupRequests('testUid'))
+          .thenAnswer((_) async => [
+                Group(
+                    name: "name",
+                    description: "description",
+                    members: ["owner"],
+                    admin: "owner",
+                    id: "id",
+                    categories: [],
+                    imagePath: '',
+                    isPublic: false),
+              ]);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  categories: [],
+                  email: "test_email",
+                  name: "test_name",
+                  surname: "test_surname",
+                  username: "test_username",
+                  isPublic: false,
+                  imagePath: "",
+                  uid: "testUid")),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp(
+            home: CupertinoPageScaffold(
+              child: OptionsPage(
+                authService: mockAuthService,
+                notificationService: mockNotificationService,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Options'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.bell));
+      await tester.pumpAndSettle();
+      expect(find.text('Requests'), findsOneWidget); //Request page
+      await tester.tap(find.byIcon(CupertinoIcons.person)); //Follow requests
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Accept"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("User deleted his account"), findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      await tester.tap(
+          find.byIcon(CupertinoIcons.person_2_square_stack)); //Group requests
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Accept"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Group has been deleted"), findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Requests'), findsOneWidget);
     });
   });
 }

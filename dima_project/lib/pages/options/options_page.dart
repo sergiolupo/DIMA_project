@@ -194,7 +194,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                                 'Failed to reauthenticate with Google account'),
                             actions: <CupertinoDialogAction>[
                               CupertinoDialogAction(
-                                child: const Text('OK'),
+                                child: const Text('Ok'),
                                 onPressed: () {
                                   Navigator.of(newContext).pop();
                                 },
@@ -218,6 +218,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
         CupertinoPageRoute(
           builder: (context) => DeleteAccountPage(
             authService: widget.authService,
+            notificationService: widget.notificationService,
           ),
         ),
       );

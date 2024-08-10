@@ -9,9 +9,11 @@ import 'package:go_router/go_router.dart';
 
 class DeleteAccountPage extends ConsumerStatefulWidget {
   final AuthService authService;
+  final NotificationService notificationService;
   const DeleteAccountPage({
     super.key,
     required this.authService,
+    required this.notificationService,
   });
   @override
   DeleteAccountPageState createState() => DeleteAccountPageState();
@@ -83,7 +85,7 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                     );
                     await databaseService.updateToken('');
                     await databaseService.deleteUser();
-                    await NotificationService(databaseService: databaseService)
+                    await widget.notificationService
                         .unsubscribeAndClearTopics();
                     ref.invalidate(userProvider);
                     ref.invalidate(followerProvider);
@@ -108,7 +110,7 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                               'The email or password you entered is incorrect'),
                           actions: <CupertinoDialogAction>[
                             CupertinoDialogAction(
-                              child: const Text('OK'),
+                              child: const Text('Ok'),
                               onPressed: () {
                                 if (!context.mounted) return;
                                 setState(() {

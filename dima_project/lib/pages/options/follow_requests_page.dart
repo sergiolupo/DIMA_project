@@ -27,7 +27,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Requests'),
+        middle: const Text('Follow Requests'),
         leading: CupertinoButton(
           onPressed: () => Navigator.of(context).pop(),
           padding: const EdgeInsets.only(left: 10),
