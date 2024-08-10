@@ -1,14 +1,13 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dima_project/models/message.dart';
@@ -16,9 +15,21 @@ import 'package:dima_project/models/message.dart';
 import '../mocks/mock_database_service.mocks.dart';
 
 void main() {
-  final PrivateChat fakePrivateChat = PrivateChat(
-    id: '123',
+  final PrivateChat fakePrivateChat1 = PrivateChat(
+    id: '321',
     members: ['user1', 'user2'],
+    lastMessage: LastMessage(
+      recentMessage: 'Hello',
+      recentMessageSender: 'user1',
+      recentMessageTimestamp: Timestamp.fromDate(DateTime.now()),
+      recentMessageType: Type.text,
+      sentByMe: true,
+      unreadMessages: 0,
+    ),
+  );
+  final PrivateChat fakePrivateChat2 = PrivateChat(
+    id: '432',
+    members: ['user1', 'user3'],
     lastMessage: LastMessage(
       recentMessage: 'Hello',
       recentMessageSender: 'user1',
@@ -101,7 +112,8 @@ void main() {
       expect(find.text('No chats yet'), findsOneWidget);
       expect(find.text('Create a chat to start chatting'), findsOneWidget);
     });
-    testWidgets('Displays chat messages on ChatPage for mobile',
+    testWidgets(
+        'Chat page displays chats and groups for mobile and navigation works',
         (WidgetTester tester) async {
       AuthService.setUid('user1');
       final firestore = FakeFirebaseFirestore();
@@ -141,34 +153,53 @@ void main() {
           await firestore.collection('users').doc('user2').get();
       DocumentSnapshot documentSnapshot1 =
           await firestore.collection('users').doc('user1').get();
-      when(mockDatabaseService.getPrivateChatsStream())
-          .thenAnswer((_) => Stream.value([fakePrivateChat]));
+      when(mockDatabaseService.getPrivateChatsStream()).thenAnswer(
+          (_) => Stream.value([fakePrivateChat1, fakePrivateChat2]));
       when(mockDatabaseService.getGroupsStream())
           .thenAnswer((_) => Stream.value([fakeGroup1, fakeGroup2]));
       when(mockDatabaseService.getUserDataFromUID('user2'))
           .thenAnswer((_) => Stream.value(documentSnapshot2));
+      when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
+        return Stream.error('User not found');
+      });
       when(mockDatabaseService.getUserDataFromUID('user1'))
           .thenAnswer((_) => Stream.value(documentSnapshot1));
 
       await tester.pumpWidget(
-        CupertinoApp(
-          home: ChatPage(
-            databaseService: mockDatabaseService,
+        ProviderScope(
+          overrides: [
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+          ],
+          child: CupertinoApp(
+            home: ChatPage(
+              databaseService: mockDatabaseService,
+            ),
           ),
         ),
       );
       await tester.pumpAndSettle();
-
-      expect(find.text('Group1'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.add_circled_solid));
+      await tester.pumpAndSettle();
+      expect(find.text('Create'), findsOneWidget); // Create group page
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsOneWidget); // Chat page
       expect(find.text('Group2'), findsOneWidget);
       expect(find.text('You: '), findsOneWidget);
       expect(find.text('Hello'), findsOneWidget);
       expect(find.text('Join the conversation!'), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'AAA');
+      await tester.pumpAndSettle();
+      expect(find.text('No groups found'), findsOneWidget);
       await tester.tap(find.text('Private'));
       await tester.pumpAndSettle();
+      expect(find.text('No private chats found'), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), '');
+      await tester.pumpAndSettle();
       expect(find.text('username2'), findsOneWidget);
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsOneWidget);
+      expect(find.text('Deleted Account'), findsOneWidget);
+      expect(find.text('You: '), findsNWidgets(2));
+      expect(find.text('Hello'), findsNWidgets(2));
     });
   });
 }

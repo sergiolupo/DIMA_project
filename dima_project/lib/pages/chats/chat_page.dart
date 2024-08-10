@@ -135,7 +135,7 @@ class ChatPageState extends State<ChatPage> {
                                   'assets/darkMode/no_groups_chat_found.png')
                               : Image.asset(
                                   'assets/images/no_groups_chat_found.png'),
-                          const Text('No groups'),
+                          const Text('No groups found'),
                         ],
                       ));
                     }
@@ -186,7 +186,7 @@ class ChatPageState extends State<ChatPage> {
               ),
             );
           } else {
-            return Container(); // Return an empty container or handle other cases as needed
+            return Container();
           }
         },
       ),
@@ -284,7 +284,7 @@ class ChatPageState extends State<ChatPage> {
                                         'assets/darkMode/no_chat_found.png')
                                     : Image.asset(
                                         'assets/images/no_chat_found.png'),
-                                const Text('No private chats'),
+                                const Text('No private chats found'),
                               ],
                             ));
                           }
@@ -297,6 +297,26 @@ class ChatPageState extends State<ChatPage> {
                         );
                       } else {
                         if (snapshot.hasError) {
+                          if (!("Deleted Account")
+                              .toLowerCase()
+                              .contains(searchedText.toLowerCase())) {
+                            i += 1;
+                            if (i == data.length) {
+                              return Center(
+                                  child: Column(
+                                children: [
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_chat_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_chat_found.png'),
+                                  const Text('No private chats found'),
+                                ],
+                              ));
+                            }
+                            return const SizedBox.shrink();
+                          }
                           return PrivateChatTile(
                             privateChat: privateChat,
                             other: UserData(
@@ -330,7 +350,7 @@ class ChatPageState extends State<ChatPage> {
               ),
             );
           } else {
-            return Container(); // Return an empty container or handle other cases as needed
+            return Container();
           }
         },
       ),
