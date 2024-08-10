@@ -33,7 +33,7 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
         transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         middle: Text(
-          'Delete Account',
+          'Confirm Account Deletion',
           style: TextStyle(
             color: CupertinoTheme.of(context).primaryColor,
             fontSize: 18,
@@ -62,8 +62,10 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                   fontSize: 18,
                 ),
               ),
+              const SizedBox(height: 20),
               EmailInputField(_emailController),
               PasswordInputField(_passwordController),
+              const SizedBox(height: 10),
               CupertinoButton(
                 onPressed: () async {
                   if (!_formKey.currentState!.validate()) {
@@ -71,6 +73,17 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                   }
 
                   if (await checkReauthentication()) {
+                    BuildContext context1 = context;
+                    if (!context.mounted) return;
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (BuildContext newBuildContext) {
+                        context1 = newBuildContext;
+                        return const CupertinoAlertDialog(
+                          content: CupertinoActivityIndicator(),
+                        );
+                      },
+                    );
                     await databaseService.updateToken('');
                     await widget.sharedPreferencesHelper.clearNotification();
                     await databaseService.deleteUser();
@@ -84,6 +97,8 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                     ref.invalidate(createdEventsProvider);
                     ref.invalidate(eventProvider);
                     await widget.authService.deleteUser();
+                    if (!context1.mounted) return;
+                    Navigator.of(context1).pop();
                     if (!context.mounted) return;
                     context.go('/login');
                   } else {
