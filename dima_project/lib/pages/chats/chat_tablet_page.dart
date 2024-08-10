@@ -21,11 +21,13 @@ class ChatTabletPage extends StatefulWidget {
   final Group? selectedGroup;
   final PrivateChat? selectedPrivateChat;
   final UserData? selectedUser;
+  final DatabaseService databaseService;
   const ChatTabletPage({
     super.key,
     required this.selectedGroup,
     required this.selectedPrivateChat,
     required this.selectedUser,
+    required this.databaseService,
   });
 
   @override
@@ -42,10 +44,11 @@ class ChatTabletPageState extends State<ChatTabletPage> {
   PrivateChat? selectedPrivateChat;
   int idx = 0;
   Widget page = const StartMessagingWidget();
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   @override
   void initState() {
     super.initState();
+    _databaseService = widget.databaseService;
     _privateChatsStream = _databaseService.getPrivateChatsStream();
     _groupsStream = _databaseService.getGroupsStream();
 

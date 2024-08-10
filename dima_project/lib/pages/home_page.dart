@@ -133,8 +133,11 @@ class HomePageState extends ConsumerState<HomePage> {
             break;
           case 1:
             page = ResponsiveLayout(
-              mobileLayout: const ChatPage(),
+              mobileLayout: ChatPage(
+                databaseService: databaseService,
+              ),
               tabletLayout: ChatTabletPage(
+                databaseService: databaseService,
                 selectedGroup: selectedGroup,
                 selectedPrivateChat: selectedPrivateChat,
                 selectedUser: selectedUser,

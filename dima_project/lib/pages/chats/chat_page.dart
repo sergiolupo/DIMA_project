@@ -13,24 +13,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
+  final DatabaseService databaseService;
   const ChatPage({
     super.key,
+    required this.databaseService,
   });
 
   @override
-  ListChatPageState createState() => ListChatPageState();
+  ChatPageState createState() => ChatPageState();
 }
 
-class ListChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> {
   late final Stream<List<PrivateChat>> _privateChatsStream;
   late final Stream<List<Group>> _groupsStream;
   final String uid = AuthService.uid;
   String searchedText = "";
   int idx = 0;
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   @override
   void initState() {
     super.initState();
+    _databaseService = widget.databaseService;
     _privateChatsStream = _databaseService.getPrivateChatsStream();
     _groupsStream = _databaseService.getGroupsStream();
   }
@@ -146,7 +149,7 @@ class ListChatPageState extends State<ChatPage> {
                     );
                   }
                   return StreamBuilder(
-                      stream: DatabaseService().getUserDataFromUID(
+                      stream: _databaseService.getUserDataFromUID(
                           group.lastMessage!.recentMessageSender),
                       builder: (context, snapshot) {
                         String username = "";
@@ -223,8 +226,8 @@ class ListChatPageState extends State<ChatPage> {
             const SizedBox(height: 20),
             Text(
               idx == 0
-                  ? "Create a group to start chatting "
-                  : "Start a private chat to start chatting",
+                  ? "Create a group to start chatting"
+                  : "Create a chat to start chatting",
               style: const TextStyle(
                   color: CupertinoColors.systemGrey, fontSize: 15),
             ),
