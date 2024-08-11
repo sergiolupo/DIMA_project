@@ -10,20 +10,24 @@ class TextMessageTile extends StatelessWidget {
   final String? senderUsername;
   final VoidCallback showCustomSnackbar;
   final DatabaseService databaseService;
+  final FocusNode focusNode;
   const TextMessageTile({
     required this.message,
     this.senderUsername,
     required this.showCustomSnackbar,
     required this.databaseService,
+    required this.focusNode,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () => MessageUtils.showBottomSheet(
-          context, message, databaseService,
-          showCustomSnackbar: () => showCustomSnackbar()),
+      onLongPress: () {
+        focusNode.unfocus();
+        MessageUtils.showBottomSheet(context, message, databaseService,
+            showCustomSnackbar: () => showCustomSnackbar());
+      },
       child: Stack(
         children: [
           Container(

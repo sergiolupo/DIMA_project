@@ -14,6 +14,7 @@ import 'package:shimmer/shimmer.dart';
 class EventMessageTile extends ConsumerStatefulWidget {
   final Message message;
   final String? senderUsername;
+
   const EventMessageTile({
     required this.message,
     this.senderUsername,

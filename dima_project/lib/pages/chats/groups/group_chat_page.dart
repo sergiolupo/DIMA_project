@@ -412,6 +412,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           showCustomSnackbar: () {
             showCustomSnackbar(true);
           },
+          focusNode: _focusNode,
           message: message,
           senderUsername: senderUsername,
           databaseService: _databaseService,

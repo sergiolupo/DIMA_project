@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -6,16 +8,19 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
+import '../mocks/mock_image_picker.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
@@ -128,9 +133,11 @@ void main() {
 
   late final MockDatabaseService mockDatabaseService;
   late final MockNotificationService mockNotificationService;
+  late final MockImagePicker mockImagePicker;
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockNotificationService = MockNotificationService();
+    mockImagePicker = MockImagePicker();
   });
   group('ChatPage Tests for mobile', () {
     testWidgets(
@@ -277,6 +284,7 @@ void main() {
         "CreateGroup page displays correctly and successfully creates a new group for mobile",
         (WidgetTester tester) async {
       AuthService.setUid('user1');
+
       when(mockDatabaseService.getPrivateChatsStream())
           .thenAnswer((_) => Stream.value([]));
       when(mockDatabaseService.getGroupsStream())
@@ -400,6 +408,7 @@ void main() {
       when(mockDatabaseService.getChats(any)).thenAnswer((_) {
         return Stream.value(messages);
       });
+
       await mockNetworkImagesFor(() async {
         await tester.pumpWidget(
           ProviderScope(
@@ -435,6 +444,10 @@ void main() {
       expect(find.text('Delete Message'), findsOneWidget);
       expect(find.text('Read By'), findsOneWidget);
       await tester.tap(find.text('Copy Text'));
+      await tester.pump();
+      //expect(find.byIcon(FontAwesomeIcons.download), findsOneWidget);
+      //expect(find.text('Copied to clipboard'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoTextField), 'Hello');
       await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));

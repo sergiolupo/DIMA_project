@@ -32,6 +32,7 @@ void main() {
     await tester.pumpWidget(
       CupertinoApp(
         home: TextMessageTile(
+          focusNode: FocusNode(),
           message: message,
           senderUsername: 'Sender Username',
           showCustomSnackbar: () {},

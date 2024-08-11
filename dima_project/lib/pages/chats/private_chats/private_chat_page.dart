@@ -288,6 +288,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                         ? Hero(
                             tag: message.id!,
                             child: TextMessageTile(
+                              focusNode: _focusNode,
                               message: message,
                               databaseService: _databaseService,
                               showCustomSnackbar: () {
