@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
@@ -10,15 +13,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dima_project/models/message.dart';
-import 'package:network_image_mock/network_image_mock.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_image_picker.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
-import '../mocks/mock_xfile.mocks.dart';
 
 void main() {
   final PrivateChat fakePrivateChat1 = PrivateChat(
@@ -71,11 +74,11 @@ void main() {
   List<ReadBy> readBy = [
     ReadBy(
       username: 'user1',
-      readAt: Timestamp.fromDate(DateTime(2024, 1, 1, 1, 1)),
+      readAt: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
     ),
     ReadBy(
       username: 'user2',
-      readAt: Timestamp.fromDate(DateTime(2024, 1, 1, 1, 1)),
+      readAt: Timestamp.fromDate(DateTime(2024, 2, 3, 1, 1)),
     ),
   ];
   List<Message> messages = [
@@ -92,7 +95,7 @@ void main() {
     Message(
       content: 'Title\nDescription\nhttps://example.com\nhttps://imageurl.com',
       sentByMe: true,
-      time: Timestamp.fromDate(DateTime(2024, 1, 1, 1, 1)),
+      time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
       isGroupMessage: true,
       sender: 'user1',
@@ -102,7 +105,7 @@ void main() {
     Message(
       content: 'image_url',
       sentByMe: true,
-      time: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
+      time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
       isGroupMessage: true,
       sender: 'user1',
@@ -112,16 +115,11 @@ void main() {
     Message(
       content: 'event_id',
       sentByMe: true,
-      time: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
+      time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
-      isGroupMessage: false,
-      sender: 'test_uid',
-      readBy: [
-        ReadBy(
-          username: 'test_uid',
-          readAt: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
-        ),
-      ],
+      isGroupMessage: true,
+      sender: 'user1',
+      readBy: readBy,
       type: Type.event,
     )
   ];
@@ -352,12 +350,25 @@ void main() {
     });
   });
   group('Test chat functionality', () {
+    tearDown(() async {
+      // List of files to delete
+      final files = ['doc1.png', 'doc2.png'];
+
+      // Delete each file if it exists
+      for (final fileName in files) {
+        final file = File(fileName);
+        if (await file.exists()) {
+          await file.delete();
+          debugPrint('$fileName deleted.');
+        }
+      }
+    });
+
     testWidgets(
         "Group chat page renders correctly and send message functionality works correctly",
         (WidgetTester tester) async {
       AuthService.setUid('user1');
       final firestore = FakeFirebaseFirestore();
-      final MockXFile mockXFile = MockXFile();
       await firestore.collection('users').doc('user2').set({
         'uid': 'user2',
         'name': 'name2',
@@ -421,35 +432,57 @@ void main() {
       when(mockDatabaseService.getChats(any)).thenAnswer((_) {
         return Stream.value(messages);
       });
-      when(mockImagePicker.pickImage(source: any, imageQuality: any))
-          .thenAnswer(
-        (_) => Future.value(mockXFile),
-      );
-      when(mockImagePicker.pickMultiImage(imageQuality: any)).thenAnswer(
-        (_) => Future.value([mockXFile]),
-      );
-      when(mockXFile.readAsBytes())
-          .thenAnswer((_) => Future.value(Uint8List(0)));
+      when(mockImagePicker.pickImage(
+              source: ImageSource.camera, imageQuality: 80))
+          .thenAnswer((_) async {
+        final ByteData data = await rootBundle.load('assets/logo.png');
+        final Uint8List bytes = data.buffer.asUint8List();
+        Directory tempDir = await getTemporaryDirectory();
+        final File file = await File(
+          '${tempDir.path}/doc1.png',
+        ).writeAsBytes(bytes);
 
-      await mockNetworkImagesFor(() async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              databaseServiceProvider.overrideWithValue(mockDatabaseService),
-              followerProvider.overrideWith(
-                (ref, uid) async => [],
-              ),
-            ],
-            child: CupertinoApp(
-              home: ChatPage(
-                databaseService: mockDatabaseService,
-                notificationService: mockNotificationService,
-                imagePicker: mockImagePicker,
+        return XFile(file.path);
+      });
+      when(mockImagePicker.pickMultiImage(imageQuality: 80)).thenAnswer(
+        (_) async {
+          final ByteData data = await rootBundle.load('assets/logo.png');
+          final Uint8List bytes = data.buffer.asUint8List();
+          Directory tempDir = await getTemporaryDirectory();
+          final File file = await File(
+            '${tempDir.path}/doc2.png',
+          ).writeAsBytes(bytes);
+          return [XFile(file.path)];
+        },
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            eventProvider.overrideWith(
+              (ref, eventId) async => Event(
+                id: 'event_id',
+                name: 'Sample Event',
+                description: 'Event Description',
+                imagePath: '',
+                admin: 'user1',
+                isPublic: true,
               ),
             ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            followerProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+          ],
+          child: CupertinoApp(
+            home: ChatPage(
+              databaseService: mockDatabaseService,
+              notificationService: mockNotificationService,
+              imagePicker: mockImagePicker,
+            ),
           ),
-        );
-      });
+        ),
+      );
 
       await tester.pumpAndSettle();
       await tester.tap(find.text('Group1'));
@@ -468,7 +501,6 @@ void main() {
       expect(find.text('Delete Message'), findsOneWidget);
       expect(find.text('Read By'), findsOneWidget);
       await tester.tap(find.text('Copy Text'));
-      await tester.pump();
       await tester.pumpAndSettle();
       expect(find.text('Copied to clipboard'), findsOneWidget);
       await tester.pump(const Duration(seconds: 2));
@@ -478,9 +510,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.add));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(CupertinoIcons.camera_fill));
-      await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.photo_fill));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.camera_fill).last);
       await tester.pumpAndSettle();
       //await tester.tap(find.byIcon(CupertinoIcons.calendar));
     });
