@@ -75,11 +75,12 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                 onPressed: () {
                   if (widget.canNavigate) {
                     widget.navigateToPage!(GroupInfoPage(
-                        group: widget.group,
-                        canNavigate: widget.canNavigate,
-                        navigateToPage: widget.navigateToPage,
-                        databaseService: databaseService,
-                        notificationService: notificationService));
+                      group: widget.group,
+                      canNavigate: widget.canNavigate,
+                      navigateToPage: widget.navigateToPage,
+                      databaseService: databaseService,
+                      notificationService: notificationService,
+                    ));
                   } else {
                     Navigator.of(context).pop();
                   }

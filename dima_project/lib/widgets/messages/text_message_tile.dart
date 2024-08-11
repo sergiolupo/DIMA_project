@@ -24,6 +24,7 @@ class TextMessageTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: () {
+        debugPrint('Long pressed');
         focusNode.unfocus();
         MessageUtils.showBottomSheet(context, message, databaseService,
             showCustomSnackbar: () => showCustomSnackbar());

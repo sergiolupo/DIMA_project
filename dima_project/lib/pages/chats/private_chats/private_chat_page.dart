@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +8,7 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -29,6 +29,7 @@ class PrivateChatPage extends StatefulWidget {
   final UserData user;
   final NotificationService notificationService;
   final DatabaseService databaseService;
+  final ImagePicker imagePicker;
   const PrivateChatPage({
     super.key,
     required this.privateChat,
@@ -37,6 +38,7 @@ class PrivateChatPage extends StatefulWidget {
     required this.user,
     required this.notificationService,
     required this.databaseService,
+    required this.imagePicker,
   });
 
   @override
@@ -170,13 +172,25 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
-
-      final message = await _databaseService.sendChatImage(
-        widget.privateChat.id!,
-        File(image.path),
-        false,
-        Uint8List.fromList(bytes),
+      final String imageUrl = await StorageService.uploadImageToStorage(
+          'chat_images/${widget.privateChat.id!}/${AuthService.uid}/${Timestamp.now()}.jpg',
+          Uint8List.fromList(bytes));
+      ReadBy readBy = ReadBy(
+        readAt: Timestamp.now(),
+        username: AuthService.uid,
       );
+
+      final Message message = Message(
+        content: imageUrl,
+        sender: AuthService.uid,
+        isGroupMessage: false,
+        time: Timestamp.now(),
+        readBy: [
+          readBy,
+        ],
+        type: Type.image,
+      );
+      await _databaseService.sendMessage(widget.privateChat.id!, message);
 
       await NotificationService(databaseService: DatabaseService())
           .sendNotificationOnPrivateChat(widget.privateChat, message);
@@ -203,12 +217,25 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         widget.privateChat.id ??=
             await _databaseService.createPrivateChat(widget.privateChat);
 
-        final message = await _databaseService.sendChatImage(
-          widget.privateChat.id!,
-          File(image.path),
-          false,
-          Uint8List.fromList(bytes),
+        final String imageUrl = await StorageService.uploadImageToStorage(
+            'chat_images/${widget.privateChat.id!}/${AuthService.uid}/${Timestamp.now()}.jpg',
+            Uint8List.fromList(bytes));
+        ReadBy readBy = ReadBy(
+          readAt: Timestamp.now(),
+          username: AuthService.uid,
         );
+
+        final Message message = Message(
+          content: imageUrl,
+          sender: AuthService.uid,
+          isGroupMessage: false,
+          time: Timestamp.now(),
+          readBy: [
+            readBy,
+          ],
+          type: Type.image,
+        );
+        await _databaseService.sendMessage(widget.privateChat.id!, message);
         await NotificationService(databaseService: DatabaseService())
             .sendNotificationOnPrivateChat(
           widget.privateChat,

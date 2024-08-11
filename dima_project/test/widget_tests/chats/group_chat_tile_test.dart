@@ -7,6 +7,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
+import '../../mocks/mock_image_picker.mocks.dart';
 import '../../mocks/mock_notification_service.mocks.dart';
 
 void main() {
@@ -25,6 +26,7 @@ void main() {
             username: "",
             databaseService: MockDatabaseService(),
             notificationService: MockNotificationService(),
+            imagePicker: MockImagePicker(),
           ),
         ),
       ),
@@ -61,6 +63,7 @@ void main() {
             username: username,
             databaseService: MockDatabaseService(),
             notificationService: MockNotificationService(),
+            imagePicker: MockImagePicker(),
           ),
         ),
       ),

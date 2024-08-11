@@ -19,6 +19,7 @@ import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class UserProfileTablet extends ConsumerStatefulWidget {
@@ -267,6 +268,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                                       user: user,
                                       notificationService: notificationService,
                                       databaseService: databaseService,
+                                      imagePicker: ImagePicker(),
                                     ),
                                   ),
                                 );

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -945,32 +944,6 @@ class DatabaseService {
         'recentMessageType': message.type.toString(),
       });
     }
-  }
-
-  Future<Message> sendChatImage(String chatID, File file, bool isGroupMessage,
-      Uint8List imagePath) async {
-    final String imageUrl = await StorageService.uploadImageToStorage(
-        'chat_images/$chatID/${AuthService.uid}/${Timestamp.now()}.jpg',
-        imagePath);
-
-    ReadBy readBy = ReadBy(
-      readAt: Timestamp.now(),
-      username: AuthService.uid,
-    );
-
-    final Message message = Message(
-      content: imageUrl,
-      sender: AuthService.uid,
-      isGroupMessage: isGroupMessage,
-      time: Timestamp.now(),
-      readBy: [
-        readBy,
-      ],
-      type: Type.image,
-    );
-
-    await sendMessage(chatID, message);
-    return message;
   }
 
   Future<bool> isEmailTaken(String email) async {

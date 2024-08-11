@@ -5,6 +5,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class GroupChatTile extends StatefulWidget {
@@ -12,12 +13,14 @@ class GroupChatTile extends StatefulWidget {
   final String? username;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final ImagePicker imagePicker;
   const GroupChatTile({
     super.key,
     required this.group,
     this.username,
     required this.databaseService,
     required this.notificationService,
+    required this.imagePicker,
   });
 
   @override
@@ -72,6 +75,7 @@ class GroupChatTileState extends State<GroupChatTile> {
                 canNavigate: false,
                 databaseService: widget.databaseService,
                 notificationService: widget.notificationService,
+                imagePicker: widget.imagePicker,
               ),
             ),
           );

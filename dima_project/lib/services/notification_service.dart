@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:dima_project/models/message.dart' as chat_message;
+import 'package:image_picker/image_picker.dart';
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -147,13 +148,14 @@ class NotificationService {
           context,
           CupertinoPageRoute(
               builder: (context) => PrivateChatPage(
-                    privateChat: privateChat,
-                    user: user,
-                    canNavigate: false,
+                  privateChat: privateChat,
+                  user: user,
+                  canNavigate: false,
+                  databaseService: DatabaseService(),
+                  notificationService: NotificationService(
                     databaseService: DatabaseService(),
-                    notificationService:
-                        NotificationService(databaseService: DatabaseService()),
-                  )));
+                  ),
+                  imagePicker: ImagePicker())));
     }
     if (message.data['type'] == 'group_chat') {
       final Group group =
@@ -177,6 +179,7 @@ class NotificationService {
                     databaseService: DatabaseService(),
                     notificationService:
                         NotificationService(databaseService: DatabaseService()),
+                    imagePicker: ImagePicker(),
                   )));
     }
     if (message.data['type'] == 'event' &&

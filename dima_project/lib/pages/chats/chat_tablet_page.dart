@@ -15,6 +15,7 @@ import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:dima_project/services/notification_service.dart';
 
@@ -24,6 +25,7 @@ class ChatTabletPage extends StatefulWidget {
   final UserData? selectedUser;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final ImagePicker imagePicker;
   const ChatTabletPage({
     super.key,
     required this.selectedGroup,
@@ -31,6 +33,7 @@ class ChatTabletPage extends StatefulWidget {
     required this.selectedUser,
     required this.databaseService,
     required this.notificationService,
+    required this.imagePicker,
   });
 
   @override
@@ -65,6 +68,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           canNavigate: true,
           databaseService: _databaseService,
           notificationService: widget.notificationService,
+          imagePicker: widget.imagePicker,
         );
       });
     }
@@ -81,6 +85,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           user: selectedUser!,
           databaseService: _databaseService,
           notificationService: widget.notificationService,
+          imagePicker: widget.imagePicker,
         );
       });
     }
@@ -246,6 +251,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               canNavigate: true,
                               databaseService: _databaseService,
                               notificationService: widget.notificationService,
+                              imagePicker: widget.imagePicker,
                             );
                           }
                           if (page is GroupInfoPage) {
@@ -286,6 +292,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               canNavigate: true,
                               databaseService: _databaseService,
                               notificationService: widget.notificationService,
+                              imagePicker: widget.imagePicker,
                             );
                           });
                         },
@@ -332,6 +339,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   databaseService: _databaseService,
                                   notificationService:
                                       widget.notificationService,
+                                  imagePicker: widget.imagePicker,
                                 );
                               });
                             },
@@ -431,6 +439,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   databaseService: _databaseService,
                                   notificationService:
                                       widget.notificationService,
+                                  imagePicker: widget.imagePicker,
                                 );
                               }
                               if (page is PrivateInfoPage) {
@@ -475,6 +484,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 user: other,
                                 databaseService: _databaseService,
                                 notificationService: widget.notificationService,
+                                imagePicker: widget.imagePicker,
                               );
                             })
                           },
@@ -506,6 +516,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   databaseService: _databaseService,
                                   notificationService:
                                       widget.notificationService,
+                                  imagePicker: widget.imagePicker,
                                   privateChat: privateChat,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,

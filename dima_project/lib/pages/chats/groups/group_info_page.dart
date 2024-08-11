@@ -16,6 +16,7 @@ import 'package:dima_project/widgets/user_tile.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GroupInfoPage extends StatefulWidget {
@@ -77,6 +78,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 navigateToPage: widget.navigateToPage,
                 databaseService: _databaseService,
                 notificationService: widget.notificationService,
+                imagePicker: ImagePicker(),
               ));
               return;
             }

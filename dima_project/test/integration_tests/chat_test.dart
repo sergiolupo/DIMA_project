@@ -1,19 +1,15 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dima_project/models/message.dart';
@@ -22,6 +18,7 @@ import 'package:network_image_mock/network_image_mock.dart';
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_image_picker.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
+import '../mocks/mock_xfile.mocks.dart';
 
 void main() {
   final PrivateChat fakePrivateChat1 = PrivateChat(
@@ -70,14 +67,7 @@ void main() {
     members: ['user1', 'user2'],
     lastMessage: null,
   );
-  final eventMock = Event(
-    id: 'event_id',
-    name: 'Sample Event',
-    description: 'Event Description',
-    imagePath: '',
-    admin: 'test_uid',
-    isPublic: true,
-  );
+
   List<ReadBy> readBy = [
     ReadBy(
       username: 'user1',
@@ -120,25 +110,32 @@ void main() {
       type: Type.image,
     ),
     Message(
-      content: 'Image',
+      content: 'event_id',
       sentByMe: true,
       time: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
       senderImage: '',
       isGroupMessage: false,
-      sender: 'user1',
-      readBy: readBy,
-      type: Type.image,
+      sender: 'test_uid',
+      readBy: [
+        ReadBy(
+          username: 'test_uid',
+          readAt: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
+        ),
+      ],
+      type: Type.event,
     )
   ];
 
   late final MockDatabaseService mockDatabaseService;
   late final MockNotificationService mockNotificationService;
   late final MockImagePicker mockImagePicker;
+
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockNotificationService = MockNotificationService();
     mockImagePicker = MockImagePicker();
   });
+
   group('ChatPage Tests for mobile', () {
     testWidgets(
         'Displays no chat messages on ChatPage for mobile when no chats and groups exist',
@@ -153,6 +150,7 @@ void main() {
           home: ChatPage(
             databaseService: mockDatabaseService,
             notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
           ),
         ),
       );
@@ -177,6 +175,7 @@ void main() {
           home: ChatPage(
             databaseService: mockDatabaseService,
             notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
           ),
         ),
       );
@@ -250,6 +249,7 @@ void main() {
             home: ChatPage(
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
+              imagePicker: mockImagePicker,
             ),
           ),
         ),
@@ -304,6 +304,7 @@ void main() {
             home: ChatPage(
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
+              imagePicker: mockImagePicker,
             ),
           ),
         ),
@@ -356,6 +357,7 @@ void main() {
         (WidgetTester tester) async {
       AuthService.setUid('user1');
       final firestore = FakeFirebaseFirestore();
+      final MockXFile mockXFile = MockXFile();
       await firestore.collection('users').doc('user2').set({
         'uid': 'user2',
         'name': 'name2',
@@ -405,9 +407,29 @@ void main() {
       when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
         return Stream.error('User not found');
       });
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          return;
+        },
+      );
+      when(mockDatabaseService.sendMessage(any, any))
+          .thenAnswer((_) => Future.value());
       when(mockDatabaseService.getChats(any)).thenAnswer((_) {
         return Stream.value(messages);
       });
+      when(mockDatabaseService.getChats(any)).thenAnswer((_) {
+        return Stream.value(messages);
+      });
+      when(mockImagePicker.pickImage(source: any, imageQuality: any))
+          .thenAnswer(
+        (_) => Future.value(mockXFile),
+      );
+      when(mockImagePicker.pickMultiImage(imageQuality: any)).thenAnswer(
+        (_) => Future.value([mockXFile]),
+      );
+      when(mockXFile.readAsBytes())
+          .thenAnswer((_) => Future.value(Uint8List(0)));
 
       await mockNetworkImagesFor(() async {
         await tester.pumpWidget(
@@ -422,11 +444,13 @@ void main() {
               home: ChatPage(
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
+                imagePicker: mockImagePicker,
               ),
             ),
           ),
         );
       });
+
       await tester.pumpAndSettle();
       await tester.tap(find.text('Group1'));
       await tester.pumpAndSettle();
@@ -445,13 +469,20 @@ void main() {
       expect(find.text('Read By'), findsOneWidget);
       await tester.tap(find.text('Copy Text'));
       await tester.pump();
-      //expect(find.byIcon(FontAwesomeIcons.download), findsOneWidget);
-      //expect(find.text('Copied to clipboard'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('Copied to clipboard'), findsOneWidget);
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoTextField), 'Hello');
       await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
       await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.add));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.camera_fill));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.photo_fill));
+      await tester.pumpAndSettle();
+      //await tester.tap(find.byIcon(CupertinoIcons.calendar));
     });
   });
 }

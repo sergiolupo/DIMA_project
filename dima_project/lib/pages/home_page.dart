@@ -16,6 +16,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final int? index;
@@ -136,6 +137,7 @@ class HomePageState extends ConsumerState<HomePage> {
               mobileLayout: ChatPage(
                 databaseService: databaseService,
                 notificationService: widget.notificationService,
+                imagePicker: ImagePicker(),
               ),
               tabletLayout: ChatTabletPage(
                 databaseService: databaseService,
@@ -143,6 +145,7 @@ class HomePageState extends ConsumerState<HomePage> {
                 selectedPrivateChat: selectedPrivateChat,
                 selectedUser: selectedUser,
                 notificationService: widget.notificationService,
+                imagePicker: ImagePicker(),
               ),
             );
             break;

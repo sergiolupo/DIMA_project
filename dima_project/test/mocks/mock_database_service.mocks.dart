@@ -3,17 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i9;
-import 'dart:io' as _i12;
-import 'dart:typed_data' as _i10;
+import 'dart:async' as _i8;
+import 'dart:typed_data' as _i9;
 
 import 'package:cloud_firestore/cloud_firestore.dart' as _i2;
-import 'package:dima_project/models/event.dart' as _i7;
+import 'package:dima_project/models/event.dart' as _i6;
 import 'package:dima_project/models/group.dart' as _i4;
-import 'package:dima_project/models/message.dart' as _i6;
+import 'package:dima_project/models/message.dart' as _i10;
 import 'package:dima_project/models/private_chat.dart' as _i5;
 import 'package:dima_project/models/user.dart' as _i3;
-import 'package:dima_project/services/database_service.dart' as _i8;
+import 'package:dima_project/services/database_service.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i11;
 
@@ -82,18 +81,8 @@ class _FakeDocumentSnapshot_4<T extends Object?> extends _i1.SmartFake
         );
 }
 
-class _FakeMessage_5 extends _i1.SmartFake implements _i6.Message {
-  _FakeMessage_5(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeEvent_6 extends _i1.SmartFake implements _i7.Event {
-  _FakeEvent_6(
+class _FakeEvent_5 extends _i1.SmartFake implements _i6.Event {
+  _FakeEvent_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -105,7 +94,7 @@ class _FakeEvent_6 extends _i1.SmartFake implements _i7.Event {
 /// A class which mocks [DatabaseService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
+class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
   MockDatabaseService() {
     _i1.throwOnMissingStub(this);
   }
@@ -206,10 +195,10 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       );
 
   @override
-  _i9.Future<void> registerUserWithUUID(
+  _i8.Future<void> registerUserWithUUID(
     _i3.UserData? user,
     String? uuid,
-    _i10.Uint8List? imagePath,
+    _i9.Uint8List? imagePath,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -220,24 +209,24 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             imagePath,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> updateToken(String? token) => (super.noSuchMethod(
+  _i8.Future<void> updateToken(String? token) => (super.noSuchMethod(
         Invocation.method(
           #updateToken,
           [token],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> updateUserInformation(
+  _i8.Future<void> updateUserInformation(
     _i3.UserData? user,
-    _i10.Uint8List? imagePath,
+    _i9.Uint8List? imagePath,
     bool? imageHasChanged,
     bool? visibilityHasChange,
   ) =>
@@ -251,88 +240,88 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             visibilityHasChange,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<_i3.UserData> getUserData(String? uid) => (super.noSuchMethod(
+  _i8.Future<_i3.UserData> getUserData(String? uid) => (super.noSuchMethod(
         Invocation.method(
           #getUserData,
           [uid],
         ),
-        returnValue: _i9.Future<_i3.UserData>.value(_FakeUserData_1(
+        returnValue: _i8.Future<_i3.UserData>.value(_FakeUserData_1(
           this,
           Invocation.method(
             #getUserData,
             [uid],
           ),
         )),
-      ) as _i9.Future<_i3.UserData>);
+      ) as _i8.Future<_i3.UserData>);
 
   @override
-  _i9.Stream<_i2.DocumentSnapshot<Object?>> getUserDataFromUID(String? uid) =>
+  _i8.Stream<_i2.DocumentSnapshot<Object?>> getUserDataFromUID(String? uid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserDataFromUID,
           [uid],
         ),
-        returnValue: _i9.Stream<_i2.DocumentSnapshot<Object?>>.empty(),
-      ) as _i9.Stream<_i2.DocumentSnapshot<Object?>>);
+        returnValue: _i8.Stream<_i2.DocumentSnapshot<Object?>>.empty(),
+      ) as _i8.Stream<_i2.DocumentSnapshot<Object?>>);
 
   @override
-  _i9.Stream<_i4.Group> getGroupFromIdStream(String? id) => (super.noSuchMethod(
+  _i8.Stream<_i4.Group> getGroupFromIdStream(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getGroupFromIdStream,
           [id],
         ),
-        returnValue: _i9.Stream<_i4.Group>.empty(),
-      ) as _i9.Stream<_i4.Group>);
+        returnValue: _i8.Stream<_i4.Group>.empty(),
+      ) as _i8.Stream<_i4.Group>);
 
   @override
-  _i9.Future<_i4.Group> getGroupFromId(String? id) => (super.noSuchMethod(
+  _i8.Future<_i4.Group> getGroupFromId(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getGroupFromId,
           [id],
         ),
-        returnValue: _i9.Future<_i4.Group>.value(_FakeGroup_2(
+        returnValue: _i8.Future<_i4.Group>.value(_FakeGroup_2(
           this,
           Invocation.method(
             #getGroupFromId,
             [id],
           ),
         )),
-      ) as _i9.Future<_i4.Group>);
+      ) as _i8.Future<_i4.Group>);
 
   @override
-  _i9.Future<_i3.UserData> getUserDataFromUsername(String? username) =>
+  _i8.Future<_i3.UserData> getUserDataFromUsername(String? username) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserDataFromUsername,
           [username],
         ),
-        returnValue: _i9.Future<_i3.UserData>.value(_FakeUserData_1(
+        returnValue: _i8.Future<_i3.UserData>.value(_FakeUserData_1(
           this,
           Invocation.method(
             #getUserDataFromUsername,
             [username],
           ),
         )),
-      ) as _i9.Future<_i3.UserData>);
+      ) as _i8.Future<_i3.UserData>);
 
   @override
-  _i9.Future<bool> checkUserExist(String? email) => (super.noSuchMethod(
+  _i8.Future<bool> checkUserExist(String? email) => (super.noSuchMethod(
         Invocation.method(
           #checkUserExist,
           [email],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 
   @override
-  _i9.Future<void> createGroup(
+  _i8.Future<void> createGroup(
     _i4.Group? group,
-    _i10.Uint8List? imagePath,
+    _i9.Uint8List? imagePath,
     List<String>? uuids,
   ) =>
       (super.noSuchMethod(
@@ -344,32 +333,32 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuids,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Stream<List<_i6.Message>> getChats(String? groupId) =>
+  _i8.Stream<List<_i10.Message>> getChats(String? groupId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getChats,
           [groupId],
         ),
-        returnValue: _i9.Stream<List<_i6.Message>>.empty(),
-      ) as _i9.Stream<List<_i6.Message>>);
+        returnValue: _i8.Stream<List<_i10.Message>>.empty(),
+      ) as _i8.Stream<List<_i10.Message>>);
 
   @override
-  _i9.Stream<List<dynamic>> getGroupMembers(String? groupId) =>
+  _i8.Stream<List<dynamic>> getGroupMembers(String? groupId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getGroupMembers,
           [groupId],
         ),
-        returnValue: _i9.Stream<List<dynamic>>.empty(),
-      ) as _i9.Stream<List<dynamic>>);
+        returnValue: _i8.Stream<List<dynamic>>.empty(),
+      ) as _i8.Stream<List<dynamic>>);
 
   @override
-  _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByGroupNameStream(
+  _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByGroupNameStream(
           String? searchText) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -377,11 +366,11 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
           [searchText],
         ),
         returnValue:
-            _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
-      ) as _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
+            _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
+      ) as _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
 
   @override
-  _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByUsernameStream(
+  _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByUsernameStream(
           String? searchText) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -389,54 +378,54 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
           [searchText],
         ),
         returnValue:
-            _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
-      ) as _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
+            _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
+      ) as _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
 
   @override
-  _i9.Future<void> deleteUserGroupRequests(String? groupId) =>
+  _i8.Future<void> deleteUserGroupRequests(String? groupId) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteUserGroupRequests,
           [groupId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteFollowRequests() => (super.noSuchMethod(
+  _i8.Future<void> deleteFollowRequests() => (super.noSuchMethod(
         Invocation.method(
           #deleteFollowRequests,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteGroupRequests(String? uid) => (super.noSuchMethod(
+  _i8.Future<void> deleteGroupRequests(String? uid) => (super.noSuchMethod(
         Invocation.method(
           #deleteGroupRequests,
           [uid],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> toggleGroupJoin(String? groupId) => (super.noSuchMethod(
+  _i8.Future<void> toggleGroupJoin(String? groupId) => (super.noSuchMethod(
         Invocation.method(
           #toggleGroupJoin,
           [groupId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> sendMessage(
+  _i8.Future<void> sendMessage(
     String? id,
-    _i6.Message? message,
+    _i10.Message? message,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -446,40 +435,40 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             message,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<_i5.PrivateChat> getPrivateChatsFromMember(
+  _i8.Future<_i5.PrivateChat> getPrivateChatsFromMember(
           List<String>? members) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateChatsFromMember,
           [members],
         ),
-        returnValue: _i9.Future<_i5.PrivateChat>.value(_FakePrivateChat_3(
+        returnValue: _i8.Future<_i5.PrivateChat>.value(_FakePrivateChat_3(
           this,
           Invocation.method(
             #getPrivateChatsFromMember,
             [members],
           ),
         )),
-      ) as _i9.Future<_i5.PrivateChat>);
+      ) as _i8.Future<_i5.PrivateChat>);
 
   @override
-  _i9.Stream<String?> getPrivateChatIdFromMembers(List<String>? members) =>
+  _i8.Stream<String?> getPrivateChatIdFromMembers(List<String>? members) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateChatIdFromMembers,
           [members],
         ),
-        returnValue: _i9.Stream<String?>.empty(),
-      ) as _i9.Stream<String?>);
+        returnValue: _i8.Stream<String?>.empty(),
+      ) as _i8.Stream<String?>);
 
   @override
-  _i9.Future<dynamic> sendFirstPrivateMessage(
-    _i6.Message? message,
+  _i8.Future<dynamic> sendFirstPrivateMessage(
+    _i10.Message? message,
     String? id,
   ) =>
       (super.noSuchMethod(
@@ -490,61 +479,61 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             id,
           ],
         ),
-        returnValue: _i9.Future<dynamic>.value(),
-      ) as _i9.Future<dynamic>);
+        returnValue: _i8.Future<dynamic>.value(),
+      ) as _i8.Future<dynamic>);
 
   @override
-  _i9.Future<String> createPrivateChat(_i5.PrivateChat? privateChat) =>
+  _i8.Future<String> createPrivateChat(_i5.PrivateChat? privateChat) =>
       (super.noSuchMethod(
         Invocation.method(
           #createPrivateChat,
           [privateChat],
         ),
-        returnValue: _i9.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i8.Future<String>.value(_i11.dummyValue<String>(
           this,
           Invocation.method(
             #createPrivateChat,
             [privateChat],
           ),
         )),
-      ) as _i9.Future<String>);
+      ) as _i8.Future<String>);
 
   @override
-  _i9.Future<List<_i4.Group>> getGroups(String? uuid) => (super.noSuchMethod(
+  _i8.Future<List<_i4.Group>> getGroups(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #getGroups,
           [uuid],
         ),
-        returnValue: _i9.Future<List<_i4.Group>>.value(<_i4.Group>[]),
-      ) as _i9.Future<List<_i4.Group>>);
+        returnValue: _i8.Future<List<_i4.Group>>.value(<_i4.Group>[]),
+      ) as _i8.Future<List<_i4.Group>>);
 
   @override
-  _i9.Stream<List<_i4.Group>> getGroupsStream() => (super.noSuchMethod(
+  _i8.Stream<List<_i4.Group>> getGroupsStream() => (super.noSuchMethod(
         Invocation.method(
           #getGroupsStream,
           [],
         ),
-        returnValue: _i9.Stream<List<_i4.Group>>.empty(),
-      ) as _i9.Stream<List<_i4.Group>>);
+        returnValue: _i8.Stream<List<_i4.Group>>.empty(),
+      ) as _i8.Stream<List<_i4.Group>>);
 
   @override
-  _i9.Stream<List<_i5.PrivateChat>> getPrivateChatsStream() =>
+  _i8.Stream<List<_i5.PrivateChat>> getPrivateChatsStream() =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateChatsStream,
           [],
         ),
-        returnValue: _i9.Stream<List<_i5.PrivateChat>>.empty(),
-      ) as _i9.Stream<List<_i5.PrivateChat>>);
+        returnValue: _i8.Stream<List<_i5.PrivateChat>>.empty(),
+      ) as _i8.Stream<List<_i5.PrivateChat>>);
 
   @override
-  _i9.Future<_i2.DocumentSnapshot<Object?>> getFollowersUser(String? uuid) =>
+  _i8.Future<_i2.DocumentSnapshot<Object?>> getFollowersUser(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFollowersUser,
           [uuid],
         ),
-        returnValue: _i9.Future<_i2.DocumentSnapshot<Object?>>.value(
+        returnValue: _i8.Future<_i2.DocumentSnapshot<Object?>>.value(
             _FakeDocumentSnapshot_4<Object?>(
           this,
           Invocation.method(
@@ -552,10 +541,10 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             [uuid],
           ),
         )),
-      ) as _i9.Future<_i2.DocumentSnapshot<Object?>>);
+      ) as _i8.Future<_i2.DocumentSnapshot<Object?>>);
 
   @override
-  _i9.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
+  _i8.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>> getMembersStreamUser(
     String? eventId,
     String? detailId,
   ) =>
@@ -568,20 +557,20 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
           ],
         ),
         returnValue:
-            _i9.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>>.empty(),
-      ) as _i9.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>>);
+            _i8.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>>.empty(),
+      ) as _i8.Stream<_i2.DocumentSnapshot<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<bool> isUsernameTaken(String? username) => (super.noSuchMethod(
+  _i8.Future<bool> isUsernameTaken(String? username) => (super.noSuchMethod(
         Invocation.method(
           #isUsernameTaken,
           [username],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 
   @override
-  _i9.Future<void> toggleFollowUnfollow(
+  _i8.Future<void> toggleFollowUnfollow(
     String? user,
     String? visitor,
   ) =>
@@ -593,22 +582,22 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             visitor,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Stream<List<_i6.Message>> getPrivateChats(String? privateChatId) =>
+  _i8.Stream<List<_i10.Message>> getPrivateChats(String? privateChatId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateChats,
           [privateChatId],
         ),
-        returnValue: _i9.Stream<List<_i6.Message>>.empty(),
-      ) as _i9.Stream<List<_i6.Message>>);
+        returnValue: _i8.Stream<List<_i10.Message>>.empty(),
+      ) as _i8.Stream<List<_i10.Message>>);
 
   @override
-  _i9.Future<int> getUnreadMessages(
+  _i8.Future<int> getUnreadMessages(
     bool? isGroup,
     String? id,
   ) =>
@@ -620,33 +609,33 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             id,
           ],
         ),
-        returnValue: _i9.Future<int>.value(0),
-      ) as _i9.Future<int>);
+        returnValue: _i8.Future<int>.value(0),
+      ) as _i8.Future<int>);
 
   @override
-  _i9.Future<void> updateMessageReadStatus(_i6.Message? message) =>
+  _i8.Future<void> updateMessageReadStatus(_i10.Message? message) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateMessageReadStatus,
           [message],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteMessage(_i6.Message? message) => (super.noSuchMethod(
+  _i8.Future<void> deleteMessage(_i10.Message? message) => (super.noSuchMethod(
         Invocation.method(
           #deleteMessage,
           [message],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> updateMessageContent(
-    _i6.Message? message,
+  _i8.Future<void> updateMessageContent(
+    _i10.Message? message,
     String? updatedMessage,
   ) =>
       (super.noSuchMethod(
@@ -657,112 +646,81 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             updatedMessage,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<_i6.Message> sendChatImage(
-    String? chatID,
-    _i12.File? file,
-    bool? isGroupMessage,
-    _i10.Uint8List? imagePath,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #sendChatImage,
-          [
-            chatID,
-            file,
-            isGroupMessage,
-            imagePath,
-          ],
-        ),
-        returnValue: _i9.Future<_i6.Message>.value(_FakeMessage_5(
-          this,
-          Invocation.method(
-            #sendChatImage,
-            [
-              chatID,
-              file,
-              isGroupMessage,
-              imagePath,
-            ],
-          ),
-        )),
-      ) as _i9.Future<_i6.Message>);
-
-  @override
-  _i9.Future<bool> isEmailTaken(String? email) => (super.noSuchMethod(
+  _i8.Future<bool> isEmailTaken(String? email) => (super.noSuchMethod(
         Invocation.method(
           #isEmailTaken,
           [email],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 
   @override
-  _i9.Stream<List<dynamic>> getGroupRequestsStream(String? id) =>
+  _i8.Stream<List<dynamic>> getGroupRequestsStream(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getGroupRequestsStream,
           [id],
         ),
-        returnValue: _i9.Stream<List<dynamic>>.empty(),
-      ) as _i9.Stream<List<dynamic>>);
+        returnValue: _i8.Stream<List<dynamic>>.empty(),
+      ) as _i8.Stream<List<dynamic>>);
 
   @override
-  _i9.Future<List<_i3.UserData>> getGroupRequestsForGroup(String? id) =>
+  _i8.Future<List<_i3.UserData>> getGroupRequestsForGroup(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getGroupRequestsForGroup,
           [id],
         ),
-        returnValue: _i9.Future<List<_i3.UserData>>.value(<_i3.UserData>[]),
-      ) as _i9.Future<List<_i3.UserData>>);
+        returnValue: _i8.Future<List<_i3.UserData>>.value(<_i3.UserData>[]),
+      ) as _i8.Future<List<_i3.UserData>>);
 
   @override
-  _i9.Future<List<String>> getGroupRequests(String? id) => (super.noSuchMethod(
+  _i8.Future<List<String>> getGroupRequests(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getGroupRequests,
           [id],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i8.Future<List<String>>.value(<String>[]),
+      ) as _i8.Future<List<String>>);
 
   @override
-  _i9.Future<List<_i4.Group>> getUserGroupRequests(String? id) =>
+  _i8.Future<List<_i4.Group>> getUserGroupRequests(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserGroupRequests,
           [id],
         ),
-        returnValue: _i9.Future<List<_i4.Group>>.value(<_i4.Group>[]),
-      ) as _i9.Future<List<_i4.Group>>);
+        returnValue: _i8.Future<List<_i4.Group>>.value(<_i4.Group>[]),
+      ) as _i8.Future<List<_i4.Group>>);
 
   @override
-  _i9.Future<List<_i3.UserData>> getFollowRequests(String? id) =>
+  _i8.Future<List<_i3.UserData>> getFollowRequests(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFollowRequests,
           [id],
         ),
-        returnValue: _i9.Future<List<_i3.UserData>>.value(<_i3.UserData>[]),
-      ) as _i9.Future<List<_i3.UserData>>);
+        returnValue: _i8.Future<List<_i3.UserData>>.value(<_i3.UserData>[]),
+      ) as _i8.Future<List<_i3.UserData>>);
 
   @override
-  _i9.Future<Map<String, List<String>>> getEventRequests(String? id) =>
+  _i8.Future<Map<String, List<String>>> getEventRequests(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventRequests,
           [id],
         ),
-        returnValue: _i9.Future<Map<String, List<String>>>.value(
+        returnValue: _i8.Future<Map<String, List<String>>>.value(
             <String, List<String>>{}),
-      ) as _i9.Future<Map<String, List<String>>>);
+      ) as _i8.Future<Map<String, List<String>>>);
 
   @override
-  _i9.Future<void> denyGroupRequest(
+  _i8.Future<void> denyGroupRequest(
     String? groupId,
     String? uuid,
   ) =>
@@ -774,12 +732,12 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuid,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> acceptGroupRequest(
+  _i8.Future<void> acceptGroupRequest(
     String? groupId,
     String? uuid,
   ) =>
@@ -791,14 +749,14 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuid,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<List<_i6.Message>> getGroupMessagesType(
+  _i8.Future<List<_i10.Message>> getGroupMessagesType(
     String? id,
-    _i6.Type? type,
+    _i10.Type? type,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -808,13 +766,13 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             type,
           ],
         ),
-        returnValue: _i9.Future<List<_i6.Message>>.value(<_i6.Message>[]),
-      ) as _i9.Future<List<_i6.Message>>);
+        returnValue: _i8.Future<List<_i10.Message>>.value(<_i10.Message>[]),
+      ) as _i8.Future<List<_i10.Message>>);
 
   @override
-  _i9.Future<List<_i6.Message>> getPrivateMessagesType(
+  _i8.Future<List<_i10.Message>> getPrivateMessagesType(
     String? id,
-    _i6.Type? type,
+    _i10.Type? type,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -824,31 +782,31 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             type,
           ],
         ),
-        returnValue: _i9.Future<List<_i6.Message>>.value(<_i6.Message>[]),
-      ) as _i9.Future<List<_i6.Message>>);
+        returnValue: _i8.Future<List<_i10.Message>>.value(<_i10.Message>[]),
+      ) as _i8.Future<List<_i10.Message>>);
 
   @override
-  _i9.Future<void> acceptUserRequest(String? user) => (super.noSuchMethod(
+  _i8.Future<void> acceptUserRequest(String? user) => (super.noSuchMethod(
         Invocation.method(
           #acceptUserRequest,
           [user],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> denyUserRequest(String? user) => (super.noSuchMethod(
+  _i8.Future<void> denyUserRequest(String? user) => (super.noSuchMethod(
         Invocation.method(
           #denyUserRequest,
           [user],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> acceptEventRequest(
+  _i8.Future<void> acceptEventRequest(
     String? eventId,
     String? detailId,
     String? uuid,
@@ -862,35 +820,35 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuid,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> denyUserGroupRequest(String? groupId) => (super.noSuchMethod(
+  _i8.Future<void> denyUserGroupRequest(String? groupId) => (super.noSuchMethod(
         Invocation.method(
           #denyUserGroupRequest,
           [groupId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> acceptUserGroupRequest(String? groupId) =>
+  _i8.Future<void> acceptUserGroupRequest(String? groupId) =>
       (super.noSuchMethod(
         Invocation.method(
           #acceptUserGroupRequest,
           [groupId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> createEvent(
-    _i7.Event? event,
-    _i10.Uint8List? imagePath,
+  _i8.Future<void> createEvent(
+    _i6.Event? event,
+    _i9.Uint8List? imagePath,
     List<String>? uuids,
     List<String>? groupIds,
   ) =>
@@ -904,12 +862,12 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             groupIds,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> sendEventsOnGroups(
+  _i8.Future<void> sendEventsOnGroups(
     String? eventId,
     List<String>? groupIds,
   ) =>
@@ -921,12 +879,12 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             groupIds,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> sendEventsOnPrivateChat(
+  _i8.Future<void> sendEventsOnPrivateChat(
     String? eventId,
     List<String>? uuids,
   ) =>
@@ -938,12 +896,12 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuids,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByEventNameStream(
+  _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>> searchByEventNameStream(
           String? searchText) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -951,11 +909,11 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
           [searchText],
         ),
         returnValue:
-            _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
-      ) as _i9.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
+            _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>.empty(),
+      ) as _i8.Stream<List<_i2.QueryDocumentSnapshot<Object?>>>);
 
   @override
-  _i9.Future<void> toggleEventJoin(
+  _i8.Future<void> toggleEventJoin(
     String? eventId,
     String? detailId,
   ) =>
@@ -967,41 +925,41 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             detailId,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Stream<_i7.Event> getEventStream(String? eventId) => (super.noSuchMethod(
+  _i8.Stream<_i6.Event> getEventStream(String? eventId) => (super.noSuchMethod(
         Invocation.method(
           #getEventStream,
           [eventId],
         ),
-        returnValue: _i9.Stream<_i7.Event>.empty(),
-      ) as _i9.Stream<_i7.Event>);
+        returnValue: _i8.Stream<_i6.Event>.empty(),
+      ) as _i8.Stream<_i6.Event>);
 
   @override
-  _i9.Future<List<_i7.Event>> getCreatedEvents(String? uuid) =>
+  _i8.Future<List<_i6.Event>> getCreatedEvents(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCreatedEvents,
           [uuid],
         ),
-        returnValue: _i9.Future<List<_i7.Event>>.value(<_i7.Event>[]),
-      ) as _i9.Future<List<_i7.Event>>);
+        returnValue: _i8.Future<List<_i6.Event>>.value(<_i6.Event>[]),
+      ) as _i8.Future<List<_i6.Event>>);
 
   @override
-  _i9.Future<List<_i7.Event>> getJoinedEvents(String? uuid) =>
+  _i8.Future<List<_i6.Event>> getJoinedEvents(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getJoinedEvents,
           [uuid],
         ),
-        returnValue: _i9.Future<List<_i7.Event>>.value(<_i7.Event>[]),
-      ) as _i9.Future<List<_i7.Event>>);
+        returnValue: _i8.Future<List<_i6.Event>>.value(<_i6.Event>[]),
+      ) as _i8.Future<List<_i6.Event>>);
 
   @override
-  _i9.Future<bool> checkIfJoined(
+  _i8.Future<bool> checkIfJoined(
     bool? isGroup,
     String? id,
     String? uuid,
@@ -1015,11 +973,11 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uuid,
           ],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 
   @override
-  _i9.Future<dynamic> shareNewsOnGroups(
+  _i8.Future<dynamic> shareNewsOnGroups(
     String? title,
     String? description,
     String? imageUrl,
@@ -1037,11 +995,11 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             id,
           ],
         ),
-        returnValue: _i9.Future<dynamic>.value(),
-      ) as _i9.Future<dynamic>);
+        returnValue: _i8.Future<dynamic>.value(),
+      ) as _i8.Future<dynamic>);
 
   @override
-  _i9.Future<dynamic> shareNewsOnFollower(
+  _i8.Future<dynamic> shareNewsOnFollower(
     String? title,
     String? description,
     String? imageUrl,
@@ -1059,13 +1017,13 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             uid,
           ],
         ),
-        returnValue: _i9.Future<dynamic>.value(),
-      ) as _i9.Future<dynamic>);
+        returnValue: _i8.Future<dynamic>.value(),
+      ) as _i8.Future<dynamic>);
 
   @override
-  _i9.Future<void> updateEvent(
-    _i7.Event? event,
-    _i10.Uint8List? uint8list,
+  _i8.Future<void> updateEvent(
+    _i6.Event? event,
+    _i9.Uint8List? uint8list,
     bool? sameImage,
     bool? visibilityHasChanged,
     List<String>? uuids,
@@ -1083,29 +1041,29 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             groupIds,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<_i7.Event> getEvent(String? id) => (super.noSuchMethod(
+  _i8.Future<_i6.Event> getEvent(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getEvent,
           [id],
         ),
-        returnValue: _i9.Future<_i7.Event>.value(_FakeEvent_6(
+        returnValue: _i8.Future<_i6.Event>.value(_FakeEvent_5(
           this,
           Invocation.method(
             #getEvent,
             [id],
           ),
         )),
-      ) as _i9.Future<_i7.Event>);
+      ) as _i8.Future<_i6.Event>);
 
   @override
   dynamic updateGroup(
     _i4.Group? group,
-    _i10.Uint8List? uint8list,
+    _i9.Uint8List? uint8list,
     bool? sameImage,
     bool? visibilityHasChanged,
     List<String>? uuids,
@@ -1122,18 +1080,18 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ));
 
   @override
-  _i9.Future<void> deletePrivateChat(_i5.PrivateChat? chat) =>
+  _i8.Future<void> deletePrivateChat(_i5.PrivateChat? chat) =>
       (super.noSuchMethod(
         Invocation.method(
           #deletePrivateChat,
           [chat],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteDetail(
+  _i8.Future<void> deleteDetail(
     String? eventId,
     String? detailId,
   ) =>
@@ -1145,58 +1103,58 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             detailId,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteEvent(String? eventId) => (super.noSuchMethod(
+  _i8.Future<void> deleteEvent(String? eventId) => (super.noSuchMethod(
         Invocation.method(
           #deleteEvent,
           [eventId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<void> deleteUser() => (super.noSuchMethod(
+  _i8.Future<void> deleteUser() => (super.noSuchMethod(
         Invocation.method(
           #deleteUser,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<String> getDeviceTokenPrivateChat(_i5.PrivateChat? chat) =>
+  _i8.Future<String> getDeviceTokenPrivateChat(_i5.PrivateChat? chat) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDeviceTokenPrivateChat,
           [chat],
         ),
-        returnValue: _i9.Future<String>.value(_i11.dummyValue<String>(
+        returnValue: _i8.Future<String>.value(_i11.dummyValue<String>(
           this,
           Invocation.method(
             #getDeviceTokenPrivateChat,
             [chat],
           ),
         )),
-      ) as _i9.Future<String>);
+      ) as _i8.Future<String>);
 
   @override
-  _i9.Future<List<String>> getDevicesTokensGroup(String? groupId) =>
+  _i8.Future<List<String>> getDevicesTokensGroup(String? groupId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDevicesTokensGroup,
           [groupId],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i8.Future<List<String>>.value(<String>[]),
+      ) as _i8.Future<List<String>>);
 
   @override
-  _i9.Future<List<String>> getDevicesTokensDetail(
+  _i8.Future<List<String>> getDevicesTokensDetail(
     String? eventId,
     String? detailId,
   ) =>
@@ -1208,31 +1166,31 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             detailId,
           ],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i8.Future<List<String>>.value(<String>[]),
+      ) as _i8.Future<List<String>>);
 
   @override
-  _i9.Future<List<String>> getDevicesTokensEvent(String? eventId) =>
+  _i8.Future<List<String>> getDevicesTokensEvent(String? eventId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDevicesTokensEvent,
           [eventId],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i8.Future<List<String>>.value(<String>[]),
+      ) as _i8.Future<List<String>>);
 
   @override
-  _i9.Stream<List<dynamic>> getFollowingsStream(String? uuid) =>
+  _i8.Stream<List<dynamic>> getFollowingsStream(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFollowingsStream,
           [uuid],
         ),
-        returnValue: _i9.Stream<List<dynamic>>.empty(),
-      ) as _i9.Stream<List<dynamic>>);
+        returnValue: _i8.Stream<List<dynamic>>.empty(),
+      ) as _i8.Stream<List<dynamic>>);
 
   @override
-  _i9.Future<void> updateNotification(
+  _i8.Future<void> updateNotification(
     String? id,
     bool? notify,
     bool? isGroup,
@@ -1246,12 +1204,12 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             isGroup,
           ],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
-  _i9.Future<bool> getNotification(
+  _i8.Future<bool> getNotification(
     String? id,
     bool? isGroup,
   ) =>
@@ -1263,6 +1221,6 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
             isGroup,
           ],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 }

@@ -8,6 +8,7 @@ import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupTile extends ConsumerWidget {
   final Group group;
@@ -38,6 +39,7 @@ class GroupTile extends ConsumerWidget {
                       canNavigate: false,
                       databaseService: databaseService,
                       notificationService: notificationService,
+                      imagePicker: ImagePicker(),
                     ),
                   ),
                 );

@@ -15,6 +15,7 @@ import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 import 'package:dima_project/services/notification_service.dart';
@@ -137,6 +138,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 navigateToPage: widget.navigateToPage,
                 databaseService: databaseService,
                 notificationService: notificationService,
+                imagePicker: ImagePicker(),
               ));
             } else {
               Navigator.of(context).pop();
@@ -451,6 +453,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       navigateToPage: widget.navigateToPage,
                       databaseService: databaseService,
                       notificationService: notificationService,
+                      imagePicker: ImagePicker(),
                     ));
                   } else {
                     if (mounted) {

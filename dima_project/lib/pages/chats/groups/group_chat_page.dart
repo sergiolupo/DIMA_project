@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +9,7 @@ import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -28,6 +28,7 @@ class GroupChatPage extends StatefulWidget {
   final Function? navigateToPage;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final ImagePicker imagePicker;
   const GroupChatPage({
     super.key,
     required this.canNavigate,
@@ -35,6 +36,7 @@ class GroupChatPage extends StatefulWidget {
     this.navigateToPage,
     required this.databaseService,
     required this.notificationService,
+    required this.imagePicker,
   });
 
   @override
@@ -169,7 +171,6 @@ class GroupChatPageState extends State<GroupChatPage> {
     if (mounted) {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
-      debugPrint('RenderBox size: ${renderBox.size}');
       final Size size = renderBox.size;
       _clipboardOverlay = OverlayEntry(
         builder: (context) => BannerMessage(
@@ -213,7 +214,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void onTapCamera() async {
-    final ImagePicker picker = ImagePicker();
+    final ImagePicker picker = widget.imagePicker;
     final XFile? image =
         await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
     if (image != null) {
@@ -223,12 +224,25 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
       final bytes = await image.readAsBytes();
-      final message = await _databaseService.sendChatImage(
-        group.id,
-        File(image.path),
-        true,
-        Uint8List.fromList(bytes),
+      final String imageUrl = await StorageService.uploadImageToStorage(
+          'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
+          Uint8List.fromList(bytes));
+      ReadBy readBy = ReadBy(
+        readAt: Timestamp.now(),
+        username: AuthService.uid,
       );
+
+      final Message message = Message(
+        content: imageUrl,
+        sender: AuthService.uid,
+        isGroupMessage: true,
+        time: Timestamp.now(),
+        readBy: [
+          readBy,
+        ],
+        type: Type.image,
+      );
+      await _databaseService.sendMessage(group.id, message);
       await widget.notificationService
           .sendNotificationOnGroup(widget.group.id, message);
       if (mounted) {
@@ -240,7 +254,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   }
 
   void onTapPhoto() async {
-    final ImagePicker picker = ImagePicker();
+    final ImagePicker picker = widget.imagePicker;
     final List<XFile> images = await picker.pickMultiImage(imageQuality: 80);
 
     if (images.isNotEmpty) {
@@ -251,12 +265,26 @@ class GroupChatPageState extends State<GroupChatPage> {
           });
         }
         final bytes = await image.readAsBytes();
-        final message = await _databaseService.sendChatImage(
-          group.id,
-          File(image.path),
-          true,
-          Uint8List.fromList(bytes),
+
+        final String imageUrl = await StorageService.uploadImageToStorage(
+            'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
+            Uint8List.fromList(bytes));
+        ReadBy readBy = ReadBy(
+          readAt: Timestamp.now(),
+          username: AuthService.uid,
         );
+
+        final Message message = Message(
+          content: imageUrl,
+          sender: AuthService.uid,
+          isGroupMessage: true,
+          time: Timestamp.now(),
+          readBy: [
+            readBy,
+          ],
+          type: Type.image,
+        );
+        await _databaseService.sendMessage(group.id, message);
         await widget.notificationService
             .sendNotificationOnGroup(widget.group.id, message);
         if (mounted) {

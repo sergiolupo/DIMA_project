@@ -6,6 +6,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class PrivateChatTile extends StatefulWidget {
@@ -13,12 +14,14 @@ class PrivateChatTile extends StatefulWidget {
   final UserData other;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final ImagePicker imagePicker;
   const PrivateChatTile({
     super.key,
     required this.privateChat,
     required this.other,
     required this.databaseService,
     required this.notificationService,
+    required this.imagePicker,
   });
 
   @override
@@ -70,6 +73,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                 user: widget.other,
                 databaseService: widget.databaseService,
                 notificationService: widget.notificationService,
+                imagePicker: widget.imagePicker,
 
               ),
             ),

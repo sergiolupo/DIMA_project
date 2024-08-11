@@ -17,7 +17,7 @@ void main() {
       (WidgetTester tester) async {
     AuthService.setUid('test_uid');
     final message = Message(
-      content: 'Content',
+      content: 'event_id',
       sentByMe: true,
       time: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
       senderImage: '',
@@ -29,7 +29,7 @@ void main() {
           readAt: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
         ),
       ],
-      type: Type.image,
+      type: Type.event,
     );
 
     // Create a mock event to return from the provider
