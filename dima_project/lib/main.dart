@@ -1,10 +1,4 @@
-import 'package:dima_project/models/group.dart';
-import 'package:dima_project/models/private_chat.dart';
-import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/events/event_page.dart';
-import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/login_or_home_page.dart';
-import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/register_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -81,33 +75,6 @@ final GoRouter _router = GoRouter(
             ));
       },
     ),
-    GoRoute(
-        path: '/privateChat',
-        builder: (BuildContext context, GoRouterState state) {
-          Map<String, dynamic> map = state.extra as Map<String, dynamic>;
-          PrivateChat privateChat = map['privateChat'] as PrivateChat;
-          UserData user = map['user'] as UserData;
-          return PrivateChatPage(
-            privateChat: privateChat,
-            user: user,
-            canNavigate: false,
-          );
-        }),
-    GoRoute(
-        path: '/groupChat',
-        builder: (BuildContext context, GoRouterState state) {
-          Group group = state.extra as Group;
-          return GroupChatPage(
-            group: group,
-            canNavigate: false,
-          );
-        }),
-    GoRoute(
-        path: '/event',
-        builder: (BuildContext context, GoRouterState state) {
-          String eventId = state.extra as String;
-          return EventPage(eventId: eventId);
-        }),
   ],
 );
 

@@ -1,11 +1,18 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 
 final databaseServiceProvider = Provider<DatabaseService>((ref) {
   return DatabaseService();
+});
+
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return NotificationService(
+    databaseService: ref.read(databaseServiceProvider),
+  );
 });
 
 final userProvider = FutureProvider.family<UserData, String>((ref, uuid) async {

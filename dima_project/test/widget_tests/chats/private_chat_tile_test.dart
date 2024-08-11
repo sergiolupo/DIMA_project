@@ -8,6 +8,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
+import '../../mocks/mock_notification_service.mocks.dart';
 
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',
@@ -42,6 +43,7 @@ void main() {
             privateChat: privateChat,
             other: user,
             databaseService: MockDatabaseService(),
+            notificationService: MockNotificationService(),
           ),
         ),
       ),
@@ -87,6 +89,7 @@ void main() {
             privateChat: privateChatEvent,
             other: user,
             databaseService: MockDatabaseService(),
+            notificationService: MockNotificationService(),
           ),
         ),
       ),

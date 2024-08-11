@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -22,6 +23,8 @@ class GroupTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final String uid = AuthService.uid;
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
+    final NotificationService notificationService =
+        ref.watch(notificationServiceProvider);
     return Row(
       children: [
         Expanded(
@@ -33,6 +36,8 @@ class GroupTile extends ConsumerWidget {
                     builder: (context) => GroupChatPage(
                       group: group,
                       canNavigate: false,
+                      databaseService: databaseService,
+                      notificationService: notificationService,
                     ),
                   ),
                 );

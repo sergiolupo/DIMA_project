@@ -6,6 +6,8 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/media_view_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -17,6 +19,8 @@ class ShowMediasPage extends StatelessWidget {
   final Group? group;
   final PrivateChat? privateChat;
   final UserData? user;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ShowMediasPage(
       {super.key,
       required this.isGroup,
@@ -25,7 +29,9 @@ class ShowMediasPage extends StatelessWidget {
       this.privateChat,
       this.user,
       this.group,
-      this.navigateToPage});
+      this.navigateToPage,
+      required this.databaseService,
+      required this.notificationService});
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +48,20 @@ class ShowMediasPage extends StatelessWidget {
               if (canNavigate) {
                 if (isGroup) {
                   navigateToPage!(GroupInfoPage(
-                      group: group!,
-                      canNavigate: canNavigate,
-                      navigateToPage: navigateToPage));
+                    group: group!,
+                    canNavigate: canNavigate,
+                    navigateToPage: navigateToPage,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
+                  ));
                 } else {
                   navigateToPage!(PrivateInfoPage(
                     privateChat: privateChat!,
                     canNavigate: canNavigate,
                     navigateToPage: navigateToPage,
                     user: user!,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
                   ));
                 }
               } else {
@@ -131,6 +142,8 @@ class ShowMediasPage extends StatelessWidget {
                                 messages: groupedMedias.values
                                     .expand((element) => element)
                                     .toList(),
+                                databaseService: databaseService,
+                                notificationService: notificationService,
                               ));
                             } else {
                               Navigator.of(context).push(
@@ -145,6 +158,8 @@ class ShowMediasPage extends StatelessWidget {
                                     messages: groupedMedias.values
                                         .expand((element) => element)
                                         .toList(),
+                                    databaseService: databaseService,
+                                    notificationService: notificationService,
                                   ),
                                 ),
                               );

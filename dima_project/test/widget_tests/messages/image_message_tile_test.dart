@@ -7,6 +7,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
+import '../../mocks/mock_notification_service.mocks.dart';
 
 void main() {
   testWidgets('ImageMessageTile displays correctly',
@@ -35,6 +36,7 @@ void main() {
             message: message,
             showCustomSnackbar: () {},
             databaseService: MockDatabaseService(),
+            notificationService: MockNotificationService(),
           ),
         ),
       );

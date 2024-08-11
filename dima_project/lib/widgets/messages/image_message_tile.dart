@@ -1,6 +1,7 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/chats/media_view_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -12,12 +13,14 @@ class ImageMessageTile extends StatelessWidget {
   final String? senderUsername;
   final VoidCallback showCustomSnackbar;
   final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ImageMessageTile({
     required this.message,
     this.senderUsername,
     super.key,
     required this.showCustomSnackbar,
     required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -37,6 +40,8 @@ class ImageMessageTile extends StatelessWidget {
               isGroup: message.isGroupMessage,
               media: message,
               messages: [message],
+              databaseService: databaseService,
+              notificationService: notificationService,
             ),
           ),
         );

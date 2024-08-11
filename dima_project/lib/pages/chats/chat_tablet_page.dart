@@ -16,18 +16,21 @@ import 'package:dima_project/widgets/chats/private_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:dima_project/services/notification_service.dart';
 
 class ChatTabletPage extends StatefulWidget {
   final Group? selectedGroup;
   final PrivateChat? selectedPrivateChat;
   final UserData? selectedUser;
   final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ChatTabletPage({
     super.key,
     required this.selectedGroup,
     required this.selectedPrivateChat,
     required this.selectedUser,
     required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -60,6 +63,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           key: UniqueKey(),
           navigateToPage: _navigateToPage,
           canNavigate: true,
+          databaseService: _databaseService,
+          notificationService: widget.notificationService,
         );
       });
     }
@@ -74,6 +79,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           navigateToPage: _navigateToPage,
           canNavigate: true,
           user: selectedUser!,
+          databaseService: _databaseService,
+          notificationService: widget.notificationService,
         );
       });
     }
@@ -237,6 +244,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
                               canNavigate: true,
+                              databaseService: _databaseService,
+                              notificationService: widget.notificationService,
                             );
                           }
                           if (page is GroupInfoPage) {
@@ -245,6 +254,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
                               canNavigate: true,
+                              databaseService: _databaseService,
+                              notificationService: widget.notificationService,
                             );
                           }
                         });
@@ -273,6 +284,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
                               canNavigate: true,
+                              databaseService: _databaseService,
+                              notificationService: widget.notificationService,
                             );
                           });
                         },
@@ -316,6 +329,9 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 );
                               });
                             },
@@ -412,6 +428,9 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,
                                   user: other,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 );
                               }
                               if (page is PrivateInfoPage) {
@@ -421,6 +440,9 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,
                                   user: other,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 );
                               }
                             });
@@ -451,6 +473,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 navigateToPage: _navigateToPage,
                                 canNavigate: true,
                                 user: other,
+                                databaseService: _databaseService,
+                                notificationService: widget.notificationService,
                               );
                             })
                           },
@@ -479,6 +503,9 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 selectedPrivateChat = privateChat;
                                 privateChat.lastMessage!.unreadMessages = 0;
                                 page = PrivateChatPage(
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                   privateChat: privateChat,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,

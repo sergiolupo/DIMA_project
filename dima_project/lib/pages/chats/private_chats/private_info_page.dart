@@ -7,6 +7,7 @@ import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,12 +17,16 @@ class PrivateInfoPage extends StatefulWidget {
   final Function? navigateToPage;
   final bool canNavigate;
   final UserData user;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const PrivateInfoPage({
     super.key,
     required this.privateChat,
     this.navigateToPage,
     required this.canNavigate,
     required this.user,
+    required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -30,10 +35,11 @@ class PrivateInfoPage extends StatefulWidget {
 
 class PrivateInfoPageState extends State<PrivateInfoPage> {
   final String uid = AuthService.uid;
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   bool notify = true;
   @override
   void initState() {
+    _databaseService = widget.databaseService;
     init();
     super.initState();
   }
@@ -60,6 +66,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                 canNavigate: widget.canNavigate,
                 navigateToPage: widget.navigateToPage,
                 user: widget.user,
+                databaseService: widget.databaseService,
+                notificationService: widget.notificationService,
               ));
               return;
             }
@@ -169,6 +177,9 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
                                   user: widget.user,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -180,6 +191,9 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     isGroup: false,
                                     medias: media,
                                     user: widget.user,
+                                    databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );
@@ -246,6 +260,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                   isGroup: false,
                                   user: widget.user,
                                   databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -259,6 +275,8 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     events: events,
                                     user: widget.user,
                                     databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );
@@ -324,6 +342,9 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
                                   user: widget.user,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -336,6 +357,9 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     isGroup: false,
                                     news: news,
                                     user: widget.user,
+                                    databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );

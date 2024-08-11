@@ -2,6 +2,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
@@ -11,11 +12,13 @@ class PrivateChatTile extends StatefulWidget {
   final PrivateChat privateChat;
   final UserData other;
   final DatabaseService databaseService;
+  final NotificationService notificationService;
   const PrivateChatTile({
     super.key,
     required this.privateChat,
     required this.other,
     required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -65,6 +68,9 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                 privateChat: widget.privateChat,
                 canNavigate: false,
                 user: widget.other,
+                databaseService: widget.databaseService,
+                notificationService: widget.notificationService,
+
               ),
             ),
           );

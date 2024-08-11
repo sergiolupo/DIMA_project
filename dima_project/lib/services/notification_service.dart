@@ -150,6 +150,9 @@ class NotificationService {
                     privateChat: privateChat,
                     user: user,
                     canNavigate: false,
+                    databaseService: DatabaseService(),
+                    notificationService:
+                        NotificationService(databaseService: DatabaseService()),
                   )));
     }
     if (message.data['type'] == 'group_chat') {
@@ -171,6 +174,9 @@ class NotificationService {
               builder: (context) => GroupChatPage(
                     group: group,
                     canNavigate: false,
+                    databaseService: DatabaseService(),
+                    notificationService:
+                        NotificationService(databaseService: DatabaseService()),
                   )));
     }
     if (message.data['type'] == 'event' &&

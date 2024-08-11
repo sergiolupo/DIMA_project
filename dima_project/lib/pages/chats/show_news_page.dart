@@ -5,6 +5,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,8 @@ class ShowNewsPage extends StatelessWidget {
   final Function? navigateToPage;
   final PrivateChat? privateChat;
   final UserData? user;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ShowNewsPage(
       {super.key,
       required this.isGroup,
@@ -24,6 +27,8 @@ class ShowNewsPage extends StatelessWidget {
       this.group,
       this.user,
       required this.canNavigate,
+      required this.databaseService,
+      required this.notificationService,
       this.privateChat,
       this.navigateToPage});
 
@@ -42,15 +47,20 @@ class ShowNewsPage extends StatelessWidget {
               if (canNavigate) {
                 if (isGroup) {
                   navigateToPage!(GroupInfoPage(
-                      group: group!,
-                      canNavigate: canNavigate,
-                      navigateToPage: navigateToPage));
+                    group: group!,
+                    canNavigate: canNavigate,
+                    navigateToPage: navigateToPage,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
+                  ));
                 } else {
                   navigateToPage!(PrivateInfoPage(
                     privateChat: privateChat!,
                     canNavigate: canNavigate,
                     navigateToPage: navigateToPage,
                     user: user!,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
                   ));
                 }
               }

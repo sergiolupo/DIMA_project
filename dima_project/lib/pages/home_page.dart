@@ -135,12 +135,14 @@ class HomePageState extends ConsumerState<HomePage> {
             page = ResponsiveLayout(
               mobileLayout: ChatPage(
                 databaseService: databaseService,
+                notificationService: widget.notificationService,
               ),
               tabletLayout: ChatTabletPage(
                 databaseService: databaseService,
                 selectedGroup: selectedGroup,
                 selectedPrivateChat: selectedPrivateChat,
                 selectedUser: selectedUser,
+                notificationService: widget.notificationService,
               ),
             );
             break;

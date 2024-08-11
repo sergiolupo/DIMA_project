@@ -9,6 +9,7 @@ import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
@@ -21,11 +22,15 @@ class GroupInfoPage extends StatefulWidget {
   final Group group;
   final Function? navigateToPage;
   final bool canNavigate;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const GroupInfoPage({
     super.key,
     required this.group,
     this.navigateToPage,
     required this.canNavigate,
+    required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -36,11 +41,12 @@ class GroupInfoPageState extends State<GroupInfoPage> {
   late Group group;
 
   final String uid = AuthService.uid;
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   bool notify = true;
 
   @override
   void initState() {
+    _databaseService = widget.databaseService;
     init();
     super.initState();
     setState(() {
@@ -66,9 +72,12 @@ class GroupInfoPageState extends State<GroupInfoPage> {
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupChatPage(
-                  group: group,
-                  canNavigate: widget.canNavigate,
-                  navigateToPage: widget.navigateToPage));
+                group: group,
+                canNavigate: widget.canNavigate,
+                navigateToPage: widget.navigateToPage,
+                databaseService: _databaseService,
+                notificationService: widget.notificationService,
+              ));
               return;
             }
             Navigator.of(context).pop(group);
@@ -266,6 +275,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     requests: requests,
                                     canNavigate: true,
                                     navigateToPage: widget.navigateToPage,
+                                    notificationService:
+                                        widget.notificationService,
+                                    databaseService: _databaseService,
                                   ));
                                   return;
                                 }
@@ -277,6 +289,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                       group: group,
                                       requests: requests,
                                       canNavigate: false,
+                                      notificationService:
+                                          widget.notificationService,
+                                      databaseService: _databaseService,
                                     ),
                                   ),
                                 );
@@ -342,6 +357,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
                                   group: group,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -352,6 +370,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     medias: media,
                                     group: group,
                                     canNavigate: false,
+                                    databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );
@@ -415,6 +436,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
                                   databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -426,6 +449,8 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     isGroup: true,
                                     events: events,
                                     databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );
@@ -488,6 +513,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   news: news,
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
+                                  databaseService: _databaseService,
+                                  notificationService:
+                                      widget.notificationService,
                                 ));
                                 return;
                               }
@@ -498,6 +526,9 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     canNavigate: false,
                                     isGroup: true,
                                     news: news,
+                                    databaseService: _databaseService,
+                                    notificationService:
+                                        widget.notificationService,
                                   ),
                                 ),
                               );

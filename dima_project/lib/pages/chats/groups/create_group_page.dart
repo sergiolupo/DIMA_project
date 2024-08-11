@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -10,7 +11,6 @@ import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -304,7 +304,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
       Group(
         name: _groupNameController.text,
         id: '',
-        admin: FirebaseAuth.instance.currentUser!.uid,
+        admin: AuthService.uid,
         description: _groupDescriptionController.text,
         categories: selectedCategories,
         isPublic: isPublic,
@@ -312,6 +312,6 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
       selectedImagePath,
       databaseService,
     );
-    ref.invalidate(groupsProvider(FirebaseAuth.instance.currentUser!.uid));
+    ref.invalidate(groupsProvider(AuthService.uid));
   }
 }

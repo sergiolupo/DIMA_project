@@ -17,13 +17,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
+import 'package:dima_project/services/notification_service.dart';
 
 class CreateEventPage extends ConsumerStatefulWidget {
   final Group? group;
   final bool canNavigate;
   final Function? navigateToPage;
-  const CreateEventPage(
-      {super.key, this.group, required this.canNavigate, this.navigateToPage});
+  const CreateEventPage({
+    super.key,
+    this.group,
+    required this.canNavigate,
+    this.navigateToPage,
+  });
 
   @override
   CreateEventPageState createState() => CreateEventPageState();
@@ -46,7 +51,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   int numInfos = 1;
   Map<int, bool> map = {};
   Map<int, EventDetails> details = {};
-
+  late final DatabaseService databaseService;
+  late final NotificationService notificationService;
   final String uid = AuthService.uid;
   @override
   void dispose() {
@@ -63,10 +69,14 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     setState(() {
       if (widget.group != null) groupIds.add(widget.group!.id);
     });
-    super.initState();
+
     animationController = AnimationController(
       vsync: this,
     );
+    databaseService = ref.read(databaseServiceProvider);
+    notificationService = ref.read(notificationServiceProvider);
+
+    super.initState();
   }
 
   Future<void> _createEvent(DatabaseService databaseService) async {
@@ -107,13 +117,13 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
       if (!buildContext.mounted) return;
       Navigator.of(buildContext).pop();
 
-      showDoneDialog();
+      showDoneDialog(databaseService);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseService databaseService = DatabaseService();
+    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -125,6 +135,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 canNavigate: widget.canNavigate,
                 group: widget.group!,
                 navigateToPage: widget.navigateToPage,
+                databaseService: databaseService,
+                notificationService: notificationService,
               ));
             } else {
               Navigator.of(context).pop();
@@ -388,7 +400,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     );
   }
 
-  void showDoneDialog() {
+  void showDoneDialog(DatabaseService databaseService) {
     showCupertinoDialog(
       context: context,
       barrierDismissible: false,
@@ -437,6 +449,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       canNavigate: widget.canNavigate,
                       group: widget.group!,
                       navigateToPage: widget.navigateToPage,
+                      databaseService: databaseService,
+                      notificationService: notificationService,
                     ));
                   } else {
                     if (mounted) {

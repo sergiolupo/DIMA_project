@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
+import '../mocks/mock_notification_service.mocks.dart';
 
 // ignore: subtype_of_sealed_class
 class MockQueryDocumentSnapshot extends Fake
@@ -45,6 +46,8 @@ void main() {
           (ref, uid) => Stream.value([]),
         ),
         databaseServiceProvider.overrideWithValue(MockDatabaseService()),
+        notificationServiceProvider
+            .overrideWithValue(MockNotificationService()),
       ],
       child: CupertinoApp(
         home: SearchPage(

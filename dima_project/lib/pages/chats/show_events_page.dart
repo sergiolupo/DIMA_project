@@ -6,6 +6,7 @@ import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +20,7 @@ class ShowEventsPage extends StatelessWidget {
   final PrivateChat? privateChat;
   final UserData? user;
   final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ShowEventsPage(
       {super.key,
       required this.isGroup,
@@ -27,6 +29,7 @@ class ShowEventsPage extends StatelessWidget {
       required this.canNavigate,
       this.privateChat,
       required this.databaseService,
+      required this.notificationService,
       this.user,
       this.group});
 
@@ -45,15 +48,20 @@ class ShowEventsPage extends StatelessWidget {
               if (canNavigate) {
                 if (isGroup) {
                   navigateToPage!(GroupInfoPage(
-                      group: group!,
-                      canNavigate: canNavigate,
-                      navigateToPage: navigateToPage));
+                    group: group!,
+                    canNavigate: canNavigate,
+                    navigateToPage: navigateToPage,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
+                  ));
                 } else {
                   navigateToPage!(PrivateInfoPage(
                     privateChat: privateChat!,
                     navigateToPage: navigateToPage,
                     canNavigate: canNavigate,
                     user: user!,
+                    databaseService: databaseService,
+                    notificationService: notificationService,
                   ));
                 }
               } else {

@@ -6,6 +6,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile.dart';
@@ -14,9 +15,11 @@ import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
   final DatabaseService databaseService;
+  final NotificationService notificationService;
   const ChatPage({
     super.key,
     required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -146,6 +149,7 @@ class ChatPageState extends State<ChatPage> {
                       username: '',
                       group: group,
                       databaseService: _databaseService,
+                      notificationService: widget.notificationService,
                     );
                   }
                   return StreamBuilder(
@@ -168,6 +172,7 @@ class ChatPageState extends State<ChatPage> {
                           group: group,
                           username: username,
                           databaseService: _databaseService,
+                          notificationService: widget.notificationService,
                         );
                       });
                 },
@@ -294,6 +299,7 @@ class ChatPageState extends State<ChatPage> {
                           privateChat: privateChat,
                           other: other,
                           databaseService: _databaseService,
+                          notificationService: widget.notificationService,
                         );
                       } else {
                         if (snapshot.hasError) {
@@ -328,6 +334,7 @@ class ChatPageState extends State<ChatPage> {
                               surname: '',
                             ),
                             databaseService: _databaseService,
+                            notificationService: widget.notificationService,
                           );
                         }
                         return Container();

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
@@ -19,6 +20,7 @@ class EditGroupPage extends ConsumerStatefulWidget {
   final Group group;
   final bool canNavigate;
   final Function? navigateToPage;
+
   @override
   const EditGroupPage({
     super.key,
@@ -40,6 +42,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
   List<String> uuids = [];
   List<String> selectedCategories = [];
   int index = 0;
+  late final DatabaseService databaseService;
+  late final NotificationService notificationService;
   @override
   void dispose() {
     _groupNameController.dispose();
@@ -50,6 +54,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
   @override
   void initState() {
     super.initState();
+    databaseService = ref.read(databaseServiceProvider);
+    notificationService = ref.read(notificationServiceProvider);
     setState(() {
       isPublic = widget.group.isPublic;
       selectedCategories = widget.group.categories!;
@@ -60,7 +66,6 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final databaseService = ref.read(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -72,7 +77,9 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                     widget.navigateToPage!(GroupInfoPage(
                         group: widget.group,
                         canNavigate: widget.canNavigate,
-                        navigateToPage: widget.navigateToPage));
+                        navigateToPage: widget.navigateToPage,
+                        databaseService: databaseService,
+                        notificationService: notificationService));
                   } else {
                     Navigator.of(context).pop();
                   }
@@ -131,6 +138,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                         widget.navigateToPage!(GroupInfoPage(
                             group: newGroup,
                             canNavigate: widget.canNavigate,
+                            databaseService: databaseService,
+                            notificationService: notificationService,
                             navigateToPage: widget.navigateToPage));
                       } else {
                         if (context.mounted) {

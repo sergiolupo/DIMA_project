@@ -7,6 +7,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/widgets/group_tile.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
+import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
   final Group testGroup = Group(
@@ -22,6 +23,8 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         databaseServiceProvider.overrideWithValue(MockDatabaseService()),
+        notificationServiceProvider
+            .overrideWithValue(MockNotificationService()),
       ],
       child: CupertinoApp(
         home: CupertinoPageScaffold(

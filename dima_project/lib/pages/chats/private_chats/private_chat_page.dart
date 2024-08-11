@@ -27,12 +27,16 @@ class PrivateChatPage extends StatefulWidget {
   final bool canNavigate;
   final Function? navigateToPage;
   final UserData user;
+  final NotificationService notificationService;
+  final DatabaseService databaseService;
   const PrivateChatPage({
     super.key,
     required this.privateChat,
     required this.canNavigate,
     this.navigateToPage,
     required this.user,
+    required this.notificationService,
+    required this.databaseService,
   });
 
   @override
@@ -48,9 +52,11 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   OverlayEntry? _clipboardOverlay;
   OverlayEntry? _optionsMenuOverlay;
   final FocusNode _focusNode = FocusNode();
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   @override
   void initState() {
+    _databaseService = widget.databaseService;
+
     _checkPrivateChatId();
 
     super.initState();
@@ -70,6 +76,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
                     user: widget.user,
+                    notificationService: widget.notificationService,
+                    databaseService: widget.databaseService,
                   ),
                 ));
               } else {
@@ -79,6 +87,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
                     user: widget.user,
+                    notificationService: widget.notificationService,
+                    databaseService: widget.databaseService,
                   ),
                 );
                 return;
@@ -288,6 +298,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                         : (message.type == Type.image)
                             ? ImageMessageTile(
                                 databaseService: _databaseService,
+                                notificationService: widget.notificationService,
                                 message: message,
                                 showCustomSnackbar: () {
                                   showCustomSnackbar(false);

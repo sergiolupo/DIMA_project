@@ -5,6 +5,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -16,6 +17,8 @@ class MediaViewPage extends StatefulWidget {
   final bool isGroup;
   final Group? group;
   final PrivateChat? privateChat;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const MediaViewPage(
       {super.key,
       required this.media,
@@ -24,7 +27,9 @@ class MediaViewPage extends StatefulWidget {
       required this.isGroup,
       this.privateChat,
       this.group,
-      this.navigateToPage});
+      this.navigateToPage,
+      required this.databaseService,
+      required this.notificationService});
 
   @override
   MediaViewPageState createState() => MediaViewPageState();
@@ -33,13 +38,15 @@ class MediaViewPage extends StatefulWidget {
 class MediaViewPageState extends State<MediaViewPage> {
   late PageController _pageController;
   late int initialPage;
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   @override
   void initState() {
-    super.initState();
+    _databaseService = widget.databaseService;
+
     initialPage =
         widget.messages.indexWhere((message) => message.id == widget.media.id);
     _pageController = PageController(initialPage: initialPage);
+    super.initState();
   }
 
   @override
@@ -61,7 +68,9 @@ class MediaViewPageState extends State<MediaViewPage> {
                         canNavigate: widget.canNavigate,
                         group: widget.group,
                         privateChat: widget.privateChat,
-                        navigateToPage: widget.navigateToPage));
+                        navigateToPage: widget.navigateToPage,
+                        databaseService: _databaseService,
+                        notificationService: widget.notificationService));
 
                     return;
                   }

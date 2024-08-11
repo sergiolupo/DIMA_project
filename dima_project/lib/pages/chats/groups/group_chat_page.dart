@@ -7,6 +7,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -18,20 +19,22 @@ import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupChatPage extends StatefulWidget {
   final Group group;
   final bool canNavigate;
   final Function? navigateToPage;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const GroupChatPage({
     super.key,
     required this.canNavigate,
     required this.group,
     this.navigateToPage,
+    required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -47,11 +50,12 @@ class GroupChatPageState extends State<GroupChatPage> {
   final GlobalKey _navigationBarKey = GlobalKey();
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
   late Group group;
 
   @override
   void initState() {
+    _databaseService = widget.databaseService;
     group = widget.group;
     getChats();
     super.initState();
@@ -74,6 +78,8 @@ class GroupChatPageState extends State<GroupChatPage> {
                 CupertinoPageRoute(
                   builder: (context) => GroupInfoPage(
                     group: group,
+                    notificationService: widget.notificationService,
+                    databaseService: _databaseService,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
                   ),
@@ -89,6 +95,8 @@ class GroupChatPageState extends State<GroupChatPage> {
                 GroupInfoPage(
                   group: group,
                   canNavigate: widget.canNavigate,
+                  notificationService: widget.notificationService,
+                  databaseService: _databaseService,
                   navigateToPage: widget.navigateToPage,
                 ),
               );
@@ -119,11 +127,7 @@ class GroupChatPageState extends State<GroupChatPage> {
             : CupertinoButton(
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  } else {
-                    context.go("/home", extra: 1);
-                  }
+                  Navigator.of(context).pop();
                 },
                 child: Icon(CupertinoIcons.back,
                     color: CupertinoTheme.of(context).primaryColor),
@@ -165,6 +169,7 @@ class GroupChatPageState extends State<GroupChatPage> {
     if (mounted) {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
+      debugPrint('RenderBox size: ${renderBox.size}');
       final Size size = renderBox.size;
       _clipboardOverlay = OverlayEntry(
         builder: (context) => BannerMessage(
@@ -224,7 +229,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         true,
         Uint8List.fromList(bytes),
       );
-      await NotificationService(databaseService: DatabaseService())
+      await widget.notificationService
           .sendNotificationOnGroup(widget.group.id, message);
       if (mounted) {
         setState(() {
@@ -252,7 +257,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           true,
           Uint8List.fromList(bytes),
         );
-        await NotificationService(databaseService: DatabaseService())
+        await widget.notificationService
             .sendNotificationOnGroup(widget.group.id, message);
         if (mounted) {
           setState(() {
@@ -356,11 +361,11 @@ class GroupChatPageState extends State<GroupChatPage> {
     if (messageEditingController.text.isNotEmpty) {
       ReadBy readBy = ReadBy(
         readAt: Timestamp.now(),
-        username: FirebaseAuth.instance.currentUser!.uid,
+        username: AuthService.uid,
       );
       Message message = Message(
         content: messageEditingController.text,
-        sender: FirebaseAuth.instance.currentUser!.uid,
+        sender: AuthService.uid,
         isGroupMessage: true,
         time: Timestamp.now(),
         readBy: [
@@ -370,7 +375,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       );
 
       await _databaseService.sendMessage(group.id, message);
-      await NotificationService(databaseService: DatabaseService())
+      await widget.notificationService
           .sendNotificationOnGroup(widget.group.id, message);
       setState(() {
         messageEditingController.clear();
@@ -414,6 +419,7 @@ class GroupChatPageState extends State<GroupChatPage> {
       case Type.image:
         return ImageMessageTile(
           databaseService: _databaseService,
+          notificationService: widget.notificationService,
           message: message,
           senderUsername: senderUsername,
           showCustomSnackbar: () {

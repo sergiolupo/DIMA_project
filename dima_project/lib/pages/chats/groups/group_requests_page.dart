@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -10,12 +11,16 @@ class GroupRequestsPage extends StatefulWidget {
   final List<UserData> requests;
   final bool canNavigate;
   final Function? navigateToPage;
+  final DatabaseService databaseService;
+  final NotificationService notificationService;
   const GroupRequestsPage({
     super.key,
     required this.group,
     required this.requests,
     required this.canNavigate,
     this.navigateToPage,
+    required this.databaseService,
+    required this.notificationService,
   });
 
   @override
@@ -24,9 +29,11 @@ class GroupRequestsPage extends StatefulWidget {
 
 class GroupRequestsPageState extends State<GroupRequestsPage> {
   late List<UserData> users;
-  final DatabaseService _databaseService = DatabaseService();
+  late final DatabaseService _databaseService;
+
   @override
   void initState() {
+    _databaseService = widget.databaseService;
     users = widget.requests;
     super.initState();
   }
@@ -43,9 +50,12 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 await _databaseService.getGroupFromId(widget.group.id);
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupInfoPage(
-                  group: group,
-                  canNavigate: widget.canNavigate,
-                  navigateToPage: widget.navigateToPage));
+                group: group,
+                canNavigate: widget.canNavigate,
+                navigateToPage: widget.navigateToPage,
+                databaseService: _databaseService,
+                notificationService: widget.notificationService,
+              ));
             }
             if (!context.mounted) return;
             Navigator.of(context).pop(group);

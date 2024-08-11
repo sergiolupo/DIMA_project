@@ -25,7 +25,7 @@ void main() {
           readAt: Timestamp.fromDate(DateTime(2021, 1, 1, 1, 1)),
         ),
       ],
-      type: Type.image,
+      type: Type.text,
     );
 
     // Build the widget

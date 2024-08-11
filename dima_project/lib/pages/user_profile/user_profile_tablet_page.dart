@@ -36,11 +36,11 @@ class UserProfileTablet extends ConsumerStatefulWidget {
 class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
   late final bool isMyProfile;
 
-// 0 is not following, 1 is following, 2 is requested
-
   int index = 0;
   bool navigatorCanPop = false;
   final String uid = AuthService.uid;
+  late final NotificationService notificationService;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +52,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
     ref.read(groupsProvider(widget.user));
     ref.read(joinedEventsProvider(widget.user));
     ref.read(createdEventsProvider(widget.user));
+    notificationService = ref.read(notificationServiceProvider);
+
     setState(() {
       navigatorCanPop = canNavigatorPop(context);
     });
@@ -263,6 +265,8 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                                       privateChat: chat,
                                       canNavigate: false,
                                       user: user,
+                                      notificationService: notificationService,
+                                      databaseService: databaseService,
                                     ),
                                   ),
                                 );
