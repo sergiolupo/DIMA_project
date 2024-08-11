@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile_tablet.dart';
@@ -26,6 +27,7 @@ class ChatTabletPage extends StatefulWidget {
   final DatabaseService databaseService;
   final NotificationService notificationService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const ChatTabletPage({
     super.key,
     required this.selectedGroup,
@@ -34,6 +36,7 @@ class ChatTabletPage extends StatefulWidget {
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
+    required this.storageService,
   });
 
   @override
@@ -62,6 +65,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
       setState(() {
         selectedGroup = widget.selectedGroup;
         page = GroupChatPage(
+          storageService: widget.storageService,
           group: selectedGroup!,
           key: UniqueKey(),
           navigateToPage: _navigateToPage,
@@ -78,6 +82,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
         selectedUser = widget.selectedUser;
         selectedPrivateChat = widget.selectedPrivateChat;
         page = PrivateChatPage(
+          storageService: widget.storageService,
           privateChat: selectedPrivateChat!,
           key: UniqueKey(),
           navigateToPage: _navigateToPage,
@@ -245,6 +250,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         setState(() {
                           if (page is GroupChatPage) {
                             page = GroupChatPage(
+                              storageService: widget.storageService,
                               group: group,
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
@@ -286,6 +292,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           setState(() {
                             selectedGroup = group;
                             page = GroupChatPage(
+                              storageService: widget.storageService,
                               group: group,
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
@@ -332,6 +339,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 selectedGroup = group;
                                 group.lastMessage!.unreadMessages = 0;
                                 page = GroupChatPage(
+                                  storageService: widget.storageService,
                                   group: group,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
@@ -431,6 +439,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             setState(() {
                               if (page is PrivateChatPage) {
                                 page = PrivateChatPage(
+                                  storageService: widget.storageService,
                                   privateChat: privateChat,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
@@ -477,6 +486,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               selectedPrivateChat = privateChat;
                               privateChat.lastMessage!.unreadMessages = 0;
                               page = PrivateChatPage(
+                                storageService: widget.storageService,
                                 privateChat: privateChat,
                                 key: UniqueKey(),
                                 navigateToPage: _navigateToPage,
@@ -513,6 +523,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 selectedPrivateChat = privateChat;
                                 privateChat.lastMessage!.unreadMessages = 0;
                                 page = PrivateChatPage(
+                                  storageService: widget.storageService,
                                   databaseService: _databaseService,
                                   notificationService:
                                       widget.notificationService,

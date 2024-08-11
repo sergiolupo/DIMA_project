@@ -10,6 +10,7 @@ import 'package:dima_project/models/message.dart';
 import '../../mocks/mock_database_service.mocks.dart';
 import '../../mocks/mock_image_picker.mocks.dart';
 import '../../mocks/mock_notification_service.mocks.dart';
+import '../../mocks/mock_storage_service.mocks.dart';
 
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',
@@ -41,6 +42,7 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: PrivateChatTile(
+            storageService: MockStorageService(),
             privateChat: privateChat,
             other: user,
             databaseService: MockDatabaseService(),
@@ -88,6 +90,7 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: PrivateChatTile(
+            storageService: MockStorageService(),
             privateChat: privateChatEvent,
             other: user,
             databaseService: MockDatabaseService(),

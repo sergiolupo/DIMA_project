@@ -7,6 +7,7 @@ import 'package:dima_project/pages/responsive_layout.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/events/event_grid.dart';
 import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
 import 'package:dima_project/pages/user_profile/show_followers_page.dart';
@@ -265,6 +266,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                                 Navigator.of(context, rootNavigator: true).push(
                                   CupertinoPageRoute(
                                     builder: (context) => PrivateChatPage(
+                                      storageService: StorageService(),
                                       privateChat: chat,
                                       canNavigate: false,
                                       user: user,

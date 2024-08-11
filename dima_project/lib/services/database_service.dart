@@ -34,8 +34,8 @@ class DatabaseService {
       UserData user, String uuid, Uint8List imagePath) async {
     String imageUrl = imagePath.toString() == '[]'
         ? ''
-        : await StorageService.uploadImageToStorage(
-            'profile_images/$uuid.jpg', imagePath);
+        : await StorageService()
+            .uploadImageToStorage('profile_images/$uuid.jpg', imagePath);
     List<Map<String, dynamic>> serializedList =
         user.categories.map((item) => {'value': item}).toList();
     await usersRef.doc(uuid).set({
@@ -78,7 +78,7 @@ class DatabaseService {
     if (imageHasChanged) {
       String imageUrl = imagePath.toString() == '[]' || imagePath!.isEmpty
           ? ''
-          : await StorageService.uploadImageToStorage(
+          : await StorageService().uploadImageToStorage(
               'profile_images/${user.uid!}.jpg', imagePath);
       List<Map<String, dynamic>> serializedList =
           user.categories.map((item) => {'value': item}).toList();
@@ -198,7 +198,7 @@ class DatabaseService {
 
       String imageUrl = imagePath.toString() == '[]'
           ? ''
-          : await StorageService.uploadImageToStorage(
+          : await StorageService().uploadImageToStorage(
               'group_images/${docRef.id}.jpg', imagePath);
 
       await groupsRef.doc(docRef.id).update({
@@ -1159,7 +1159,7 @@ class DatabaseService {
 
       String imageUrl = imagePath.toString() == '[]'
           ? ''
-          : await StorageService.uploadImageToStorage(
+          : await StorageService().uploadImageToStorage(
               'event_images/${docRef.id}.jpg', imagePath);
 
       await eventsRef.doc(docRef.id).update({
@@ -1531,7 +1531,7 @@ class DatabaseService {
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
-          : await StorageService.uploadImageToStorage(
+          : await StorageService().uploadImageToStorage(
               'event_images/${event.id}.jpg', uint8list);
       await eventsRef.doc(event.id).update({
         'imagePath': imageUrl,
@@ -1570,7 +1570,7 @@ class DatabaseService {
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
-          : await StorageService.uploadImageToStorage(
+          : await StorageService().uploadImageToStorage(
               'group_images/${group.id}.jpg', uint8list);
       await groupsRef.doc(group.id).update({
         'groupImage': imageUrl,

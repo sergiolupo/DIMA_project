@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
@@ -14,8 +15,10 @@ class GroupChatTile extends StatefulWidget {
   final DatabaseService databaseService;
   final NotificationService notificationService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const GroupChatTile({
     super.key,
+    required this.storageService,
     required this.group,
     this.username,
     required this.databaseService,
@@ -71,6 +74,7 @@ class GroupChatTileState extends State<GroupChatTile> {
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
+                storageService: widget.storageService,
                 group: widget.group,
                 canNavigate: false,
                 databaseService: widget.databaseService,

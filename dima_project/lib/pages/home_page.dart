@@ -14,6 +14,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -135,11 +136,13 @@ class HomePageState extends ConsumerState<HomePage> {
           case 1:
             page = ResponsiveLayout(
               mobileLayout: ChatPage(
+                storageService: StorageService(),
                 databaseService: databaseService,
                 notificationService: widget.notificationService,
                 imagePicker: ImagePicker(),
               ),
               tabletLayout: ChatTabletPage(
+                storageService: StorageService(),
                 databaseService: databaseService,
                 selectedGroup: selectedGroup,
                 selectedPrivateChat: selectedPrivateChat,

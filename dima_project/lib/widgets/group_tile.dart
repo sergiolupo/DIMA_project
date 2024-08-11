@@ -4,6 +4,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,6 +36,7 @@ class GroupTile extends ConsumerWidget {
                 Navigator.of(context, rootNavigator: true).push(
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
+                      storageService: StorageService(),
                       group: group,
                       canNavigate: false,
                       databaseService: databaseService,

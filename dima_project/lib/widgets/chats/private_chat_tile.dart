@@ -3,6 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
@@ -15,6 +16,7 @@ class PrivateChatTile extends StatefulWidget {
   final DatabaseService databaseService;
   final NotificationService notificationService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const PrivateChatTile({
     super.key,
     required this.privateChat,
@@ -22,6 +24,7 @@ class PrivateChatTile extends StatefulWidget {
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
+    required this.storageService,
   });
 
   @override
@@ -68,13 +71,13 @@ class PrivateChatTileState extends State<PrivateChatTile> {
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => PrivateChatPage(
+                storageService: widget.storageService,
                 privateChat: widget.privateChat,
                 canNavigate: false,
                 user: widget.other,
                 databaseService: widget.databaseService,
                 notificationService: widget.notificationService,
                 imagePicker: widget.imagePicker,
-
               ),
             ),
           );

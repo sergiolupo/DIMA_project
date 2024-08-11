@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
@@ -73,6 +74,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupChatPage(
+                storageService: StorageService(),
                 group: group,
                 canNavigate: widget.canNavigate,
                 navigateToPage: widget.navigateToPage,

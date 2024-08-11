@@ -7,6 +7,7 @@ import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile.dart';
@@ -18,11 +19,13 @@ class ChatPage extends StatefulWidget {
   final DatabaseService databaseService;
   final NotificationService notificationService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const ChatPage({
     super.key,
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
+    required this.storageService,
   });
 
   @override
@@ -149,6 +152,7 @@ class ChatPageState extends State<ChatPage> {
                   }
                   if (group.lastMessage == null) {
                     return GroupChatTile(
+                      storageService: widget.storageService,
                       username: '',
                       group: group,
                       databaseService: _databaseService,
@@ -173,6 +177,7 @@ class ChatPageState extends State<ChatPage> {
                               UserData.fromSnapshot(snapshot.data!).username;
                         }
                         return GroupChatTile(
+                          storageService: widget.storageService,
                           group: group,
                           username: username,
                           databaseService: _databaseService,
@@ -301,6 +306,7 @@ class ChatPageState extends State<ChatPage> {
                           return const SizedBox.shrink();
                         }
                         return PrivateChatTile(
+                          storageService: widget.storageService,
                           privateChat: privateChat,
                           other: other,
                           databaseService: _databaseService,
@@ -330,6 +336,7 @@ class ChatPageState extends State<ChatPage> {
                             return const SizedBox.shrink();
                           }
                           return PrivateChatTile(
+                            storageService: widget.storageService,
                             privateChat: privateChat,
                             other: UserData(
                               imagePath: '',

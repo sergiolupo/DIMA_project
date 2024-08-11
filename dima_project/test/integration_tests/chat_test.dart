@@ -15,15 +15,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:mockito/mockito.dart';
 import 'package:dima_project/models/message.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mocktail/mocktail.dart' as mocktail;
+import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_image_picker.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
+import '../mocks/mock_storage_service.mocks.dart';
+
+class MockXFile extends mocktail.Mock implements XFile {
+  @override
+  readAsBytes() async {
+    return Future.value(Uint8List(0));
+  }
+}
 
 void main() {
+  final MockXFile mockXFile = MockXFile();
   final PrivateChat fakePrivateChat1 = PrivateChat(
     id: '321',
     members: ['user1', 'user2'],
@@ -127,11 +136,12 @@ void main() {
   late final MockDatabaseService mockDatabaseService;
   late final MockNotificationService mockNotificationService;
   late final MockImagePicker mockImagePicker;
-
+  late final MockStorageService mockStorageService;
   setUpAll(() {
     mockDatabaseService = MockDatabaseService();
     mockNotificationService = MockNotificationService();
     mockImagePicker = MockImagePicker();
+    mockStorageService = MockStorageService();
   });
 
   group('ChatPage Tests for mobile', () {
@@ -146,6 +156,7 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: ChatPage(
+            storageService: mockStorageService,
             databaseService: mockDatabaseService,
             notificationService: mockNotificationService,
             imagePicker: mockImagePicker,
@@ -171,6 +182,7 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: ChatPage(
+            storageService: mockStorageService,
             databaseService: mockDatabaseService,
             notificationService: mockNotificationService,
             imagePicker: mockImagePicker,
@@ -245,6 +257,7 @@ void main() {
           ],
           child: CupertinoApp(
             home: ChatPage(
+              storageService: mockStorageService,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,
@@ -300,6 +313,7 @@ void main() {
           ],
           child: CupertinoApp(
             home: ChatPage(
+              storageService: mockStorageService,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,
@@ -435,27 +449,16 @@ void main() {
       when(mockImagePicker.pickImage(
               source: ImageSource.camera, imageQuality: 80))
           .thenAnswer((_) async {
-        final ByteData data = await rootBundle.load('assets/logo.png');
-        final Uint8List bytes = data.buffer.asUint8List();
-        Directory tempDir = await getTemporaryDirectory();
-        final File file = await File(
-          '${tempDir.path}/doc1.png',
-        ).writeAsBytes(bytes);
-
-        return XFile(file.path);
+        return mockXFile;
       });
       when(mockImagePicker.pickMultiImage(imageQuality: 80)).thenAnswer(
         (_) async {
-          final ByteData data = await rootBundle.load('assets/logo.png');
-          final Uint8List bytes = data.buffer.asUint8List();
-          Directory tempDir = await getTemporaryDirectory();
-          final File file = await File(
-            '${tempDir.path}/doc2.png',
-          ).writeAsBytes(bytes);
-          return [XFile(file.path)];
+          return [mockXFile];
         },
       );
-
+      when(mockStorageService.uploadImageToStorage(any, any)).thenAnswer((_) {
+        return Future.value('image_url');
+      });
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -476,6 +479,7 @@ void main() {
           ],
           child: CupertinoApp(
             home: ChatPage(
+              storageService: mockStorageService,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,

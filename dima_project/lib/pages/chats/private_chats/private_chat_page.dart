@@ -30,6 +30,7 @@ class PrivateChatPage extends StatefulWidget {
   final NotificationService notificationService;
   final DatabaseService databaseService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const PrivateChatPage({
     super.key,
     required this.privateChat,
@@ -39,6 +40,7 @@ class PrivateChatPage extends StatefulWidget {
     required this.notificationService,
     required this.databaseService,
     required this.imagePicker,
+    required this.storageService,
   });
 
   @override
@@ -172,7 +174,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
 
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
-      final String imageUrl = await StorageService.uploadImageToStorage(
+      final String imageUrl = await widget.storageService.uploadImageToStorage(
           'chat_images/${widget.privateChat.id!}/${AuthService.uid}/${Timestamp.now()}.jpg',
           Uint8List.fromList(bytes));
       ReadBy readBy = ReadBy(
@@ -217,7 +219,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         widget.privateChat.id ??=
             await _databaseService.createPrivateChat(widget.privateChat);
 
-        final String imageUrl = await StorageService.uploadImageToStorage(
+        final String imageUrl = await widget.storageService.uploadImageToStorage(
             'chat_images/${widget.privateChat.id!}/${AuthService.uid}/${Timestamp.now()}.jpg',
             Uint8List.fromList(bytes));
         ReadBy readBy = ReadBy(

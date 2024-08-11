@@ -10,6 +10,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
 import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -133,6 +134,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupChatPage(
+                storageService: StorageService(),
                 canNavigate: widget.canNavigate,
                 group: widget.group!,
                 navigateToPage: widget.navigateToPage,
@@ -448,6 +450,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                   }
                   if (widget.canNavigate) {
                     widget.navigateToPage!(GroupChatPage(
+                      storageService: StorageService(),
                       canNavigate: widget.canNavigate,
                       group: widget.group!,
                       navigateToPage: widget.navigateToPage,

@@ -8,6 +8,7 @@ import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -63,6 +64,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(PrivateChatPage(
+                storageService: StorageService(),
                 privateChat: widget.privateChat,
                 canNavigate: widget.canNavigate,
                 navigateToPage: widget.navigateToPage,

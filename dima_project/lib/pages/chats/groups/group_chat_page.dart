@@ -29,6 +29,7 @@ class GroupChatPage extends StatefulWidget {
   final DatabaseService databaseService;
   final NotificationService notificationService;
   final ImagePicker imagePicker;
+  final StorageService storageService;
   const GroupChatPage({
     super.key,
     required this.canNavigate,
@@ -37,6 +38,7 @@ class GroupChatPage extends StatefulWidget {
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
+    required this.storageService,
   });
 
   @override
@@ -224,7 +226,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         });
       }
       final bytes = await image.readAsBytes();
-      final String imageUrl = await StorageService.uploadImageToStorage(
+      final String imageUrl = await widget.storageService.uploadImageToStorage(
           'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
           Uint8List.fromList(bytes));
       ReadBy readBy = ReadBy(
@@ -264,9 +266,10 @@ class GroupChatPageState extends State<GroupChatPage> {
             isUploading = true;
           });
         }
+
         final bytes = await image.readAsBytes();
 
-        final String imageUrl = await StorageService.uploadImageToStorage(
+        final String imageUrl = await widget.storageService.uploadImageToStorage(
             'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
             Uint8List.fromList(bytes));
         ReadBy readBy = ReadBy(

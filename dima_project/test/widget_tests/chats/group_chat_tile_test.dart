@@ -9,6 +9,7 @@ import 'package:dima_project/models/message.dart';
 import '../../mocks/mock_database_service.mocks.dart';
 import '../../mocks/mock_image_picker.mocks.dart';
 import '../../mocks/mock_notification_service.mocks.dart';
+import '../../mocks/mock_storage_service.mocks.dart';
 
 void main() {
   testWidgets('GroupChatTile displays group name', (WidgetTester tester) async {
@@ -22,6 +23,7 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: GroupChatTile(
+            storageService: MockStorageService(),
             group: testGroup,
             username: "",
             databaseService: MockDatabaseService(),
@@ -59,6 +61,7 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: GroupChatTile(
+            storageService: MockStorageService(),
             group: testGroup,
             username: username,
             databaseService: MockDatabaseService(),

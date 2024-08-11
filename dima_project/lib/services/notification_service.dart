@@ -12,6 +12,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -148,6 +149,7 @@ class NotificationService {
           context,
           CupertinoPageRoute(
               builder: (context) => PrivateChatPage(
+                  storageService: StorageService(),
                   privateChat: privateChat,
                   user: user,
                   canNavigate: false,
@@ -174,6 +176,7 @@ class NotificationService {
           context,
           CupertinoPageRoute(
               builder: (context) => GroupChatPage(
+                    storageService: StorageService(),
                     group: group,
                     canNavigate: false,
                     databaseService: DatabaseService(),
