@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -33,7 +35,7 @@ class MockXFile extends mocktail.Mock implements XFile {
 void main() {
   final MockXFile mockXFile = MockXFile();
   final UserData fakeUserData1 = UserData(
-      uid: 'user1',
+      uid: 'uid1',
       name: 'name1',
       email: 'mail1',
       imagePath: '',
@@ -42,7 +44,7 @@ void main() {
       categories: ['Environment'],
       isPublic: true);
   final UserData fakeUserData2 = UserData(
-      uid: 'user2',
+      uid: 'uid2',
       name: 'name2',
       email: 'mail2',
       imagePath: '',
@@ -50,7 +52,15 @@ void main() {
       username: 'username2',
       categories: ['Environment'],
       isPublic: true);
-
+  final UserData fakeUserData3 = UserData(
+      uid: 'uid3',
+      name: 'name3',
+      email: 'mail3',
+      imagePath: '',
+      surname: 'surname3',
+      username: 'username3',
+      categories: ['Environment'],
+      isPublic: true);
   final PrivateChat fakePrivateChat1 = PrivateChat(
     id: '321',
     members: ['user1', 'user2'],
@@ -605,7 +615,7 @@ void main() {
           (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
       when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
         return Future.value(UserData.fromSnapshot(
-            await firestore.collection('users').doc('user2').get()));
+            await firestore.collection('users').doc('user3').get()));
       });
 
       when(mockNotificationService.sendNotificationOnGroup(any, any))
@@ -626,12 +636,22 @@ void main() {
         return Future.value('image_url');
       });
       when(mockDatabaseService.getGroupRequestsForGroup(any)).thenAnswer((_) {
-        return Future.value([fakeUserData1, fakeUserData2]);
+        return Future.value([fakeUserData1, fakeUserData2, fakeUserData3]);
       });
       when(mockDatabaseService.updateNotification(any, any, any))
           .thenAnswer((_) {
         return Future.value();
       });
+      when(mockDatabaseService.acceptGroupRequest(any, "uid1")).thenAnswer(
+        ((_) => Future.value()),
+      );
+      when(mockDatabaseService.acceptGroupRequest(any, "uid2")).thenAnswer(
+        ((_) => Future.error('User deleted his account')),
+      );
+      when(mockDatabaseService.denyGroupRequest(any, "uid3")).thenAnswer(
+        ((_) => Future.value()),
+      );
+
       when(mockDatabaseService.getGroupFromId(any))
           .thenAnswer((_) => Future.value(fakeGroup1));
       when(mockDatabaseService.getEvent('event_id')).thenAnswer(
@@ -702,6 +722,22 @@ void main() {
       await tester.tap(find.text('Requests')); //Requests
       await tester.pumpAndSettle();
       expect(find.text('Group Requests'), findsOneWidget);
+      expect(find.text('username1'), findsOneWidget);
+      expect(find.text('username2'), findsOneWidget);
+      expect(find.text('username3'), findsOneWidget);
+      await tester.tap(find.text('Accept').first);
+      await tester.pumpAndSettle();
+      expect(find.text('username1'), findsNothing);
+      await tester.tap(find.text('Accept').first);
+      await tester.pumpAndSettle();
+      expect(find.text('username2'), findsNothing);
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text('User deleted his account'), findsOneWidget);
+      await tester.tap(find.text('Ok'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Deny'));
+      await tester.pumpAndSettle();
+      expect(find.text('username3'), findsNothing);
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
       expect(find.text('Group Info'), findsOneWidget);
@@ -723,5 +759,6 @@ void main() {
       expect(find.text('News'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
     });
+    // edit group + leave group
   });
 }
