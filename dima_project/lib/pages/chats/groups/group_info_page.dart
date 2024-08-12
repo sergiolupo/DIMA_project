@@ -134,7 +134,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
       ),
       child: CupertinoScrollbar(
         child: SingleChildScrollView(
-          primary: false,
+          primary: true,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -570,7 +570,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                   onTap: () {
                     showLeaveGroupDialog(context);
                   },
-                  child: const Text('Exit Group',
+                  child: const Text('Leave Group',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -691,7 +691,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 }
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              child: const Text("Leave"),
+              child: const Text("Yes"),
             ),
           ],
         );
