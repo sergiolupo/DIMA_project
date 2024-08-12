@@ -5,6 +5,7 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
+import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -33,6 +34,25 @@ class MockXFile extends mocktail.Mock implements XFile {
 
 void main() {
   final MockXFile mockXFile = MockXFile();
+  final UserData fakeUserData1 = UserData(
+      uid: 'user1',
+      name: 'name1',
+      email: 'mail1',
+      imagePath: '',
+      surname: 'surname1',
+      username: 'username1',
+      categories: ['Environment'],
+      isPublic: true);
+  final UserData fakeUserData2 = UserData(
+      uid: 'user2',
+      name: 'name2',
+      email: 'mail2',
+      imagePath: '',
+      surname: 'surname2',
+      username: 'username2',
+      categories: ['Environment'],
+      isPublic: true);
+
   final PrivateChat fakePrivateChat1 = PrivateChat(
     id: '321',
     members: ['user1', 'user2'],
@@ -60,9 +80,15 @@ void main() {
   final Group fakeGroup1 = Group(
     id: '123',
     name: 'Group1',
+    admin: 'user1',
     isPublic: false,
-    members: ['user1', 'user2,user3'],
+    members: [
+      'user1',
+      'user2',
+    ],
     imagePath: '',
+    description: 'Description',
+    categories: ['Environment'],
     lastMessage: LastMessage(
         recentMessage: 'Hello',
         recentMessageSender: 'user1',
@@ -112,7 +138,7 @@ void main() {
       type: Type.news,
     ),
     Message(
-      content: 'image_url',
+      content: '',
       sentByMe: true,
       time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
@@ -303,6 +329,7 @@ void main() {
       when(mockDatabaseService.createGroup(any, any, any)).thenAnswer(
         (_) => Future.value(),
       );
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -364,20 +391,6 @@ void main() {
     });
   });
   group('Test chat functionality', () {
-    tearDown(() async {
-      // List of files to delete
-      final files = ['doc1.png', 'doc2.png'];
-
-      // Delete each file if it exists
-      for (final fileName in files) {
-        final file = File(fileName);
-        if (await file.exists()) {
-          await file.delete();
-          debugPrint('$fileName deleted.');
-        }
-      }
-    });
-
     testWidgets(
         "Group chat page renders correctly and send message functionality works correctly",
         (WidgetTester tester) async {
@@ -440,9 +453,7 @@ void main() {
       );
       when(mockDatabaseService.sendMessage(any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.getChats(any)).thenAnswer((_) {
-        return Stream.value(messages);
-      });
+
       when(mockDatabaseService.getChats(any)).thenAnswer((_) {
         return Stream.value(messages);
       });
@@ -476,6 +487,8 @@ void main() {
             followerProvider.overrideWith(
               (ref, uid) async => [],
             ),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
           ],
           child: CupertinoApp(
             home: ChatPage(
@@ -516,9 +529,189 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.photo_fill));
       await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.camera_fill).last);
       await tester.pumpAndSettle();
-      //await tester.tap(find.byIcon(CupertinoIcons.calendar));
+      expect(find.text('Group1'), findsOneWidget);
+    });
+    testWidgets("Group chat page navigations work correctly for mobile",
+        (WidgetTester tester) async {
+      final firestore = FakeFirebaseFirestore();
+      await firestore.collection('users').doc('user1').set({
+        'uid': 'user1',
+        'name': 'name1',
+        'email': 'mail1',
+        'requests': [],
+        'imageUrl': '',
+        'surname': 'surname1',
+        'username': 'username1',
+        'isPublic': true,
+        'token': 'token1',
+        'isSignedInWithGoogle': false,
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+      });
+      await firestore.collection('users').doc('user2').set({
+        'uid': 'user2',
+        'name': 'name2',
+        'email': 'mail2',
+        'imageUrl': '',
+        'surname': 'surname2',
+        'username': 'username2',
+        'requests': [],
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+        'isPublic': true,
+        'token': 'token2',
+        'isSignedInWithGoogle': false,
+      });
+      AuthService.setUid('user1');
+      DocumentSnapshot documentSnapshot1 =
+          await firestore.collection('users').doc('user1').get();
+      DocumentSnapshot documentSnapshot2 =
+          await firestore.collection('users').doc('user2').get();
+
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => Stream.value([fakeGroup1]));
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => Stream.value([]));
+
+      when(mockDatabaseService.getChats(any)).thenAnswer((_) {
+        return Stream.value(messages);
+      });
+      when(mockDatabaseService.getUserDataFromUID('user1'))
+          .thenAnswer((_) => Stream.value(documentSnapshot1));
+      when(mockDatabaseService.getUserDataFromUID('user2'))
+          .thenAnswer((_) => Stream.value(documentSnapshot2));
+      when(mockDatabaseService.getNotification(any, any)).thenAnswer(
+        (_) => Future.value(true),
+      );
+      when(mockDatabaseService.getGroupMessagesType(any, Type.news)).thenAnswer(
+        (_) => Future.value([messages[1]]),
+      );
+      when(mockDatabaseService.getGroupMessagesType(any, Type.image))
+          .thenAnswer(
+        (_) => Future.value([messages[2]]),
+      );
+      when(mockDatabaseService.getGroupMessagesType(any, Type.event))
+          .thenAnswer(
+        (_) => Future.value([messages[3]]),
+      );
+      when(mockDatabaseService.getUserData('user1')).thenAnswer(
+          (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+      when(mockDatabaseService.getUserData('user2')).thenAnswer(
+          (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+      when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
+        return Future.value(UserData.fromSnapshot(
+            await firestore.collection('users').doc('user2').get()));
+      });
+
+      when(mockNotificationService.sendNotificationOnGroup(any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.sendMessage(any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockImagePicker.pickImage(
+              source: ImageSource.camera, imageQuality: 80))
+          .thenAnswer((_) async {
+        return mockXFile;
+      });
+      when(mockImagePicker.pickMultiImage(imageQuality: 80)).thenAnswer(
+        (_) async {
+          return [mockXFile];
+        },
+      );
+      when(mockStorageService.uploadImageToStorage(any, any)).thenAnswer((_) {
+        return Future.value('image_url');
+      });
+      when(mockDatabaseService.getGroupRequestsForGroup(any)).thenAnswer((_) {
+        return Future.value([fakeUserData1, fakeUserData2]);
+      });
+      when(mockDatabaseService.updateNotification(any, any, any))
+          .thenAnswer((_) {
+        return Future.value();
+      });
+      when(mockDatabaseService.getGroupFromId(any))
+          .thenAnswer((_) => Future.value(fakeGroup1));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            eventProvider.overrideWith(
+              (ref, eventId) async => Event(
+                id: 'event_id',
+                name: 'Sample Event',
+                description: 'Event Description',
+                imagePath: '',
+                admin: 'user1',
+                isPublic: true,
+              ),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            followerProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            userProvider.overrideWith(
+              (ref, uid) async => mockDatabaseService.getUserData(uid),
+            ),
+          ],
+          child: CupertinoApp(
+            home: ChatPage(
+              storageService: mockStorageService,
+              databaseService: mockDatabaseService,
+              notificationService: mockNotificationService,
+              imagePicker: mockImagePicker,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Group1'));
+      await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsOneWidget);
+
+      await tester.tap(find.byIcon(CupertinoIcons.add));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.calendar)); //Event
+      await tester.pumpAndSettle();
+      expect(find.text('Create Event'), findsNWidgets(2));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsOneWidget);
+      await tester.tap(find.text('Group1')); //Group Info
+      await tester.pumpAndSettle();
+
+      expect(find.text('Group Info'), findsOneWidget);
+      expect(find.text('Group1'), findsOneWidget);
+      expect(find.text('Description'), findsOneWidget);
+
+      await tester.tap(find.text('Requests')); //Requests
+      await tester.pumpAndSettle();
+      expect(find.text('Group Requests'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Group Info'), findsOneWidget);
+
+      await tester.tap(find.text('Media')); //Media
+      await tester.pumpAndSettle();
+      expect(find.text('Medias'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Group Info'), findsOneWidget);
+      await tester.tap(find.text('Events')); //Members
+      await tester.pumpAndSettle();
+      expect(find.text('Events'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Group Info'), findsOneWidget);
+      await tester.tap(find.text('News')); //News
+      await tester.pumpAndSettle();
+      expect(find.text('News'), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
     });
   });
 }
