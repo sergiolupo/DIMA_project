@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -15,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
@@ -154,6 +153,7 @@ void main() {
       sender: 'user1',
       readBy: readBy,
       type: Type.image,
+      id: 'image_id',
     ),
     Message(
       content: 'event_id',
@@ -657,13 +657,25 @@ void main() {
       when(mockDatabaseService.getEvent('event_id')).thenAnswer(
         (_) => Future.value(
           Event(
-            id: 'event_id',
-            name: 'Sample Event',
-            description: 'Event Description',
-            imagePath: '',
-            admin: 'user1',
-            isPublic: true,
-          ),
+              id: 'event_id',
+              name: 'Sample Event',
+              description: 'Event Description',
+              imagePath: '',
+              admin: 'user1',
+              isPublic: true,
+              details: [
+                EventDetails(
+                  startDate: DateTime.now(),
+                  startTime: DateTime.now(),
+                  endDate: DateTime.now(),
+                  endTime: DateTime.now(),
+                  latlng: const LatLng(0, 0),
+                  location: 'Location',
+                  id: 'event_id',
+                  requests: [],
+                  members: ['user1'],
+                ),
+              ]),
         ),
       );
       await tester.pumpWidget(
@@ -671,13 +683,25 @@ void main() {
           overrides: [
             eventProvider.overrideWith(
               (ref, eventId) async => Event(
-                id: 'event_id',
-                name: 'Sample Event',
-                description: 'Event Description',
-                imagePath: '',
-                admin: 'user1',
-                isPublic: true,
-              ),
+                  id: 'event_id',
+                  name: 'Sample Event',
+                  description: 'Event Description',
+                  imagePath: '',
+                  admin: 'user1',
+                  isPublic: true,
+                  details: [
+                    EventDetails(
+                      startDate: DateTime.now(),
+                      startTime: DateTime.now(),
+                      endDate: DateTime.now(),
+                      endTime: DateTime.now(),
+                      latlng: const LatLng(0, 0),
+                      location: 'Location',
+                      id: 'event_id',
+                      requests: [],
+                      members: ['user1'],
+                    ),
+                  ]),
             ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             followerProvider.overrideWith(
@@ -750,6 +774,15 @@ void main() {
       expect(find.text('Group Info'), findsOneWidget);
       await tester.tap(find.text('Events')); //Events
       await tester.pumpAndSettle();
+
+      expect(find.text('Events'), findsOneWidget);
+      await tester.tap(find.text('Sample Event'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sample Event'), findsOneWidget);
+      expect(find.text('Event Description'), findsOneWidget);
+
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
       expect(find.text('Events'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
@@ -757,7 +790,14 @@ void main() {
       await tester.tap(find.text('News')); //News
       await tester.pumpAndSettle();
       expect(find.text('News'), findsOneWidget);
+      expect(find.text('Title'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Group Info'), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.bell), findsNWidgets(2));
+      await tester.tap(find.text('Notifications'));
+      await tester.pumpAndSettle();
+      expect(find.text('Notifications'), findsOneWidget);
     });
     // edit group + leave group
   });

@@ -1,6 +1,5 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -33,7 +32,7 @@ class EventPageState extends ConsumerState<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseService databaseService = DatabaseService();
+    final databaseService = ref.read(databaseServiceProvider);
     final event = ref.watch(eventProvider(widget.eventId));
     return event.when(
       data: (event) {

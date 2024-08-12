@@ -64,6 +64,7 @@ class ShowNewsPage extends StatelessWidget {
                   ));
                 }
               }
+              Navigator.pop(context);
             },
             padding: const EdgeInsets.only(left: 10),
             child: Icon(CupertinoIcons.back,
