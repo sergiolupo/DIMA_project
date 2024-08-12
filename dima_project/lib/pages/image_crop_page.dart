@@ -10,12 +10,14 @@ class ImageCropPage extends StatefulWidget {
   final ValueChanged<Uint8List> imageInsertPageKey;
   final int imageType; // 0 for user, 1 for group, 2 for event
   final String defaultImage;
+  final ImagePicker imagePicker;
   const ImageCropPage({
     super.key,
     this.imagePath,
     required this.imageInsertPageKey,
     required this.imageType,
     required this.defaultImage,
+    required this.imagePicker,
   });
 
   @override
@@ -23,12 +25,13 @@ class ImageCropPage extends StatefulWidget {
 }
 
 class ImageCropPageState extends State<ImageCropPage> {
-  final ImagePicker _picker = ImagePicker();
+  late final ImagePicker _picker;
   Uint8List _selectedImagePath = Uint8List(0);
   String defaultImage = '';
   @override
   void initState() {
     super.initState();
+    _picker = widget.imagePicker;
     _selectedImagePath = widget.imagePath ?? Uint8List(0);
     defaultImage = widget.defaultImage;
   }

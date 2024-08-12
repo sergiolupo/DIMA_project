@@ -59,8 +59,9 @@ class ChatPageState extends State<ChatPage> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => const CreateGroupPage(
+                    builder: (context) => CreateGroupPage(
                           canNavigate: false,
+                          imagePicker: widget.imagePicker,
                         )));
           },
           child: const Icon(

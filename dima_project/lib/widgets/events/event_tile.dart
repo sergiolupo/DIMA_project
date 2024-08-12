@@ -6,6 +6,7 @@ import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EventTile extends ConsumerWidget {
   final Event event;
@@ -30,6 +31,7 @@ class EventTile extends ConsumerWidget {
                 CupertinoPageRoute(
                   builder: (context) => EventPage(
                     eventId: event.id!,
+                    imagePicker: ImagePicker(),
                   ),
                 ),
               );

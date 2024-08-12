@@ -15,18 +15,20 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditGroupPage extends ConsumerStatefulWidget {
   final Group group;
   final bool canNavigate;
   final Function? navigateToPage;
-
+  final ImagePicker imagePicker;
   @override
   const EditGroupPage({
     super.key,
     required this.group,
     required this.canNavigate,
     this.navigateToPage,
+    required this.imagePicker,
   });
   @override
   EditGroupPageState createState() => EditGroupPageState();
@@ -80,6 +82,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                       navigateToPage: widget.navigateToPage,
                       databaseService: databaseService,
                       notificationService: notificationService,
+                      imagePicker: widget.imagePicker,
                     ));
                   } else {
                     Navigator.of(context).pop();
@@ -141,7 +144,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                             canNavigate: widget.canNavigate,
                             databaseService: databaseService,
                             notificationService: notificationService,
-                            navigateToPage: widget.navigateToPage));
+                            navigateToPage: widget.navigateToPage,
+                            imagePicker: widget.imagePicker));
                       } else {
                         if (context.mounted) {
                           Navigator.of(context).pop(newGroup);
@@ -186,6 +190,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => ImageCropPage(
+                        imagePicker: widget.imagePicker,
                         defaultImage: defaultImage ?? widget.group.imagePath!,
                         imageType: 1,
                         imagePath: selectedImagePath,

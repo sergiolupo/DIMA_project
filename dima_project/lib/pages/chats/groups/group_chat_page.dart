@@ -86,6 +86,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                     databaseService: _databaseService,
                     canNavigate: widget.canNavigate,
                     navigateToPage: widget.navigateToPage,
+                    imagePicker: widget.imagePicker,
                   ),
                 ),
               );
@@ -102,6 +103,7 @@ class GroupChatPageState extends State<GroupChatPage> {
                   notificationService: widget.notificationService,
                   databaseService: _databaseService,
                   navigateToPage: widget.navigateToPage,
+                  imagePicker: widget.imagePicker,
                 ),
               );
               return;
@@ -201,6 +203,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           group: group,
           canNavigate: widget.canNavigate,
           navigateToPage: widget.navigateToPage,
+          imagePicker: widget.imagePicker,
         ),
       );
       return;
@@ -210,6 +213,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         builder: (context) => CreateEventPage(
           group: group,
           canNavigate: false,
+          imagePicker: widget.imagePicker,
         ),
       ),
     );

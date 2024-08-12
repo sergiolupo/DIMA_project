@@ -195,6 +195,7 @@ class NotificationService {
           CupertinoPageRoute(
               builder: (context) => EventPage(
                     eventId: message.data['event_id'],
+                    imagePicker: ImagePicker(),
                   )));
     }
     if (message.data['type'].toString() == 'news') {

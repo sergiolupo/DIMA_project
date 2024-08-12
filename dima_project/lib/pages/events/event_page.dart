@@ -8,14 +8,16 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 
 import 'package:dima_project/pages/events/edit_event_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EventPage extends ConsumerStatefulWidget {
   final String eventId;
-
+  final ImagePicker imagePicker;
   const EventPage({
     super.key,
     required this.eventId,
+    required this.imagePicker,
   });
 
   @override
@@ -51,6 +53,7 @@ class EventPageState extends ConsumerState<EventPage> {
                           CupertinoPageRoute(
                               builder: (context) => EditEventPage(
                                     event: event,
+                                    imagePicker: widget.imagePicker,
                                   )));
                     },
                     child: Text(

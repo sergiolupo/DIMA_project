@@ -26,6 +26,7 @@ class GroupInfoPage extends StatefulWidget {
   final bool canNavigate;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final ImagePicker imagePicker;
   const GroupInfoPage({
     super.key,
     required this.group,
@@ -33,6 +34,7 @@ class GroupInfoPage extends StatefulWidget {
     required this.canNavigate,
     required this.databaseService,
     required this.notificationService,
+    required this.imagePicker,
   });
 
   @override
@@ -104,6 +106,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                       group: group,
                       canNavigate: true,
                       navigateToPage: widget.navigateToPage,
+                      imagePicker: widget.imagePicker,
                     ));
                     return;
                   }
@@ -113,6 +116,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                           builder: (context) => EditGroupPage(
                                 group: group,
                                 canNavigate: false,
+                                imagePicker: widget.imagePicker,
                               )));
 
                   if (newGroup != null) {

@@ -11,6 +11,7 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   final NotificationService notificationService;
@@ -113,6 +114,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         defaultImage: defaultImage ?? user.imagePath!,
                         imageType: 0,
                         imagePath: selectedImagePath,
+                        imagePicker: ImagePicker(),
                         imageInsertPageKey: (Uint8List selectedImagePath) {
                           setState(() {
                             this.selectedImagePath = selectedImagePath;

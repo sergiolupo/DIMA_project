@@ -5,6 +5,7 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ShowEvent extends ConsumerStatefulWidget {
@@ -125,6 +126,7 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                     CupertinoPageRoute(
                                       builder: (context) => EventPage(
                                         eventId: event.id!,
+                                        imagePicker: ImagePicker(),
                                       ),
                                     ),
                                   );

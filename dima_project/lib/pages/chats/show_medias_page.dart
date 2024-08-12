@@ -10,6 +10,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ShowMediasPage extends StatelessWidget {
   final bool isGroup;
@@ -53,6 +54,7 @@ class ShowMediasPage extends StatelessWidget {
                     navigateToPage: navigateToPage,
                     databaseService: databaseService,
                     notificationService: notificationService,
+                    imagePicker: ImagePicker(),
                   ));
                 } else {
                   navigateToPage!(PrivateInfoPage(

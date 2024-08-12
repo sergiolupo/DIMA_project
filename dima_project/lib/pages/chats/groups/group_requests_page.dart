@@ -5,6 +5,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupRequestsPage extends StatefulWidget {
   final Group group;
@@ -13,6 +14,7 @@ class GroupRequestsPage extends StatefulWidget {
   final Function? navigateToPage;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+
   const GroupRequestsPage({
     super.key,
     required this.group,
@@ -55,6 +57,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 navigateToPage: widget.navigateToPage,
                 databaseService: _databaseService,
                 notificationService: widget.notificationService,
+                imagePicker: ImagePicker(),
               ));
             }
             if (!context.mounted) return;

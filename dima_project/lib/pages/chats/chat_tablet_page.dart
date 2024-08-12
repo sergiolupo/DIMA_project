@@ -154,6 +154,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                     _navigateToPage(CreateGroupPage(
                       canNavigate: true,
                       navigateToPage: _navigateToPage,
+                      imagePicker: widget.imagePicker,
                     ));
                   },
                 ),
@@ -268,6 +269,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                               canNavigate: true,
                               databaseService: _databaseService,
                               notificationService: widget.notificationService,
+                              imagePicker: widget.imagePicker,
                             );
                           }
                         });

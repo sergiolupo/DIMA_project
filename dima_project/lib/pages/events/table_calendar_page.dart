@@ -6,13 +6,15 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:dima_project/utils/table_calendar_util.dart';
 
 class TableCalendarPage extends ConsumerStatefulWidget {
-  const TableCalendarPage({super.key});
+  final ImagePicker imagePicker;
+  const TableCalendarPage({super.key, required this.imagePicker});
 
   @override
   TableBasicsExampleState createState() => TableBasicsExampleState();
@@ -233,8 +235,9 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => const CreateEventPage(
+                builder: (context) => CreateEventPage(
                   canNavigate: false,
+                  imagePicker: widget.imagePicker,
                 ),
               ),
             );

@@ -907,6 +907,7 @@ void main() {
             group: fakeGroup1,
             databaseService: mockDatabaseService,
             notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
           ),
         ),
       ),

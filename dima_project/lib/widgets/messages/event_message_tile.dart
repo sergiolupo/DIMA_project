@@ -9,6 +9,7 @@ import 'package:dima_project/widgets/messages/event_deleted_message_tile.dart';
 import 'package:dima_project/utils/message_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
 class EventMessageTile extends ConsumerStatefulWidget {
@@ -126,6 +127,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                       CupertinoPageRoute(
                                         builder: (context) => EventPage(
                                           eventId: widget.message.content,
+                                          imagePicker: ImagePicker(),
                                         ),
                                       ),
                                     );

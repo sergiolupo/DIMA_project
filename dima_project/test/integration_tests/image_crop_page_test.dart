@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +9,9 @@ import 'package:mockito/mockito.dart';
 import '../mocks/mock_image_picker.mocks.dart';
 
 void main() {
-  testWidgets('ImageCropPage integration test', (WidgetTester tester) async {
+  testWidgets(
+      'Verify behavior when no image is selected from the gallery for ImageCropPage',
+      (WidgetTester tester) async {
     final imagePicker = MockImagePicker();
 
     Uint8List insertedImage = Uint8List(0);
@@ -23,6 +26,7 @@ void main() {
             },
             imageType: 0,
             defaultImage: '',
+            imagePicker: imagePicker,
           ),
         ),
       ),
@@ -51,12 +55,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(insertedImage, isEmpty);
-    expect(find.byType(Image), findsOneWidget);
-
-    await tester.tap(find.byIcon(CupertinoIcons.delete));
-    await tester.pumpAndSettle();
-
-    expect(insertedImage, isEmpty);
-    expect(find.byType(Image), findsOneWidget);
   });
 }

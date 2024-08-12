@@ -11,6 +11,7 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   final User? user;
@@ -69,6 +70,7 @@ class RegisterPageState extends State<RegisterPage> {
                   defaultImage: '',
                   imageType: 0,
                   imagePath: selectedImagePath,
+                  imagePicker: ImagePicker(),
                   imageInsertPageKey: (Uint8List selectedImagePath) {
                     setState(() {
                       this.selectedImagePath = selectedImagePath;

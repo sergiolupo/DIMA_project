@@ -10,6 +10,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ShowEventsPage extends StatelessWidget {
   final bool isGroup;
@@ -53,6 +54,7 @@ class ShowEventsPage extends StatelessWidget {
                     navigateToPage: navigateToPage,
                     databaseService: databaseService,
                     notificationService: notificationService,
+                    imagePicker: ImagePicker(),
                   ));
                 } else {
                   navigateToPage!(PrivateInfoPage(
@@ -194,6 +196,7 @@ class ShowEventsPage extends StatelessWidget {
                                         CupertinoPageRoute(
                                           builder: (context) => EventPage(
                                             eventId: event.id!,
+                                            imagePicker: ImagePicker(),
                                           ),
                                         ),
                                       );

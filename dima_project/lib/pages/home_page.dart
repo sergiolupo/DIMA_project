@@ -153,7 +153,9 @@ class HomePageState extends ConsumerState<HomePage> {
             );
             break;
           case 2:
-            page = const TableCalendarPage();
+            page = TableCalendarPage(
+              imagePicker: ImagePicker(),
+            );
             break;
           case 3:
             page = SearchPage(

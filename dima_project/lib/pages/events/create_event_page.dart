@@ -25,11 +25,13 @@ class CreateEventPage extends ConsumerStatefulWidget {
   final Group? group;
   final bool canNavigate;
   final Function? navigateToPage;
+  final ImagePicker imagePicker;
   const CreateEventPage({
     super.key,
     this.group,
     required this.canNavigate,
     this.navigateToPage,
+    required this.imagePicker,
   });
 
   @override
@@ -185,6 +187,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                 defaultImage: '',
                                 imageType: 2,
                                 imagePath: selectedImagePath,
+                                imagePicker: widget.imagePicker,
                                 imageInsertPageKey:
                                     (Uint8List selectedImagePath) {
                                   setState(() {

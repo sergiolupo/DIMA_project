@@ -14,14 +14,17 @@ import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateGroupPage extends ConsumerStatefulWidget {
   final bool canNavigate;
   final Function? navigateToPage;
+  final ImagePicker imagePicker;
   const CreateGroupPage({
     super.key,
     this.navigateToPage,
     required this.canNavigate,
+    required this.imagePicker,
   });
 
   @override
@@ -168,6 +171,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => ImageCropPage(
+                          imagePicker: widget.imagePicker,
                           defaultImage: '',
                           imageType: 1,
                           imagePath: selectedImagePath,
