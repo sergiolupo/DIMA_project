@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -138,7 +136,7 @@ void main() {
       type: Type.news,
     ),
     Message(
-      content: '',
+      content: 'https://imageurl.com',
       sentByMe: true,
       time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
@@ -636,6 +634,18 @@ void main() {
       });
       when(mockDatabaseService.getGroupFromId(any))
           .thenAnswer((_) => Future.value(fakeGroup1));
+      when(mockDatabaseService.getEvent('event_id')).thenAnswer(
+        (_) => Future.value(
+          Event(
+            id: 'event_id',
+            name: 'Sample Event',
+            description: 'Event Description',
+            imagePath: '',
+            admin: 'user1',
+            isPublic: true,
+          ),
+        ),
+      );
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -702,7 +712,7 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
       expect(find.text('Group Info'), findsOneWidget);
-      await tester.tap(find.text('Events')); //Members
+      await tester.tap(find.text('Events')); //Events
       await tester.pumpAndSettle();
       expect(find.text('Events'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));

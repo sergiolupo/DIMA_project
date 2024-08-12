@@ -113,7 +113,7 @@ class ShowNewsPage extends StatelessWidget {
                           description: news[1],
                           imageUrl: news[3],
                           title: news[0],
-                          databaseService: DatabaseService(),
+                          databaseService: databaseService,
                         );
                       },
                     ),

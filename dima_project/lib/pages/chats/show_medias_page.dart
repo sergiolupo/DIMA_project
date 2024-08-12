@@ -117,18 +117,14 @@ class ShowMediasPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final message = mediasForDate[index];
                         return GestureDetector(
-                          child: Container(
+                          child: CachedNetworkImage(
+                            imageUrl: message.content,
+                            fit: BoxFit.cover,
                             width: 100,
                             height: 100,
-                            color: CupertinoColors.lightBackgroundGray,
-                            child: CachedNetworkImage(
-                              imageUrl: message.content,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  const CupertinoActivityIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(CupertinoIcons.photo_fill),
-                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(CupertinoIcons.photo_fill),
+                            errorListener: (value) {},
                           ),
                           onTap: () {
                             if (canNavigate) {
