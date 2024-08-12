@@ -160,9 +160,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   void onTapCamera() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    final XFile? image = await widget.imagePicker
+        .pickImage(source: ImageSource.camera, imageQuality: 80);
     if (image != null) {
       if (mounted) {
         setState(() {
@@ -193,7 +192,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       );
       await _databaseService.sendMessage(widget.privateChat.id!, message);
 
-      await NotificationService(databaseService: DatabaseService())
+      await widget.notificationService
           .sendNotificationOnPrivateChat(widget.privateChat, message);
       if (mounted) {
         setState(() {
@@ -204,8 +203,8 @@ class PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   void onTapPhoto() async {
-    final ImagePicker picker = ImagePicker();
-    final List<XFile> images = await picker.pickMultiImage(imageQuality: 80);
+    final List<XFile> images =
+        await widget.imagePicker.pickMultiImage(imageQuality: 80);
 
     if (images.isNotEmpty) {
       for (var image in images) {
@@ -237,8 +236,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
           type: Type.image,
         );
         await _databaseService.sendMessage(widget.privateChat.id!, message);
-        await NotificationService(databaseService: DatabaseService())
-            .sendNotificationOnPrivateChat(
+        await widget.notificationService.sendNotificationOnPrivateChat(
           widget.privateChat,
           message,
         );
