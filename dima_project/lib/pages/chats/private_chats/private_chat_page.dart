@@ -18,7 +18,6 @@ import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -314,16 +313,13 @@ class PrivateChatPageState extends State<PrivateChatPage> {
                           )
                         : Container(),
                     (message.type == Type.text)
-                        ? Hero(
-                            tag: message.id!,
-                            child: TextMessageTile(
-                              focusNode: _focusNode,
-                              message: message,
-                              databaseService: _databaseService,
-                              showCustomSnackbar: () {
-                                showCustomSnackbar(true);
-                              },
-                            ),
+                        ? TextMessageTile(
+                            focusNode: _focusNode,
+                            message: message,
+                            databaseService: _databaseService,
+                            showCustomSnackbar: () {
+                              showCustomSnackbar(true);
+                            },
                           )
                         : (message.type == Type.image)
                             ? ImageMessageTile(
@@ -378,12 +374,12 @@ class PrivateChatPageState extends State<PrivateChatPage> {
     if (messageEditingController.text.isNotEmpty) {
       ReadBy readBy = ReadBy(
         readAt: Timestamp.now(),
-        username: FirebaseAuth.instance.currentUser!.uid,
+        username: AuthService.uid,
       );
 
       Message message = Message(
         content: messageEditingController.text,
-        sender: FirebaseAuth.instance.currentUser!.uid,
+        sender: AuthService.uid,
         isGroupMessage: false,
         time: Timestamp.now(),
         readBy: [
@@ -395,8 +391,7 @@ class PrivateChatPageState extends State<PrivateChatPage> {
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
       await _databaseService.sendMessage(widget.privateChat.id!, message);
-      await NotificationService(databaseService: DatabaseService())
-          .sendNotificationOnPrivateChat(
+      await widget.notificationService.sendNotificationOnPrivateChat(
         widget.privateChat,
         message,
       );
