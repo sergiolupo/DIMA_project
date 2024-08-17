@@ -104,7 +104,7 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                                   : Image.asset(
                                       'assets/images/search_following.png'),
                               const Center(
-                                child: Text('Not following anyone'),
+                                child: Text('Not following found'),
                               ),
                             ],
                           );

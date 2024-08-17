@@ -101,7 +101,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                                   : Image.asset(
                                       'assets/images/search_followers.png'),
                               const Center(
-                                child: Text('No followers'),
+                                child: Text('No followers found'),
                               ),
                             ],
                           );

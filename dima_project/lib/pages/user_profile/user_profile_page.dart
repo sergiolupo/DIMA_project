@@ -123,8 +123,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
                     CupertinoPageRoute(
                         builder: (context) => OptionsPage(
                               authService: AuthService(),
-                              notificationService: NotificationService(
-                                  databaseService: databaseService),
+                              notificationService: notificationService,
                             ))),
                 child: Icon(CupertinoIcons.bars,
                     color:

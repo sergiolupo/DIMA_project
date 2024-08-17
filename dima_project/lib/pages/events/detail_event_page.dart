@@ -2,7 +2,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/pages/user_profile/show_event_members_page.dart';
+import 'package:dima_project/pages/events/show_event_members_page.dart';
 import 'package:dima_project/widgets/events/show_date_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
