@@ -22,13 +22,13 @@ void main() {
   late final MockDatabaseService mockDatabaseService;
   late final MockNotificationService mockNotificationService;
 
-  group("User profile test for mobile", () {
+  group("User profile test for tablet", () {
     setUpAll(() {
       mockDatabaseService = MockDatabaseService();
       mockNotificationService = MockNotificationService();
     });
     testWidgets(
-        "User profile of the current user renders correctly and navigations work for mobile layout",
+        "User profile of the current user renders correctly and navigations work for tablet layout",
         (WidgetTester tester) async {
       AuthService.setUid('test');
       await tester.pumpWidget(
@@ -155,15 +155,18 @@ void main() {
               ),
             ),
           ],
-          child: CupertinoApp(
-              home: ResponsiveLayout(
-            mobileLayout: UserProfile(
-              user: AuthService.uid,
-            ),
-            tabletLayout: UserProfileTablet(
-              user: AuthService.uid,
-            ),
-          )),
+          child: MediaQuery(
+            data: const MediaQueryData(size: Size(700, 1200)),
+            child: CupertinoApp(
+                home: ResponsiveLayout(
+              mobileLayout: UserProfile(
+                user: AuthService.uid,
+              ),
+              tabletLayout: UserProfileTablet(
+                user: AuthService.uid,
+              ),
+            )),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -218,6 +221,9 @@ void main() {
       expect(find.text('Not following found'), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -700));
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(EventGrid));
       await tester.pumpAndSettle();
       expect(find.text('name'), findsOneWidget);
@@ -239,7 +245,7 @@ void main() {
       expect(find.text('description'), findsOneWidget);
     });
     testWidgets(
-        "User profile of another user renders correctly and navigations work for mobile layout",
+        "User profile of another user renders correctly and navigations work for tablet layout",
         (WidgetTester tester) async {
       AuthService.setUid('test');
       when(mockDatabaseService.getPrivateChatIdFromMembers(any))
@@ -280,15 +286,18 @@ void main() {
               (ref, id) => Future.value([]),
             ),
           ],
-          child: const CupertinoApp(
-              home: ResponsiveLayout(
-            mobileLayout: UserProfile(
-              user: 'uid1',
-            ),
-            tabletLayout: UserProfileTablet(
-              user: 'uid1',
-            ),
-          )),
+          child: const MediaQuery(
+            data: MediaQueryData(size: Size(700, 1200)),
+            child: CupertinoApp(
+                home: ResponsiveLayout(
+              mobileLayout: UserProfile(
+                user: 'uid1',
+              ),
+              tabletLayout: UserProfileTablet(
+                user: 'uid1',
+              ),
+            )),
+          ),
         ),
       );
       await tester.pumpAndSettle();
