@@ -6,7 +6,6 @@ import 'package:dima_project/pages/user_profile/user_profile_page.dart';
 import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/widgets/events/event_grid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +41,7 @@ void main() {
                   email: 'mail',
                   username: 'username',
                   imagePath: '',
-                  categories: [CategoryUtil.categories.first],
+                  categories: ['Sports'],
                   name: 'name',
                   surname: 'surname')),
             ),
@@ -53,7 +52,7 @@ void main() {
                     email: 'mail1',
                     username: 'username1',
                     imagePath: '',
-                    categories: [CategoryUtil.categories.first],
+                    categories: ['Sports'],
                     name: 'name1',
                     surname: 'surname1')
               ]),
@@ -65,7 +64,7 @@ void main() {
                     email: 'mail2',
                     username: 'username2',
                     imagePath: '',
-                    categories: [CategoryUtil.categories.first],
+                    categories: ['Sports'],
                     name: 'name2',
                     surname: 'surname2')
               ]),
@@ -156,7 +155,7 @@ void main() {
             ),
           ],
           child: MediaQuery(
-            data: const MediaQueryData(size: Size(700, 1200)),
+            data: const MediaQueryData(size: Size(820, 1200)),
             child: CupertinoApp(
                 home: ResponsiveLayout(
               mobileLayout: UserProfile(
@@ -176,7 +175,7 @@ void main() {
       expect(find.text("Following"), findsOneWidget);
       expect(find.text("Groups"), findsOneWidget);
       expect(find.text('1'), findsNWidgets(3));
-      expect(find.text("Environment"), findsOneWidget);
+      expect(find.text("Sports"), findsOneWidget);
       expect(find.text("Events created"), findsOneWidget);
       expect(find.text("Events joined"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.bars));
@@ -265,7 +264,7 @@ void main() {
                       email: 'mail1',
                       username: 'username1',
                       imagePath: '',
-                      categories: [CategoryUtil.categories.first],
+                      categories: ['Sports'],
                       name: 'name1',
                       surname: 'surname1'),
                 )),
@@ -287,7 +286,7 @@ void main() {
             ),
           ],
           child: const MediaQuery(
-            data: MediaQueryData(size: Size(700, 1200)),
+            data: MediaQueryData(size: Size(820, 1200)),
             child: CupertinoApp(
                 home: ResponsiveLayout(
               mobileLayout: UserProfile(

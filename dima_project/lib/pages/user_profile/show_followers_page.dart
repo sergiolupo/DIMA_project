@@ -1,7 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
+import 'package:dima_project/widgets/deleted_account_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,7 +53,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
       child: SafeArea(
         child: asyncUsers.when(
           loading: () => const CupertinoActivityIndicator(),
-          error: (err, stack) => const DeletedAccountPage(),
+          error: (err, stack) => const DeletedAccountWidget(),
           data: (users) {
             return Column(
               children: [

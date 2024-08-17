@@ -1,7 +1,7 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/group_tile.dart';
-import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
+import 'package:dima_project/widgets/deleted_account_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -121,7 +121,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
             },
             loading: () => const CupertinoActivityIndicator(),
             error: (error, stackTrace) {
-              return const DeletedAccountPage();
+              return const DeletedAccountWidget();
             },
           ),
         ),

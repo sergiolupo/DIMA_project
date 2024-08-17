@@ -9,7 +9,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/events/event_grid.dart';
-import 'package:dima_project/pages/user_profile/deleted_account_page.dart';
+import 'package:dima_project/widgets/deleted_account_widget.dart';
 import 'package:dima_project/pages/user_profile/show_followers_page.dart';
 import 'package:dima_project/pages/user_profile/show_following_page.dart';
 import 'package:dima_project/pages/user_profile/show_groups_page.dart';
@@ -68,7 +68,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
     return user.when(
       data: (user) {
         if (user.username == 'Deleted Account' && user.email == '') {
-          return const DeletedAccountPage();
+          return const DeletedAccountWidget();
         }
         return _buildProfile(user);
       },

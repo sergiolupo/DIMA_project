@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
-class DeletedAccountPage extends StatelessWidget {
-  const DeletedAccountPage({super.key});
+class DeletedAccountWidget extends StatelessWidget {
+  const DeletedAccountWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
