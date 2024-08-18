@@ -105,7 +105,7 @@ class MessageUtils {
 
   static Future<void> _copyText(BuildContext context, Message message,
       VoidCallback showCustomSnackbar) async {
-    //await Clipboard.setData(ClipboardData(text: message.content));
+    await Clipboard.setData(ClipboardData(text: message.content));
     if (context.mounted) {
       debugPrint('Text copied to clipboard');
       showCustomSnackbar();

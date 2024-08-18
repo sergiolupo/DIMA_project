@@ -269,7 +269,6 @@ class ShowEventState extends ConsumerState<ShowEvent> {
           child: CupertinoActivityIndicator(),
         ),
         error: (error, stackTrace) {
-          debugPrint('Error occurred: $error');
           return const Center(
             child: Text('Error occurred'),
           );
