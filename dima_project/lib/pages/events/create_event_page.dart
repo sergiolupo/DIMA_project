@@ -26,12 +26,14 @@ class CreateEventPage extends ConsumerStatefulWidget {
   final bool canNavigate;
   final Function? navigateToPage;
   final ImagePicker imagePicker;
+  final EventService eventService;
   const CreateEventPage({
     super.key,
     this.group,
     required this.canNavigate,
     this.navigateToPage,
     required this.imagePicker,
+    required this.eventService,
   });
 
   @override
@@ -143,6 +145,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 databaseService: databaseService,
                 notificationService: notificationService,
                 imagePicker: ImagePicker(),
+                eventService: widget.eventService,
               ));
             } else {
               Navigator.of(context).pop();
@@ -460,6 +463,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       databaseService: databaseService,
                       notificationService: notificationService,
                       imagePicker: ImagePicker(),
+                      eventService: widget.eventService,
                     ));
                   } else {
                     if (mounted) {
@@ -480,6 +484,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
       CupertinoPageRoute(
         builder: (context) => LocationPage(
           initialLocation: details[idx]!.latlng,
+          eventService: widget.eventService,
         ),
       ),
     );
@@ -489,7 +494,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
         details[idx]!.latlng = result;
       });
 
-      var loc = await EventService.getAddressFromLatLng(result);
+      var loc = await widget.eventService.getAddressFromLatLng(result);
 
       setState(() {
         details[idx]!.location = loc!;

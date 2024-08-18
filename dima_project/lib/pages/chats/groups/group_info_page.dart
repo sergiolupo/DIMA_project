@@ -9,6 +9,7 @@ import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/category_util.dart';
@@ -83,6 +84,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                 databaseService: _databaseService,
                 notificationService: widget.notificationService,
                 imagePicker: ImagePicker(),
+                eventService: EventService(),
               ));
               return;
             }

@@ -20,10 +20,13 @@ import 'package:latlong2/latlong.dart';
 class EditEventPage extends ConsumerStatefulWidget {
   final Event event;
   final ImagePicker imagePicker;
-
+  final EventService eventService;
   @override
   const EditEventPage(
-      {super.key, required this.event, required this.imagePicker});
+      {super.key,
+      required this.event,
+      required this.imagePicker,
+      required this.eventService});
   @override
   EditEventPageState createState() => EditEventPageState();
 }
@@ -366,6 +369,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       CupertinoPageRoute(
         builder: (context) => LocationPage(
           initialLocation: details[idx]!.latlng,
+          eventService: widget.eventService,
         ),
       ),
     );
@@ -374,7 +378,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       setState(() {
         details[idx]!.latlng = result;
       });
-      var loc = await EventService.getAddressFromLatLng(result);
+      var loc = await widget.eventService.getAddressFromLatLng(result);
       setState(() {
         details[idx]!.location = loc!;
       });

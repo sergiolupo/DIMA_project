@@ -11,6 +11,7 @@ import 'package:dima_project/pages/user_profile/user_profile_page.dart';
 import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -149,6 +150,7 @@ class HomePageState extends ConsumerState<HomePage> {
                 selectedUser: selectedUser,
                 notificationService: widget.notificationService,
                 imagePicker: ImagePicker(),
+                eventService: EventService(),
               ),
             );
             break;

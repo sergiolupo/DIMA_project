@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -80,6 +81,7 @@ class GroupChatTileState extends State<GroupChatTile> {
                 databaseService: widget.databaseService,
                 notificationService: widget.notificationService,
                 imagePicker: widget.imagePicker,
+                eventService: EventService(),
               ),
             ),
           );

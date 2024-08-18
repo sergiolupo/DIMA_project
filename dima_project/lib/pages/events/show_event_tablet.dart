@@ -1,5 +1,6 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -125,6 +126,7 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                       builder: (context) => EventPage(
                                         eventId: event.id!,
                                         imagePicker: ImagePicker(),
+                                        eventService: EventService(),
                                       ),
                                     ),
                                   );

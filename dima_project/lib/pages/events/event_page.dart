@@ -1,5 +1,6 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -14,10 +15,12 @@ import 'package:intl/intl.dart';
 class EventPage extends ConsumerStatefulWidget {
   final String eventId;
   final ImagePicker imagePicker;
+  final EventService eventService;
   const EventPage({
     super.key,
     required this.eventId,
     required this.imagePicker,
+    required this.eventService,
   });
 
   @override
@@ -54,6 +57,7 @@ class EventPageState extends ConsumerState<EventPage> {
                               builder: (context) => EditEventPage(
                                     event: event,
                                     imagePicker: widget.imagePicker,
+                                    eventService: widget.eventService,
                                   )));
                     },
                     child: Text(

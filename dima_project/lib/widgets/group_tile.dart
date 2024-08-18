@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
@@ -42,6 +43,7 @@ class GroupTile extends ConsumerWidget {
                       databaseService: databaseService,
                       notificationService: notificationService,
                       imagePicker: ImagePicker(),
+                      eventService: EventService(),
                     ),
                   ),
                 );

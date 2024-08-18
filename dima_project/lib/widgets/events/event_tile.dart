@@ -1,6 +1,7 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -32,6 +33,7 @@ class EventTile extends ConsumerWidget {
                   builder: (context) => EventPage(
                     eventId: event.id!,
                     imagePicker: ImagePicker(),
+                    eventService: EventService(),
                   ),
                 ),
               );

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class EventService {
-  static Future<LatLng> getCurrentLocation() async {
+  Future<LatLng> getCurrentLocation() async {
     // Check if location services are enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -34,7 +34,7 @@ class EventService {
     return LatLng(position.latitude, position.longitude);
   }
 
-  static Future<String?> getAddressFromLatLng(LatLng latLng) async {
+  Future<String?> getAddressFromLatLng(LatLng latLng) async {
     const apiKey = '0233c5a7-dc20-4eba-8b86-970fe87df3c2';
     final url =
         'https://graphhopper.com/api/1/geocode?reverse=true&point=${latLng.latitude},${latLng.longitude}&key=$apiKey';

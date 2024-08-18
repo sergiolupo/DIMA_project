@@ -8,6 +8,7 @@ import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -30,6 +31,7 @@ class GroupChatPage extends StatefulWidget {
   final NotificationService notificationService;
   final ImagePicker imagePicker;
   final StorageService storageService;
+  final EventService eventService;
   const GroupChatPage({
     super.key,
     required this.canNavigate,
@@ -39,6 +41,7 @@ class GroupChatPage extends StatefulWidget {
     required this.notificationService,
     required this.imagePicker,
     required this.storageService,
+    required this.eventService,
   });
 
   @override
@@ -204,6 +207,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           canNavigate: widget.canNavigate,
           navigateToPage: widget.navigateToPage,
           imagePicker: widget.imagePicker,
+          eventService: widget.eventService,
         ),
       );
       return;
@@ -214,6 +218,7 @@ class GroupChatPageState extends State<GroupChatPage> {
           group: group,
           canNavigate: false,
           imagePicker: widget.imagePicker,
+          eventService: widget.eventService,
         ),
       ),
     );

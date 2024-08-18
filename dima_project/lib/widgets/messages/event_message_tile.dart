@@ -1,6 +1,7 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
@@ -128,6 +129,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                         builder: (context) => EventPage(
                                           eventId: widget.message.content,
                                           imagePicker: ImagePicker(),
+                                          eventService: EventService(),
                                         ),
                                       ),
                                     );

@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/news/category_news.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/news_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
@@ -183,6 +184,7 @@ class NotificationService {
                     notificationService:
                         NotificationService(databaseService: DatabaseService()),
                     imagePicker: ImagePicker(),
+                    eventService: EventService(),
                   )));
     }
     if (message.data['type'] == 'event' &&
@@ -196,6 +198,7 @@ class NotificationService {
               builder: (context) => EventPage(
                     eventId: message.data['event_id'],
                     imagePicker: ImagePicker(),
+                    eventService: EventService(),
                   )));
     }
     if (message.data['type'].toString() == 'news') {

@@ -2,6 +2,7 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,10 +18,10 @@ class TableCalendarPage extends ConsumerStatefulWidget {
   const TableCalendarPage({super.key, required this.imagePicker});
 
   @override
-  TableBasicsExampleState createState() => TableBasicsExampleState();
+  TableCalendarPageState createState() => TableCalendarPageState();
 }
 
-class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
+class TableCalendarPageState extends ConsumerState<TableCalendarPage> {
   late ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
@@ -238,6 +239,7 @@ class TableBasicsExampleState extends ConsumerState<TableCalendarPage> {
                 builder: (context) => CreateEventPage(
                   canNavigate: false,
                   imagePicker: widget.imagePicker,
+                  eventService: EventService(),
                 ),
               ),
             );

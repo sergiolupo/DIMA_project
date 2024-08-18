@@ -10,6 +10,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
@@ -28,6 +29,7 @@ class ChatTabletPage extends StatefulWidget {
   final NotificationService notificationService;
   final ImagePicker imagePicker;
   final StorageService storageService;
+  final EventService eventService;
   const ChatTabletPage({
     super.key,
     required this.selectedGroup,
@@ -36,6 +38,7 @@ class ChatTabletPage extends StatefulWidget {
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
+    required this.eventService,
     required this.storageService,
   });
 
@@ -65,6 +68,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
       setState(() {
         selectedGroup = widget.selectedGroup;
         page = GroupChatPage(
+          eventService: widget.eventService,
           storageService: widget.storageService,
           group: selectedGroup!,
           key: UniqueKey(),
@@ -251,6 +255,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         setState(() {
                           if (page is GroupChatPage) {
                             page = GroupChatPage(
+                              eventService: widget.eventService,
                               storageService: widget.storageService,
                               group: group,
                               key: UniqueKey(),
@@ -294,6 +299,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           setState(() {
                             selectedGroup = group;
                             page = GroupChatPage(
+                              eventService: widget.eventService,
                               storageService: widget.storageService,
                               group: group,
                               key: UniqueKey(),
@@ -341,6 +347,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 selectedGroup = group;
                                 group.lastMessage!.unreadMessages = 0;
                                 page = GroupChatPage(
+                                  eventService: widget.eventService,
                                   storageService: widget.storageService,
                                   group: group,
                                   key: UniqueKey(),

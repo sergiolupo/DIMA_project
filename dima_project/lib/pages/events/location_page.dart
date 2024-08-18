@@ -5,8 +5,9 @@ import 'package:latlong2/latlong.dart';
 
 class LocationPage extends StatefulWidget {
   final LatLng? initialLocation;
-  const LocationPage({super.key, required this.initialLocation});
-
+  final EventService eventService;
+  const LocationPage(
+      {super.key, required this.initialLocation, required this.eventService});
   @override
   LocationPageState createState() => LocationPageState();
 }
@@ -25,7 +26,7 @@ class LocationPageState extends State<LocationPage> {
         selectedLocation = widget.initialLocation;
       });
     } else {
-      LatLng pos = await EventService.getCurrentLocation();
+      LatLng pos = await widget.eventService.getCurrentLocation();
       setState(() {
         selectedLocation = pos;
       });
