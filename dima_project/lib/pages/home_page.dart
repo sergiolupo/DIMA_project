@@ -157,6 +157,7 @@ class HomePageState extends ConsumerState<HomePage> {
           case 2:
             page = TableCalendarPage(
               imagePicker: ImagePicker(),
+              eventService: EventService(),
             );
             break;
           case 3:

@@ -15,7 +15,9 @@ import 'package:dima_project/utils/table_calendar_util.dart';
 
 class TableCalendarPage extends ConsumerStatefulWidget {
   final ImagePicker imagePicker;
-  const TableCalendarPage({super.key, required this.imagePicker});
+  final EventService eventService;
+  const TableCalendarPage(
+      {super.key, required this.imagePicker, required this.eventService});
 
   @override
   TableCalendarPageState createState() => TableCalendarPageState();
@@ -239,7 +241,7 @@ class TableCalendarPageState extends ConsumerState<TableCalendarPage> {
                 builder: (context) => CreateEventPage(
                   canNavigate: false,
                   imagePicker: widget.imagePicker,
-                  eventService: EventService(),
+                  eventService: widget.eventService,
                 ),
               ),
             );
