@@ -7,7 +7,7 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/news/blog_tile.dart';
+import 'package:dima_project/widgets/news/news_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -112,7 +112,7 @@ class ShowNewsPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final message = mediasForDate[index];
                         final List<String> news = message.content.split('\n');
-                        return BlogTile(
+                        return NewsTile(
                           url: news[2],
                           description: news[1],
                           imageUrl: news[3],

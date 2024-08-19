@@ -4,12 +4,10 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/last_message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/pages/chats/chat_tablet_page.dart';
-import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/utils/constants.dart';
+import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -957,8 +955,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
       });
-      testWidgets("Private chat page navigations work correctly for mobile",
+      testWidgets("Private chat page navigations work correctly for tablet",
           (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1194.0, 834.0);
+        tester.view.devicePixelRatio = 1.0;
         final firestore = FakeFirebaseFirestore();
         await firestore.collection('users').doc('user1').set({
           'uid': 'user1',
@@ -1122,13 +1122,13 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('username2'));
         await tester.pumpAndSettle();
-        expect(find.text('username2'), findsOneWidget);
+        expect(find.text('username2'), findsNWidgets(2));
 
-        await tester.tap(find.text('username2')); //Private Chat Info
+        await tester.tap(find.text('username2').last); //Private Chat Info
         await tester.pumpAndSettle();
 
         expect(find.text('Private Chat Info'), findsOneWidget);
-        expect(find.text('username2'), findsOneWidget);
+        expect(find.text('username2'), findsNWidgets(2));
 
         await tester.tap(find.text('Media')); //Media
         await tester.pumpAndSettle();
@@ -1165,9 +1165,31 @@ void main() {
       });
     });
 
-    testWidgets("Test edit group functionality for mobile",
+    testWidgets("Test edit group functionality for tablet",
         (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       AuthService.setUid('user1');
+      final testGroup = Group(
+        id: '123',
+        name: 'Group1',
+        admin: 'user1',
+        isPublic: false,
+        members: [
+          'user1',
+          'user2',
+        ],
+        imagePath: '',
+        description: 'Description',
+        categories: ['Environment'],
+        lastMessage: LastMessage(
+            recentMessage: 'Hello',
+            recentMessageSender: 'user1',
+            recentMessageTimestamp: Timestamp.fromDate(DateTime.now()),
+            recentMessageType: Type.text,
+            unreadMessages: 0,
+            sentByMe: true),
+      );
       final firestore = FakeFirebaseFirestore();
       await firestore.collection('users').doc('user1').set({
         'uid': 'user1',
@@ -1209,6 +1231,10 @@ void main() {
         return Future.value([fakeUserData1, fakeUserData2, fakeUserData3]);
       });
 
+      when(mockDatabaseService.getChats(any)).thenAnswer((_) {
+        return Stream.value(messages);
+      });
+
       when(mockDatabaseService.getGroupMessagesType(any, Type.news)).thenAnswer(
         (_) => Future.value([messages[1]]),
       );
@@ -1230,32 +1256,29 @@ void main() {
       when(mockDatabaseService.updateGroup(any, any, any, any, any)).thenAnswer(
         ((_) => Future.value()),
       );
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => Stream.value([]));
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => Stream.value([testGroup]));
       when(mockDatabaseService.getGroupFromId(any)).thenAnswer(
-        ((_) => Future.value(Group(
-              id: '123',
-              name: 'Group1',
-              admin: 'user1',
-              isPublic: false,
-              members: [
-                'user1',
-                'user2',
-              ],
-              imagePath: '',
-              description: 'Description',
-              categories: ['Environment'],
-              lastMessage: LastMessage(
-                  recentMessage: 'Hello',
-                  recentMessageSender: 'user1',
-                  recentMessageTimestamp: Timestamp.fromDate(DateTime.now()),
-                  recentMessageType: Type.text,
-                  unreadMessages: 0,
-                  sentByMe: true),
-            ))),
+        ((_) => Future.value(testGroup)),
       );
+      when(mockDatabaseService.getUserDataFromUID('user1'))
+          .thenAnswer((_) => Stream.value(documentSnapshot1));
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            eventProvider.overrideWith(
+              (ref, eventId) async => Event(
+                id: 'event_id',
+                name: 'Sample Event',
+                description: 'Event Description',
+                imagePath: '',
+                admin: 'user1',
+                isPublic: true,
+              ),
+            ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             followerProvider.overrideWith(
               (ref, uid) async => [],
@@ -1267,19 +1290,28 @@ void main() {
             ),
           ],
           child: CupertinoApp(
-            home: GroupInfoPage(
-              canNavigate: false,
-              group: fakeGroup1,
+            home: ChatTabletPage(
+              storageService: mockStorageService,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,
+              selectedGroup: null,
+              selectedPrivateChat: null,
+              selectedUser: null,
+              eventService: mockEventService,
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Group1'));
+      await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsNWidgets(2));
+      await tester.tap(find.text('Group1').last);
+      await tester.pumpAndSettle();
+
       expect(find.text('Group Info'), findsOneWidget);
-      expect(find.text('Group1'), findsOneWidget);
+      expect(find.text('Group1'), findsNWidgets(2));
       expect(find.text('Description'), findsOneWidget);
       await tester.tap(find.text('Edit'));
       await tester.pumpAndSettle();
@@ -1287,18 +1319,20 @@ void main() {
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       expect(find.text('Group Info'), findsOneWidget);
-      expect(find.text('Group1'), findsOneWidget);
+      expect(find.text('Group1'), findsNWidgets(2));
       expect(find.text('Description'), findsOneWidget);
       await tester.tap(find.text('Edit'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(CupertinoTextField).at(0), '');
+      await tester.enterText(find.byType(CupertinoTextField).at(1), '');
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+
       expect(find.text('Group name is required'), findsOneWidget);
+
       await tester.tap(find.text('Ok'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(CupertinoTextField).at(0), 'Group1');
+      await tester.enterText(find.byType(CupertinoTextField).at(1), 'Group1');
       await tester.tap(find.text('Members'));
       await tester.pumpAndSettle();
       expect(find.text("Add Members"), findsOneWidget);
@@ -1306,7 +1340,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Categories'));
       await tester.pumpAndSettle();
-      expect(find.text('Categories Selection'), findsOneWidget);
+      expect(find.text('Edit Group'), findsOneWidget);
+      expect(find.byType(CategoriesForm), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
@@ -1319,6 +1354,8 @@ void main() {
     });
     testWidgets("Test leave group functionality", (WidgetTester tester) async {
       AuthService.setUid('user1');
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       final firestore = FakeFirebaseFirestore();
       await firestore.collection('users').doc('user1').set({
         'uid': 'user1',
@@ -1397,6 +1434,16 @@ void main() {
             followerProvider.overrideWith(
               (ref, uid) async => [],
             ),
+            eventProvider.overrideWith(
+              (ref, eventId) async => Event(
+                id: 'event_id',
+                name: 'Sample Event',
+                description: 'Event Description',
+                imagePath: '',
+                admin: 'user1',
+                isPublic: true,
+              ),
+            ),
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),
             userProvider.overrideWith(
@@ -1420,8 +1467,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Group1'));
       await tester.pumpAndSettle();
-      expect(find.text('Group1'), findsOneWidget);
-      await tester.tap(find.text('Group1'));
+      expect(find.text('Group1'), findsNWidgets(2));
+      await tester.tap(find.text('Group1').last);
       await tester.pumpAndSettle();
       expect(find.text('Group Info'), findsOneWidget);
       await tester.fling(
