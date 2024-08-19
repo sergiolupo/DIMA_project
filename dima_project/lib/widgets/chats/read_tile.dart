@@ -4,6 +4,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ReadTile extends StatefulWidget {
@@ -68,7 +69,7 @@ class ReadTileState extends State<ReadTile> {
               ),
             ),
             subtitle: Text(
-              'Read at ${DateUtil.getFormattedDateAndTime(context: context, time: widget.user.readAt.microsecondsSinceEpoch.toString())}',
+              '${DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch).isBefore(DateTime.now()) && DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 1))) ? 'Today' : DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 2))) ? 'Yesterday' : DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7))) ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch)) : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.user.readAt.microsecondsSinceEpoch))} at ${DateUtil.getFormattedTime(context: context, time: widget.user.readAt.microsecondsSinceEpoch.toString())}',
               style: const TextStyle(
                 fontSize: 14,
               ),

@@ -129,9 +129,11 @@ class GroupChatTileTablet extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                        .isBefore(DateTime.now()) &&
-                                    DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                            DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now()) &&
+                                    DateTime.fromMicrosecondsSinceEpoch(group
+                                            .lastMessage!
+                                            .recentMessageTimestamp
+                                            .microsecondsSinceEpoch)
                                         .isAfter(DateTime.now()
                                             .subtract(const Duration(days: 1)))
                                 ? DateFormat.jm().format(
@@ -139,11 +141,12 @@ class GroupChatTileTablet extends StatelessWidget {
                                         .lastMessage!
                                         .recentMessageTimestamp
                                         .microsecondsSinceEpoch))
-                                : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                        DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                            .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                    ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                    : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                        .isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                    ? 'Yesterday'
+                                    : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                        ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                        : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                             style: TextStyle(
                               fontSize: 12,
                               color: group.lastMessage!.unreadMessages! > 0
