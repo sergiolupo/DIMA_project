@@ -260,22 +260,23 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(
           find.byType(CupertinoTextField).at(0), "Test Event1");
+
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNWidgets(3));
 
       await tester.tap(find.text("Add more dates"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNWidgets(8));
-      await tester.drag(
-          find.byType(CupertinoPageScaffold), const Offset(0, -50));
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Delete"));
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
       await tester.pumpAndSettle();
 
+      await tester.tap(find.text("Delete"));
+      await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNWidgets(3));
       await tester.tap(find.text("Participants"));
       await tester.pumpAndSettle();
-      expect(find.text("Add members"), findsOneWidget);
+      expect(find.text("Add Members"), findsOneWidget);
       expect(find.text("No followers"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
@@ -290,7 +291,7 @@ void main() {
 
       await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
-      expect("Event", findsOneWidget);
+      expect(find.text("Event"), findsOneWidget);
     });
     testWidgets("Create Event Page test", (WidgetTester tester) async {
       await tester.pumpWidget(
