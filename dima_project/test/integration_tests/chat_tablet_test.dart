@@ -519,9 +519,8 @@ void main() {
         expect(find.text('Group1'), findsNWidgets(2));
         expect(find.text('You: '), findsOneWidget);
         expect(find.text('Hello'), findsNWidgets(2));
-        await tester.tap(find.text('Group1'));
-        await tester.pumpAndSettle();
-        await tester.longPress(find.text('Hello'));
+
+        await tester.longPress(find.text('Hello').last);
         await tester.pumpAndSettle();
         expect(find.text('Copy Text'), findsOneWidget);
         expect(find.text('Delete Message'), findsOneWidget);
@@ -531,21 +530,23 @@ void main() {
         expect(find.text('Copied to clipboard'), findsOneWidget);
         await tester.pump(const Duration(seconds: 2));
         await tester.pumpAndSettle();
-        await tester.enterText(find.byType(CupertinoTextField), 'Hello');
+        await tester.enterText(find.byType(CupertinoTextField).last, 'Hello');
         await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
         await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(CupertinoIcons.add));
+        await tester.tap(find.byIcon(CupertinoIcons.add).last);
         await tester.pumpAndSettle();
         await tester.tap(find.byIcon(CupertinoIcons.photo_fill));
         await tester.pumpAndSettle();
-        expect(find.text('Group1'), findsOneWidget);
+        expect(find.text('Group1'), findsNWidgets(2));
         await tester.tap(find.byIcon(CupertinoIcons.camera_fill).last);
         await tester.pumpAndSettle();
-        expect(find.text('Group1'), findsOneWidget);
+        expect(find.text('Group1'), findsNWidgets(2));
       });
       testWidgets(
           "Private chat page renders correctly and send message functionality works correctly",
           (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1194.0, 834.0);
+        tester.view.devicePixelRatio = 1.0;
         AuthService.setUid('user1');
         final firestore = FakeFirebaseFirestore();
         await firestore.collection('users').doc('user2').set({
@@ -644,11 +645,15 @@ void main() {
                   .overrideWithValue(mockNotificationService),
             ],
             child: CupertinoApp(
-              home: ChatPage(
+              home: ChatTabletPage(
                 storageService: mockStorageService,
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
                 imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
               ),
             ),
           ),
@@ -659,15 +664,11 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('username2'));
         await tester.pumpAndSettle();
-        expect(find.text('username2'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
-        await tester.pumpAndSettle();
-        expect(find.text('username2'), findsOneWidget);
+        expect(find.text('username2'), findsNWidgets(2));
         expect(find.text('You: '), findsOneWidget);
-        expect(find.text('Hello'), findsOneWidget);
-        await tester.tap(find.text('username2'));
-        await tester.pumpAndSettle();
-        await tester.longPress(find.text('Hello'));
+        expect(find.text('Hello'), findsNWidgets(2));
+
+        await tester.longPress(find.text('Hello').last);
         await tester.pumpAndSettle();
         expect(find.text('Copy Text'), findsOneWidget);
         expect(find.text('Delete Message'), findsOneWidget);
@@ -677,20 +678,22 @@ void main() {
         expect(find.text('Copied to clipboard'), findsOneWidget);
         await tester.pump(const Duration(seconds: 2));
         await tester.pumpAndSettle();
-        await tester.enterText(find.byType(CupertinoTextField), 'Hello');
+        await tester.enterText(find.byType(CupertinoTextField).last, 'Hello');
         await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
         await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(CupertinoIcons.add));
+        await tester.tap(find.byIcon(CupertinoIcons.add).last);
         await tester.pumpAndSettle();
         await tester.tap(find.byIcon(CupertinoIcons.photo_fill));
         await tester.pumpAndSettle();
-        expect(find.text('username2'), findsOneWidget);
+        expect(find.text('username2'), findsNWidgets(2));
         await tester.tap(find.byIcon(CupertinoIcons.camera_fill).last);
         await tester.pumpAndSettle();
-        expect(find.text('username2'), findsOneWidget);
+        expect(find.text('username2'), findsNWidgets(2));
       });
-      testWidgets("Group chat page navigations work correctly for mobile",
+      testWidgets("Group chat page navigations work correctly for tablet",
           (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1194.0, 834.0);
+        tester.view.devicePixelRatio = 1.0;
         final firestore = FakeFirebaseFirestore();
         await firestore.collection('users').doc('user1').set({
           'uid': 'user1',
@@ -863,33 +866,39 @@ void main() {
               ),
             ],
             child: CupertinoApp(
-              home: ChatPage(
+              home: ChatTabletPage(
                 storageService: mockStorageService,
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
                 imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
               ),
             ),
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Group1'));
-        await tester.pumpAndSettle();
         expect(find.text('Group1'), findsOneWidget);
 
-        await tester.tap(find.byIcon(CupertinoIcons.add));
+        await tester.tap(find.text('Group1'));
+        await tester.pumpAndSettle();
+        expect(find.text('Group1'), findsNWidgets(2));
+
+        await tester.tap(find.byIcon(CupertinoIcons.add).last);
         await tester.pumpAndSettle();
         await tester.tap(find.byIcon(CupertinoIcons.calendar)); //Event
         await tester.pumpAndSettle();
         expect(find.text('Create Event'), findsNWidgets(2));
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
-        expect(find.text('Group1'), findsOneWidget);
-        await tester.tap(find.text('Group1')); //Group Info
+        expect(find.text('Group1'), findsNWidgets(2));
+        await tester.tap(find.text('Group1').last); //Group Info
         await tester.pumpAndSettle();
 
         expect(find.text('Group Info'), findsOneWidget);
-        expect(find.text('Group1'), findsOneWidget);
+        expect(find.text('Group1'), findsNWidgets(2));
         expect(find.text('Description'), findsOneWidget);
 
         await tester.tap(find.text('Requests')); //Requests
@@ -1095,11 +1104,15 @@ void main() {
               ),
             ],
             child: CupertinoApp(
-              home: ChatPage(
+              home: ChatTabletPage(
                 storageService: mockStorageService,
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
                 imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
               ),
             ),
           ),
@@ -1391,11 +1404,15 @@ void main() {
             ),
           ],
           child: CupertinoApp(
-            home: ChatPage(
+            home: ChatTabletPage(
+              storageService: mockStorageService,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,
-              storageService: mockStorageService,
+              selectedGroup: null,
+              selectedPrivateChat: null,
+              selectedUser: null,
+              eventService: mockEventService,
             ),
           ),
         ),

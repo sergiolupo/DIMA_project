@@ -59,6 +59,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 notificationService: widget.notificationService,
                 imagePicker: ImagePicker(),
               ));
+              return;
             }
             if (!context.mounted) return;
             Navigator.of(context).pop(group);

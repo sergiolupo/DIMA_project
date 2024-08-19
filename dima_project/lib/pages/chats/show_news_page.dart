@@ -65,6 +65,7 @@ class ShowNewsPage extends StatelessWidget {
                     notificationService: notificationService,
                   ));
                 }
+                return;
               }
               Navigator.pop(context);
             },

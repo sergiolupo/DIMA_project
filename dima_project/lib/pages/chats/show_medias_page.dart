@@ -66,6 +66,7 @@ class ShowMediasPage extends StatelessWidget {
                     notificationService: notificationService,
                   ));
                 }
+                return;
               } else {
                 Navigator.of(context).pop();
               }

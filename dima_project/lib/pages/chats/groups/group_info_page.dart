@@ -283,7 +283,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   widget.navigateToPage!(GroupRequestsPage(
                                     group: group,
                                     requests: requests,
-                                    canNavigate: true,
+                                    canNavigate: widget.canNavigate,
                                     navigateToPage: widget.navigateToPage,
                                     notificationService:
                                         widget.notificationService,
@@ -298,7 +298,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                     builder: (context) => GroupRequestsPage(
                                       group: group,
                                       requests: requests,
-                                      canNavigate: false,
+                                      canNavigate: widget.canNavigate,
                                       notificationService:
                                           widget.notificationService,
                                       databaseService: _databaseService,
@@ -313,6 +313,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             );
                           },
                         ),
+                      const SizedBox(height: 10),
                       FutureBuilder(
                         future: _databaseService.getGroupMessagesType(
                             group.id, Type.image),
