@@ -2,9 +2,11 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
@@ -320,6 +322,35 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+    });
+    testWidgets("Table Calendar Page test", (WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            eventProvider.overrideWith(
+              (ref, id) async => fakeEvent1,
+            ),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            followingProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+          ],
+          child: CupertinoApp(
+            home: TableCalendarPage(
+              imagePicker: mockImagePicker,
+              eventService: mockEventService,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      debugDefaultTargetPlatformOverride = null;
     });
   });
 }

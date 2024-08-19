@@ -369,45 +369,60 @@ class UserProfileState extends ConsumerState<UserProfile> {
       visible: index == 1,
       child: events.when(
           data: (events) {
-            return Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
+            if (events.isEmpty) {
+              return const Row(
+                children: [
+                  Text(
+                    'No events yet',
+                    style: TextStyle(
+                        color: CupertinoColors.systemGrey,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => ResponsiveLayout(
-                            tabletLayout: ShowEventTablet(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: false,
-                            ),
-                            mobileLayout: ShowEvent(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: false,
+                ],
+              );
+            } else {
+              return Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ResponsiveLayout(
+                              tabletLayout: ShowEventTablet(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: false,
+                              ),
+                              mobileLayout: ShowEvent(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: false,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      child: EventGrid(
-                        event: event,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
+                        child: EventGrid(
+                          event: event,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
           },
           error: (error, stackTrace) {
             return const Center(

@@ -58,14 +58,26 @@ class LoginPageState extends State<LoginPage> {
               if (MediaQuery.of(context).size.width > Constants.limitWidth)
                 Expanded(
                   child: _showLogin
-                      ? Image.asset(
-                          'assets/images/landing.png',
-                          fit: BoxFit.contain,
-                        )
-                      : Image.asset(
-                          'assets/images/forgot_password.png',
-                          fit: BoxFit.contain,
-                        ),
+                      ? MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset(
+                              'assets/darkMode/landing.png',
+                              fit: BoxFit.contain,
+                            )
+                          : Image.asset(
+                              'assets/images/landing.png',
+                              fit: BoxFit.contain,
+                            )
+                      : MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset(
+                              'assets/darkMode/forgot_password.png',
+                              fit: BoxFit.contain,
+                            )
+                          : Image.asset(
+                              'assets/images/forgot_password.png',
+                              fit: BoxFit.contain,
+                            ),
                 ),
               SizedBox(
                 width: MediaQuery.of(context).size.width > Constants.limitWidth

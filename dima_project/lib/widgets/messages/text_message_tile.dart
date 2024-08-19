@@ -50,14 +50,12 @@ class TextMessageTile extends StatelessWidget {
                 if (!message.sentByMe! && message.isGroupMessage)
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          CreateImageWidget.getUserImage(
-                            message.senderImage!,
-                            0,
-                          ),
-                        ]),
+                    child: Column(children: [
+                      CreateImageWidget.getUserImage(
+                        message.senderImage!,
+                        0,
+                      ),
+                    ]),
                   ),
                 Flexible(
                   child: Stack(

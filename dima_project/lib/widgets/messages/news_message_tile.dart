@@ -122,7 +122,7 @@ class NewsMessageTile extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 150,
+                                  width: 200,
                                   child: Text(
                                     message.content.split('\n').first,
                                     maxLines: 1,
@@ -138,7 +138,7 @@ class NewsMessageTile extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(
-                                  width: 150,
+                                  width: 200,
                                   child: Text(
                                     message.content.split('\n')[1],
                                     maxLines: 3,

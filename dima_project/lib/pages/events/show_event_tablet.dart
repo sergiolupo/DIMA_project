@@ -58,8 +58,24 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
       child: events.when(
         data: (events) {
           if (events.isEmpty) {
-            return const Center(
-              child: Text('No events found'),
+            return Center(
+              child: Column(
+                children: [
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset(
+                          'assets/darkMode/no_events.png',
+                          height: MediaQuery.of(context).size.height * 0.7,
+                        )
+                      : Image.asset('assets/images/no_events.png',
+                          height: MediaQuery.of(context).size.height * 0.7),
+                  const Text('No events found',
+                      style: TextStyle(
+                        color: CupertinoColors.systemGrey,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ],
+              ),
             );
           }
           final int initialPage =

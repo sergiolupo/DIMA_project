@@ -138,7 +138,7 @@ class ImageMessageTile extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 25,
+            bottom: message.sentByMe! ? 8 : 25,
             right: message.sentByMe! ? 2 : null,
             left: message.sentByMe!
                 ? null

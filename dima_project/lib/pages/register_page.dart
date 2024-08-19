@@ -103,6 +103,19 @@ class RegisterPageState extends State<RegisterPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        trailing: _currentPage == 4
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(3),
+                onPressed: () => {managePage()},
+                child: Text(
+                  'Register',
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: CupertinoTheme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : null,
         leading: CupertinoNavigationBarBackButton(
           color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
@@ -117,12 +130,14 @@ class RegisterPageState extends State<RegisterPage> {
             }
           },
         ),
-        middle: Text(
-          pageName,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: CupertinoTheme.of(context).primaryColor,
+        middle: Padding(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          child: Text(
+            pageName,
+            style: TextStyle(
+              fontSize: 24,
+              color: CupertinoTheme.of(context).primaryColor,
+            ),
           ),
         ),
       ),
@@ -137,31 +152,27 @@ class RegisterPageState extends State<RegisterPage> {
                   children: <Widget>[
                     page,
                     const SizedBox(height: 20.0),
-                    CupertinoButton(
-                      onPressed: () =>
-                          {if (_formKey.currentState!.validate()) managePage()},
-                      padding: const EdgeInsets.symmetric(horizontal: 50),
-                      color: CupertinoTheme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                      child: _currentPage < 4
-                          ? const Text(
-                              'Next',
-                              style: TextStyle(color: CupertinoColors.white),
-                            )
-                          : _isEnteredWithGoogle
-                              ? const Text("Confirm",
+                    if (_currentPage != 4)
+                      CupertinoButton(
+                          onPressed: () => {
+                                if (_formKey.currentState!.validate())
+                                  managePage()
+                              },
+                          padding: const EdgeInsets.symmetric(horizontal: 50),
+                          color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(20),
+                          child: _currentPage < 4
+                              ? const Text(
+                                  'Next',
                                   style:
-                                      TextStyle(color: CupertinoColors.white))
-                              : const Text('Register',
-                                  style:
-                                      TextStyle(color: CupertinoColors.white)),
-                    ),
-                    const SizedBox(
-                        height: 20), // Added spacing between button and text
+                                      TextStyle(color: CupertinoColors.white),
+                                )
+                              : const SizedBox.shrink()),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              const SizedBox(height: 20), // Added spacing between text and row
+              const SizedBox(height: 20),
               !_isEnteredWithGoogle
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
