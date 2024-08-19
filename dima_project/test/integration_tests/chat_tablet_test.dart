@@ -353,8 +353,10 @@ void main() {
     });
     group('Create Group Page Tests', () {
       testWidgets(
-          "CreateGroup page displays correctly and successfully creates a new group for mobile",
+          "CreateGroup page displays correctly and successfully creates a new group for tablet",
           (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1194.0, 834.0);
+        tester.view.devicePixelRatio = 1.0;
         AuthService.setUid('user1');
 
         when(mockDatabaseService.getPrivateChatsStream())
@@ -374,17 +376,21 @@ void main() {
               ),
             ],
             child: CupertinoApp(
-              home: ChatPage(
+              home: ChatTabletPage(
                 storageService: mockStorageService,
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
                 imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
               ),
             ),
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(CupertinoIcons.add_circled_solid));
+        await tester.tap(find.byIcon(CupertinoIcons.add));
         await tester.pumpAndSettle();
         expect(find.text('Create'), findsOneWidget);
         await tester.enterText(find.byType(CupertinoTextField).first, 'Group3');
@@ -403,8 +409,7 @@ void main() {
             find.byType(CupertinoTextField).at(1), 'Description');
         await tester.tap(find.text('Categories')); // Categories Page
         await tester.pumpAndSettle();
-        expect(find.text('Categories Selection'), findsOneWidget);
-        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+        await tester.tap(find.byIcon(CupertinoIcons.back));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(CupertinoSwitch));
         await tester.pumpAndSettle();
@@ -429,6 +434,8 @@ void main() {
       testWidgets(
           "Group chat page renders correctly and send message functionality works correctly",
           (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1194.0, 834.0);
+        tester.view.devicePixelRatio = 1.0;
         AuthService.setUid('user1');
         final firestore = FakeFirebaseFirestore();
         await firestore.collection('users').doc('user2').set({
@@ -526,11 +533,15 @@ void main() {
                   .overrideWithValue(mockNotificationService),
             ],
             child: CupertinoApp(
-              home: ChatPage(
+              home: ChatTabletPage(
                 storageService: mockStorageService,
                 databaseService: mockDatabaseService,
                 notificationService: mockNotificationService,
                 imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
               ),
             ),
           ),
@@ -539,12 +550,9 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('Group1'));
         await tester.pumpAndSettle();
-        expect(find.text('Group1'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
-        await tester.pumpAndSettle();
-        expect(find.text('Group1'), findsOneWidget);
+        expect(find.text('Group1'), findsNWidgets(2));
         expect(find.text('You: '), findsOneWidget);
-        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('Hello'), findsNWidgets(2));
         await tester.tap(find.text('Group1'));
         await tester.pumpAndSettle();
         await tester.longPress(find.text('Hello'));
