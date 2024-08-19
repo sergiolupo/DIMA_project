@@ -138,13 +138,13 @@ class ImageMessageTile extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 10,
+            bottom: 25,
             right: message.sentByMe! ? 2 : null,
             left: message.sentByMe!
                 ? null
                 : MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? 150
-                    : MediaQuery.of(context).size.width / 2 - 45,
+                    ? 185
+                    : MediaQuery.of(context).size.width / 2 - 12,
             child: Row(
               children: [
                 Text(
