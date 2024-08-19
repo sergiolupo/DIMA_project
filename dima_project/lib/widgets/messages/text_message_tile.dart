@@ -58,97 +58,100 @@ class TextMessageTile extends StatelessWidget {
                     ]),
                   ),
                 Flexible(
-                  child: Stack(
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          minWidth: 80,
-                        ),
-                        padding: const EdgeInsets.only(
-                            top: 8.0, right: 8.0, left: 8.0, bottom: 24.0),
-                        decoration: BoxDecoration(
-                          borderRadius: message.sentByMe!
-                              ? const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                )
-                              : const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                          color: message.sentByMe!
-                              ? CupertinoTheme.of(context).primaryColor
-                              : CupertinoColors.systemGrey,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            if (!message.sentByMe! && message.isGroupMessage)
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    senderUsername!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: message.sentByMe!
-                                          ? CupertinoColors.white
-                                          : CupertinoColors.black,
-                                      letterSpacing: -0.5,
-                                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Stack(
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.7,
+                            minWidth: 80,
+                          ),
+                          padding: const EdgeInsets.only(
+                              top: 8.0, right: 8.0, left: 8.0, bottom: 24.0),
+                          decoration: BoxDecoration(
+                            borderRadius: message.sentByMe!
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                  )
+                                : const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
                                   ),
-                                ],
-                              ),
-                            Text(
-                              message.content,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: message.sentByMe!
-                                    ? CupertinoColors.white
-                                    : CupertinoColors.black,
-                                fontSize: 16,
-                              ),
-                              softWrap: true,
-                              overflow: TextOverflow.visible,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 2.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
+                            color: message.sentByMe!
+                                ? CupertinoTheme.of(context).primaryColor
+                                : CupertinoColors.systemGrey,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (!message.sentByMe! && message.isGroupMessage)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      senderUsername!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: message.sentByMe!
+                                            ? CupertinoColors.white
+                                            : CupertinoColors.black,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               Text(
-                                DateUtil.getFormattedTime(
-                                    context: context,
-                                    time: message.time.microsecondsSinceEpoch
-                                        .toString()),
+                                message.content,
+                                textAlign: TextAlign.left,
                                 style: TextStyle(
                                   color: message.sentByMe!
                                       ? CupertinoColors.white
                                       : CupertinoColors.black,
-                                  fontSize: 9,
+                                  fontSize: 16,
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              MessageUtils.buildReadByIcon(
-                                message,
-                                databaseService,
+                                softWrap: true,
+                                overflow: TextOverflow.visible,
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          bottom: 0,
+                          right: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 2.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  DateUtil.getFormattedTime(
+                                      context: context,
+                                      time: message.time.microsecondsSinceEpoch
+                                          .toString()),
+                                  style: TextStyle(
+                                    color: message.sentByMe!
+                                        ? CupertinoColors.white
+                                        : CupertinoColors.black,
+                                    fontSize: 9,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                MessageUtils.buildReadByIcon(
+                                  message,
+                                  databaseService,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
