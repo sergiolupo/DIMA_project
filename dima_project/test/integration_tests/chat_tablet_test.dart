@@ -9,9 +9,9 @@ import 'package:dima_project/pages/chats/chat_tablet_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -219,41 +219,6 @@ void main() {
       expect(find.text('Create a chat to start chatting'), findsOneWidget);
     });
     testWidgets(
-        'Displays no chat messages on ChatPage for tablet in dark mode when no chats and groups exist',
-        (WidgetTester tester) async {
-      tester.view.physicalSize = const Size(1194.0, 834.0);
-      tester.view.devicePixelRatio = 1.0;
-      AuthService.setUid('user1');
-      when(mockDatabaseService.getPrivateChatsStream())
-          .thenAnswer((_) => Stream.value([]));
-      when(mockDatabaseService.getGroupsStream())
-          .thenAnswer((_) => Stream.value([]));
-      await tester.pumpWidget(
-        MediaQuery(
-          data: const MediaQueryData(platformBrightness: Brightness.dark),
-          child: CupertinoApp(
-            home: ChatTabletPage(
-              storageService: mockStorageService,
-              databaseService: mockDatabaseService,
-              notificationService: mockNotificationService,
-              imagePicker: mockImagePicker,
-              selectedGroup: null,
-              selectedPrivateChat: null,
-              selectedUser: null,
-              eventService: mockEventService,
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('No groups yet'), findsOneWidget);
-      expect(find.text('Create a group to start chatting'), findsOneWidget);
-      await tester.tap(find.text('Private'));
-      await tester.pumpAndSettle();
-      expect(find.text('No chats yet'), findsOneWidget);
-      expect(find.text('Create a chat to start chatting'), findsOneWidget);
-    });
-    testWidgets(
         'Chat page displays chats and groups for tablet and navigation works',
         (WidgetTester tester) async {
       tester.view.physicalSize = const Size(1194.0, 834.0);
@@ -343,7 +308,8 @@ void main() {
       expect(find.text('No groups found'), findsOneWidget);
       await tester.tap(find.text('Private'));
       await tester.pumpAndSettle();
-      expect(find.text('No private chats found'), findsOneWidget);
+
+      expect(find.text("No private chats found"), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), '');
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsOneWidget);

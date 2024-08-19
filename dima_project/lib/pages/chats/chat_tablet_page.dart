@@ -430,7 +430,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                         'assets/darkMode/no_chat_found.png')
                                     : Image.asset(
                                         'assets/images/no_chat_found.png'),
-                                const Text('No private chats found'),
+                                const Text("No private chats found"),
                               ],
                             ));
                           }
@@ -511,6 +511,25 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         );
                       } else {
                         if (snapshot.hasError) {
+                          if (!("Deleted Account")
+                              .toLowerCase()
+                              .contains(searchedText.toLowerCase())) {
+                            if (index == data.length - 1 && !found) {
+                              return Center(
+                                  child: Column(
+                                children: [
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Image.asset(
+                                          'assets/darkMode/no_chat_found.png')
+                                      : Image.asset(
+                                          'assets/images/no_chat_found.png'),
+                                  const Text('No private chats found'),
+                                ],
+                              ));
+                            }
+                            return const SizedBox.shrink();
+                          }
                           return PrivateChatTileTablet(
                             onDismissed: (DismissDirection direction) async {
                               await _databaseService
