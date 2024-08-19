@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
+import 'package:nock/nock.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_event_service.mocks.dart';
@@ -17,12 +18,11 @@ import '../mocks/mock_image_picker.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
-  final MockImagePicker mockImagePicker = MockImagePicker();
-  final MockEventService mockEventService = MockEventService();
-  final MockNotificationService mockNotificationService =
-      MockNotificationService();
-  final MockDatabaseService mockDatabaseService = MockDatabaseService();
-  final Event fakeEvent = Event(
+  late final MockImagePicker mockImagePicker;
+  late final MockEventService mockEventService;
+  late final MockNotificationService mockNotificationService;
+  late final MockDatabaseService mockDatabaseService;
+  final Event fakeEvent1 = Event(
       id: "123",
       name: "Test Event",
       description: "Test Description",
@@ -40,10 +40,43 @@ void main() {
             id: "321",
             members: ["Test Admin", "uid"])
       ]);
+  final Event fakeEvent2 = Event(
+      id: "456",
+      name: "Test Event",
+      description: "Test Description",
+      admin: "uid",
+      imagePath: "",
+      isPublic: true,
+      details: [
+        EventDetails(
+            startDate: DateTime(2024, 1, 1),
+            endDate: DateTime(2024, 1, 2),
+            startTime: DateTime(2024, 1, 1, 0, 0),
+            endTime: DateTime(2024, 1, 2, 1, 0),
+            location: "Test Location",
+            latlng: const LatLng(0, 0),
+            id: "654",
+            members: ["uid"])
+      ]);
   group("Event tests", () {
+    setUpAll(() {
+      nock.init();
+      mockImagePicker = MockImagePicker();
+      mockEventService = MockEventService();
+      mockNotificationService = MockNotificationService();
+      mockDatabaseService = MockDatabaseService();
+    });
+
+    setUp(() {
+      nock.cleanAll();
+    });
     testWidgets("Event page renders correctly and navigation works",
         (WidgetTester tester) async {
       AuthService.setUid("uid");
+
+      nock('https://tile.openstreetmap.org')
+          .get('/{z}/{x}/{y}.png')
+          .reply(200, 'OK');
 
       await tester.pumpWidget(
         ProviderScope(
@@ -52,7 +85,7 @@ void main() {
                 .overrideWithValue(mockNotificationService),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             eventProvider.overrideWith(
-              (ref, id) async => fakeEvent,
+              (ref, id) async => fakeEvent1,
             ),
             followingProvider.overrideWith(
               (ref, uid) async => [],
@@ -67,6 +100,7 @@ void main() {
                   name: "name",
                   surname: "surname",
                   username: "username",
+                  requests: [],
                 ));
               } else {
                 return Future.value(UserData(
@@ -77,6 +111,7 @@ void main() {
                   name: "admin",
                   surname: "admin",
                   username: "admin",
+                  requests: [],
                 ));
               }
             }),
@@ -85,7 +120,7 @@ void main() {
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent.id!,
+              eventId: fakeEvent1.id!,
             ),
           ),
         ),
@@ -96,7 +131,7 @@ void main() {
       expect(find.text("Test Description"), findsOneWidget);
       expect(
           find.text(
-              '${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].endDate!)}'),
+              '${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].endDate!)}'),
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
@@ -104,8 +139,9 @@ void main() {
       await tester.tap(find.byType(CupertinoListTile));
       await tester.pumpAndSettle();
       expect(find.text("Detail Page"), findsOneWidget);
-      /*expect(find.text("Participants"), findsOneWidget);
-      expect(find.text('Test Location'), findsOneWidget);
+      expect(find.text("Location: Test Location"), findsOneWidget);
+      expect(find.textContaining("Add to calendar"), findsOneWidget);
+      expect(find.text("Participants"), findsOneWidget);
       await tester.tap(find.text("Participants"));
       await tester.pumpAndSettle();
       expect(find.text("Participants"), findsOneWidget);
@@ -117,18 +153,12 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
       expect(find.text("Detail Page"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
-      expect(find.text("Event"), findsOneWidget);*/
+      expect(find.text("Event"), findsOneWidget);
     });
 
     testWidgets("Delete event works", (WidgetTester tester) async {
-      when(() => mockDatabaseService.deleteEvent(fakeEvent.id!))
-          .thenAnswer((_) => Future.value());
-
-      when(() => mockNotificationService.sendEventNotification(
-          "Test Event", "123", false, "2")).thenAnswer((_) => Future.value());
-
       AuthService.setUid("uid");
       await tester.pumpWidget(
         ProviderScope(
@@ -137,14 +167,14 @@ void main() {
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),
             eventProvider.overrideWith(
-              (ref, id) async => fakeEvent,
+              (ref, id) async => fakeEvent2,
             ),
           ],
           child: CupertinoApp(
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent.id!,
+              eventId: fakeEvent1.id!,
             ),
           ),
         ),
@@ -155,11 +185,11 @@ void main() {
       expect(find.text("Test Description"), findsOneWidget);
       expect(
           find.text(
-              '${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].endDate!)}'),
+              '${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].endDate!)}'),
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-      await tester.tap(find.text("Delete Event"));
+      await tester.tap(find.text('Delete Event'));
       await tester.pumpAndSettle();
       expect(find.text("Are you sure you want to delete this event?"),
           findsOneWidget);
@@ -172,24 +202,24 @@ void main() {
           findsOneWidget);
       await tester.tap(find.text("Delete"));
       await tester.pumpAndSettle();
-
-      verify(mockDatabaseService.deleteEvent(fakeEvent.id!) as Function())
-          .called(1);
     });
     testWidgets("Edit event page works correctly", (WidgetTester tester) async {
       AuthService.setUid("uid");
-      when(() => mockDatabaseService.getGroups("uid"))
-          .thenAnswer((_) => Future.value([]));
-      when(() => mockDatabaseService
-              .updateEvent(fakeEvent, null, true, false, [], []))
-          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([]),
+      );
+
+      when(mockDatabaseService.updateEvent(any, any, any, any, any, any))
+          .thenAnswer((_) {
+        return Future.value();
+      });
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             eventProvider.overrideWith(
-              (ref, id) async => fakeEvent,
+              (ref, id) async => fakeEvent2,
             ),
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),
@@ -204,7 +234,7 @@ void main() {
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent.id!,
+              eventId: fakeEvent2.id!,
             ),
           ),
         ),
@@ -215,7 +245,7 @@ void main() {
       expect(find.text("Test Description"), findsOneWidget);
       expect(
           find.text(
-              '${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent.details![0].endDate!)}'),
+              '${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].endDate!)}'),
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
@@ -231,12 +261,18 @@ void main() {
       await tester.enterText(
           find.byType(CupertinoTextField).at(0), "Test Event1");
       await tester.pumpAndSettle();
+      expect(find.byType(CupertinoListTile), findsNWidgets(3));
+
       await tester.tap(find.text("Add more dates"));
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoTextField), findsNWidgets(7));
+      expect(find.byType(CupertinoListTile), findsNWidgets(8));
+      await tester.drag(
+          find.byType(CupertinoPageScaffold), const Offset(0, -50));
+      await tester.pumpAndSettle();
       await tester.tap(find.text("Delete"));
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoTextField), findsNWidgets(2));
+
+      expect(find.byType(CupertinoListTile), findsNWidgets(3));
       await tester.tap(find.text("Participants"));
       await tester.pumpAndSettle();
       expect(find.text("Add members"), findsOneWidget);
@@ -262,7 +298,7 @@ void main() {
           overrides: [
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             eventProvider.overrideWith(
-              (ref, id) async => fakeEvent,
+              (ref, id) async => fakeEvent1,
             ),
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),

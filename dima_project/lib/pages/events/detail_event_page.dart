@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
@@ -174,7 +175,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 );
               },
               child: Text(
-                detail.members!.length > 1 ? " Participants" : " Participant",
+                detail.members!.length > 1 ? "Participants" : "Participant",
                 style: CupertinoTheme.of(context)
                     .textTheme
                     .textStyle
@@ -377,7 +378,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
   }
 
   TileLayer get openStreetMapTileLayer => TileLayer(
-        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        userAgentPackageName: 'polimi.dima_project.agorapp',
-      );
+      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      userAgentPackageName: 'polimi.dima_project.agorapp',
+      errorImage: CachedNetworkImageProvider(
+          'https://www.openstreetmap.org/404.png',
+          errorListener: (Object error) {}));
 }
