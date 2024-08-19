@@ -76,9 +76,8 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                     children: [
                       MediaQuery.of(context).platformBrightness ==
                               Brightness.dark
-                          ? Image.asset(
-                              'assets/darkMode/no_following_found.png')
-                          : Image.asset('assets/images/no_following_found.png'),
+                          ? Image.asset('assets/darkMode/no_following.png')
+                          : Image.asset('assets/images/no_following.png'),
                       const Center(
                         child: Text('Not following anyone'),
                       ),

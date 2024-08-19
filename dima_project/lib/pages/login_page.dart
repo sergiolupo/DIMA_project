@@ -57,10 +57,15 @@ class LoginPageState extends State<LoginPage> {
             children: [
               if (MediaQuery.of(context).size.width > Constants.limitWidth)
                 Expanded(
-                  child: Image.asset(
-                    'assets/images/landing.png',
-                    fit: BoxFit.contain,
-                  ),
+                  child: _showLogin
+                      ? Image.asset(
+                          'assets/images/landing.png',
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          'assets/images/forgot_password.png',
+                          fit: BoxFit.contain,
+                        ),
                 ),
               SizedBox(
                 width: MediaQuery.of(context).size.width > Constants.limitWidth
