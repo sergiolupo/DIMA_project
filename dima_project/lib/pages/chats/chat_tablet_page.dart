@@ -237,7 +237,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                     'assets/darkMode/no_groups_chat_found.png')
                                 : Image.asset(
                                     'assets/images/no_groups_chat_found.png'),
-                            const Text('No groups'),
+                            const Text('No groups found'),
                           ],
                         ));
                       }
@@ -431,7 +431,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                         'assets/darkMode/no_chat_found.png')
                                     : Image.asset(
                                         'assets/images/no_chat_found.png'),
-                                const Text('No private chats'),
+                                const Text('No private chats found'),
                               ],
                             ));
                           }
@@ -624,8 +624,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             const SizedBox(height: 20),
             Text(
               idx == 0
-                  ? "Create a group to start chatting "
-                  : "Start a private chat to start chatting",
+                  ? "Create a group to start chatting"
+                  : "Create a chat to start chatting",
               style: const TextStyle(
                   color: CupertinoColors.systemGrey, fontSize: 15),
             ),
