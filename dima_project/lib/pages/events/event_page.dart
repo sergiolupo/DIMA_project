@@ -1,7 +1,6 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/event_service.dart';
-import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,6 +37,7 @@ class EventPageState extends ConsumerState<EventPage> {
   @override
   Widget build(BuildContext context) {
     final databaseService = ref.read(databaseServiceProvider);
+    final notificationService = ref.read(notificationServiceProvider);
     final event = ref.watch(eventProvider(widget.eventId));
     return event.when(
       data: (event) {
@@ -58,6 +58,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                     event: event,
                                     imagePicker: widget.imagePicker,
                                     eventService: widget.eventService,
+                                    notificationService: notificationService,
                                   )));
                     },
                     child: Text(
@@ -253,9 +254,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                                     );
 
                                                     try {
-                                                      await NotificationService(
-                                                              databaseService:
-                                                                  databaseService)
+                                                      await notificationService
                                                           .sendEventNotification(
                                                               event.name,
                                                               widget.eventId,

@@ -42,7 +42,7 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
             Navigator.of(context).pop();
           },
         ),
-        middle: Text('Partecipants',
+        middle: Text('Participants',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
       ),
       child: event.when(

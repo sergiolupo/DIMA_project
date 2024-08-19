@@ -165,7 +165,7 @@ class EventService {
           actions: <Widget>[
             CupertinoDialogAction(
               isDefaultAction: true,
-              child: const Text('OK'),
+              child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },

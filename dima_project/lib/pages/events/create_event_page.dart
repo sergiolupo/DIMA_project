@@ -300,7 +300,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               children: [
                                 Icon(CupertinoIcons.person_3_fill),
                                 SizedBox(width: 10),
-                                Text('Partecipants'),
+                                Text('Participants'),
                               ],
                             ),
                             trailing: const Icon(CupertinoIcons.forward),
@@ -343,6 +343,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                 CupertinoPageRoute(
                                   builder: (context) => ShareEventPage(
                                     groupIds: groupIds,
+                                    databaseService: databaseService,
                                   ),
                                 ),
                               );

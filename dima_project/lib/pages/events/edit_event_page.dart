@@ -21,11 +21,13 @@ class EditEventPage extends ConsumerStatefulWidget {
   final Event event;
   final ImagePicker imagePicker;
   final EventService eventService;
+  final NotificationService notificationService;
   @override
   const EditEventPage(
       {super.key,
       required this.event,
       required this.imagePicker,
+      required this.notificationService,
       required this.eventService});
   @override
   EditEventPageState createState() => EditEventPageState();
@@ -114,9 +116,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                     details.values.toList() != oldEvent.details! ||
                     selectedImagePath != null ||
                     isPublic != oldEvent.isPublic) {
-                  await NotificationService(databaseService: databaseService)
-                      .sendEventNotification(
-                          widget.event.name, widget.event.id!, false, "1");
+                  await widget.notificationService.sendEventNotification(
+                      widget.event.name, widget.event.id!, false, "1");
                 }
 
                 // Pop the loading dialog
@@ -292,7 +293,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 child: Column(
                   children: [
                     CupertinoListTile(
-                      title: const Text('Partecipants'),
+                      title: const Text('Participants'),
                       leading: const Icon(CupertinoIcons.person_3_fill),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
@@ -332,6 +333,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                           CupertinoPageRoute(
                             builder: (context) => ShareEventPage(
                               groupIds: groupIds,
+                              databaseService: databaseService,
                             ),
                           ),
                         );

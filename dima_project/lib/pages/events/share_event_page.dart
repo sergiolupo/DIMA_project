@@ -6,8 +6,10 @@ import 'package:flutter/cupertino.dart';
 
 class ShareEventPage extends StatefulWidget {
   final List<String> groupIds;
+  final DatabaseService databaseService;
   @override
-  const ShareEventPage({super.key, required this.groupIds});
+  const ShareEventPage(
+      {super.key, required this.groupIds, required this.databaseService});
 
   @override
   State<ShareEventPage> createState() => ShareEventPageState();
@@ -26,7 +28,7 @@ class ShareEventPageState extends State<ShareEventPage> {
 
   void fetchGroups() async {
     final List<Group> userGroups =
-        await DatabaseService().getGroups(AuthService.uid);
+        await widget.databaseService.getGroups(AuthService.uid);
     setState(() {
       groups = userGroups;
       groupsIds = widget.groupIds;
