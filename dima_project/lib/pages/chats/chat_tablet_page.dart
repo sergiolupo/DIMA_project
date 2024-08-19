@@ -394,8 +394,8 @@ class ChatTabletPageState extends State<ChatTabletPage> {
           if (idx == 0) {
             return const SizedBox.shrink();
           }
-          int i = 0;
           if (snapshot.hasData) {
+            bool found = false;
             var data = snapshot.data!;
 
             if (data.isNotEmpty) {
@@ -420,8 +420,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                         if (!other.username
                             .toLowerCase()
                             .contains(searchedText.toLowerCase())) {
-                          i += 1;
-                          if (i == data.length) {
+                          if (index == data.length - 1 && !found) {
                             return Center(
                                 child: Column(
                               children: [
@@ -437,7 +436,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                           }
                           return const SizedBox.shrink();
                         }
-
+                        found = true;
                         if (selectedUser != null &&
                             selectedUser!.uid == other.uid &&
                             (selectedUser!.username != other.username ||
