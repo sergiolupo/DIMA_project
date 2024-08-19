@@ -109,11 +109,10 @@ class InvitePageState extends ConsumerState<InvitePage> {
                     children: [
                       MediaQuery.of(context).platformBrightness ==
                               Brightness.dark
-                          ? Image.asset(
-                              'assets/darkMode/no_followers_found.png')
-                          : Image.asset('assets/images/no_followers_found.png'),
+                          ? Image.asset('assets/darkMode/no_followers.png')
+                          : Image.asset('assets/images/no_followers.png'),
                       const Center(
-                        child: Text('No results found'),
+                        child: Text('No followers found'),
                       ),
                     ],
                   );

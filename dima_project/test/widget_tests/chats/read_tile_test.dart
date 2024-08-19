@@ -5,6 +5,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/chats/read_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:mockito/mockito.dart';
 
 class MockDatabaseService extends Mock implements DatabaseService {
@@ -26,7 +27,8 @@ void main() {
 
   testWidgets('Displays user data when userData is not null',
       (WidgetTester tester) async {
-    final readBy = ReadBy(username: 'user', readAt: Timestamp.now());
+    Timestamp timestamp = Timestamp.fromDate(DateTime(2024, 1, 2));
+    final readBy = ReadBy(username: 'user', readAt: timestamp);
 
     await tester.pumpWidget(
       CupertinoApp(
@@ -36,6 +38,10 @@ void main() {
     await tester.pump();
 
     expect(find.text('user'), findsOneWidget);
-    expect(find.textContaining('Read at'), findsOneWidget);
+    expect(
+        find.textContaining(DateFormat.yMd().format(
+            DateTime.fromMicrosecondsSinceEpoch(
+                timestamp.microsecondsSinceEpoch))),
+        findsOneWidget);
   });
 }

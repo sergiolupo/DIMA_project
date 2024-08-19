@@ -67,7 +67,7 @@ void main() {
 
     await tester.enterText(find.byType(CupertinoSearchTextField), 'hhhh');
     await tester.pumpAndSettle();
-    expect(find.text('No results found'), findsOneWidget);
+    expect(find.text('No followers found'), findsOneWidget);
 
     await tester.enterText(find.byType(CupertinoSearchTextField), 'test_user1');
     await tester.pumpAndSettle();
