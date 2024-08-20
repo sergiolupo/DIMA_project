@@ -106,7 +106,6 @@ class ShowMediasPage extends StatelessWidget {
                             ),
                           ]),
                     ),
-                    const SizedBox(height: 10),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -124,8 +123,8 @@ class ShowMediasPage extends StatelessWidget {
                             CachedNetworkImage(
                               imageUrl: message.content,
                               fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
+                              width: 180,
+                              height: 180,
                               errorWidget: (context, url, error) =>
                                   const Icon(CupertinoIcons.photo_fill),
                               errorListener: (value) {},

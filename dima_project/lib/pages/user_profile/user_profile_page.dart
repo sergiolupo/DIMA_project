@@ -370,16 +370,33 @@ class UserProfileState extends ConsumerState<UserProfile> {
       child: events.when(
           data: (events) {
             if (events.isEmpty) {
-              return const Row(
-                children: [
-                  Text(
-                    'No events yet',
-                    style: TextStyle(
-                        color: CupertinoColors.systemGrey,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 80),
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: CupertinoColors.systemGrey, width: 2),
+                        ),
+                        child: const Icon(
+                          LineAwesomeIcons.calendar_times,
+                          color: CupertinoColors.systemGrey,
+                          size: 50,
+                        )),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'No events yet',
+                      style: TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               );
             } else {
               return Column(
@@ -440,6 +457,36 @@ class UserProfileState extends ConsumerState<UserProfile> {
       visible: index == 0,
       child: events.when(
           data: (events) {
+            if (events.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 80),
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: CupertinoColors.systemGrey, width: 2),
+                        ),
+                        child: const Icon(
+                          LineAwesomeIcons.calendar_times,
+                          color: CupertinoColors.systemGrey,
+                          size: 50,
+                        )),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'No events yet',
+                      style: TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
+            }
             return Column(
               children: [
                 GridView.builder(

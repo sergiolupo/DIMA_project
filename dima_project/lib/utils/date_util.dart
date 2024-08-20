@@ -107,8 +107,14 @@ class DateUtil {
       final DateTime messageDate =
           DateTime.fromMillisecondsSinceEpoch(media.time.seconds * 1000);
 
-      // Format the date
-      final String dateKey = DateUtil.formatDateBasedOnToday(messageDate);
+      //final String dateKey = DateUtil.formatDateBasedOnToday(messageDate);
+      final String dateKey;
+      if (messageDate
+          .isAfter(DateTime.now().subtract(const Duration(days: 365)))) {
+        dateKey = DateFormat.MMMM().format(messageDate);
+      } else {
+        dateKey = DateFormat.yMMMM().format(messageDate);
+      }
 
       if (groupedMedias.containsKey(dateKey)) {
         groupedMedias[dateKey]!.add(media);

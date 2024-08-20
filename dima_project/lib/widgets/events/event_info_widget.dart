@@ -3,6 +3,7 @@ import 'package:dima_project/widgets/events/date_picker.dart';
 import 'package:dima_project/widgets/events/time_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class EventInfoWidget extends StatelessWidget {
   final int index;
@@ -234,46 +235,38 @@ class EventInfoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CupertinoButton(
-                        padding: const EdgeInsets.only(left: 10),
-                        alignment: Alignment.topLeft,
-                        onPressed: () {
-                          onTap();
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'Reduce',
-                              style: TextStyle(
-                                color: CupertinoTheme.of(context).primaryColor,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const Icon(
-                              CupertinoIcons.minus,
-                              size: 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                      CupertinoButton(
-                        padding: const EdgeInsets.only(right: 10),
-                        alignment: Alignment.topRight,
+                        padding: const EdgeInsets.only(left: 30, bottom: 10),
                         onPressed: () {
                           add();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            const Icon(
+                              CupertinoIcons.calendar_badge_plus,
+                              size: 30,
+                            ),
+                            const SizedBox(width: 5),
                             Text(
-                              'Add',
+                              'Add more dates',
                               style: TextStyle(
                                 color: CupertinoTheme.of(context).primaryColor,
                                 fontSize: 14,
                               ),
                             ),
-                            const Icon(
-                              CupertinoIcons.add,
-                              size: 14,
+                          ],
+                        ),
+                      ),
+                      CupertinoButton(
+                        padding: const EdgeInsets.only(right: 10, bottom: 10),
+                        onPressed: () {
+                          onTap();
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.compress_solid,
+                              size: 30,
                             ),
                           ],
                         ),
@@ -282,24 +275,16 @@ class EventInfoWidget extends StatelessWidget {
                   ),
                   if (numInfos > 1)
                     CupertinoButton(
-                      padding: const EdgeInsets.only(right: 10),
-                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(left: 35, bottom: 5),
                       onPressed: () {
                         delete(index);
                       },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            'Delete',
-                            style: TextStyle(
-                              color: CupertinoTheme.of(context).primaryColor,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const Icon(
+                          Icon(
                             CupertinoIcons.trash,
-                            size: 14,
+                            size: 25,
                           ),
                         ],
                       ),
@@ -371,49 +356,41 @@ class EventInfoWidget extends StatelessWidget {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          numInfos > 1
+                              ? Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CupertinoButton(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    onPressed: () {
+                                      delete(index);
+                                    },
+                                    child: const Row(
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.trash,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                           CupertinoButton(
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.only(right: 10),
+                            alignment: Alignment.bottomRight,
                             onPressed: () {
                               onTap();
                             },
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Expand',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
                                 Icon(
-                                  CupertinoIcons.add,
+                                  LineAwesomeIcons.expand_solid,
                                   size: 20,
                                 ),
                               ],
                             ),
                           ),
-                          if (numInfos > 1)
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: CupertinoButton(
-                                onPressed: () {
-                                  delete(index);
-                                },
-                                child: const Row(
-                                  children: [
-                                    Text(
-                                      'Delete',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                    Icon(
-                                      CupertinoIcons.trash,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
                         ]),
                 ],
               ),

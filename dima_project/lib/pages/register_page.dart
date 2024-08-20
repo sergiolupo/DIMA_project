@@ -120,9 +120,9 @@ class RegisterPageState extends State<RegisterPage> {
           color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             if (_currentPage == 1 && !_isEnteredWithGoogle) {
-              context.go('/');
+              context.go('/login');
             } else if (_currentPage == 2 && _isEnteredWithGoogle) {
-              context.go('/');
+              context.go('/login');
             } else {
               setState(() {
                 _currentPage = _currentPage - 1;

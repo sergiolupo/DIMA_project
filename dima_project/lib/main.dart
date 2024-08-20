@@ -43,6 +43,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
+          debugPrint("Go to /");
           return const LoginOrHomePage();
         }),
     GoRoute(

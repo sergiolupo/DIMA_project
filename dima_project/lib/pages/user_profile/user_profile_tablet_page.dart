@@ -358,45 +358,77 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
       visible: index == 1,
       child: events.when(
           data: (events) {
-            return Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                  ),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => ResponsiveLayout(
-                            tabletLayout: ShowEventTablet(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: false,
-                            ),
-                            mobileLayout: ShowEvent(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: false,
+            if (events.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: CupertinoColors.systemGrey, width: 2),
+                        ),
+                        child: const Icon(
+                          LineAwesomeIcons.calendar_times,
+                          color: CupertinoColors.systemGrey,
+                          size: 50,
+                        )),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'No events yet',
+                      style: TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ResponsiveLayout(
+                              tabletLayout: ShowEventTablet(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: false,
+                              ),
+                              mobileLayout: ShowEvent(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: false,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      child: EventGrid(
-                        event: event,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
+                        child: EventGrid(
+                          event: event,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
           },
           error: (error, stackTrace) {
             return const Center(
@@ -414,45 +446,77 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
       visible: index == 0,
       child: events.when(
           data: (events) {
-            return Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                  ),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => ResponsiveLayout(
-                            tabletLayout: ShowEventTablet(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: true,
-                            ),
-                            mobileLayout: ShowEvent(
-                              eventId: event.id!,
-                              userData: user,
-                              createdEvents: true,
+            if (events.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: CupertinoColors.systemGrey, width: 2),
+                        ),
+                        child: const Icon(
+                          LineAwesomeIcons.calendar_times,
+                          color: CupertinoColors.systemGrey,
+                          size: 50,
+                        )),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'No events yet',
+                      style: TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => ResponsiveLayout(
+                              tabletLayout: ShowEventTablet(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: true,
+                              ),
+                              mobileLayout: ShowEvent(
+                                eventId: event.id!,
+                                userData: user,
+                                createdEvents: true,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      child: EventGrid(
-                        event: event,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
+                        child: EventGrid(
+                          event: event,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
           },
           error: (error, stackTrace) {
             return const Center(

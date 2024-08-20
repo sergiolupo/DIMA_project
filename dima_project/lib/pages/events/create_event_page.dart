@@ -11,6 +11,7 @@ import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/services/storage_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
 import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -133,6 +134,22 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        trailing: CupertinoButton(
+          onPressed: () async {
+            await _createEvent(databaseService);
+          },
+          padding: const EdgeInsets.all(0),
+          child: Text(
+            'Create',
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width > Constants.limitWidth
+                  ? 20
+                  : 15,
+              color: CupertinoTheme.of(context).primaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         leading: CupertinoNavigationBarBackButton(
           color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
@@ -155,7 +172,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
         middle: Text(
           'Create Event',
           style: TextStyle(
-              fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
+              fontSize: 25, color: CupertinoTheme.of(context).primaryColor),
         ),
       ),
       child: ListView(
@@ -204,6 +221,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                         child: CreateImageWidget.getEventImageMemory(
                           selectedImagePath,
                         ),
+                      ),
+                      suffix: CupertinoButton(
+                        onPressed: () => _eventNameController.clear(),
+                        child: const Icon(CupertinoIcons.clear_circled_solid),
                       ),
                       decoration: BoxDecoration(
                         color:
@@ -377,29 +398,6 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CupertinoButton(
-                          onPressed: () async {
-                            await _createEvent(databaseService);
-                          },
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          color: CupertinoTheme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(20),
-                          child: const Text(
-                            'Create',
-                            style: TextStyle(
-                              fontSize: 15,
-                              letterSpacing: 2,
-                              color: CupertinoColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),

@@ -70,7 +70,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                         Padding(
                           padding: const EdgeInsets.only(right: 3),
                           child: Column(children: [
-                            const SizedBox(height: 160),
+                            const SizedBox(height: 100),
                             CreateImageWidget.getUserImage(
                               widget.message.senderImage!,
                               0,
@@ -82,7 +82,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                             ? const EdgeInsets.only(left: 30)
                             : const EdgeInsets.only(right: 30),
                         padding: const EdgeInsets.only(
-                            top: 2, left: 8, right: 8, bottom: 10),
+                            top: 10, left: 15, right: 8, bottom: 10),
                         decoration: BoxDecoration(
                           borderRadius: widget.message.sentByMe!
                               ? const BorderRadius.only(
@@ -107,15 +107,19 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    widget.senderUsername!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: widget.message.sentByMe!
-                                          ? CupertinoColors.white
-                                          : CupertinoColors.black,
-                                      letterSpacing: -0.5,
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 4.0),
+                                    child: Text(
+                                      widget.senderUsername!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: widget.message.sentByMe!
+                                            ? CupertinoColors.white
+                                            : CupertinoColors.black,
+                                        letterSpacing: -0.5,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -135,44 +139,60 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                     );
                                   },
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     children: [
-                                      CreateImageWidget.getEventImage(
-                                        event.imagePath!,
-                                        small: false,
-                                      ),
-                                      SizedBox(
-                                        width: 150,
-                                        child: Text(
-                                          event.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: widget.message.sentByMe!
-                                                ? CupertinoColors.white
-                                                : CupertinoColors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
+                                      Row(
+                                        children: [
+                                          Transform.scale(
+                                            scale: 1.4,
+                                            child:
+                                                CreateImageWidget.getEventImage(
+                                              event.imagePath!,
+                                              small: true,
+                                            ),
                                           ),
-                                        ),
+                                          const SizedBox(width: 10),
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                width: 150,
+                                                child: Text(
+                                                  event.name,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: widget
+                                                            .message.sentByMe!
+                                                        ? CupertinoColors.white
+                                                        : CupertinoColors.black,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 150,
+                                                child: Text(
+                                                  event.description,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: widget
+                                                            .message.sentByMe!
+                                                        ? CupertinoColors.white
+                                                        : CupertinoColors.black,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
                                       ),
-                                      SizedBox(
-                                        width: 150,
-                                        child: Text(
-                                          event.description,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: widget.message.sentByMe!
-                                                ? CupertinoColors.white
-                                                : CupertinoColors.black,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
+                                      const SizedBox(height: 30),
                                     ],
                                   ),
                                 ),
@@ -185,13 +205,13 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                   ),
                 ),
                 Positioned(
-                  bottom: widget.message.sentByMe! ? 7 : 25,
+                  bottom: widget.message.sentByMe! ? 7 : 20,
                   right: widget.message.sentByMe! ? 2 : null,
                   left: widget.message.sentByMe!
                       ? 20
                       : MediaQuery.of(context).size.width > Constants.limitWidth
-                          ? 140
-                          : MediaQuery.of(context).size.width / 2 - 50,
+                          ? 190
+                          : MediaQuery.of(context).size.width / 2 - 3,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,

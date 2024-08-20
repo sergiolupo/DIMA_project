@@ -65,7 +65,10 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
             Navigator.of(context).pop(group);
           },
         ),
-        middle: const Text('Group Requests'),
+        middle: Text(
+          'Group Requests',
+          style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+        ),
       ),
       child: ListView.builder(
         itemCount: users.length,
