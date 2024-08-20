@@ -698,6 +698,9 @@ void main() {
           .thenAnswer((_) => Stream.value([fakePrivateChat1]));
       when(mockDatabaseService.getGroupsStream())
           .thenAnswer((_) => Stream.value([fakeGroup1, fakeGroup2]));
+      when(mockDatabaseService.getPrivateChats(any)).thenAnswer((_) {
+        return Stream.value(messages);
+      });
       when(mockNotificationService.sendNotificationOnGroup(any, any))
           .thenAnswer((_) => Future.value());
       when(mockDatabaseService.getUserDataFromUID('user1'))
@@ -707,6 +710,9 @@ void main() {
       when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
         return Stream.error('User not found');
       });
+      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user2']))
+          .thenAnswer((_) => Stream.value('321'));
+
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         SystemChannels.platform,
         (MethodCall methodCall) async {
@@ -786,7 +792,6 @@ void main() {
       expect(find.byType(StartMessagingWidget), findsOneWidget);
       await tester.tap(find.text('Group2'));
       await tester.pumpAndSettle();
-      debugPrint("Tap");
       expect(find.text('Group2'), findsNWidgets(2));
       expect(find.text('Join the conversation!'), findsOneWidget);
       await tester.drag(find.text("Group2").first, const Offset(-500.0, 0.0));
@@ -795,6 +800,14 @@ void main() {
 
       await tester.tap(find.text('Private'));
       await tester.pumpAndSettle();
+      expect(find.text('username2'), findsOneWidget);
+      await tester.tap(find.text('username2'));
+      await tester.pumpAndSettle();
+      expect(find.text('username2'), findsNWidgets(2));
+      await tester.drag(
+          find.text("username2").first, const Offset(-500.0, 0.0));
+      await tester.pumpAndSettle();
+      expect(find.byType(StartMessagingWidget), findsOneWidget);
     });
 
     testWidgets(
