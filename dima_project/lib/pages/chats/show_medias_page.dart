@@ -119,51 +119,63 @@ class ShowMediasPage extends StatelessWidget {
                       itemCount: mediasForDate.length,
                       itemBuilder: (context, index) {
                         final message = mediasForDate[index];
-                        return GestureDetector(
-                          child: CachedNetworkImage(
-                            imageUrl: message.content,
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
-                            errorWidget: (context, url, error) =>
-                                const Icon(CupertinoIcons.photo_fill),
-                            errorListener: (value) {},
-                          ),
-                          onTap: () {
-                            if (canNavigate) {
-                              navigateToPage!(MediaViewPage(
-                                isGroup: isGroup,
-                                group: group,
-                                privateChat: privateChat,
-                                canNavigate: canNavigate,
-                                navigateToPage: navigateToPage,
-                                media: message,
-                                messages: groupedMedias.values
-                                    .expand((element) => element)
-                                    .toList(),
-                                databaseService: databaseService,
-                                notificationService: notificationService,
-                              ));
-                            } else {
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) => MediaViewPage(
-                                    isGroup: isGroup,
-                                    group: group,
-                                    privateChat: privateChat,
-                                    canNavigate: canNavigate,
-                                    navigateToPage: navigateToPage,
-                                    media: message,
-                                    messages: groupedMedias.values
-                                        .expand((element) => element)
-                                        .toList(),
-                                    databaseService: databaseService,
-                                    notificationService: notificationService,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
+                        return Stack(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: message.content,
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                              errorWidget: (context, url, error) =>
+                                  const Icon(CupertinoIcons.photo_fill),
+                              errorListener: (value) {},
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              top: 0,
+                              child: CupertinoButton(
+                                  child: const SizedBox.shrink(),
+                                  onPressed: () {
+                                    if (canNavigate) {
+                                      navigateToPage!(MediaViewPage(
+                                        isGroup: isGroup,
+                                        group: group,
+                                        privateChat: privateChat,
+                                        canNavigate: canNavigate,
+                                        navigateToPage: navigateToPage,
+                                        media: message,
+                                        messages: groupedMedias.values
+                                            .expand((element) => element)
+                                            .toList(),
+                                        databaseService: databaseService,
+                                        notificationService:
+                                            notificationService,
+                                      ));
+                                    } else {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) => MediaViewPage(
+                                            isGroup: isGroup,
+                                            group: group,
+                                            privateChat: privateChat,
+                                            canNavigate: canNavigate,
+                                            navigateToPage: navigateToPage,
+                                            media: message,
+                                            messages: groupedMedias.values
+                                                .expand((element) => element)
+                                                .toList(),
+                                            databaseService: databaseService,
+                                            notificationService:
+                                                notificationService,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }),
+                            ),
+                          ],
                         );
                       },
                     ),

@@ -111,18 +111,14 @@ class MediaViewPageState extends State<MediaViewPage> {
   Widget _buildMediaView(Message message) {
     return Container(
       color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-      child: Stack(
-        children: [
-          Center(
-            child: CachedNetworkImage(
-              imageUrl: message.content,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const CupertinoActivityIndicator(),
-              errorWidget: (context, url, error) =>
-                  const Icon(CupertinoIcons.photo_fill),
-            ),
-          ),
-        ],
+      child: Center(
+        child: CachedNetworkImage(
+          imageUrl: message.content,
+          fit: BoxFit.cover,
+          errorWidget: (context, url, error) =>
+              const Icon(CupertinoIcons.photo_fill),
+          errorListener: (value) {},
+        ),
       ),
     );
   }

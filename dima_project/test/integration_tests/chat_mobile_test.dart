@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -6,6 +9,7 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
+import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -19,6 +23,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mockito/mockito.dart';
+import 'package:network_image_mock/network_image_mock.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_image_picker.mocks.dart';
@@ -166,6 +171,30 @@ void main() {
       readBy: readBy,
       type: Type.event,
     )
+  ];
+  List<Message> medias = [
+    Message(
+      content: 'https://imageurl.com',
+      sentByMe: true,
+      time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
+      senderImage: '',
+      isGroupMessage: true,
+      sender: 'user1',
+      readBy: readBy,
+      type: Type.image,
+      id: 'image_id',
+    ),
+    Message(
+      content: 'https://imageurl1.com',
+      sentByMe: true,
+      time: Timestamp.fromDate(DateTime(2024, 3, 3, 3, 3)),
+      senderImage: '',
+      isGroupMessage: true,
+      sender: 'user1',
+      readBy: readBy,
+      type: Type.image,
+      id: 'image_id1',
+    ),
   ];
 
   late final MockDatabaseService mockDatabaseService;
@@ -1152,6 +1181,142 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
       });
+    });
+    testWidgets(
+        "Show media page renders correctly and the images are displayed correctly",
+        (WidgetTester tester) async {
+      final firestore = FakeFirebaseFirestore();
+      await firestore.collection('users').doc('user1').set({
+        'uid': 'user1',
+        'name': 'name1',
+        'email': 'mail1',
+        'requests': [],
+        'imageUrl': '',
+        'surname': 'surname1',
+        'username': 'username1',
+        'isPublic': true,
+        'token': 'token1',
+        'isSignedInWithGoogle': false,
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+      });
+      await firestore.collection('users').doc('user2').set({
+        'uid': 'user2',
+        'name': 'name2',
+        'email': 'mail2',
+        'imageUrl': '',
+        'surname': 'surname2',
+        'username': 'username2',
+        'requests': [],
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+        'isPublic': true,
+        'token': 'token2',
+        'isSignedInWithGoogle': false,
+      });
+
+      AuthService.setUid('user1');
+      DocumentSnapshot documentSnapshot1 =
+          await firestore.collection('users').doc('user1').get();
+      DocumentSnapshot documentSnapshot2 =
+          await firestore.collection('users').doc('user2').get();
+
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => Stream.value([]));
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => Stream.value([fakePrivateChat1]));
+
+      when(mockDatabaseService.getPrivateChats(any)).thenAnswer((_) {
+        return Stream.value(medias);
+      });
+      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user2']))
+          .thenAnswer((_) => Stream.value('321'));
+
+      when(mockDatabaseService.getUserDataFromUID('user1'))
+          .thenAnswer((_) => Stream.value(documentSnapshot1));
+      when(mockDatabaseService.getUserDataFromUID('user2'))
+          .thenAnswer((_) => Stream.value(documentSnapshot2));
+      when(mockDatabaseService.getNotification(any, any)).thenAnswer(
+        (_) => Future.value(true),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.news))
+          .thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.image))
+          .thenAnswer(
+        (_) => Future.value(medias),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.event))
+          .thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getUserData('user1')).thenAnswer(
+          (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+      when(mockDatabaseService.getUserData('user2')).thenAnswer(
+          (_) => Future.value(UserData.fromSnapshot(documentSnapshot2)));
+      when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
+        return Future.value(UserData.fromSnapshot(
+            await firestore.collection('users').doc('user3').get()));
+      });
+
+      when(mockDatabaseService.updateNotification(any, any, any))
+          .thenAnswer((_) {
+        return Future.value();
+      });
+      await mockNetworkImagesFor(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              databaseServiceProvider.overrideWithValue(mockDatabaseService),
+              followerProvider.overrideWith(
+                (ref, uid) async => [],
+              ),
+              notificationServiceProvider
+                  .overrideWithValue(mockNotificationService),
+              userProvider.overrideWith(
+                (ref, uid) async => mockDatabaseService.getUserData(uid),
+              ),
+            ],
+            child: CupertinoApp(
+              home: ChatPage(
+                storageService: mockStorageService,
+                databaseService: mockDatabaseService,
+                notificationService: mockNotificationService,
+                imagePicker: mockImagePicker,
+              ),
+            ),
+          ),
+        );
+      });
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Private'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('username2'));
+      await tester.pumpAndSettle();
+      expect(find.text('username2'), findsOneWidget);
+
+      await tester.tap(find.text('username2')); //Private Chat Info
+      await tester.pumpAndSettle();
+
+      expect(find.text('Private Chat Info'), findsOneWidget);
+      expect(find.text('username2'), findsOneWidget);
+
+      await tester.tap(find.text('Media')); //Media
+      await tester.pumpAndSettle();
+
+      expect(find.text('Medias'), findsOneWidget);
+      expect(find.byType(CachedNetworkImage), findsNWidgets(2));
+      expect(find.byType(CupertinoButton), findsNWidgets(3));
+
+      await tester.tap(find.byType(CupertinoButton).at(1)); //Media
+      await tester.pumpAndSettle();
+
+      expect(find.text("username1"), findsOneWidget);
     });
 
     testWidgets("Test edit group functionality for mobile",
