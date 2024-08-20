@@ -1,6 +1,7 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
+import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -209,7 +210,7 @@ void main() {
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent1.id!,
+              eventId: fakeEvent2.id!,
             ),
           ),
         ),
@@ -259,7 +260,7 @@ void main() {
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent1.id!,
+              eventId: fakeEvent3.id!,
             ),
           ),
         ),
@@ -320,7 +321,7 @@ void main() {
             home: EventPage(
               imagePicker: mockImagePicker,
               eventService: mockEventService,
-              eventId: fakeEvent1.id!,
+              eventId: fakeEvent3.id!,
             ),
           ),
         ),
@@ -348,57 +349,145 @@ void main() {
       expect(find.textContaining("Add to calendar"), findsOneWidget);
       expect(find.text("Participant"), findsOneWidget);
     });
+    group("Joining events functions correctly", () {
+      testWidgets("Joining a public event before it starts functions correctly",
+          (WidgetTester tester) async {
+        AuthService.setUid("uid1");
+        when(mockDatabaseService.toggleEventJoin(any, any)).thenAnswer(
+          (_) => Future.value(),
+        );
 
-    testWidgets("Joining events functions correctly",
-        (WidgetTester tester) async {
-      AuthService.setUid("uid1");
-      when(mockDatabaseService.toggleEventJoin(any, any)).thenAnswer(
-        (_) => Future.value(),
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            databaseServiceProvider.overrideWithValue(mockDatabaseService),
-            notificationServiceProvider
-                .overrideWithValue(mockNotificationService),
-            eventProvider.overrideWith(
-              (ref, id) async => fakeEvent3,
-            ),
-          ],
-          child: CupertinoApp(
-            home: EventPage(
-              imagePicker: mockImagePicker,
-              eventService: mockEventService,
-              eventId: fakeEvent1.id!,
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              databaseServiceProvider.overrideWithValue(mockDatabaseService),
+              notificationServiceProvider
+                  .overrideWithValue(mockNotificationService),
+              eventProvider.overrideWith(
+                (ref, id) async => fakeEvent3,
+              ),
+            ],
+            child: CupertinoApp(
+              home: EventPage(
+                imagePicker: mockImagePicker,
+                eventService: mockEventService,
+                eventId: fakeEvent3.id!,
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text("Event"), findsOneWidget);
-      expect(find.text("Test Event"), findsOneWidget);
-      expect(find.text("Test Description"), findsOneWidget);
-      expect(
-          find.text(
-              '${DateFormat('dd/MM/yyyy').format(fakeEvent3.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent3.details![0].endDate!)}'),
-          findsOneWidget);
-      expect(find.text('Test Location'), findsOneWidget);
-      expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-      await tester.tap(find.byType(CupertinoListTile));
-      await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
-      expect(find.text("Location: Test Location"), findsOneWidget);
-      expect(find.textContaining("Add to calendar"), findsOneWidget);
-      expect(find.text("Participant"), findsOneWidget);
-      await tester.tap(find.text("Subscribe"));
-      await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
-      expect(find.text("Location: Test Location"), findsOneWidget);
-      expect(find.textContaining("Add to calendar"), findsOneWidget);
-      expect(find.text("Participant"), findsOneWidget);
-    });
+        );
+        await tester.pumpAndSettle();
+        expect(find.text("Event"), findsOneWidget);
+        expect(find.text("Test Event"), findsOneWidget);
+        expect(find.text("Test Description"), findsOneWidget);
+        expect(
+            find.text(
+                '${DateFormat('dd/MM/yyyy').format(fakeEvent3.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent3.details![0].endDate!)}'),
+            findsOneWidget);
+        expect(find.text('Test Location'), findsOneWidget);
+        expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
+        await tester.tap(find.byType(CupertinoListTile));
+        await tester.pumpAndSettle();
+        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Location: Test Location"), findsOneWidget);
+        expect(find.textContaining("Add to calendar"), findsOneWidget);
+        expect(find.text("Participant"), findsOneWidget);
+        await tester.tap(find.text("Subscribe"));
+        await tester.pumpAndSettle();
+        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Location: Test Location"), findsOneWidget);
+        expect(find.textContaining("Add to calendar"), findsOneWidget);
+        expect(find.text("Participant"), findsOneWidget);
+      });
+      testWidgets("Joining a public event after it starts is prevented",
+          (WidgetTester tester) async {
+        AuthService.setUid("uid1");
+        final Event event = Event(
+            id: "789",
+            name: "Test Event",
+            description: "Test Description",
+            admin: "uid",
+            imagePath: "",
+            isPublic: true,
+            details: [
+              EventDetails(
+                  requests: [],
+                  startDate: DateTime(2000, 1, 1),
+                  endDate: DateTime(2001, 1, 2),
+                  startTime: DateTime(2000, 1, 1, 0, 0),
+                  endTime: DateTime(2001, 1, 2, 1, 0),
+                  location: "Test Location",
+                  latlng: const LatLng(0, 0),
+                  id: "654",
+                  members: ["uid"])
+            ]);
 
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              databaseServiceProvider.overrideWithValue(mockDatabaseService),
+              notificationServiceProvider
+                  .overrideWithValue(mockNotificationService),
+              eventProvider.overrideWith(
+                (ref, id) async => event,
+              ),
+            ],
+            child: CupertinoApp(
+              home: DetailPage(
+                eventId: event.id!,
+                detailId: event.details![0].id!,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Location: Test Location"), findsOneWidget);
+        expect(find.textContaining("Add to calendar"), findsOneWidget);
+        expect(find.text("Participant"), findsOneWidget);
+        expect(find.text("Subscribe"), findsNothing);
+      });
+      testWidgets("Joining a deleted event is prevented",
+          (WidgetTester tester) async {
+        AuthService.setUid("uid1");
+
+        when(mockDatabaseService.toggleEventJoin(any, any)).thenAnswer(
+            (_) => throw Exception('Event or date has been deleted'));
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              databaseServiceProvider.overrideWithValue(mockDatabaseService),
+              notificationServiceProvider
+                  .overrideWithValue(mockNotificationService),
+              eventProvider.overrideWith(
+                (ref, id) async => fakeEvent3,
+              ),
+            ],
+            child: CupertinoApp(
+              home: DetailPage(
+                eventId: fakeEvent3.id!,
+                detailId: fakeEvent3.details![0].id!,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Location: Test Location"), findsOneWidget);
+        expect(find.textContaining("Add to calendar"), findsOneWidget);
+        expect(find.text("Participant"), findsOneWidget);
+        await tester.tap(find.text("Subscribe"));
+        await tester.pumpAndSettle();
+        expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+        expect(find.text("Event or date has been deleted"), findsOneWidget);
+        expect(find.text("Error while joining event"), findsOneWidget);
+        await tester.tap(find.text("Ok"));
+        await tester.pumpAndSettle();
+      });
+    });
     testWidgets("Edit event page works correctly", (WidgetTester tester) async {
       AuthService.setUid("uid");
       when(mockDatabaseService.getGroups(any)).thenAnswer(

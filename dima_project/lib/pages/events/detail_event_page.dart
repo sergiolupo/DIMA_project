@@ -231,18 +231,21 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     );
                     ref.invalidate(eventProvider(event.id!));
                     ref.invalidate(joinedEventsProvider(uid));
-                  } catch (e) {
-                    debugPrint("Event has been deleted");
+                  } on Exception catch (e) {
+                    debugPrint(e.toString());
+                    final String message =
+                        e.toString().split(':')[1].substring(1);
+                    debugPrint(message);
                     if (!context.mounted) return;
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext newContext) {
                         return CupertinoAlertDialog(
-                          title: const Text('Event has been deleted'),
-                          content: const Text('This date has been deleted.'),
+                          title: const Text('Error while joining event'),
+                          content: Text(message),
                           actions: <Widget>[
                             CupertinoDialogAction(
-                              child: const Text('OK'),
+                              child: const Text('Ok'),
                               onPressed: () {
                                 ref.invalidate(eventProvider(event.id!));
                                 ref.invalidate(joinedEventsProvider(uid));

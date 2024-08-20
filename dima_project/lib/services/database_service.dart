@@ -198,8 +198,8 @@ class DatabaseService {
 
       String imageUrl = imagePath.toString() == '[]'
           ? ''
-          : await StorageService().uploadImageToStorage(
-              'group_images/${docRef.id}.jpg', imagePath);
+          : await StorageService()
+              .uploadImageToStorage('group_images/${docRef.id}.jpg', imagePath);
 
       await groupsRef.doc(docRef.id).update({
         'groupId': docRef.id,
@@ -1159,8 +1159,8 @@ class DatabaseService {
 
       String imageUrl = imagePath.toString() == '[]'
           ? ''
-          : await StorageService().uploadImageToStorage(
-              'event_images/${docRef.id}.jpg', imagePath);
+          : await StorageService()
+              .uploadImageToStorage('event_images/${docRef.id}.jpg', imagePath);
 
       await eventsRef.doc(docRef.id).update({
         'imagePath': imageUrl,
@@ -1281,9 +1281,21 @@ class DatabaseService {
     String eventId,
     String detailId,
   ) async {
-    DocumentSnapshot<Object?> eventDoc = await eventsRef.doc(eventId).get();
-    DocumentSnapshot<Map<String, dynamic>> detailDoc =
-        await eventsRef.doc(eventId).collection('details').doc(detailId).get();
+    DocumentSnapshot<Object?> eventDoc;
+    DocumentSnapshot<Map<String, dynamic>> detailDoc;
+    try {
+      eventDoc = await eventsRef.doc(eventId).get();
+      detailDoc = await eventsRef
+          .doc(eventId)
+          .collection('details')
+          .doc(detailId)
+          .get();
+    } catch (e) {
+      throw Exception('Event or date has been deleted');
+    }
+    if (!eventDoc.exists || !detailDoc.exists) {
+      throw Exception('Event or date has been deleted');
+    }
 
     if (!DateTime.now().isBefore(DateTime(
       detailDoc['startDate'].toDate().year,
@@ -1292,49 +1304,55 @@ class DatabaseService {
       detailDoc['startTime'].toDate().hour,
       detailDoc['startTime'].toDate().minute,
     ))) {
-      return;
+      throw Exception('Event has already started');
     }
-    debugPrint('Event ID: $eventId');
-    bool isJoined = detailDoc['members'].contains(AuthService.uid);
-    debugPrint('Is joined: $isJoined');
-    if (isJoined) {
-      await Future.wait([
-        eventsRef.doc(eventId).collection('details').doc(detailId).update({
-          'members': FieldValue.arrayRemove([AuthService.uid])
-        }),
-        usersRef.doc(AuthService.uid).update({
-          'events': FieldValue.arrayRemove(["$eventId:$detailId"])
-        }),
-      ]);
-    } else {
-      if (eventDoc['isPublic']) {
+    debugPrint('Error');
+    try {
+      debugPrint('Event ID: $eventId');
+      bool isJoined = detailDoc['members'].contains(AuthService.uid);
+      debugPrint('Is joined: $isJoined');
+      if (isJoined) {
         await Future.wait([
           eventsRef.doc(eventId).collection('details').doc(detailId).update({
-            'members': FieldValue.arrayUnion([AuthService.uid])
+            'members': FieldValue.arrayRemove([AuthService.uid])
           }),
           usersRef.doc(AuthService.uid).update({
-            'events': FieldValue.arrayUnion(["$eventId:$detailId"])
+            'events': FieldValue.arrayRemove(["$eventId:$detailId"])
           }),
         ]);
       } else {
-        if (!detailDoc['requests'].contains(AuthService.uid)) {
-          await eventsRef
-              .doc(eventId)
-              .collection('details')
-              .doc(detailId)
-              .update({
-            'requests': FieldValue.arrayUnion([AuthService.uid])
-          });
+        if (eventDoc['isPublic']) {
+          await Future.wait([
+            eventsRef.doc(eventId).collection('details').doc(detailId).update({
+              'members': FieldValue.arrayUnion([AuthService.uid])
+            }),
+            usersRef.doc(AuthService.uid).update({
+              'events': FieldValue.arrayUnion(["$eventId:$detailId"])
+            }),
+          ]);
         } else {
-          await eventsRef
-              .doc(eventId)
-              .collection('details')
-              .doc(detailId)
-              .update({
-            'requests': FieldValue.arrayRemove([AuthService.uid])
-          });
+          if (!detailDoc['requests'].contains(AuthService.uid)) {
+            await eventsRef
+                .doc(eventId)
+                .collection('details')
+                .doc(detailId)
+                .update({
+              'requests': FieldValue.arrayUnion([AuthService.uid])
+            });
+          } else {
+            await eventsRef
+                .doc(eventId)
+                .collection('details')
+                .doc(detailId)
+                .update({
+              'requests': FieldValue.arrayRemove([AuthService.uid])
+            });
+          }
         }
       }
+    } catch (e) {
+      debugPrint('Error while joining event: $e');
+      throw Exception('Event or date has been deleted');
     }
   }
 
@@ -1531,8 +1549,8 @@ class DatabaseService {
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
-          : await StorageService().uploadImageToStorage(
-              'event_images/${event.id}.jpg', uint8list);
+          : await StorageService()
+              .uploadImageToStorage('event_images/${event.id}.jpg', uint8list);
       await eventsRef.doc(event.id).update({
         'imagePath': imageUrl,
       });
@@ -1570,8 +1588,8 @@ class DatabaseService {
     if (!sameImage) {
       String imageUrl = uint8list.toString() == '[]' || uint8list!.isEmpty
           ? ''
-          : await StorageService().uploadImageToStorage(
-              'group_images/${group.id}.jpg', uint8list);
+          : await StorageService()
+              .uploadImageToStorage('group_images/${group.id}.jpg', uint8list);
       await groupsRef.doc(group.id).update({
         'groupImage': imageUrl,
       });
