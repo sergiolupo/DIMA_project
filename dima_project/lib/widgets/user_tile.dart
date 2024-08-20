@@ -94,18 +94,14 @@ class UserTileState extends ConsumerState<UserTile> {
         widget.user.uid != uid && widget.isFollowing != null
             ? GestureDetector(
                 onTap: () async {
-                  try {
-                    await databaseService.toggleFollowUnfollow(
-                      widget.user.uid!,
-                      uid,
-                    );
-                    ref.invalidate(followingProvider(uid));
-                    ref.invalidate(followerProvider(widget.user.uid!));
-                    ref.invalidate(followerProvider(uid));
-                    ref.invalidate(userProvider(widget.user.uid!));
-                  } catch (error) {
-                    debugPrint("Error occurred: $error");
-                  }
+                  await databaseService.toggleFollowUnfollow(
+                    widget.user.uid!,
+                    uid,
+                  );
+                  ref.invalidate(followingProvider(uid));
+                  ref.invalidate(followerProvider(widget.user.uid!));
+                  ref.invalidate(followerProvider(uid));
+                  ref.invalidate(userProvider(widget.user.uid!));
                 },
                 child: Container(
                   padding: const EdgeInsets.only(right: 20),
