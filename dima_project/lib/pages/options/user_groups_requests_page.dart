@@ -28,7 +28,8 @@ class UserGroupsRequestsPageState
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Group Requests'),
+        middle: Text('Group Requests',
+            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
         leading: CupertinoButton(
           onPressed: () => Navigator.of(context).pop(),
           padding: const EdgeInsets.only(left: 10),

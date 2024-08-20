@@ -49,7 +49,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
             backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-            middle: const Text('Settings'),
+            middle: Text('Settings',
+                style:
+                    TextStyle(color: CupertinoTheme.of(context).primaryColor)),
             leading: CupertinoButton(
               onPressed: () => Navigator.of(context).pop(),
               padding: const EdgeInsets.only(left: 10),

@@ -47,7 +47,12 @@ class ShowRequestPageState extends State<ShowRequestPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-          middle: const Text('Requests'),
+          middle: Text(
+            'Requests',
+            style: TextStyle(
+              color: CupertinoTheme.of(context).primaryColor,
+            ),
+          ),
           leading: CupertinoButton(
             onPressed: () => Navigator.of(context).pop(),
             padding: const EdgeInsets.only(left: 10),
