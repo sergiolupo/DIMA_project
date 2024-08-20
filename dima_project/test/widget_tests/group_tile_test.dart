@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/widgets/group_tile.dart';
+import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
@@ -40,5 +41,57 @@ void main() {
 
     expect(nameFinder, findsOneWidget);
     expect(imageFinder, findsOneWidget);
+  });
+  testWidgets("GroupTile shows GroupChatPage when group is joined and tapped",
+      (WidgetTester tester) async {
+    AuthService.setUid('uid');
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    final MockNotificationService mockNotificationService =
+        MockNotificationService();
+    when(mockDatabaseService.getChats(any)).thenAnswer((_) => Stream.value([]));
+
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        databaseServiceProvider.overrideWithValue(mockDatabaseService),
+        notificationServiceProvider.overrideWithValue(mockNotificationService),
+      ],
+      child: CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: GroupTile(group: testGroup, isJoined: 1),
+          ),
+        ),
+      ),
+    ));
+    expect(find.text("Joined"), findsOneWidget);
+    await tester.tap(find.text('Group'));
+    await tester.pumpAndSettle();
+    expect(find.text("Group"), findsOneWidget);
+  });
+  testWidgets("GroupTile works correctly when join button is tapped",
+      (WidgetTester tester) async {
+    AuthService.setUid('uid');
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    final MockNotificationService mockNotificationService =
+        MockNotificationService();
+    when(mockDatabaseService.toggleGroupJoin(any)).thenAnswer((_) async {});
+
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        databaseServiceProvider.overrideWithValue(mockDatabaseService),
+        notificationServiceProvider.overrideWithValue(mockNotificationService),
+      ],
+      child: CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: GroupTile(group: testGroup, isJoined: 0),
+          ),
+        ),
+      ),
+    ));
+    expect(find.text("Join"), findsOneWidget);
+    await tester.tap(find.text('Join'));
+    await tester.pumpAndSettle();
+    verify(mockDatabaseService.toggleGroupJoin(testGroup.id)).called(1);
   });
 }
