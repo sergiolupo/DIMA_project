@@ -802,6 +802,12 @@ void main() {
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
 
       await tester.pumpAndSettle();
+      await tester.tap(find.text("Participants"));
+      await tester.pumpAndSettle();
+      expect(find.text("Add Members"), findsOneWidget);
+      expect(find.text("No followers"), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
       await tester.tap(find.text("Groups"));
       await tester.pumpAndSettle();
       expect(find.text("name"), findsOneWidget);
@@ -814,6 +820,10 @@ void main() {
       expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
+      await tester.tap(find.byType(CupertinoSwitch));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
       await tester.tap(find.text("Create"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoAlertDialog), findsOneWidget);
