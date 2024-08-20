@@ -585,42 +585,58 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Event"), findsOneWidget);
     });
-    testWidgets("Create Event Page test", (WidgetTester tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            databaseServiceProvider.overrideWithValue(mockDatabaseService),
-            eventProvider.overrideWith(
-              (ref, id) async => fakeEvent1,
-            ),
-            notificationServiceProvider
-                .overrideWithValue(mockNotificationService),
-            followingProvider.overrideWith(
-              (ref, uid) async => [],
-            ),
-            followerProvider.overrideWith(
-              (ref, uid) async => [],
-            ),
-          ],
-          child: CupertinoApp(
-            home: CreateEventPage(
-              imagePicker: mockImagePicker,
-              eventService: mockEventService,
-              canNavigate: false,
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-    });
-    testWidgets("Table Calendar Page test", (WidgetTester tester) async {
+    testWidgets("Table Calendar Page navigation functions correctly",
+        (WidgetTester tester) async {
+      AuthService.setUid("uid");
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      final Event event1 = Event(
+          id: "456",
+          name: "Event1",
+          description: "Test Description",
+          admin: "uid",
+          imagePath: "",
+          isPublic: true,
+          details: [
+            EventDetails(
+                startDate:
+                    DateTime(DateTime.now().year, DateTime.now().month, 1),
+                endDate: DateTime(DateTime.now().year, DateTime.now().month, 2),
+                startTime: DateTime(
+                    DateTime.now().year, DateTime.now().month, 1, 0, 0),
+                endTime: DateTime(
+                    DateTime.now().year, DateTime.now().month, 2, 1, 0),
+                location: "Test Location",
+                latlng: const LatLng(0, 0),
+                id: "654",
+                members: ["uid"])
+          ]);
+      final Event event2 = Event(
+          id: "456",
+          name: "Event2",
+          description: "Test Description",
+          admin: "uid",
+          imagePath: "",
+          isPublic: true,
+          details: [
+            EventDetails(
+                startDate:
+                    DateTime(DateTime.now().year, DateTime.now().month, 3),
+                endDate: DateTime(DateTime.now().year, DateTime.now().month, 4),
+                startTime: DateTime(
+                    DateTime.now().year, DateTime.now().month, 3, 0, 0),
+                endTime: DateTime(
+                    DateTime.now().year, DateTime.now().month, 4, 1, 0),
+                location: "Test Location",
+                latlng: const LatLng(0, 0),
+                id: "654",
+                members: ["uid"])
+          ]);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             eventProvider.overrideWith(
-              (ref, id) async => fakeEvent1,
+              (ref, id) async => event1,
             ),
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),
@@ -629,6 +645,12 @@ void main() {
             ),
             followerProvider.overrideWith(
               (ref, uid) async => [],
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, uid) async => [event2],
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, uid) async => [event1],
             ),
           ],
           child: CupertinoApp(
@@ -640,6 +662,31 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.text("Calendar"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.add_circled));
+      await tester.pumpAndSettle();
+      expect(find.text("Create Event"), findsNWidgets(2));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+      expect(find.text("Calendar"), findsOneWidget);
+      await tester.tap(find.text("1"));
+
+      await tester.pumpAndSettle();
+      expect(find.text("Event1"), findsOneWidget);
+      await tester.tap(find.byType(CupertinoListTile));
+      await tester.pumpAndSettle();
+      expect(find.text("Detail Page"), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text("1"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text("4"));
+      await tester.pumpAndSettle();
+      expect(find.text("Event1"), findsNWidgets(2));
+      expect(find.text("Event2"), findsNWidgets(2));
+
       debugDefaultTargetPlatformOverride = null;
     });
   });
