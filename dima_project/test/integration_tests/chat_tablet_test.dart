@@ -8,6 +8,7 @@ import 'package:dima_project/pages/chats/chat_tablet_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
+import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -107,10 +108,11 @@ void main() {
         sentByMe: true),
   );
   final Group fakeGroup2 = Group(
-    id: '123',
+    id: '456',
     name: 'Group2',
     imagePath: '',
     isPublic: false,
+    description: 'Description',
     members: ['user1', 'user2'],
     lastMessage: null,
   );
@@ -649,6 +651,152 @@ void main() {
       expect(find.text('You: '), findsOneWidget);
       expect(find.text('Hello'), findsNWidgets(2));
     });
+    testWidgets(
+        "Dismiss groups and private chats works correctly on ChatPage for tablet",
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('user1');
+      final firestore = FakeFirebaseFirestore();
+      await firestore.collection('users').doc('user2').set({
+        'uid': 'user2',
+        'name': 'name2',
+        'email': 'mail2',
+        'imageUrl': '',
+        'surname': 'surname2',
+        'username': 'username2',
+        'requests': [],
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+        'isPublic': true,
+        'token': 'token2',
+        'isSignedInWithGoogle': false,
+      });
+      await firestore.collection('users').doc('user1').set({
+        'uid': 'user1',
+        'name': 'name1',
+        'email': 'mail1',
+        'requests': [],
+        'imageUrl': '',
+        'surname': 'surname1',
+        'username': 'username1',
+        'isPublic': true,
+        'token': 'token1',
+        'isSignedInWithGoogle': false,
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+      });
+      DocumentSnapshot documentSnapshot2 =
+          await firestore.collection('users').doc('user2').get();
+      DocumentSnapshot documentSnapshot1 =
+          await firestore.collection('users').doc('user1').get();
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => Stream.value([fakePrivateChat1]));
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => Stream.value([fakeGroup1, fakeGroup2]));
+      when(mockNotificationService.sendNotificationOnGroup(any, any))
+          .thenAnswer((_) => Future.value());
+      when(mockDatabaseService.getUserDataFromUID('user1'))
+          .thenAnswer((_) => Stream.value(documentSnapshot1));
+      when(mockDatabaseService.getUserDataFromUID('user2'))
+          .thenAnswer((_) => Stream.value(documentSnapshot2));
+      when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
+        return Stream.error('User not found');
+      });
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          return;
+        },
+      );
+      when(mockDatabaseService.sendMessage(any, any))
+          .thenAnswer((_) => Future.value());
+
+      when(mockDatabaseService.getChats('123')).thenAnswer((_) {
+        return Stream.value(messages);
+      });
+      when(mockDatabaseService.getChats('456')).thenAnswer((_) {
+        return Stream.value([]);
+      });
+      when(mockImagePicker.pickImage(
+              source: ImageSource.camera, imageQuality: 80))
+          .thenAnswer((_) async {
+        return mockXFile;
+      });
+      when(mockImagePicker.pickMultiImage(imageQuality: 80)).thenAnswer(
+        (_) async {
+          return [mockXFile];
+        },
+      );
+      when(mockStorageService.uploadImageToStorage(any, any)).thenAnswer((_) {
+        return Future.value('image_url');
+      });
+      when(mockDatabaseService.toggleGroupJoin(any)).thenAnswer((_) {
+        return Future.value();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            eventProvider.overrideWith(
+              (ref, eventId) async => Event(
+                id: 'event_id',
+                name: 'Sample Event',
+                description: 'Event Description',
+                imagePath: '',
+                admin: 'user1',
+                isPublic: true,
+              ),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            followerProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+          ],
+          child: CupertinoApp(
+            home: ChatTabletPage(
+              storageService: mockStorageService,
+              databaseService: mockDatabaseService,
+              notificationService: mockNotificationService,
+              imagePicker: mockImagePicker,
+              selectedGroup: null,
+              selectedPrivateChat: null,
+              selectedUser: null,
+              eventService: mockEventService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Group1'));
+      await tester.pumpAndSettle();
+      expect(find.text('Group1'), findsNWidgets(2));
+      expect(find.text('You: '), findsOneWidget);
+      expect(find.text('Hello'), findsNWidgets(2));
+
+      await tester.drag(find.text("Group1").first, const Offset(-500.0, 0.0));
+      await tester.pumpAndSettle();
+      expect(find.byType(StartMessagingWidget), findsOneWidget);
+      await tester.tap(find.text('Group2'));
+      await tester.pumpAndSettle();
+      debugPrint("Tap");
+      expect(find.text('Group2'), findsNWidgets(2));
+      expect(find.text('Join the conversation!'), findsOneWidget);
+      await tester.drag(find.text("Group2").first, const Offset(-500.0, 0.0));
+      await tester.pumpAndSettle();
+      expect(find.byType(StartMessagingWidget), findsOneWidget);
+
+      await tester.tap(find.text('Private'));
+      await tester.pumpAndSettle();
+    });
+
     testWidgets(
         "Private chat page renders correctly when a private chat is selected",
         (WidgetTester tester) async {
