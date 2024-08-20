@@ -75,7 +75,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                 OptionTile(
                   leading: const Icon(CupertinoIcons.trash),
                   title: const Text('Delete Account'),
-                  onTap: () => deleteAccount(databaseService),
+                  onTap: () async => await deleteAccount(databaseService),
                 ),
                 OptionTile(
                   leading: const Icon(CupertinoIcons.arrow_right_to_line),
@@ -117,24 +117,13 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
   }
 
   Future<void> deleteAccount(DatabaseService databaseService) async {
-    BuildContext context1 = context;
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext newBuildContext) {
-        context1 = newBuildContext;
-        return const CupertinoAlertDialog(
-          content: CupertinoActivityIndicator(),
-        );
-      },
-    );
-
     final bool isSignedInWithGoogle =
         (await databaseService.getUserData(AuthService.uid))
             .isSignedInWithGoogle!;
+    if (!mounted) return;
     if (isSignedInWithGoogle) {
-      if (!context1.mounted) return;
-      Navigator.of(context1).pop();
-      if (!mounted) return;
+      BuildContext buildContext = context;
+
       showCupertinoDialog(
         context: context,
         builder: (BuildContext newContext) {
@@ -155,8 +144,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                     Navigator.of(newContext).pop();
                     showCupertinoDialog(
                       context: context,
-                      builder: (BuildContext newBuildContext) {
-                        context1 = newBuildContext;
+                      builder: (BuildContext loadingContext) {
+                        buildContext = loadingContext;
                         return const CupertinoAlertDialog(
                           content: CupertinoActivityIndicator(),
                         );
@@ -164,6 +153,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                     );
                     final bool isReauthenticated =
                         await widget.authService.reauthenticateUserWithGoogle();
+
                     if (isReauthenticated) {
                       await databaseService.updateToken('');
                       await databaseService.deleteUser();
@@ -177,14 +167,13 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                       ref.invalidate(createdEventsProvider);
                       ref.invalidate(eventProvider);
                       await widget.authService.deleteUser();
-                      if (!context1.mounted) return;
-                      Navigator.of(context1).pop();
+
                       if (!mounted) return;
                       context.go('/login');
                     } else {
-                      if (!context1.mounted) return;
-                      Navigator.of(context1).pop();
                       if (!mounted) return;
+                      if (!buildContext.mounted) return;
+                      Navigator.of(buildContext).pop();
                       showCupertinoDialog(
                         context: context,
                         builder: (BuildContext newContext) {
@@ -210,10 +199,6 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
         },
       );
     } else {
-      if (!context1.mounted) return;
-      Navigator.of(context1).pop();
-      if (!mounted) return;
-
       Navigator.of(context).push(
         CupertinoPageRoute(
           builder: (context) => DeleteAccountPage(
