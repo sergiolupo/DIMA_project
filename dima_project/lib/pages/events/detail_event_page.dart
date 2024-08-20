@@ -37,7 +37,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
-
+    final NotificationService notificationService =
+        ref.watch(notificationServiceProvider);
     final event = ref.watch(eventProvider(widget.eventId));
     return event.when(data: (event) {
       final detail = event.details!.firstWhere(
@@ -285,7 +286,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                 onPressed: () => Navigator.of(context).pop(),
                               ),
                               CupertinoDialogAction(
-                                child: const Text('Delete'),
+                                child: const Text('Yes'),
                                 onPressed: () async {
                                   Navigator.of(newContext).pop();
                                   BuildContext buildContext = context;
@@ -300,8 +301,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                       );
                                     },
                                   );
-                                  await NotificationService(
-                                          databaseService: databaseService)
+                                  await notificationService
                                       .sendEventNotification(event.name,
                                           event.id!, true, widget.detailId);
                                   await databaseService.deleteDetail(
