@@ -1301,7 +1301,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byIcon(CupertinoIcons.calendar)); //Event
         await tester.pumpAndSettle();
-        expect(find.text('Create Event'), findsNWidgets(2));
+        expect(find.text('Create Event'), findsOneWidget);
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group1'), findsNWidgets(2));

@@ -1,6 +1,6 @@
 import 'package:dima_project/models/event.dart';
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mockito/mockito.dart';
@@ -665,7 +666,7 @@ void main() {
       expect(find.text("Calendar"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.add_circled));
       await tester.pumpAndSettle();
-      expect(find.text("Create Event"), findsNWidgets(2));
+      expect(find.text("Create Event"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text("Calendar"), findsOneWidget);
@@ -687,6 +688,139 @@ void main() {
       expect(find.text("Event1"), findsNWidgets(2));
       expect(find.text("Event2"), findsNWidgets(2));
 
+      debugDefaultTargetPlatformOverride = null;
+    });
+    testWidgets("Create Event Page test", (WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      when(mockEventService.getCurrentLocation())
+          .thenAnswer((_) => Future.value(const LatLng(0, 0)));
+      when(mockEventService.getAddressFromLatLng(any))
+          .thenAnswer((_) => Future.value("Test Location"));
+      when(mockDatabaseService.getGroups(any)).thenAnswer(
+        (_) => Future.value([
+          Group(
+              name: "name",
+              id: "id",
+              isPublic: true,
+              members: ["uid"],
+              admin: "uid",
+              imagePath: "",
+              description: "description")
+        ]),
+      );
+      when(mockDatabaseService.createEvent(any, any, any, any))
+          .thenAnswer((_) => Future.value());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            followingProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+          ],
+          child: CupertinoApp(
+            home: TableCalendarPage(
+              imagePicker: mockImagePicker,
+              eventService: mockEventService,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text("Calendar"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.add_circled));
+      await tester.pumpAndSettle();
+      expect(find.text("Create Event"), findsOneWidget);
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Create"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Validation Error"), findsOneWidget);
+      expect(find.text("Event name is required"), findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView).first, const Offset(0, 300));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoTextField).at(0), "Test Event");
+      await tester.enterText(
+          find.byType(CupertinoTextField).at(1), "Test Description");
+      await tester.tap(find.byIcon(FontAwesomeIcons.calendar).first);
+      await tester.pumpAndSettle();
+      await tester.drag(
+          find.text(DateTime.now().year.toString()), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(FontAwesomeIcons.calendar).last);
+      await tester.pumpAndSettle();
+      await tester.drag(
+          find.text(DateTime.now().year.toString()), const Offset(0, -400));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(FontAwesomeIcons.clock).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(FontAwesomeIcons.clock).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
+      await tester.pumpAndSettle();
+      expect(find.text("Select location"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
+      await tester.pumpAndSettle();
+      expect(find.text("Select location"), findsOneWidget);
+      await tester.tap(find.text("Select location"));
+      await tester.pumpAndSettle();
+      expect(find.text("Test Location"), findsOneWidget);
+
+      //qua
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Groups"));
+      await tester.pumpAndSettle();
+      expect(find.text("name"), findsOneWidget);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.tap(find.text("name"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsNothing);
+      expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Create"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("Event created successfully!"), findsOneWidget);
+      await tester.tap(find.text("Ok"));
+      await tester.pumpAndSettle();
+      expect(find.text("Calendar"), findsOneWidget);
       debugDefaultTargetPlatformOverride = null;
     });
   });

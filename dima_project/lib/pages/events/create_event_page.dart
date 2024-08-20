@@ -390,7 +390,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                           color: CupertinoTheme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(20),
                           child: const Text(
-                            'Create Event',
+                            'Create',
                             style: TextStyle(
                               fontSize: 15,
                               letterSpacing: 2,
@@ -436,7 +436,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
               ),
               const SizedBox(height: 20),
               CupertinoButton(
-                child: const Text('OK'),
+                child: const Text('Ok'),
                 onPressed: () {
                   animationController.reset();
 
