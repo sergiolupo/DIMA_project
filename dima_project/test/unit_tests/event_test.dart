@@ -79,6 +79,14 @@ void main() {
         'isPublic': true,
         'createdAt': Timestamp.fromDate(DateTime(2021, 1, 1)),
       });
+      await firestore.collection('events').doc('eventId1').set({
+        'name': 'eventName1',
+        'description': 'description1',
+        'admin': 'admin1',
+        'imagePath': 'imagePath1',
+        'isPublic': true,
+        'createdAt': Timestamp.fromDate(DateTime(2022, 2, 2)),
+      });
       await firestore
           .collection('events')
           .doc('eventId')
@@ -96,6 +104,9 @@ void main() {
 
       final snapshot =
           await firestore.collection('events').doc('eventId').get();
+
+      final snapshot1 =
+          await firestore.collection('events').doc('eventId1').get();
       Event eventModel = await Event.fromSnapshot(snapshot);
       expect(eventModel.name, 'eventName');
       expect(eventModel.description, 'description');
@@ -112,7 +123,17 @@ void main() {
       expect(eventModel.details![0].members, ['admin']);
       expect(eventModel.details![0].requests, []);
       expect(eventModel.details![0].location, 'location');
+      Event eventModel1 = await Event.fromSnapshot(snapshot1);
+      expect(eventModel1.name, 'eventName1');
+      expect(eventModel1.description, 'description1');
+      expect(eventModel1.admin, 'admin1');
+      expect(eventModel1.imagePath, 'imagePath1');
+      expect(eventModel1.isPublic, true);
+      expect(eventModel1.id, 'eventId1');
+      expect(eventModel1.createdAt, Timestamp.fromDate(DateTime(2022, 2, 2)));
+      expect(eventModel1.details, []);
     });
+
     test("Test copywith", () {
       EventDetails eventDetails = EventDetails(
         startDate: DateTime(2021, 1, 1),

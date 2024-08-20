@@ -64,5 +64,24 @@ void main() {
       expect(userData.requests, ['request1', 'request2']);
       expect(userData.token, 'token');
     });
+    test("Ensure fromSnapshot handles non-existent user data correctly",
+        () async {
+      final firestore = FakeFirebaseFirestore();
+
+      final snapshot = await firestore.collection('users').doc('userId').get();
+
+      UserData userData = UserData.fromSnapshot(snapshot);
+
+      expect(userData.isSignedInWithGoogle, false);
+      expect(userData.categories, []);
+      expect(userData.imagePath, '');
+      expect(userData.email, '');
+      expect(userData.name, '');
+      expect(userData.surname, '');
+      expect(userData.username, 'Deleted Account');
+      expect(userData.isPublic, false);
+      expect(userData.requests, []);
+      expect(userData.token, '');
+    });
   });
 }
