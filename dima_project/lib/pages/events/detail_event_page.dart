@@ -94,7 +94,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                           detail.latlng!.latitude, detail.latlng!.longitude);
                       final title = event.name;
                       final availableMaps = await MapLauncher.installedMaps;
-
                       if (context.mounted) {
                         showCupertinoModalPopup(
                           context: context,

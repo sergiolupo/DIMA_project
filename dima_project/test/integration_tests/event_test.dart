@@ -104,7 +104,12 @@ void main() {
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         const MethodChannel('map_launcher'),
         (MethodCall methodCall) async {
-          return [];
+          return [
+            {
+              'mapName': 'Apple Maps',
+              'mapType': 'apple',
+            },
+          ];
         },
       );
 
@@ -186,6 +191,7 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.location_solid));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoActionSheet), findsOneWidget);
+      expect(find.text('Apple Maps'), findsOneWidget);
       expect(find.text("Cancel"), findsOneWidget);
       await tester.tap(find.text("Cancel"));
       await tester.pumpAndSettle();
@@ -229,6 +235,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Are you sure you want to delete this event?"),
           findsOneWidget);
+
       await tester.tap(find.text("Cancel"));
       await tester.pumpAndSettle();
       expect(find.text("Event"), findsOneWidget);
