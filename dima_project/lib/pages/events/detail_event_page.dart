@@ -10,6 +10,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
@@ -87,6 +88,50 @@ class DetailPageState extends ConsumerState<DetailPage> {
               width: MediaQuery.of(context).size.width * 0.9,
               child: FlutterMap(
                   options: MapOptions(
+                    onTap: (TapPosition position, LatLng latlng) async {
+                      final coords = Coords(
+                          detail.latlng!.latitude, detail.latlng!.longitude);
+                      final title = event.name;
+                      final availableMaps = await MapLauncher.installedMaps;
+
+                      if (context.mounted) {
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (BuildContext newContext) {
+                            return CupertinoActionSheet(
+                              actions: [
+                                for (var map in availableMaps)
+                                  CupertinoActionSheetAction(
+                                    onPressed: () => map.showMarker(
+                                      coords: coords,
+                                      title: title,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          map.icon,
+                                          height: 30.0,
+                                          width: 30.0,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(map.mapName),
+                                      ],
+                                    ),
+                                  )
+                              ],
+                              cancelButton: CupertinoActionSheetAction(
+                                onPressed: () => Navigator.pop(newContext),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: CupertinoColors.systemRed),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
                     initialCenter: detail.latlng!,
                     initialZoom: 11,
                     interactionOptions:
@@ -100,57 +145,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                           width: 80.0,
                           height: 80.0,
                           point: detail.latlng!,
-                          child: CupertinoButton(
-                            onPressed: () async {
-                              final coords = Coords(detail.latlng!.latitude,
-                                  detail.latlng!.longitude);
-                              final title = event.name;
-                              final availableMaps =
-                                  await MapLauncher.installedMaps;
-
-                              if (context.mounted) {
-                                showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (BuildContext newContext) {
-                                    return CupertinoActionSheet(
-                                      actions: [
-                                        for (var map in availableMaps)
-                                          CupertinoActionSheetAction(
-                                            onPressed: () => map.showMarker(
-                                              coords: coords,
-                                              title: title,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                SvgPicture.asset(
-                                                  map.icon,
-                                                  height: 30.0,
-                                                  width: 30.0,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(map.mapName),
-                                              ],
-                                            ),
-                                          )
-                                      ],
-                                      cancelButton: CupertinoActionSheetAction(
-                                        onPressed: () =>
-                                            Navigator.pop(newContext),
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                              color: CupertinoColors.systemRed),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                            },
-                            child: Icon(
-                              CupertinoIcons.location_solid,
-                              color: CupertinoTheme.of(context).primaryColor,
-                            ),
+                          child: Icon(
+                            CupertinoIcons.location_solid,
+                            color: CupertinoTheme.of(context).primaryColor,
                           ),
                         ),
                       ],
