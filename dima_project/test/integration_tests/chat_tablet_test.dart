@@ -694,8 +694,8 @@ void main() {
           await firestore.collection('users').doc('user2').get();
       DocumentSnapshot documentSnapshot1 =
           await firestore.collection('users').doc('user1').get();
-      when(mockDatabaseService.getPrivateChatsStream())
-          .thenAnswer((_) => Stream.value([fakePrivateChat1]));
+      when(mockDatabaseService.getPrivateChatsStream()).thenAnswer(
+          (_) => Stream.value([fakePrivateChat1, fakePrivateChat2]));
       when(mockDatabaseService.getGroupsStream())
           .thenAnswer((_) => Stream.value([fakeGroup1, fakeGroup2]));
       when(mockDatabaseService.getPrivateChats(any)).thenAnswer((_) {
@@ -712,7 +712,8 @@ void main() {
       });
       when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user2']))
           .thenAnswer((_) => Stream.value('321'));
-
+      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user3']))
+          .thenAnswer((_) => Stream.value('321'));
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         SystemChannels.platform,
         (MethodCall methodCall) async {
@@ -801,11 +802,21 @@ void main() {
       await tester.tap(find.text('Private'));
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsOneWidget);
+      expect(find.text('Deleted Account'), findsOneWidget);
+
       await tester.tap(find.text('username2'));
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsNWidgets(2));
       await tester.drag(
           find.text("username2").first, const Offset(-500.0, 0.0));
+      await tester.pumpAndSettle();
+      expect(find.byType(StartMessagingWidget), findsOneWidget);
+      expect(find.text('Deleted Account'), findsOneWidget);
+      await tester.tap(find.text('Deleted Account'));
+      await tester.pumpAndSettle();
+      expect(find.text('Deleted Account'), findsNWidgets(2));
+      await tester.drag(
+          find.text("Deleted Account").first, const Offset(-500.0, 0.0));
       await tester.pumpAndSettle();
       expect(find.byType(StartMessagingWidget), findsOneWidget);
     });
