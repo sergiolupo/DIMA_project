@@ -564,7 +564,7 @@ void main() {
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text("Delete"));
+      await tester.tap(find.byIcon(CupertinoIcons.trash));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNWidgets(3));
       await tester.tap(find.text("Participants"));

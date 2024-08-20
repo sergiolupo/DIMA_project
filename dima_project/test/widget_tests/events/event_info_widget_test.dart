@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 void main() {
   group('EventInfoWidget Tests', () {
@@ -80,8 +81,8 @@ void main() {
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Reduce'), findsOneWidget);
-      expect(find.text('Add'), findsOneWidget);
+      expect(find.byIcon(LineAwesomeIcons.compress_solid), findsOneWidget);
+      expect(find.text('Add more dates'), findsOneWidget);
     });
 
     testWidgets('EventInfoWidget does not render when boolMap is false',
