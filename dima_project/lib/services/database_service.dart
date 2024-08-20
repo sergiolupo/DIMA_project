@@ -1010,6 +1010,10 @@ class DatabaseService {
   }
 
   Future<void> acceptGroupRequest(String groupId, String uuid) async {
+    if ((await groupsRef.doc(groupId).get())['members']
+        .contains(AuthService.uid)) {
+      return;
+    }
     await groupsRef.doc(groupId).update({
       'requests': FieldValue.arrayRemove([uuid])
     });
@@ -1130,6 +1134,10 @@ class DatabaseService {
   Future<void> acceptUserGroupRequest(
     String groupId,
   ) async {
+    if ((await groupsRef.doc(groupId).get())['members']
+        .contains(AuthService.uid)) {
+      return;
+    }
     await Future.wait([
       groupsRef.doc(groupId).update({
         'members': FieldValue.arrayUnion([AuthService.uid]),

@@ -6,14 +6,15 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GroupsRequestsPage extends ConsumerStatefulWidget {
+class UserGroupsRequestsPage extends ConsumerStatefulWidget {
   final List<Group> groupRequests;
-  const GroupsRequestsPage({super.key, required this.groupRequests});
+  const UserGroupsRequestsPage({super.key, required this.groupRequests});
   @override
-  GroupsRequestsPageState createState() => GroupsRequestsPageState();
+  UserGroupsRequestsPageState createState() => UserGroupsRequestsPageState();
 }
 
-class GroupsRequestsPageState extends ConsumerState<GroupsRequestsPage> {
+class UserGroupsRequestsPageState
+    extends ConsumerState<UserGroupsRequestsPage> {
   late List<Group> groupsRequests;
   final String uid = AuthService.uid;
   @override

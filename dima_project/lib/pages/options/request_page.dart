@@ -1,7 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/options/follow_requests_page.dart';
-import 'package:dima_project/pages/options/groups_requests_page.dart';
+import 'package:dima_project/pages/options/user_groups_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/option_tile.dart';
@@ -124,7 +124,7 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
-                            builder: (context) => GroupsRequestsPage(
+                            builder: (context) => UserGroupsRequestsPage(
                                 groupRequests: _groupRequests!)))
                         .then((value) => init())
                   },
