@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
@@ -20,6 +21,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mockito/mockito.dart';
+import 'package:network_image_mock/network_image_mock.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_event_service.mocks.dart';
@@ -170,7 +172,30 @@ void main() {
       type: Type.event,
     )
   ];
-
+  List<Message> medias = [
+    Message(
+      content: 'https://imageurl.com',
+      sentByMe: true,
+      time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
+      senderImage: '',
+      isGroupMessage: true,
+      sender: 'user3',
+      readBy: readBy,
+      type: Type.image,
+      id: 'image_id',
+    ),
+    Message(
+      content: 'https://imageurl1.com',
+      sentByMe: true,
+      time: Timestamp.fromDate(DateTime(2024, 3, 3, 3, 3)),
+      senderImage: '',
+      isGroupMessage: true,
+      sender: 'user1',
+      readBy: readBy,
+      type: Type.image,
+      id: 'image_id1',
+    ),
+  ];
   late final MockDatabaseService mockDatabaseService;
   late final MockNotificationService mockNotificationService;
   late final MockImagePicker mockImagePicker;
@@ -1551,6 +1576,147 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
       });
+    });
+
+    testWidgets(
+        "Show media page renders correctly and the images are displayed correctly",
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      final firestore = FakeFirebaseFirestore();
+      await firestore.collection('users').doc('user1').set({
+        'uid': 'user1',
+        'name': 'name1',
+        'email': 'mail1',
+        'requests': [],
+        'imageUrl': '',
+        'surname': 'surname1',
+        'username': 'username1',
+        'isPublic': true,
+        'token': 'token1',
+        'isSignedInWithGoogle': false,
+        'selectedCategories': [
+          {'value': 'category1'},
+          {'value': 'category2'},
+        ],
+      });
+
+      AuthService.setUid('user1');
+      DocumentSnapshot documentSnapshot1 =
+          await firestore.collection('users').doc('user1').get();
+
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => Stream.value([]));
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => Stream.value([fakePrivateChat2]));
+
+      when(mockDatabaseService.getPrivateChats(any)).thenAnswer((_) {
+        return Stream.value(medias);
+      });
+      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user3']))
+          .thenAnswer((_) => Stream.value('321'));
+
+      when(mockDatabaseService.getUserDataFromUID('user1'))
+          .thenAnswer((_) => Stream.value(documentSnapshot1));
+      when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
+        return Stream.error('User not found');
+      });
+      when(mockDatabaseService.getNotification(any, any)).thenAnswer(
+        (_) => Future.value(true),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.news))
+          .thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.image))
+          .thenAnswer(
+        (_) => Future.value(medias),
+      );
+      when(mockDatabaseService.getPrivateMessagesType(any, Type.event))
+          .thenAnswer(
+        (_) => Future.value([]),
+      );
+      when(mockDatabaseService.getUserData('user1')).thenAnswer(
+          (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+
+      when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
+        return Future.value(UserData.fromSnapshot(
+            await firestore.collection('users').doc('user3').get()));
+      });
+
+      when(mockDatabaseService.updateNotification(any, any, any))
+          .thenAnswer((_) {
+        return Future.value();
+      });
+      await mockNetworkImagesFor(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              databaseServiceProvider.overrideWithValue(mockDatabaseService),
+              followerProvider.overrideWith(
+                (ref, uid) async => [],
+              ),
+              notificationServiceProvider
+                  .overrideWithValue(mockNotificationService),
+              userProvider.overrideWith(
+                (ref, uid) async => mockDatabaseService.getUserData(uid),
+              ),
+            ],
+            child: CupertinoApp(
+              home: ChatTabletPage(
+                storageService: mockStorageService,
+                databaseService: mockDatabaseService,
+                notificationService: mockNotificationService,
+                imagePicker: mockImagePicker,
+                selectedGroup: null,
+                selectedPrivateChat: null,
+                selectedUser: null,
+                eventService: mockEventService,
+              ),
+            ),
+          ),
+        );
+      });
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Private'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Deleted Account'));
+      await tester.pumpAndSettle();
+      expect(find.text('Deleted Account'), findsNWidgets(2));
+
+      await tester.tap(find.text('Deleted Account').last); //Private Chat Info
+      await tester.pumpAndSettle();
+
+      expect(find.text('Private Chat Info'), findsOneWidget);
+      expect(find.text('Deleted Account'), findsNWidgets(2));
+
+      await tester.tap(find.text('Media')); //Media
+      await tester.pumpAndSettle();
+
+      expect(find.text('Medias'), findsOneWidget);
+      expect(find.byType(CachedNetworkImage), findsNWidgets(2));
+      expect(find.byType(CupertinoButton), findsNWidgets(5));
+
+      await tester.tap(find.byType(CupertinoButton).at(3)); //Media
+      await tester.pumpAndSettle();
+
+      expect(find.text("username1"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Medias'), findsOneWidget);
+      expect(find.byType(CachedNetworkImage), findsNWidgets(2));
+      expect(find.byType(CupertinoButton), findsNWidgets(5));
+
+      await tester.tap(find.byType(CupertinoButton).at(3));
+      await tester.pumpAndSettle();
+      expect(find.text("username1"), findsOneWidget);
+      await tester.drag(find.text("username1"), const Offset(500, 0));
+      await tester.pumpAndSettle();
+      expect(find.text('Deleted Account'), findsNWidgets(2));
+      await tester.drag(
+          find.text("Deleted Account").last, const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      expect(find.text("username1"), findsOneWidget);
     });
 
     testWidgets("Test edit group functionality for tablet",
