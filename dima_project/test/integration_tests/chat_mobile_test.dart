@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
@@ -9,7 +7,6 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/chat_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
-import 'package:dima_project/pages/chats/show_medias_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -179,7 +176,7 @@ void main() {
       time: Timestamp.fromDate(DateTime(2024, 2, 2, 2, 2)),
       senderImage: '',
       isGroupMessage: true,
-      sender: 'user1',
+      sender: 'user3',
       readBy: readBy,
       type: Type.image,
       id: 'image_id',
@@ -1202,44 +1199,27 @@ void main() {
           {'value': 'category2'},
         ],
       });
-      await firestore.collection('users').doc('user2').set({
-        'uid': 'user2',
-        'name': 'name2',
-        'email': 'mail2',
-        'imageUrl': '',
-        'surname': 'surname2',
-        'username': 'username2',
-        'requests': [],
-        'selectedCategories': [
-          {'value': 'category1'},
-          {'value': 'category2'},
-        ],
-        'isPublic': true,
-        'token': 'token2',
-        'isSignedInWithGoogle': false,
-      });
 
       AuthService.setUid('user1');
       DocumentSnapshot documentSnapshot1 =
           await firestore.collection('users').doc('user1').get();
-      DocumentSnapshot documentSnapshot2 =
-          await firestore.collection('users').doc('user2').get();
 
       when(mockDatabaseService.getGroupsStream())
           .thenAnswer((_) => Stream.value([]));
       when(mockDatabaseService.getPrivateChatsStream())
-          .thenAnswer((_) => Stream.value([fakePrivateChat1]));
+          .thenAnswer((_) => Stream.value([fakePrivateChat2]));
 
       when(mockDatabaseService.getPrivateChats(any)).thenAnswer((_) {
         return Stream.value(medias);
       });
-      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user2']))
+      when(mockDatabaseService.getPrivateChatIdFromMembers(['user1', 'user3']))
           .thenAnswer((_) => Stream.value('321'));
 
       when(mockDatabaseService.getUserDataFromUID('user1'))
           .thenAnswer((_) => Stream.value(documentSnapshot1));
-      when(mockDatabaseService.getUserDataFromUID('user2'))
-          .thenAnswer((_) => Stream.value(documentSnapshot2));
+      when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
+        return Stream.error('User not found');
+      });
       when(mockDatabaseService.getNotification(any, any)).thenAnswer(
         (_) => Future.value(true),
       );
@@ -1257,8 +1237,7 @@ void main() {
       );
       when(mockDatabaseService.getUserData('user1')).thenAnswer(
           (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
-      when(mockDatabaseService.getUserData('user2')).thenAnswer(
-          (_) => Future.value(UserData.fromSnapshot(documentSnapshot2)));
+
       when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
         return Future.value(UserData.fromSnapshot(
             await firestore.collection('users').doc('user3').get()));
@@ -1296,15 +1275,15 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Private'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('username2'));
+      await tester.tap(find.text('Deleted Account'));
       await tester.pumpAndSettle();
-      expect(find.text('username2'), findsOneWidget);
+      expect(find.text('Deleted Account'), findsOneWidget);
 
-      await tester.tap(find.text('username2')); //Private Chat Info
+      await tester.tap(find.text('Deleted Account')); //Private Chat Info
       await tester.pumpAndSettle();
 
       expect(find.text('Private Chat Info'), findsOneWidget);
-      expect(find.text('username2'), findsOneWidget);
+      expect(find.text('Deleted Account'), findsOneWidget);
 
       await tester.tap(find.text('Media')); //Media
       await tester.pumpAndSettle();
@@ -1316,6 +1295,21 @@ void main() {
       await tester.tap(find.byType(CupertinoButton).at(1)); //Media
       await tester.pumpAndSettle();
 
+      expect(find.text("username1"), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.pumpAndSettle();
+      expect(find.text('Medias'), findsOneWidget);
+      expect(find.byType(CachedNetworkImage), findsNWidgets(2));
+      expect(find.byType(CupertinoButton), findsNWidgets(3));
+
+      await tester.tap(find.byType(CupertinoButton).at(1));
+      await tester.pumpAndSettle();
+      expect(find.text("username1"), findsOneWidget);
+      await tester.drag(find.text("username1"), const Offset(500, 0));
+      await tester.pumpAndSettle();
+      expect(find.text('Deleted Account'), findsOneWidget);
+      await tester.drag(find.text("Deleted Account"), const Offset(-500, 0));
+      await tester.pumpAndSettle();
       expect(find.text("username1"), findsOneWidget);
     });
 
