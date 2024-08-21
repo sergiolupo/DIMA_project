@@ -46,6 +46,13 @@ class ShareEventGroupPageState extends State<ShareEventGroupPage> {
             Navigator.of(context).pop(groupsIds);
           },
         ),
+        middle: Text(
+          "Invite Groups",
+          style: TextStyle(
+            fontSize: 18,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
       ),
       child: SafeArea(
         child: Padding(

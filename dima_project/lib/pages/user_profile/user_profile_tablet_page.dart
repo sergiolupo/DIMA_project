@@ -90,6 +90,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
     final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: (navigatorCanPop)
             ? CupertinoNavigationBarBackButton(

@@ -600,85 +600,112 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                   ],
                 ),
               ),
-              Container(
-                constraints: BoxConstraints(
-                  maxHeight: (group.admin == uid)
-                      ? (group.members!.length + 1) * 50
-                      : group.members!.length * 50,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: CupertinoTheme.of(context).primaryContrastingColor,
-                ),
-                height: (group.admin == uid)
-                    ? (group.members!.length + 1) * 50
-                    : group.members!.length * 50,
-                child: (group.admin == uid)
-                    ? ListView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          Row(
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        group.members!.length.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        group.members!.length == 1 ? "Member" : "Members",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: (group.admin == uid)
+                          ? (group.members!.length + 1) * 50
+                          : group.members!.length * 50,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: CupertinoTheme.of(context).primaryContrastingColor,
+                    ),
+                    height: (group.admin == uid)
+                        ? (group.members!.length + 1) * 50
+                        : group.members!.length * 50,
+                    child: (group.admin == uid)
+                        ? ListView(
+                            physics: const NeverScrollableScrollPhysics(),
                             children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  AddMembersGroupPage(
-                                                group: group,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: CupertinoListTile(
-                                          leading: Transform.scale(
-                                            scale: MediaQuery.of(context)
-                                                        .size
-                                                        .width >
-                                                    Constants.limitWidth
-                                                ? 1.3
-                                                : 1,
-                                            child: Icon(
-                                              CupertinoIcons.person_add,
-                                              size: 25,
-                                              color: CupertinoTheme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          ),
-                                          title: Text(
-                                            "Add Members",
-                                            style: TextStyle(
-                                                color:
-                                                    CupertinoTheme.of(context)
-                                                        .primaryColor,
-                                                fontSize: MediaQuery.of(context)
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      AddMembersGroupPage(
+                                                    group: group,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: CupertinoListTile(
+                                              leading: Transform.scale(
+                                                scale: MediaQuery.of(context)
                                                             .size
                                                             .width >
                                                         Constants.limitWidth
-                                                    ? 20
-                                                    : 15),
+                                                    ? 1.3
+                                                    : 1,
+                                                child: Icon(
+                                                  CupertinoIcons.person_add,
+                                                  size: 25,
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .primaryColor,
+                                                ),
+                                              ),
+                                              title: Text(
+                                                "Add Members",
+                                                style: TextStyle(
+                                                    color: CupertinoTheme.of(
+                                                            context)
+                                                        .primaryColor,
+                                                    fontSize:
+                                                        MediaQuery.of(context)
+                                                                    .size
+                                                                    .width >
+                                                                Constants
+                                                                    .limitWidth
+                                                            ? 20
+                                                            : 15),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                              Container(
+                                height: 1,
+                                color: CupertinoColors.opaqueSeparator
+                                    .withOpacity(0.2),
+                              ),
+                              memberList(),
                             ],
-                          ),
-                          Container(
-                            height: 1,
-                            color: CupertinoColors.opaqueSeparator
-                                .withOpacity(0.2),
-                          ),
-                          memberList(),
-                        ],
-                      )
-                    : memberList(),
+                          )
+                        : memberList(),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               GestureDetector(

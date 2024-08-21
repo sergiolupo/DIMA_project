@@ -51,7 +51,7 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
               )
             : null,
         middle: Text(
-          "Add Members",
+          "Invite Followers",
           style: TextStyle(
             fontSize: 18,
             color: CupertinoTheme.of(context).primaryColor,
