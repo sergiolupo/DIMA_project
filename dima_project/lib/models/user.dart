@@ -13,6 +13,7 @@ class UserData {
   List<String>? requests;
   String? token;
   bool? isSignedInWithGoogle;
+  final List<String>? groups;
   UserData({
     required this.categories,
     this.imagePath,
@@ -26,6 +27,7 @@ class UserData {
     this.isPublic,
     this.requests,
     this.token,
+    this.groups,
   });
 
   static UserData fromSnapshot(DocumentSnapshot documentSnapshot) {
@@ -48,6 +50,10 @@ class UserData {
             .cast<String>(),
         token: documentSnapshot['token'],
         isSignedInWithGoogle: documentSnapshot['isSignedInWithGoogle'],
+        groups: (documentSnapshot['groups'] as List<dynamic>)
+            .map((group) => group.toString())
+            .toList()
+            .cast<String>(),
       );
     } catch (e) {
       return UserData(
@@ -62,6 +68,7 @@ class UserData {
         requests: [],
         token: '',
         isSignedInWithGoogle: false,
+        groups: [],
       );
     }
   }

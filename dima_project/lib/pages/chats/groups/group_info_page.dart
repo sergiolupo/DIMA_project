@@ -1,6 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:dima_project/pages/chats/groups/add_members_group_page.dart';
 import 'package:dima_project/pages/chats/groups/edit_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/chats/groups/group_requests_page.dart';
@@ -140,7 +141,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
             : null,
       ),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         primary: true,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -623,7 +624,16 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   children: [
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {},
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  AddMembersGroupPage(
+                                                group: group,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                         child: CupertinoListTile(
                                           leading: Transform.scale(
                                             scale: MediaQuery.of(context)
@@ -683,6 +693,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                     ),
                     textAlign: TextAlign.center),
               ),
+              const SizedBox(height: 50),
             ],
           ),
         ),

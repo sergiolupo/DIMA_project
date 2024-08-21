@@ -1608,10 +1608,15 @@ class DatabaseService {
         members.add(id);
       }
     }
-    for (var id in uuids) {
+    await inviteUserToGroup(group.id, uuids, members);
+  }
+
+  Future<void> inviteUserToGroup(
+      String groupId, List<String> uids, List<dynamic> members) async {
+    for (var id in uids) {
       if (!members.contains(id)) {
         await usersRef.doc(id).update({
-          'groupsRequests': FieldValue.arrayUnion([group.id])
+          'groupsRequests': FieldValue.arrayUnion([groupId])
         });
       }
     }
