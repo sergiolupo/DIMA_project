@@ -337,7 +337,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                             actions: <Widget>[
                               CupertinoDialogAction(
                                 child: const Text('Cancel'),
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => Navigator.of(newContext).pop(),
                               ),
                               CupertinoDialogAction(
                                 child: const Text('Yes'),

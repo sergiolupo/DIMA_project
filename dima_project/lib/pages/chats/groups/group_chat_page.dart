@@ -3,13 +3,13 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
-import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/create_event_page.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
@@ -21,9 +21,10 @@ import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class GroupChatPage extends StatefulWidget {
+class GroupChatPage extends ConsumerStatefulWidget {
   final Group group;
   final bool canNavigate;
   final Function? navigateToPage;
@@ -48,7 +49,7 @@ class GroupChatPage extends StatefulWidget {
   GroupChatPageState createState() => GroupChatPageState();
 }
 
-class GroupChatPageState extends State<GroupChatPage> {
+class GroupChatPageState extends ConsumerState<GroupChatPage> {
   late final Stream<List<Message>> chats;
   TextEditingController messageEditingController = TextEditingController();
   bool isUploading = false;
@@ -80,6 +81,7 @@ class GroupChatPageState extends State<GroupChatPage> {
         middle: CupertinoButton(
           padding: const EdgeInsets.all(0),
           onPressed: () async {
+            ref.invalidate(userProvider);
             if (!widget.canNavigate) {
               final Group? newGroup = await Navigator.of(context).push(
                 CupertinoPageRoute(
@@ -323,6 +325,8 @@ class GroupChatPageState extends State<GroupChatPage> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final message = snapshot.data![index];
+              final user = ref.watch(userProvider(message.sender));
+
               bool isSameDate = false;
               String? newDate = '';
 
@@ -368,23 +372,15 @@ class GroupChatPageState extends State<GroupChatPage> {
                             ),
                           )
                         : Container(),
-                    StreamBuilder(
-                      stream:
-                          _databaseService.getUserDataFromUID(message.sender),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          message.senderImage = '';
-                          return _buildMessageTile(message, 'Deleted Account');
-                        }
-
-                        if (snapshot.hasData) {
-                          final user = UserData.fromSnapshot(snapshot.data!);
-                          message.senderImage = user.imagePath;
-                          return _buildMessageTile(message, user.username);
-                        }
-                        return Container();
-                      },
-                    )
+                    user.when(data: (user) {
+                      message.senderImage = user.imagePath;
+                      return _buildMessageTile(message, user.username);
+                    }, error: (_, __) {
+                      message.senderImage = '';
+                      return _buildMessageTile(message, 'Deleted Account');
+                    }, loading: () {
+                      return Container();
+                    })
                   ],
                 ),
               );

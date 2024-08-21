@@ -1,7 +1,7 @@
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
-import 'package:dima_project/widgets/news/share_group_tile.dart';
+import 'package:dima_project/widgets/group_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShareEventGroupPage extends StatefulWidget {
@@ -19,7 +19,8 @@ class ShareEventGroupPageState extends State<ShareEventGroupPage> {
   List<String> groupsIds = [];
 
   List<Group>? groups;
-
+  final TextEditingController _searchController = TextEditingController();
+  String searchText = '';
   @override
   void initState() {
     super.initState();
@@ -51,7 +52,23 @@ class ShareEventGroupPageState extends State<ShareEventGroupPage> {
           padding: const EdgeInsets.only(
             top: 16.0,
           ),
-          child: getGroups(),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSearchTextField(
+                  controller: _searchController,
+                  placeholder: "Search groups...",
+                  onChanged: (_) {
+                    setState(() {
+                      searchText = _searchController.text;
+                    });
+                  },
+                ),
+              ),
+              getGroups(),
+            ],
+          ),
         ),
       ),
     );
@@ -62,28 +79,70 @@ class ShareEventGroupPageState extends State<ShareEventGroupPage> {
       return const Center(child: CupertinoActivityIndicator());
     }
     if (groups!.isEmpty) {
-      return const Center(
-        child: Text("No groups"),
+      return SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Image.asset('assets/darkMode/search_groups.png')
+                : Image.asset('assets/images/search_groups.png'),
+            const Center(
+              child: Text('No groups'),
+            ),
+          ],
+        ),
       );
     }
-    return ListView.builder(
-      itemCount: groups!.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return ShareGroupTile(
-          group: groups![index],
-          onSelected: (String id) {
-            setState(() {
-              if (groupsIds.contains(id)) {
-                groupsIds.remove(id);
-              } else {
-                groupsIds.add(id);
-              }
-            });
-          },
-          active: groupsIds.contains(groups![index].id),
-        );
-      },
+    final List<Group> filteredGroups = groups!
+        .where((group) =>
+            group.name.toLowerCase().contains(searchText.toLowerCase()))
+        .toList();
+    if (filteredGroups.isEmpty) {
+      return SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Image.asset('assets/darkMode/no_groups_found.png')
+                : Image.asset('assets/images/no_groups_found.png'),
+            const Center(
+              child: Text('No groups found'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: CupertinoTheme.of(context).primaryContrastingColor),
+      child: ListView.builder(
+        itemCount: filteredGroups.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          final group = filteredGroups[index];
+          return GroupInvitationTile(
+            group: group,
+            onSelected: (String id) {
+              setState(() {
+                if (groupsIds.contains(id)) {
+                  groupsIds.remove(id);
+                } else {
+                  groupsIds.add(id);
+                }
+              });
+            },
+            invited: groupsIds.contains(groups![index].id),
+          );
+        },
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 }

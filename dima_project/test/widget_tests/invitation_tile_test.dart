@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/widgets/invitation_tile.dart';
+import 'package:dima_project/widgets/user_invitation_tile.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
@@ -26,7 +26,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
-          home: InvitationTile(
+          home: UserInvitationTile(
             user: user,
             invitePageKey: (uid) {},
             invited: false,
@@ -47,7 +47,7 @@ void main() {
 
       await tester.pumpWidget(
         CupertinoApp(
-          home: InvitationTile(
+          home: UserInvitationTile(
             user: user,
             invitePageKey: (uid) {
               wasInvited = true;
@@ -73,7 +73,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
-          home: InvitationTile(
+          home: UserInvitationTile(
             user: user,
             invitePageKey: (uid) {},
             invited: false,
@@ -103,7 +103,7 @@ void main() {
                 .overrideWith((ref) => MockNotificationService()),
           ],
           child: CupertinoApp(
-            home: InvitationTile(
+            home: UserInvitationTile(
               user: user,
               invitePageKey: (uid) {},
               invited: false,

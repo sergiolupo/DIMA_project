@@ -1,4 +1,3 @@
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -7,23 +6,28 @@ import 'package:dima_project/widgets/user_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddMembersGroupPage extends ConsumerStatefulWidget {
-  final Group group;
+class InviteUserPage extends ConsumerStatefulWidget {
+  final ValueChanged<String> invitePageKey;
+  final List<String> invitedUsers;
+  final bool isGroup;
+  final String? id;
   @override
-  const AddMembersGroupPage({
+  const InviteUserPage({
     super.key,
-    required this.group,
+    required this.invitePageKey,
+    required this.invitedUsers,
+    required this.isGroup,
+    required this.id,
   });
 
   @override
-  AddMembersGroupPageState createState() => AddMembersGroupPageState();
+  InviteUserPageState createState() => InviteUserPageState();
 }
 
-class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
+class InviteUserPageState extends ConsumerState<InviteUserPage> {
   final TextEditingController _searchController = TextEditingController();
   String searchText = '';
   final String uid = AuthService.uid;
-  final List<String> uids = [];
   @override
   void initState() {
     ref.read(followerProvider(uid));
@@ -37,6 +41,7 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
         ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
@@ -50,34 +55,6 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
           style: TextStyle(
             fontSize: 18,
             color: CupertinoTheme.of(context).primaryColor,
-          ),
-        ),
-        trailing: Visibility(
-          visible: uids.isNotEmpty,
-          child: CupertinoButton(
-            padding: const EdgeInsets.all(0),
-            borderRadius: BorderRadius.circular(10),
-            child: const Icon(CupertinoIcons.paperplane),
-            onPressed: () async {
-              BuildContext buildContext = context;
-              showCupertinoDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext newContext) {
-                  buildContext = newContext;
-                  return const CupertinoAlertDialog(
-                    content: CupertinoActivityIndicator(),
-                  );
-                },
-              );
-              await databaseService.inviteUserToGroup(
-                  widget.group.id, uids, widget.group.members!);
-              if (buildContext.mounted) {
-                Navigator.of(buildContext).pop();
-              }
-              if (!context.mounted) return;
-              Navigator.of(context).pop();
-            },
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -139,18 +116,17 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                 );
               }
               return Container(
-                height: filteredUsers.length * 50.0,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: CupertinoTheme.of(context).primaryContrastingColor),
                 child: ListView.builder(
+                  shrinkWrap: true,
                   itemCount: filteredUsers.length,
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
-
                     return FutureBuilder(
                       future: databaseService.checkIfJoined(
-                          true, widget.group.id, userData.uid!),
+                          widget.isGroup, widget.id, userData.uid!),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return const Text('Error');
@@ -165,16 +141,9 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                           children: [
                             UserInvitationTile(
                               user: userData,
-                              invitePageKey: (String uuid) {
-                                setState(() {
-                                  if (uids.contains(uuid)) {
-                                    uids.remove(uuid);
-                                  } else {
-                                    uids.add(uuid);
-                                  }
-                                });
-                              },
-                              invited: uids.contains(userData.uid!),
+                              invitePageKey: widget.invitePageKey,
+                              invited:
+                                  widget.invitedUsers.contains(userData.uid),
                               isJoining: isJoining,
                             ),
                             if (index != filteredUsers.length - 1)

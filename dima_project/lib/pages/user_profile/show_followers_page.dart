@@ -55,6 +55,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
           loading: () => const CupertinoActivityIndicator(),
           error: (err, stack) => const DeletedAccountWidget(),
           data: (users) {
+            int i = 0;
             return Column(
               children: [
                 Padding(
@@ -64,6 +65,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                     onChanged: (_) {
                       setState(() {
                         _searchText = _searchController.text;
+                        i = 0;
                       });
                     },
                   ),
@@ -90,7 +92,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                       if (!user.username
                           .toLowerCase()
                           .contains(_searchText.toLowerCase())) {
-                        if (index == users.length - 1) {
+                        if (i == users.length - 1) {
                           return Column(
                             children: [
                               MediaQuery.of(context).platformBrightness ==
@@ -105,6 +107,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                             ],
                           );
                         }
+                        i++;
                         return const SizedBox.shrink();
                       }
 
@@ -131,5 +134,11 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 }

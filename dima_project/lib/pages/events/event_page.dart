@@ -198,139 +198,137 @@ class EventPageState extends ConsumerState<EventPage> {
                             },
                           ),
                           uid == event.admin
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        CupertinoButton(
-                                          padding: const EdgeInsets.all(0),
-                                          onPressed: () {
-                                            ref.invalidate(
-                                                eventProvider(widget.eventId));
-                                            ref.invalidate(
-                                                createdEventsProvider(uid));
-                                            Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        EditEventPage(
-                                                          event: event,
-                                                          imagePicker: widget
-                                                              .imagePicker,
-                                                          eventService: widget
-                                                              .eventService,
-                                                          notificationService:
-                                                              notificationService,
-                                                        )));
-                                          },
-                                          child: Text(
-                                            'Edit Event',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: CupertinoTheme.of(context)
-                                                  .primaryColor,
-                                            ),
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: CupertinoTheme.of(context)
+                                        .primaryContrastingColor,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      CupertinoListTile(
+                                        trailing:
+                                            const Icon(CupertinoIcons.forward),
+                                        title: const Row(children: [
+                                          Icon(CupertinoIcons.pencil),
+                                          SizedBox(width: 10),
+                                          Text('Edit Event'),
+                                        ]),
+                                        onTap: () {
+                                          ref.invalidate(
+                                              eventProvider(widget.eventId));
+                                          ref.invalidate(
+                                              createdEventsProvider(uid));
+                                          Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      EditEventPage(
+                                                        event: event,
+                                                        imagePicker:
+                                                            widget.imagePicker,
+                                                        eventService:
+                                                            widget.eventService,
+                                                        notificationService:
+                                                            notificationService,
+                                                      )));
+                                        },
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: CupertinoColors.opaqueSeparator
+                                            .withOpacity(0.2),
+                                      ),
+                                      CupertinoListTile(
+                                          trailing: const Icon(
+                                              CupertinoIcons.forward),
+                                          title: const Row(
+                                            children: [
+                                              Icon(CupertinoIcons.trash),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                'Delete Event',
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        CupertinoButton(
-                                            padding: const EdgeInsets.all(0),
-                                            child: const Text(
-                                              'Delete Event',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: CupertinoColors
-                                                      .systemRed),
-                                            ),
-                                            onPressed: () {
-                                              showCupertinoDialog(
-                                                context: context,
-                                                builder: (newContext) =>
-                                                    CupertinoAlertDialog(
-                                                  title: const Text(
-                                                      'Delete Event'),
-                                                  content: const Text(
-                                                      'Are you sure you want to delete this event?'),
-                                                  actions: <Widget>[
-                                                    CupertinoDialogAction(
-                                                      child:
-                                                          const Text('Cancel'),
-                                                      onPressed: () =>
-                                                          Navigator.of(
-                                                                  newContext)
-                                                              .pop(),
-                                                    ),
-                                                    CupertinoDialogAction(
-                                                      child: const Text('Yes'),
-                                                      onPressed: () async {
+                                          onTap: () {
+                                            showCupertinoDialog(
+                                              context: context,
+                                              builder: (newContext) =>
+                                                  CupertinoAlertDialog(
+                                                title:
+                                                    const Text('Delete Event'),
+                                                content: const Text(
+                                                    'Are you sure you want to delete this event?'),
+                                                actions: <Widget>[
+                                                  CupertinoDialogAction(
+                                                    child: const Text('Cancel'),
+                                                    onPressed: () =>
                                                         Navigator.of(newContext)
-                                                            .pop();
-                                                        BuildContext
-                                                            buildContext =
-                                                            context;
-                                                        // Show the loading dialog
-                                                        showCupertinoDialog(
-                                                          context: context,
-                                                          barrierDismissible:
-                                                              false,
-                                                          builder: (BuildContext
-                                                              newContext) {
-                                                            buildContext =
-                                                                newContext;
-                                                            return const CupertinoAlertDialog(
-                                                              content:
-                                                                  CupertinoActivityIndicator(),
-                                                            );
-                                                          },
-                                                        );
+                                                            .pop(),
+                                                  ),
+                                                  CupertinoDialogAction(
+                                                    child: const Text('Yes'),
+                                                    onPressed: () async {
+                                                      Navigator.of(newContext)
+                                                          .pop();
+                                                      BuildContext
+                                                          buildContext =
+                                                          context;
+                                                      // Show the loading dialog
+                                                      showCupertinoDialog(
+                                                        context: context,
+                                                        barrierDismissible:
+                                                            false,
+                                                        builder: (BuildContext
+                                                            newContext) {
+                                                          buildContext =
+                                                              newContext;
+                                                          return const CupertinoAlertDialog(
+                                                            content:
+                                                                CupertinoActivityIndicator(),
+                                                          );
+                                                        },
+                                                      );
 
-                                                        try {
-                                                          await notificationService
-                                                              .sendEventNotification(
-                                                                  event.name,
-                                                                  widget
-                                                                      .eventId,
-                                                                  false,
-                                                                  "2");
-                                                        } catch (e) {
-                                                          debugPrint(
-                                                              e.toString());
-                                                        }
-                                                        await databaseService
-                                                            .deleteEvent(
-                                                                widget.eventId);
-                                                        ref.invalidate(
-                                                            createdEventsProvider(
-                                                                uid));
-                                                        ref.invalidate(
-                                                            eventProvider(widget
-                                                                .eventId));
-                                                        if (buildContext
-                                                            .mounted) {
-                                                          Navigator.of(
-                                                                  buildContext)
-                                                              .pop();
-                                                        }
-                                                        if (context.mounted) {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        }
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            }),
-                                      ],
-                                    ),
-                                  ],
+                                                      try {
+                                                        await notificationService
+                                                            .sendEventNotification(
+                                                                event.name,
+                                                                widget.eventId,
+                                                                false,
+                                                                "2");
+                                                      } catch (e) {
+                                                        debugPrint(
+                                                            e.toString());
+                                                      }
+                                                      await databaseService
+                                                          .deleteEvent(
+                                                              widget.eventId);
+                                                      ref.invalidate(
+                                                          createdEventsProvider(
+                                                              uid));
+                                                      ref.invalidate(
+                                                          eventProvider(
+                                                              widget.eventId));
+                                                      if (buildContext
+                                                          .mounted) {
+                                                        Navigator.of(
+                                                                buildContext)
+                                                            .pop();
+                                                      }
+                                                      if (context.mounted) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                    ],
+                                  ),
                                 )
                               : Container(),
                         ],

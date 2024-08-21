@@ -50,6 +50,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
         child: SingleChildScrollView(
           child: groups.when(
             data: (groups) {
+              int i = 0;
               return Column(
                 children: [
                   Padding(
@@ -58,6 +59,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                       controller: _searchController,
                       onChanged: (_) => setState(() {
                         _searchText = _searchController.text;
+                        i = 0;
                       }),
                     ),
                   ),
@@ -86,7 +88,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                         if (!group.name
                             .toLowerCase()
                             .contains(_searchText.toLowerCase())) {
-                          if (index == groups.length - 1) {
+                          if (i == groups.length - 1) {
                             return SingleChildScrollView(
                               physics: const NeverScrollableScrollPhysics(),
                               child: Column(
@@ -104,6 +106,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                               ),
                             );
                           }
+                          i++;
                           return const SizedBox.shrink();
                         }
                         return GroupTile(

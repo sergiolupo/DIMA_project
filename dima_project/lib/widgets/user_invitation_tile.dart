@@ -5,12 +5,12 @@ import 'package:dima_project/pages/user_profile/user_profile_tablet_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 
-class InvitationTile extends StatefulWidget {
+class UserInvitationTile extends StatefulWidget {
   final UserData user;
   final ValueChanged<String> invitePageKey;
   final bool invited;
   final bool isJoining;
-  const InvitationTile({
+  const UserInvitationTile({
     super.key,
     required this.user,
     required this.invitePageKey,
@@ -19,10 +19,10 @@ class InvitationTile extends StatefulWidget {
   });
 
   @override
-  InvitationTileState createState() => InvitationTileState();
+  UserInvitationTileState createState() => UserInvitationTileState();
 }
 
-class InvitationTileState extends State<InvitationTile> {
+class UserInvitationTileState extends State<UserInvitationTile> {
   bool invited = false;
   @override
   void initState() {

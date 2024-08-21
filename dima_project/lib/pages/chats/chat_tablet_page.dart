@@ -619,7 +619,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
             idx == 0
                 ? MediaQuery.of(context).platformBrightness == Brightness.dark
                     ? Image.asset(
-                        'assets/darkMode/search_chat.png',
+                        'assets/darkMode/search_groups_chat.png',
                       )
                     : Image.asset(
                         'assets/images/search_groups_chat.png',

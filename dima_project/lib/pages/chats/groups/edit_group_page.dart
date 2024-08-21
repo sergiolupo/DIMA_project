@@ -5,7 +5,7 @@ import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
-import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -255,7 +255,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                       onTap: () {
                         Navigator.of(context).push(
                           CupertinoPageRoute(
-                              builder: (context) => InvitePage(
+                              builder: (context) => InviteUserPage(
                                   invitePageKey: (String uuid) {
                                     setState(() {
                                       if (uuids.contains(uuid)) {

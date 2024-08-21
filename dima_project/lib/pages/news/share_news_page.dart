@@ -140,44 +140,59 @@ class ShareNewsPageState extends State<ShareNewsPage> {
         ),
       );
     }
-    return ListView.builder(
-      physics: const ClampingScrollPhysics(),
-      itemCount: users!.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        if (!users![index]
-            .username
-            .toLowerCase()
-            .contains(_searchText.toLowerCase())) {
-          i += 1;
-          if (i == users!.length) {
-            return Center(
-              child: Column(
-                children: [
-                  MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/no_followers.png')
-                      : Image.asset('assets/images/no_followers.png'),
-                  const Text("No followers found"),
-                ],
-              ),
-            );
+    return Container(
+      height: users!.length * 50,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: CupertinoTheme.of(context).primaryContrastingColor),
+      child: ListView.builder(
+        physics: const ClampingScrollPhysics(),
+        itemCount: users!.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          if (!users![index]
+              .username
+              .toLowerCase()
+              .contains(_searchText.toLowerCase())) {
+            i += 1;
+            if (i == users!.length) {
+              return Center(
+                child: Column(
+                  children: [
+                    MediaQuery.of(context).platformBrightness == Brightness.dark
+                        ? Image.asset('assets/darkMode/no_followers.png')
+                        : Image.asset('assets/images/no_followers.png'),
+                    const Text("No followers found"),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
           }
-          return const SizedBox.shrink();
-        }
-        return ShareUserTile(
-          user: users![index],
-          onSelected: (String uuid) {
-            setState(() {
-              if (uuids.contains(uuid)) {
-                uuids.remove(uuid);
-              } else {
-                uuids.add(uuid);
-              }
-            });
-          },
-          active: uuids.contains(users![index].uid!),
-        );
-      },
+          return Column(
+            children: [
+              ShareUserTile(
+                user: users![index],
+                onSelected: (String uuid) {
+                  setState(() {
+                    if (uuids.contains(uuid)) {
+                      uuids.remove(uuid);
+                    } else {
+                      uuids.add(uuid);
+                    }
+                  });
+                },
+                active: uuids.contains(users![index].uid!),
+              ),
+              if (index != users!.length - 1)
+                Container(
+                  height: 1,
+                  color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -198,44 +213,59 @@ class ShareNewsPageState extends State<ShareNewsPage> {
         ),
       );
     }
-    return ListView.builder(
-      physics: const ClampingScrollPhysics(),
-      itemCount: groups!.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        if (!groups![index]
-            .name
-            .toLowerCase()
-            .contains(_searchText.toLowerCase())) {
-          i += 1;
-          if (i == groups!.length) {
-            return Center(
-              child: Column(
-                children: [
-                  MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/no_groups_found.png')
-                      : Image.asset('assets/images/no_groups_found.png'),
-                  const Text("No groups found"),
-                ],
-              ),
-            );
+    return Container(
+      height: groups!.length * 50,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: CupertinoTheme.of(context).primaryContrastingColor),
+      child: ListView.builder(
+        physics: const ClampingScrollPhysics(),
+        itemCount: groups!.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          if (!groups![index]
+              .name
+              .toLowerCase()
+              .contains(_searchText.toLowerCase())) {
+            i += 1;
+            if (i == groups!.length) {
+              return Center(
+                child: Column(
+                  children: [
+                    MediaQuery.of(context).platformBrightness == Brightness.dark
+                        ? Image.asset('assets/darkMode/no_groups_found.png')
+                        : Image.asset('assets/images/no_groups_found.png'),
+                    const Text("No groups found"),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
           }
-          return const SizedBox.shrink();
-        }
-        return ShareGroupTile(
-          group: groups![index],
-          onSelected: (String id) {
-            setState(() {
-              if (groupsIds.contains(id)) {
-                groupsIds.remove(id);
-              } else {
-                groupsIds.add(id);
-              }
-            });
-          },
-          active: groupsIds.contains(groups![index].id),
-        );
-      },
+          return Column(
+            children: [
+              ShareGroupTile(
+                group: groups![index],
+                onSelected: (String id) {
+                  setState(() {
+                    if (groupsIds.contains(id)) {
+                      groupsIds.remove(id);
+                    } else {
+                      groupsIds.add(id);
+                    }
+                  });
+                },
+                active: groupsIds.contains(groups![index].id),
+              ),
+              if (index != groups!.length - 1)
+                Container(
+                  height: 1,
+                  color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

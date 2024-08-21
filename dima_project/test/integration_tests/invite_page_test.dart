@@ -1,6 +1,6 @@
-import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
-import 'package:dima_project/widgets/invitation_tile.dart';
+import 'package:dima_project/widgets/user_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +50,7 @@ void main() {
           ),
         ],
         child: CupertinoApp(
-          home: InvitePage(
+          home: InviteUserPage(
             invitePageKey: (String key) {
               users.add(key);
             },
@@ -63,7 +63,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Search followers...'), findsOneWidget);
-    expect(find.byType(InvitationTile), findsNWidgets(2));
+    expect(find.byType(UserInvitationTile), findsNWidgets(2));
 
     await tester.enterText(find.byType(CupertinoSearchTextField), 'hhhh');
     await tester.pumpAndSettle();

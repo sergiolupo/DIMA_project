@@ -4,7 +4,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/utils/group_helper.dart';
-import 'package:dima_project/pages/invite_page.dart';
+import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
@@ -224,7 +224,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 onTap: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
-                        builder: (context) => InvitePage(
+                        builder: (context) => InviteUserPage(
                             invitePageKey: (String uuid) {
                               setState(() {
                                 if (uuids.contains(uuid)) {
