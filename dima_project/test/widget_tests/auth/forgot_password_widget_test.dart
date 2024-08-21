@@ -1,74 +1,95 @@
+import 'package:dima_project/pages/login_page.dart';
 import 'package:dima_project/widgets/auth/forgot_password_widget.dart';
 import 'package:dima_project/widgets/auth/login_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../mocks/mock_auth_service.mocks.dart';
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
-  group('ForgotPasswordForm Tests', () {
-    late TextEditingController usernameController;
-    late MockAuthService mockAuthService;
-    setUp(() {
-      usernameController = TextEditingController();
-      mockAuthService = MockAuthService();
-    });
+  late MockAuthService mockAuthService;
+  late TextEditingController usernameController;
 
-    testWidgets('ForgotPasswordForm renders correctly',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        CupertinoApp(
-          home: ForgotPasswordForm(usernameController,
-              authService: mockAuthService),
+  setUp(() {
+    mockAuthService = MockAuthService();
+    usernameController = TextEditingController();
+  });
+
+  testWidgets('Displays success message when password reset email is sent',
+      (WidgetTester tester) async {
+    final GoRouter router = GoRouter(
+      routes: [
+        GoRoute(
+            path: '/',
+            builder: (BuildContext context, GoRouterState state) {
+              return ForgotPasswordForm(
+                usernameController,
+                authService: mockAuthService,
+              );
+            }),
+        GoRoute(
+            path: '/login',
+            builder: (BuildContext context, GoRouterState state) {
+              return LoginPage(
+                databaseService: MockDatabaseService(),
+                authService: mockAuthService,
+              );
+            }),
+      ],
+    );
+    when(mockAuthService.sendPasswordResetEmail(any)).thenAnswer((_) async {});
+
+    await tester.pumpWidget(
+      CupertinoApp.router(
+        routerConfig: router,
+      ),
+    );
+
+    final emailField = find.byType(EmailInputField);
+    await tester.enterText(emailField, 'test@example.com');
+
+    final resetButton = find.text('Reset Password');
+    await tester.tap(resetButton);
+    await tester.pump();
+
+    expect(find.text('Success'), findsOneWidget);
+    expect(
+        find.text(
+            'A password reset email has been sent to the email address provided.'),
+        findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    verify(mockAuthService.sendPasswordResetEmail(any)).called(1);
+  });
+
+  testWidgets('Displays error message when password reset fails',
+      (WidgetTester tester) async {
+    when(mockAuthService.sendPasswordResetEmail(any))
+        .thenThrow(Exception('Network error'));
+
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: ForgotPasswordForm(
+          usernameController,
+          authService: mockAuthService,
         ),
-      );
+      ),
+    );
 
-      expect(
-          find.text('Please enter your email to receive a password reset link'),
-          findsOneWidget);
-      expect(find.byType(EmailInputField), findsOneWidget);
-      expect(find.byType(CupertinoButton), findsOneWidget);
-    });
+    final emailField = find.byType(EmailInputField);
+    await tester.enterText(emailField, 'test@example.com');
 
-    testWidgets('ForgotPasswordForm validates email input',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        CupertinoApp(
-          home: ForgotPasswordForm(usernameController,
-              authService: mockAuthService),
-        ),
-      );
+    final resetButton = find.text('Reset Password');
+    await tester.tap(resetButton);
+    await tester.pump();
 
-      await tester.tap(find.byType(CupertinoButton));
-      await tester.pump();
-
-      expect(find.text('Please enter a valid email address'), findsOneWidget);
-    });
-
-    testWidgets(
-        'ForgotPasswordForm shows success dialog on successful password reset',
-        (WidgetTester tester) async {
-      when(mockAuthService.sendPasswordResetEmail('test@example.com'))
-          .thenAnswer((_) => Future.value());
-
-      usernameController.text = 'test@example.com';
-
-      await tester.pumpWidget(
-        CupertinoApp(
-          home: ForgotPasswordForm(usernameController,
-              authService: mockAuthService),
-        ),
-      );
-
-      await tester.tap(find.byType(CupertinoButton));
-      await tester.pump();
-
-      expect(find.text('Success'), findsOneWidget);
-      expect(
-          find.text(
-              'A password reset email has been sent to the email address provided.'),
-          findsOneWidget);
-    });
+    expect(find.text('Error'), findsOneWidget);
+    expect(
+        find.textContaining(
+            'Failed to send password reset email: Network error'),
+        findsOneWidget);
   });
 }

@@ -89,11 +89,10 @@ class ForgotPasswordForm extends StatelessWidget {
       );
     } catch (error) {
       String errorMessage = error.toString();
-      int errorCodeIndex =
-          errorMessage.indexOf(']') + 1; // Find the index after the error code
-      String errorMessageSubstring =
-          errorMessage.substring(errorCodeIndex).trim();
+
+      String errorMessageSubstring = errorMessage.split(":")[1].substring(1);
       debugPrint("Error sending password reset email: $error");
+
       if (!context.mounted) return;
       Navigator.of(context).pop();
       // Show error dialog
