@@ -83,13 +83,13 @@ class RegisterPageState extends State<RegisterPage> {
           child: CreateImageWidget.getUserImageMemory(selectedImagePath,
               MediaQuery.of(context).size.width > Constants.limitWidth),
         );
-        pageName = 'Image Selection';
+        pageName = 'Profile Image';
         break;
       case 4:
         page = CategoriesForm(
           selectedCategories: selectedCategories,
         );
-        pageName = 'Category Selection';
+        pageName = 'Categories';
         break;
       default:
         page = CredentialsInformationForm(
@@ -135,7 +135,9 @@ class RegisterPageState extends State<RegisterPage> {
           child: Text(
             pageName,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: MediaQuery.of(context).size.width > Constants.limitWidth
+                  ? 20
+                  : 17,
               color: CupertinoTheme.of(context).primaryColor,
             ),
           ),
@@ -183,10 +185,10 @@ class RegisterPageState extends State<RegisterPage> {
                           onTap: () {
                             context.go('/login');
                           },
-                          child: const Text(
+                          child: Text(
                             'Sign in',
                             style: TextStyle(
-                              color: CupertinoColors.activeBlue,
+                              color: CupertinoTheme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
