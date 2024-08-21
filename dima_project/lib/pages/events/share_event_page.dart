@@ -6,7 +6,6 @@ import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/news/share_group_tile.dart';
 import 'package:dima_project/widgets/news/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ShareEventPage extends StatefulWidget {
   final DatabaseService databaseService;
@@ -60,25 +59,25 @@ class ShareEventPageState extends State<ShareEventPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text('Send To',
-            style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-        leading: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
-          ),
+        middle: Padding(
+          padding: const EdgeInsets.only(bottom: 4.0),
+          child: Text('Send To',
+              style: TextStyle(
+                  color: CupertinoTheme.of(context).primaryColor,
+                  fontSize: 20)),
+        ),
+        leading: CupertinoNavigationBarBackButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
+          color: CupertinoTheme.of(context).primaryColor,
         ),
         trailing: Visibility(
           visible: uuids.isNotEmpty || groupsIds.isNotEmpty,
           child: CupertinoButton(
             padding: const EdgeInsets.all(0),
-            color: CupertinoTheme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(40),
-            child: const Icon(LineAwesomeIcons.paper_plane),
+            borderRadius: BorderRadius.circular(10),
+            child: const Icon(CupertinoIcons.paperplane),
             onPressed: () async {
               BuildContext buildContext = context;
               showCupertinoDialog(

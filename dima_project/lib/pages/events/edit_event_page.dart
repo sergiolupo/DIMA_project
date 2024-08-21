@@ -202,33 +202,25 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: CupertinoTheme.of(context).primaryContrastingColor,
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
-                      leading: isPublic
-                          ? const Icon(CupertinoIcons.lock_open_fill)
-                          : const Icon(CupertinoIcons.lock_fill),
-                      title: const Text('Public Group'),
-                      trailing: CupertinoSwitch(
-                        value: isPublic,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isPublic = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
+                child: CupertinoListTile(
+                  leading: isPublic
+                      ? const Icon(CupertinoIcons.lock_open_fill)
+                      : const Icon(CupertinoIcons.lock_fill),
+                  title: const Text('Public Group'),
+                  trailing: CupertinoSwitch(
+                    value: isPublic,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isPublic = value;
+                      });
+                    },
+                  ),
                 )),
             const SizedBox(height: 20),
             ListView.builder(
