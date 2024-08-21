@@ -242,7 +242,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               ),
               Container(
                 height: 1,
-                color: CupertinoColors.separator,
+                color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
               ),
               CupertinoListTile(
                 title: const Text('Categories'),
@@ -266,7 +266,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               ),
               Container(
                 height: 1,
-                color: CupertinoColors.separator,
+                color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
               ),
               CupertinoListTile(
                 leading: isPublic

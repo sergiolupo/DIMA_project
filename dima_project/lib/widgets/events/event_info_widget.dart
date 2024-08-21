@@ -83,7 +83,7 @@ class EventInfoWidget extends StatelessWidget {
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.separator,
+                    color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                   ),
                   CupertinoListTile(
                     title: Container(
@@ -119,7 +119,7 @@ class EventInfoWidget extends StatelessWidget {
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.separator,
+                    color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                   ),
                   CupertinoListTile(
                       title: Container(
@@ -154,7 +154,7 @@ class EventInfoWidget extends StatelessWidget {
                   )),
                   Container(
                     height: 1,
-                    color: CupertinoColors.separator,
+                    color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                   ),
                   CupertinoListTile(
                     title: Container(
@@ -191,7 +191,7 @@ class EventInfoWidget extends StatelessWidget {
                   ),
                   Container(
                     height: 1,
-                    color: CupertinoColors.separator,
+                    color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                   ),
                   CupertinoListTile(
                     title: Container(
