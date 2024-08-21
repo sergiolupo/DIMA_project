@@ -39,8 +39,9 @@ class CustomSelectionOptionState extends State<CustomSelectionOption> {
         child: Row(
           children: [
             Expanded(
-              child: GestureDetector(
-                onTap: () {
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
                   setState(() {
                     idx = 0;
                     widget.onChanged(idx);
@@ -71,8 +72,9 @@ class CustomSelectionOptionState extends State<CustomSelectionOption> {
             ),
             if (widget.textMiddle != null)
               Expanded(
-                child: GestureDetector(
-                  onTap: () {
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
                     setState(() {
                       idx = 1;
                       widget.onChanged(idx);
@@ -102,8 +104,9 @@ class CustomSelectionOptionState extends State<CustomSelectionOption> {
                 ),
               ),
             Expanded(
-              child: GestureDetector(
-                onTap: () {
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
                   setState(() {
                     idx = widget.textMiddle != null ? 2 : 1;
                     widget.onChanged(idx);
