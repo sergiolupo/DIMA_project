@@ -3,8 +3,8 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
-import 'package:dima_project/widgets/news/share_group_tile.dart';
-import 'package:dima_project/widgets/news/share_user_tile.dart';
+import 'package:dima_project/widgets/share_group_tile.dart';
+import 'package:dima_project/widgets/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShareNewsPage extends StatefulWidget {

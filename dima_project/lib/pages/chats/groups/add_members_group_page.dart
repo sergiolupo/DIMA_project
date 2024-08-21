@@ -3,7 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/user_invitation_tile.dart';
+import 'package:dima_project/widgets/add_member_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -148,44 +148,29 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
 
-                    return FutureBuilder(
-                      future: databaseService.checkIfJoined(
-                          true, widget.group.id, userData.uid!),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return const Text('Error');
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Text('Loading');
-                        }
-                        final isJoining = snapshot.data as bool;
-
-                        return Column(
-                          children: [
-                            UserInvitationTile(
-                              user: userData,
-                              invitePageKey: (String uuid) {
-                                setState(() {
-                                  if (uids.contains(uuid)) {
-                                    uids.remove(uuid);
-                                  } else {
-                                    uids.add(uuid);
-                                  }
-                                });
-                              },
-                              invited: uids.contains(userData.uid!),
-                              isJoining: isJoining,
-                            ),
-                            if (index != filteredUsers.length - 1)
-                              Container(
-                                height: 1,
-                                color: CupertinoColors.opaqueSeparator
-                                    .withOpacity(0.2),
-                              ),
-                          ],
-                        );
-                      },
+                    return Column(
+                      children: [
+                        AddMemberTile(
+                          user: userData,
+                          onSelected: (String uuid) {
+                            setState(() {
+                              if (uids.contains(uuid)) {
+                                uids.remove(uuid);
+                              } else {
+                                uids.add(uuid);
+                              }
+                            });
+                          },
+                          active: uids.contains(userData.uid!),
+                          isJoining: userData.groups!.contains(widget.group.id),
+                        ),
+                        if (index != filteredUsers.length - 1)
+                          Container(
+                            height: 1,
+                            color: CupertinoColors.opaqueSeparator
+                                .withOpacity(0.2),
+                          ),
+                      ],
                     );
                   },
                 ),

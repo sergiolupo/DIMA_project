@@ -1,5 +1,5 @@
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/widgets/news/share_group_tile.dart';
+import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 
