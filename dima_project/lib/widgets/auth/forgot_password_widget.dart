@@ -95,7 +95,6 @@ class ForgotPasswordForm extends StatelessWidget {
 
       if (!context.mounted) return;
       Navigator.of(context).pop();
-      // Show error dialog
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {

@@ -140,7 +140,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
           },
           padding: const EdgeInsets.all(0),
           child: Text(
-            'Create',
+            'Done',
             style: TextStyle(
               fontSize: MediaQuery.of(context).size.width > Constants.limitWidth
                   ? 20

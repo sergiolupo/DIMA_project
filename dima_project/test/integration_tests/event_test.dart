@@ -746,7 +746,7 @@ void main() {
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
 
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Create"));
+      await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoAlertDialog), findsOneWidget);
       expect(find.text("Validation Error"), findsOneWidget);
@@ -765,24 +765,24 @@ void main() {
       await tester.drag(
           find.text(DateTime.now().year.toString()), const Offset(0, -300));
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Done"));
+      await tester.tap(find.text("Done").last);
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(FontAwesomeIcons.calendar).last);
       await tester.pumpAndSettle();
       await tester.drag(
           find.text(DateTime.now().year.toString()), const Offset(0, -400));
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Done"));
+      await tester.tap(find.text("Done").last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(FontAwesomeIcons.clock).first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Done"));
+      await tester.tap(find.text("Done").last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(FontAwesomeIcons.clock).last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Done"));
+      await tester.tap(find.text("Done").last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
@@ -798,7 +798,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Test Location"), findsOneWidget);
 
-      //qua
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
 
       await tester.pumpAndSettle();
@@ -824,7 +823,7 @@ void main() {
       await tester.tap(find.byType(CupertinoSwitch));
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
-      await tester.tap(find.text("Create"));
+      await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoAlertDialog), findsOneWidget);
       expect(find.text("Event created successfully!"), findsOneWidget);
