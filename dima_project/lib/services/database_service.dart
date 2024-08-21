@@ -1314,7 +1314,6 @@ class DatabaseService {
     ))) {
       throw Exception('Event has already started');
     }
-    debugPrint('Error');
     try {
       debugPrint('Event ID: $eventId');
       bool isJoined = detailDoc['members'].contains(AuthService.uid);

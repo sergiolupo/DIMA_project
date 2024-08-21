@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
@@ -49,7 +50,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
         navigationBar: CupertinoNavigationBar(
           transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-          middle: Text('Detail Page',
+          middle: Text(event.name,
               style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
           leading: Navigator.canPop(context)
               ? CupertinoNavigationBarBackButton(
@@ -78,12 +79,24 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 ShowDateWidget(date: detail.endDate!, time: detail.endTime!)
               ],
             ),
-            Text(
-              'Location: ${detail.location}',
-              style: const TextStyle(
-                fontSize: 16,
-              ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  LineAwesomeIcons.map_pin_solid,
+                  color: CupertinoTheme.of(context).primaryColor,
+                ),
+                Text(
+                  'Location: ${detail.location}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 20),
             SizedBox(
               height: 200,
               width: MediaQuery.of(context).size.width * 0.9,
@@ -266,9 +279,49 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       : detail.requests!.contains(uid)
                           ? "Requested"
                           : "Subscribe",
+                  style: const TextStyle(
+                    color: CupertinoColors.white,
+                  ),
                 ),
               ),
+            const SizedBox(height: 30),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              CupertinoButton(
+                onPressed: () async {
+                  debugPrint('Adding event to calendar');
+                  Add2Calendar.addEvent2Cal(Event(
+                    title: event.name,
+                    description: event.description,
+                    location: detail.location,
+                    startDate: DateTime(
+                        detail.startDate!.year,
+                        detail.startDate!.month,
+                        detail.startDate!.day,
+                        detail.startTime!.hour,
+                        detail.startTime!.minute),
+                    endDate: DateTime(
+                        detail.endDate!.year,
+                        detail.endDate!.month,
+                        detail.endDate!.day,
+                        detail.endTime!.hour,
+                        detail.endTime!.minute),
+                    iosParams: const IOSParams(
+                      reminder: Duration(hours: 1),
+                    ),
+                  ));
+                },
+                child: Row(
+                  children: [
+                    Icon(CupertinoIcons.calendar_badge_plus,
+                        color: CupertinoTheme.of(context).primaryColor),
+                    const SizedBox(width: 5),
+                    Text('Add to calendar',
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
               event.admin == uid
                   ? CupertinoButton(
                       padding: EdgeInsets.zero,
@@ -326,41 +379,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       },
                     )
                   : Container(),
-              CupertinoButton(
-                onPressed: () async {
-                  debugPrint('Adding event to calendar');
-                  Add2Calendar.addEvent2Cal(Event(
-                    title: event.name,
-                    description: event.description,
-                    location: detail.location,
-                    startDate: DateTime(
-                        detail.startDate!.year,
-                        detail.startDate!.month,
-                        detail.startDate!.day,
-                        detail.startTime!.hour,
-                        detail.startTime!.minute),
-                    endDate: DateTime(
-                        detail.endDate!.year,
-                        detail.endDate!.month,
-                        detail.endDate!.day,
-                        detail.endTime!.hour,
-                        detail.endTime!.minute),
-                    iosParams: const IOSParams(
-                      reminder: Duration(hours: 1),
-                    ),
-                  ));
-                },
-                child: Row(
-                  children: [
-                    Text('Add to calendar',
-                        style: TextStyle(
-                            color: CupertinoTheme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold)),
-                    Icon(CupertinoIcons.calendar,
-                        color: CupertinoTheme.of(context).primaryColor),
-                  ],
-                ),
-              ),
             ]),
           ],
         ),
