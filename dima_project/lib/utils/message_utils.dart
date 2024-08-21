@@ -130,16 +130,16 @@ class MessageUtils {
           content: const Text('Are you sure you want to delete this message?'),
           actions: [
             CupertinoDialogAction(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.pop(newContext);
+              },
+            ),
+            CupertinoDialogAction(
               child: const Text('Yes'),
               onPressed: () async {
                 await databaseService.deleteMessage(message);
                 if (newContext.mounted) Navigator.pop(newContext);
-              },
-            ),
-            CupertinoDialogAction(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.pop(newContext);
               },
             ),
           ],
