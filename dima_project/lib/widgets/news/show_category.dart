@@ -58,10 +58,7 @@ class ShowCategory extends StatelessWidget {
           Text(
             title,
             maxLines: 2,
-            style: const TextStyle(
-                color: CupertinoColors.black,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
           Text(
             description,

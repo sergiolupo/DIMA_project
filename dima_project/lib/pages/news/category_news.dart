@@ -1,8 +1,10 @@
 import 'package:dima_project/models/article_model.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/widgets/news/show_category.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CategoryNews extends StatefulWidget {
   final String name;
@@ -37,28 +39,77 @@ class _CategoryNewsState extends State<CategoryNews> {
 
   @override
   Widget build(BuildContext context) {
-    return _loading
-        ? const CupertinoActivityIndicator()
-        : CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              leading: Navigator.canPop(context)
-                  ? CupertinoNavigationBarBackButton(
-                      color: CupertinoTheme.of(context).primaryColor,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  : null,
-              middle: Text(
-                widget.name,
-                style: TextStyle(
-                    color: CupertinoTheme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: ListView.builder(
+    return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          leading: Navigator.canPop(context)
+              ? CupertinoNavigationBarBackButton(
+                  color: CupertinoTheme.of(context).primaryColor,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              : null,
+          middle: Text(
+            widget.name,
+            style: TextStyle(
+                color: CupertinoTheme.of(context).primaryColor,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+            child: _loading
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return Shimmer.fromColors(
+                        baseColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        highlightColor:
+                            CupertinoTheme.of(context).primaryContrastingColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                height: MediaQuery.of(context).size.width >
+                                        Constants.limitWidth
+                                    ? MediaQuery.of(context).size.height * 0.6
+                                    : 200,
+                                width: MediaQuery.of(context).size.width,
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                              ),
+                            ),
+                            const SizedBox(height: 5.0),
+                            Container(
+                              height: 20,
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            const SizedBox(height: 5.0),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              height: 20,
+                              width: MediaQuery.of(context).size.width,
+                            ),
+                            const SizedBox(height: 20.0),
+                          ],
+                        ),
+                      );
+                    })
+                : ListView.builder(
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
                     itemCount: categories.length,
