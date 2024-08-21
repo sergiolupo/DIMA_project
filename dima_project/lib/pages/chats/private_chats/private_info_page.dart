@@ -174,7 +174,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                               }
                               List<Message> media = snapshot.data!;
                               if (widget.canNavigate) {
-                                widget.navigateToPage!(ShowMediasPage(
+                                widget.navigateToPage!(ShowImagesPage(
                                   privateChat: widget.privateChat,
                                   medias: media,
                                   canNavigate: true,
@@ -189,7 +189,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                               }
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
-                                  builder: (context) => ShowMediasPage(
+                                  builder: (context) => ShowImagesPage(
                                     privateChat: widget.privateChat,
                                     canNavigate: false,
                                     isGroup: false,

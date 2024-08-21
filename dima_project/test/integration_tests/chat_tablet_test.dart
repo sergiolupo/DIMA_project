@@ -1579,7 +1579,7 @@ void main() {
     });
 
     testWidgets(
-        "Show media page renders correctly and the images are displayed correctly",
+        "Show images page renders correctly and the images are displayed correctly",
         (WidgetTester tester) async {
       tester.view.physicalSize = const Size(1194.0, 834.0);
       tester.view.devicePixelRatio = 1.0;

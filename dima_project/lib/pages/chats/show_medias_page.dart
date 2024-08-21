@@ -12,7 +12,7 @@ import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ShowMediasPage extends StatelessWidget {
+class ShowImagesPage extends StatelessWidget {
   final bool isGroup;
   final List<Message> medias;
   final bool canNavigate;
@@ -22,7 +22,7 @@ class ShowMediasPage extends StatelessWidget {
   final UserData? user;
   final DatabaseService databaseService;
   final NotificationService notificationService;
-  const ShowMediasPage(
+  const ShowImagesPage(
       {super.key,
       required this.isGroup,
       required this.medias,
@@ -40,7 +40,7 @@ class ShowMediasPage extends StatelessWidget {
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text(
-            'Medias',
+            'Images',
             style: TextStyle(
                 fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
           ),
@@ -138,7 +138,7 @@ class ShowMediasPage extends StatelessWidget {
                                   child: const SizedBox.shrink(),
                                   onPressed: () {
                                     if (canNavigate) {
-                                      navigateToPage!(MediaViewPage(
+                                      navigateToPage!(ImageViewPage(
                                         isGroup: isGroup,
                                         group: group,
                                         privateChat: privateChat,
@@ -155,7 +155,7 @@ class ShowMediasPage extends StatelessWidget {
                                     } else {
                                       Navigator.of(context).push(
                                         CupertinoPageRoute(
-                                          builder: (context) => MediaViewPage(
+                                          builder: (context) => ImageViewPage(
                                             isGroup: isGroup,
                                             group: group,
                                             privateChat: privateChat,

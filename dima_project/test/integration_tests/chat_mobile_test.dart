@@ -1180,7 +1180,7 @@ void main() {
       });
     });
     testWidgets(
-        "Show media page renders correctly and the images are displayed correctly",
+        "Show images page renders correctly and the images are displayed correctly",
         (WidgetTester tester) async {
       final firestore = FakeFirebaseFirestore();
       await firestore.collection('users').doc('user1').set({

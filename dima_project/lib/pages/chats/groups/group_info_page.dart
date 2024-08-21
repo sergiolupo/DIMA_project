@@ -358,7 +358,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 snapshot.hasError) return;
                             final List<Message> media = snapshot.data!;
                             if (widget.canNavigate) {
-                              widget.navigateToPage!(ShowMediasPage(
+                              widget.navigateToPage!(ShowImagesPage(
                                 isGroup: true,
                                 medias: media,
                                 canNavigate: true,
@@ -371,7 +371,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                             }
                             Navigator.of(context).push(
                               CupertinoPageRoute(
-                                builder: (context) => ShowMediasPage(
+                                builder: (context) => ShowImagesPage(
                                   isGroup: true,
                                   medias: media,
                                   group: group,

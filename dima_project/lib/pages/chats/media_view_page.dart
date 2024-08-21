@@ -9,7 +9,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
 
-class MediaViewPage extends StatefulWidget {
+class ImageViewPage extends StatefulWidget {
   final Message media;
   final List<Message> messages;
   final bool canNavigate;
@@ -19,7 +19,7 @@ class MediaViewPage extends StatefulWidget {
   final PrivateChat? privateChat;
   final DatabaseService databaseService;
   final NotificationService notificationService;
-  const MediaViewPage(
+  const ImageViewPage(
       {super.key,
       required this.media,
       required this.messages,
@@ -32,10 +32,10 @@ class MediaViewPage extends StatefulWidget {
       required this.notificationService});
 
   @override
-  MediaViewPageState createState() => MediaViewPageState();
+  ImageViewPageState createState() => ImageViewPageState();
 }
 
-class MediaViewPageState extends State<MediaViewPage> {
+class ImageViewPageState extends State<ImageViewPage> {
   late PageController _pageController;
   late int initialPage;
   late final DatabaseService _databaseService;
@@ -62,7 +62,7 @@ class MediaViewPageState extends State<MediaViewPage> {
               leading: CupertinoButton(
                 onPressed: () {
                   if (widget.canNavigate) {
-                    widget.navigateToPage!(ShowMediasPage(
+                    widget.navigateToPage!(ShowImagesPage(
                         isGroup: widget.isGroup,
                         medias: widget.messages,
                         canNavigate: widget.canNavigate,
@@ -103,12 +103,12 @@ class MediaViewPageState extends State<MediaViewPage> {
                 ),
               ),
             ),
-            child: _buildMediaView(message));
+            child: _buildImageView(message));
       },
     );
   }
 
-  Widget _buildMediaView(Message message) {
+  Widget _buildImageView(Message message) {
     return Container(
       color: CupertinoTheme.of(context).scaffoldBackgroundColor,
       child: Center(

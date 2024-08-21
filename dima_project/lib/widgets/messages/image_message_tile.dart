@@ -35,7 +35,7 @@ class ImageMessageTile extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           CupertinoPageRoute(
-            builder: (context) => MediaViewPage(
+            builder: (context) => ImageViewPage(
               canNavigate: false,
               isGroup: message.isGroupMessage,
               media: message,
