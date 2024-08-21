@@ -18,16 +18,16 @@ void main() {
             ),
           ),
         );
-
-        final container = tester.widget<Container>(find.byType(Container));
-        final constraints = container.constraints as BoxConstraints;
-
-        expect(constraints.maxWidth, 100);
-        expect(constraints.maxHeight, 100);
-        expect(find.byType(Image), findsOneWidget);
-        expect(find.byType(Image).evaluate().single.widget,
-            isA<Image>().having((i) => i.image, 'image', isA<NetworkImage>()));
       });
+
+      final container = tester.widget<Container>(find.byType(Container));
+      final constraints = container.constraints as BoxConstraints;
+
+      expect(constraints.maxWidth, 100);
+      expect(constraints.maxHeight, 100);
+      expect(find.byType(Image), findsOneWidget);
+      expect(find.byType(Image).evaluate().single.widget,
+          isA<Image>().having((i) => i.image, 'image', isA<NetworkImage>()));
     });
 
     testWidgets('getGroupImage displays default image when path is empty',
@@ -56,6 +56,25 @@ void main() {
         CupertinoApp(
           home: CupertinoPageScaffold(
             child: CreateImageWidget.getEventImageMemory(imageData),
+          ),
+        ),
+      );
+
+      final Container container =
+          tester.widget<Container>(find.byType(Container));
+      expect(container.constraints?.maxWidth, 100);
+      expect(container.constraints?.maxHeight, 100);
+      expect(find.byType(Image), findsOneWidget);
+      expect(find.byType(Image).evaluate().single.widget,
+          isA<Image>().having((i) => i.image, 'image', isA<AssetImage>()));
+    });
+    testWidgets('getGroupImageMemory displays default image when path is empty',
+        (WidgetTester tester) async {
+      final Uint8List imageData = Uint8List(0);
+      await tester.pumpWidget(
+        CupertinoApp(
+          home: CupertinoPageScaffold(
+            child: CreateImageWidget.getGroupImageMemory(imageData),
           ),
         ),
       );
@@ -118,18 +137,16 @@ void main() {
             ),
           ),
         );
-
-        await tester.pumpAndSettle();
-        expect(find.byType(Image), findsOneWidget);
-        final imageWidget =
-            find.byType(Image).evaluate().single.widget as Image;
-        expect(imageWidget.image, isA<CachedNetworkImageProvider>());
-        expect((imageWidget.image as CachedNetworkImageProvider).url, '');
-        expect(
-            find.byType(Image).evaluate().single.widget,
-            isA<Image>()
-                .having((i) => i.errorBuilder, 'errorBuilder', isNotNull));
       });
+      await tester.pumpAndSettle();
+      expect(find.byType(Image), findsOneWidget);
+      final imageWidget = find.byType(Image).evaluate().single.widget as Image;
+      expect(imageWidget.image, isA<CachedNetworkImageProvider>());
+      expect((imageWidget.image as CachedNetworkImageProvider).url, '');
+      expect(
+          find.byType(Image).evaluate().single.widget,
+          isA<Image>()
+              .having((i) => i.errorBuilder, 'errorBuilder', isNotNull));
     });
   });
 }

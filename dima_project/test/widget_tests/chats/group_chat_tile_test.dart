@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:mockito/mockito.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
 import '../../mocks/mock_image_picker.mocks.dart';
@@ -78,5 +79,34 @@ void main() {
     expect(find.text("User1: "), findsOneWidget);
     expect(find.text("Join the conversation!"), findsNothing);
     expect(find.text("1"), findsOneWidget); // Check for unread message badge
+  });
+  testWidgets("GroupChatTile displays correctly the GroupChatPage when clicked",
+      (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+
+    when(mockDatabaseService.getChats(any)).thenAnswer((_) => Stream.value([]));
+    Group testGroup = Group(
+        id: "1",
+        isPublic: true,
+        name: "Test Group",
+        imagePath: "",
+        lastMessage: null);
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: GroupChatTile(
+            storageService: MockStorageService(),
+            group: testGroup,
+            databaseService: mockDatabaseService,
+            notificationService: MockNotificationService(),
+            imagePicker: MockImagePicker(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(CupertinoButton));
+    await tester.pumpAndSettle();
+    expect(find.text("Test Group"), findsOneWidget);
   });
 }
