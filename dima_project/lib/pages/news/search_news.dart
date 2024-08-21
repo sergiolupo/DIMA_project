@@ -1,8 +1,10 @@
 import 'package:dima_project/models/article_model.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/news_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/news/blog_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchNewsPage extends StatefulWidget {
   final NewsService newsService;
@@ -57,7 +59,106 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                 stream: _searchResults,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CupertinoActivityIndicator());
+                    return ListView.builder(
+                      itemCount: 3,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          baseColor: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
+                          highlightColor: CupertinoTheme.of(context)
+                              .primaryContrastingColor
+                              .withOpacity(0.25),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: PhysicalModel(
+                                elevation: 3.0,
+                                borderRadius: BorderRadius.circular(10),
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor
+                                    .withOpacity(0.5),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 5.0),
+                                  child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor,
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? 230
+                                                : 100,
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    3
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2.5,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8.0),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: CupertinoTheme.of(
+                                                        context)
+                                                    .primaryContrastingColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              height: 20,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.4,
+                                            ),
+                                            const SizedBox(
+                                              height: 7.0,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: CupertinoTheme.of(
+                                                        context)
+                                                    .primaryContrastingColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              height: 20,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                            ),
+                                          ],
+                                        ),
+                                      ]),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   } else if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

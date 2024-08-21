@@ -67,8 +67,9 @@ class _CategoryNewsState extends State<CategoryNews> {
                       return Shimmer.fromColors(
                         baseColor:
                             CupertinoTheme.of(context).primaryContrastingColor,
-                        highlightColor:
-                            CupertinoTheme.of(context).primaryContrastingColor,
+                        highlightColor: CupertinoTheme.of(context)
+                            .primaryContrastingColor
+                            .withOpacity(0.25),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
