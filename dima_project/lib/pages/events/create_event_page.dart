@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
-import 'package:dima_project/pages/events/share_event_page.dart';
+import 'package:dima_project/pages/events/share_event_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -362,7 +362,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                             onTap: () {
                               Navigator.of(context, rootNavigator: true).push(
                                 CupertinoPageRoute(
-                                  builder: (context) => ShareEventPage(
+                                  builder: (context) => ShareEventGroupPage(
                                     groupIds: groupIds,
                                     databaseService: databaseService,
                                   ),

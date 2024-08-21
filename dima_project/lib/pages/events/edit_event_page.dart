@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/events/share_event_page.dart';
-import 'package:dima_project/pages/invite_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
@@ -39,8 +37,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   bool isPublic = true;
-  List<String> uids = [];
-  List<String> groupIds = [];
 
   Map<int, bool> map = {};
   Map<int, EventDetails> details = {};
@@ -207,6 +203,34 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
               ),
             ),
             const SizedBox(height: 20),
+            Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: CupertinoTheme.of(context).primaryContrastingColor,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.separator,
+                    ),
+                    CupertinoListTile(
+                      leading: isPublic
+                          ? const Icon(CupertinoIcons.lock_open_fill)
+                          : const Icon(CupertinoIcons.lock_fill),
+                      title: const Text('Public Group'),
+                      trailing: CupertinoSwitch(
+                        value: isPublic,
+                        onChanged: (bool value) {
+                          setState(() {
+                            isPublic = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                )),
+            const SizedBox(height: 20),
             ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: numInfos,
@@ -284,82 +308,6 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                       }),
                 ],
               ),
-            const SizedBox(height: 20),
-            Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: CupertinoTheme.of(context).primaryContrastingColor,
-                ),
-                child: Column(
-                  children: [
-                    CupertinoListTile(
-                      title: const Text('Participants'),
-                      leading: const Icon(CupertinoIcons.person_3_fill),
-                      trailing: const Icon(CupertinoIcons.forward),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          CupertinoPageRoute(
-                              builder: (context) => InvitePage(
-                                  invitePageKey: (String uuid) {
-                                    setState(() {
-                                      if (uids.contains(uuid)) {
-                                        uids.remove(uuid);
-                                      } else {
-                                        uids.add(uuid);
-                                      }
-                                    });
-                                  },
-                                  invitedUsers: uids,
-                                  isGroup: false,
-                                  id: widget.event.id)),
-                        );
-                      },
-                    ),
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
-                      title: const Row(
-                        children: [
-                          Icon(CupertinoIcons.person_2_square_stack),
-                          SizedBox(width: 10),
-                          Text('Groups'),
-                        ],
-                      ),
-                      trailing: const Icon(CupertinoIcons.forward),
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          CupertinoPageRoute(
-                            builder: (context) => ShareEventPage(
-                              groupIds: groupIds,
-                              databaseService: databaseService,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
-                      leading: isPublic
-                          ? const Icon(CupertinoIcons.lock_open_fill)
-                          : const Icon(CupertinoIcons.lock_fill),
-                      title: const Text('Public Group'),
-                      trailing: CupertinoSwitch(
-                        value: isPublic,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isPublic = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )),
-            const SizedBox(height: 20),
           ]),
         )),
       ]),
@@ -403,12 +351,11 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
       createdAt: widget.event.createdAt,
     );
     await databaseService.updateEvent(
-        event,
-        selectedImagePath,
-        selectedImagePath == null,
-        widget.event.isPublic != isPublic,
-        uids,
-        groupIds);
+      event,
+      selectedImagePath,
+      selectedImagePath == null,
+      widget.event.isPublic != isPublic,
+    );
     ref.invalidate(eventProvider(widget.event.id!));
     ref.invalidate(createdEventsProvider(uid));
   }

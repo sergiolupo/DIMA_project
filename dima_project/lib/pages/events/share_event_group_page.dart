@@ -1,0 +1,89 @@
+import 'package:dima_project/models/group.dart';
+import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/widgets/news/share_group_tile.dart';
+import 'package:flutter/cupertino.dart';
+
+class ShareEventGroupPage extends StatefulWidget {
+  final List<String> groupIds;
+  final DatabaseService databaseService;
+  @override
+  const ShareEventGroupPage(
+      {super.key, required this.groupIds, required this.databaseService});
+
+  @override
+  State<ShareEventGroupPage> createState() => ShareEventGroupPageState();
+}
+
+class ShareEventGroupPageState extends State<ShareEventGroupPage> {
+  List<String> groupsIds = [];
+
+  List<Group>? groups;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGroups();
+  }
+
+  void fetchGroups() async {
+    final List<Group> userGroups =
+        await widget.databaseService.getGroups(AuthService.uid);
+    setState(() {
+      groups = userGroups;
+      groupsIds = widget.groupIds;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
+          onPressed: () {
+            Navigator.of(context).pop(groupsIds);
+          },
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 16.0,
+          ),
+          child: getGroups(),
+        ),
+      ),
+    );
+  }
+
+  Widget getGroups() {
+    if (groups == null) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
+    if (groups!.isEmpty) {
+      return const Center(
+        child: Text("No groups"),
+      );
+    }
+    return ListView.builder(
+      itemCount: groups!.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return ShareGroupTile(
+          group: groups![index],
+          onSelected: (String id) {
+            setState(() {
+              if (groupsIds.contains(id)) {
+                groupsIds.remove(id);
+              } else {
+                groupsIds.add(id);
+              }
+            });
+          },
+          active: groupsIds.contains(groups![index].id),
+        );
+      },
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:dima_project/pages/events/detail_event_page.dart';
+import 'package:dima_project/pages/events/share_event_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -49,25 +50,17 @@ class EventPageState extends ConsumerState<EventPage> {
                 ? CupertinoButton(
                     padding: const EdgeInsets.all(0),
                     onPressed: () {
-                      ref.invalidate(eventProvider(widget.eventId));
-                      ref.invalidate(createdEventsProvider(uid));
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => EditEventPage(
-                                    event: event,
-                                    imagePicker: widget.imagePicker,
-                                    eventService: widget.eventService,
-                                    notificationService: notificationService,
-                                  )));
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => ShareEventPage(
+                            databaseService: databaseService,
+                            eventId: widget.eventId,
+                          ),
+                        ),
+                      );
                     },
-                    child: Text(
-                      'Edit',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: CupertinoTheme.of(context).primaryColor,
-                      ),
+                    child: const Icon(
+                      CupertinoIcons.share,
                     ),
                   )
                 : null,
@@ -199,7 +192,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                       },
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 20),
                                 ],
                               );
                             },
@@ -208,84 +201,135 @@ class EventPageState extends ConsumerState<EventPage> {
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    CupertinoButton(
-                                        child: const Text(
-                                          'Delete Event',
-                                          style: TextStyle(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        CupertinoButton(
+                                          padding: const EdgeInsets.all(0),
+                                          onPressed: () {
+                                            ref.invalidate(
+                                                eventProvider(widget.eventId));
+                                            ref.invalidate(
+                                                createdEventsProvider(uid));
+                                            Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        EditEventPage(
+                                                          event: event,
+                                                          imagePicker: widget
+                                                              .imagePicker,
+                                                          eventService: widget
+                                                              .eventService,
+                                                          notificationService:
+                                                              notificationService,
+                                                        )));
+                                          },
+                                          child: Text(
+                                            'Edit Event',
+                                            style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                              color: CupertinoColors.systemRed),
-                                        ),
-                                        onPressed: () {
-                                          showCupertinoDialog(
-                                            context: context,
-                                            builder: (newContext) =>
-                                                CupertinoAlertDialog(
-                                              title: const Text('Delete Event'),
-                                              content: const Text(
-                                                  'Are you sure you want to delete this event?'),
-                                              actions: <Widget>[
-                                                CupertinoDialogAction(
-                                                  child: const Text('Cancel'),
-                                                  onPressed: () =>
-                                                      Navigator.of(newContext)
-                                                          .pop(),
-                                                ),
-                                                CupertinoDialogAction(
-                                                  child: const Text('Delete'),
-                                                  onPressed: () async {
-                                                    Navigator.of(newContext)
-                                                        .pop();
-                                                    BuildContext buildContext =
-                                                        context;
-                                                    // Show the loading dialog
-                                                    showCupertinoDialog(
-                                                      context: context,
-                                                      barrierDismissible: false,
-                                                      builder: (BuildContext
-                                                          newContext) {
-                                                        buildContext =
-                                                            newContext;
-                                                        return const CupertinoAlertDialog(
-                                                          content:
-                                                              CupertinoActivityIndicator(),
-                                                        );
-                                                      },
-                                                    );
-
-                                                    try {
-                                                      await notificationService
-                                                          .sendEventNotification(
-                                                              event.name,
-                                                              widget.eventId,
-                                                              false,
-                                                              "2");
-                                                    } catch (e) {
-                                                      debugPrint(e.toString());
-                                                    }
-                                                    await databaseService
-                                                        .deleteEvent(
-                                                            widget.eventId);
-                                                    ref.invalidate(
-                                                        createdEventsProvider(
-                                                            uid));
-                                                    ref.invalidate(
-                                                        eventProvider(
-                                                            widget.eventId));
-                                                    if (buildContext.mounted) {
-                                                      Navigator.of(buildContext)
-                                                          .pop();
-                                                    }
-                                                    if (context.mounted) {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    }
-                                                  },
-                                                ),
-                                              ],
+                                              color: CupertinoTheme.of(context)
+                                                  .primaryColor,
                                             ),
-                                          );
-                                        }),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        CupertinoButton(
+                                            padding: const EdgeInsets.all(0),
+                                            child: const Text(
+                                              'Delete Event',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: CupertinoColors
+                                                      .systemRed),
+                                            ),
+                                            onPressed: () {
+                                              showCupertinoDialog(
+                                                context: context,
+                                                builder: (newContext) =>
+                                                    CupertinoAlertDialog(
+                                                  title: const Text(
+                                                      'Delete Event'),
+                                                  content: const Text(
+                                                      'Are you sure you want to delete this event?'),
+                                                  actions: <Widget>[
+                                                    CupertinoDialogAction(
+                                                      child:
+                                                          const Text('Cancel'),
+                                                      onPressed: () =>
+                                                          Navigator.of(
+                                                                  newContext)
+                                                              .pop(),
+                                                    ),
+                                                    CupertinoDialogAction(
+                                                      child: const Text('Yes'),
+                                                      onPressed: () async {
+                                                        Navigator.of(newContext)
+                                                            .pop();
+                                                        BuildContext
+                                                            buildContext =
+                                                            context;
+                                                        // Show the loading dialog
+                                                        showCupertinoDialog(
+                                                          context: context,
+                                                          barrierDismissible:
+                                                              false,
+                                                          builder: (BuildContext
+                                                              newContext) {
+                                                            buildContext =
+                                                                newContext;
+                                                            return const CupertinoAlertDialog(
+                                                              content:
+                                                                  CupertinoActivityIndicator(),
+                                                            );
+                                                          },
+                                                        );
+
+                                                        try {
+                                                          await notificationService
+                                                              .sendEventNotification(
+                                                                  event.name,
+                                                                  widget
+                                                                      .eventId,
+                                                                  false,
+                                                                  "2");
+                                                        } catch (e) {
+                                                          debugPrint(
+                                                              e.toString());
+                                                        }
+                                                        await databaseService
+                                                            .deleteEvent(
+                                                                widget.eventId);
+                                                        ref.invalidate(
+                                                            createdEventsProvider(
+                                                                uid));
+                                                        ref.invalidate(
+                                                            eventProvider(widget
+                                                                .eventId));
+                                                        if (buildContext
+                                                            .mounted) {
+                                                          Navigator.of(
+                                                                  buildContext)
+                                                              .pop();
+                                                        }
+                                                        if (context.mounted) {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        }
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }),
+                                      ],
+                                    ),
                                   ],
                                 )
                               : Container(),

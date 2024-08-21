@@ -1517,12 +1517,11 @@ class DatabaseService {
   }
 
   Future<void> updateEvent(
-      Event event,
-      Uint8List? uint8list,
-      bool sameImage,
-      bool visibilityHasChanged,
-      List<String> uuids,
-      List<String> groupIds) async {
+    Event event,
+    Uint8List? uint8list,
+    bool sameImage,
+    bool visibilityHasChanged,
+  ) async {
     await eventsRef.doc(event.id).update(Event.toMap(event));
 
     for (EventDetails detail in event.details!) {
@@ -1578,8 +1577,6 @@ class DatabaseService {
         }
       }
     }
-    await sendEventsOnGroups(event.id!, groupIds);
-    await sendEventsOnPrivateChat(event.id!, uuids);
   }
 
   Future<Event> getEvent(String id) {

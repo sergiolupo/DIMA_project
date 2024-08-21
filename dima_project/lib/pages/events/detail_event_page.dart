@@ -167,7 +167,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     ),
                   ]),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Text(
               detail.members!.length.toString(),
               style: CupertinoTheme.of(context).textTheme.textStyle,
@@ -186,10 +186,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
               },
               child: Text(
                 detail.members!.length > 1 ? "Participants" : "Participant",
-                style: CupertinoTheme.of(context)
-                    .textTheme
-                    .textStyle
-                    .copyWith(color: CupertinoColors.systemGrey),
+                style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                    color: CupertinoColors.systemGrey,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 20),
