@@ -1,7 +1,12 @@
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/widgets/invitation_tile.dart';
+
+import '../mocks/mock_database_service.mocks.dart';
+import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
   final user = UserData(
@@ -12,6 +17,8 @@ void main() {
     imagePath: '',
     categories: ['category'],
     email: 'email',
+    requests: [],
+    isPublic: true,
   );
 
   group('InvitationTile Tests', () {
@@ -77,6 +84,39 @@ void main() {
 
       expect(find.text('Invite'), findsNothing);
       expect(find.text('Invited'), findsNothing);
+    });
+    testWidgets(
+        'When the InvitationTile is tapped, it navigates to and displays the User Profile page',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            userProvider.overrideWith((ref, uuid) => user),
+            followerProvider.overrideWith((ref, uuid) => []),
+            followingProvider.overrideWith((ref, uuid) => []),
+            groupsProvider.overrideWith((ref, uuid) => []),
+            joinedEventsProvider.overrideWith((ref, uuid) => []),
+            createdEventsProvider.overrideWith((ref, uuid) => []),
+            databaseServiceProvider
+                .overrideWith((ref) => MockDatabaseService()),
+            notificationServiceProvider
+                .overrideWith((ref) => MockNotificationService()),
+          ],
+          child: CupertinoApp(
+            home: InvitationTile(
+              user: user,
+              invitePageKey: (uid) {},
+              invited: false,
+              isJoining: true,
+            ),
+          ),
+        ),
+      );
+      expect(find.text('test_user'), findsOneWidget);
+      await tester.tap(find.text('test_user'));
+      await tester.pumpAndSettle();
+      expect(find.text('test_user'), findsOneWidget);
+      expect(find.text('Test User'), findsOneWidget);
     });
   });
 }
