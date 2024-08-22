@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 
 class ForgotPasswordForm extends StatelessWidget {
   final TextEditingController _usernameController;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthService authService;
-  ForgotPasswordForm(
+  const ForgotPasswordForm(
     this._usernameController, {
     super.key,
     required this.authService,
@@ -89,8 +89,9 @@ class ForgotPasswordForm extends StatelessWidget {
       );
     } catch (error) {
       String errorMessage = error.toString();
-
-      String errorMessageSubstring = errorMessage.split(":")[1].substring(1);
+      int errorCodeIndex = errorMessage.indexOf(']') + 1;
+      String errorMessageSubstring =
+          errorMessage.substring(errorCodeIndex).trim();
       debugPrint("Error sending password reset email: $error");
 
       if (!context.mounted) return;
