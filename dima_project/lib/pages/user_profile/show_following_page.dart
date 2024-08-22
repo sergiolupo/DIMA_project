@@ -48,7 +48,7 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
               Navigator.of(context).pop();
             },
           ),
-          loading: () => const CupertinoActivityIndicator(),
+          loading: () => const SizedBox.shrink(),
           error: (err, stack) => const SizedBox.shrink(),
         ),
         middle: Text(

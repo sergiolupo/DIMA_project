@@ -41,7 +41,7 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
               Navigator.of(context).pop();
             },
           ),
-          loading: () => const CupertinoActivityIndicator(),
+          loading: () => const SizedBox.shrink(),
           error: (error, stackTrace) => const SizedBox.shrink(),
         ),
         middle: Text('Groups',

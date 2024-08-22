@@ -45,7 +45,7 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
               Navigator.of(context).pop();
             },
           ),
-          loading: () => const CupertinoActivityIndicator(),
+          loading: () => const SizedBox.shrink(),
           error: (err, stack) => const SizedBox.shrink(),
         ),
         middle: Text('Followers',

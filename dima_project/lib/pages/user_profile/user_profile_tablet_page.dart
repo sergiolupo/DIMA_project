@@ -562,7 +562,14 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                       ),
                     );
                   },
-                  loading: () => const CupertinoActivityIndicator(),
+                  loading: () => Text(
+                    '',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
+                    ),
+                  ),
                   error: (error, stackTrace) {
                     return const Center(
                       child: Text('N.A.'),
@@ -618,7 +625,14 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                       ),
                     );
                   },
-                  loading: () => const CupertinoActivityIndicator(),
+                  loading: () => Text(
+                    '',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
+                    ),
+                  ),
                   error: (error, stackTrace) {
                     return const Center(
                       child: Text('N.A.'),
@@ -675,7 +689,14 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                       ),
                     );
                   },
-                  loading: () => const CupertinoActivityIndicator(),
+                  loading: () => Text(
+                    '',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color:
+                          CupertinoTheme.of(context).textTheme.textStyle.color,
+                    ),
+                  ),
                   error: (error, stackTrace) {
                     return const Center(
                       child: Text('N.A.'),

@@ -46,24 +46,22 @@ class EventPageState extends ConsumerState<EventPage> {
           navigationBar: CupertinoNavigationBar(
             transitionBetweenRoutes: false,
             backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-            trailing: uid == event.admin
-                ? CupertinoButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => ShareEventPage(
-                            databaseService: databaseService,
-                            eventId: widget.eventId,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Icon(
-                      CupertinoIcons.share,
+            trailing: CupertinoButton(
+              padding: const EdgeInsets.all(0),
+              onPressed: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => ShareEventPage(
+                      databaseService: databaseService,
+                      eventId: widget.eventId,
                     ),
-                  )
-                : null,
+                  ),
+                );
+              },
+              child: const Icon(
+                CupertinoIcons.share,
+              ),
+            ),
             leading: Navigator.canPop(context)
                 ? CupertinoNavigationBarBackButton(
                     color: CupertinoTheme.of(context).primaryColor,
