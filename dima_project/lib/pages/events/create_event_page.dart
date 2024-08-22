@@ -4,12 +4,12 @@ import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/events/share_event_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
+import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
@@ -326,7 +326,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                             ),
                             trailing: const Icon(CupertinoIcons.forward),
                             onTap: () {
-                              Navigator.of(context).push(
+                              Navigator.of(context, rootNavigator: true).push(
                                 CupertinoPageRoute(
                                   builder: (context) => InviteUserPage(
                                     invitedUsers: uids,

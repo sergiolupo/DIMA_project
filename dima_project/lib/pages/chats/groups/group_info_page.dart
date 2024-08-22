@@ -6,7 +6,7 @@ import 'package:dima_project/pages/chats/groups/edit_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/chats/groups/group_requests_page.dart';
 import 'package:dima_project/pages/chats/show_events_page.dart';
-import 'package:dima_project/pages/chats/show_medias_page.dart';
+import 'package:dima_project/pages/chats/show_images_page.dart';
 import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
