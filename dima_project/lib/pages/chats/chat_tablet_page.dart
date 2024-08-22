@@ -237,7 +237,13 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                     'assets/darkMode/no_groups_chat_found.png')
                                 : Image.asset(
                                     'assets/images/no_groups_chat_found.png'),
-                            const Text('No groups found'),
+                            const Text(
+                              'No groups found',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: CupertinoColors.systemGrey2),
+                            ),
                           ],
                         ));
                       }

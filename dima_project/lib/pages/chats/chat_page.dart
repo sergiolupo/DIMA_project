@@ -145,7 +145,13 @@ class ChatPageState extends State<ChatPage> {
                                   'assets/darkMode/no_groups_chat_found.png')
                               : Image.asset(
                                   'assets/images/no_groups_chat_found.png'),
-                          const Text('No groups found'),
+                          const Text(
+                            'No groups found',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.systemGrey2),
+                          ),
                         ],
                       ));
                     }
@@ -300,7 +306,13 @@ class ChatPageState extends State<ChatPage> {
                                         'assets/darkMode/no_chat_found.png')
                                     : Image.asset(
                                         'assets/images/no_chat_found.png'),
-                                const Text('No private chats found'),
+                                const Text(
+                                  'No private chats found',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.systemGrey2),
+                                ),
                               ],
                             ));
                           }
@@ -330,7 +342,13 @@ class ChatPageState extends State<ChatPage> {
                                           'assets/darkMode/no_chat_found.png')
                                       : Image.asset(
                                           'assets/images/no_chat_found.png'),
-                                  const Text('No private chats found'),
+                                  const Text(
+                                    'No private chats found',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey2),
+                                  ),
                                 ],
                               ));
                             }

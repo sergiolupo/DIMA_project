@@ -44,7 +44,11 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
           loading: () => const CupertinoActivityIndicator(),
           error: (error, stackTrace) => const SizedBox.shrink(),
         ),
-        middle: const Text('Groups'),
+        middle: Text('Groups',
+            style: TextStyle(
+              fontSize: 18,
+              color: CupertinoTheme.of(context).primaryColor,
+            )),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -64,19 +68,22 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                     ),
                   ),
                   if (groups.isEmpty)
-                    SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset('assets/darkMode/search_groups.png')
-                              : Image.asset('assets/images/search_groups.png'),
-                          const Center(
-                            child: Text('No groups'),
+                    Column(
+                      children: [
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Image.asset('assets/darkMode/search_groups.png')
+                            : Image.asset('assets/images/search_groups.png'),
+                        const Center(
+                          child: Text(
+                            'No groups',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.systemGrey2),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   else
                     ListView.builder(
@@ -89,21 +96,24 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
                             .toLowerCase()
                             .contains(_searchText.toLowerCase())) {
                           if (i == groups.length - 1) {
-                            return SingleChildScrollView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              child: Column(
-                                children: [
-                                  MediaQuery.of(context).platformBrightness ==
-                                          Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_groups_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_groups_found.png'),
-                                  const Center(
-                                    child: Text('No groups found'),
+                            return Column(
+                              children: [
+                                MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/no_groups_found.png')
+                                    : Image.asset(
+                                        'assets/images/no_groups_found.png'),
+                                const Center(
+                                  child: Text(
+                                    'No groups found',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey2),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             );
                           }
                           i++;

@@ -48,89 +48,102 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
           loading: () => const CupertinoActivityIndicator(),
           error: (err, stack) => const SizedBox.shrink(),
         ),
-        middle: const Text('Followers'),
+        middle: Text('Followers',
+            style: TextStyle(
+              fontSize: 18,
+              color: CupertinoTheme.of(context).primaryColor,
+            )),
       ),
-      child: SafeArea(
-        child: asyncUsers.when(
-          loading: () => const CupertinoActivityIndicator(),
-          error: (err, stack) => const DeletedAccountWidget(),
-          data: (users) {
-            int i = 0;
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: CupertinoSearchTextField(
-                    controller: _searchController,
-                    onChanged: (_) {
-                      setState(() {
-                        _searchText = _searchController.text;
-                        i = 0;
-                      });
-                    },
+      child: SingleChildScrollView(
+        child: SafeArea(
+          child: asyncUsers.when(
+            loading: () => const CupertinoActivityIndicator(),
+            error: (err, stack) => const DeletedAccountWidget(),
+            data: (users) {
+              int i = 0;
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: CupertinoSearchTextField(
+                      controller: _searchController,
+                      onChanged: (_) {
+                        setState(() {
+                          _searchText = _searchController.text;
+                          i = 0;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                if (users.isEmpty)
-                  Column(
-                    children: [
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
-                          ? Image.asset('assets/darkMode/no_followers.png')
-                          : Image.asset('assets/images/no_followers.png'),
-                      const Center(
-                        child: Text('No followers'),
-                      ),
-                    ],
-                  )
-                else
-                  ListView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: users.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      if (!user.username
-                          .toLowerCase()
-                          .contains(_searchText.toLowerCase())) {
-                        if (i == users.length - 1) {
-                          return Column(
-                            children: [
-                              MediaQuery.of(context).platformBrightness ==
-                                      Brightness.dark
-                                  ? Image.asset(
-                                      'assets/darkMode/search_followers.png')
-                                  : Image.asset(
-                                      'assets/images/search_followers.png'),
-                              const Center(
-                                child: Text('No followers found'),
-                              ),
-                            ],
-                          );
+                  if (users.isEmpty)
+                    Column(
+                      children: [
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Image.asset('assets/darkMode/no_followers.png')
+                            : Image.asset('assets/images/no_followers.png'),
+                        const Center(
+                          child: Text(
+                            'No followers',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.systemGrey2),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    ListView.builder(
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: users.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final user = users[index];
+                        if (!user.username
+                            .toLowerCase()
+                            .contains(_searchText.toLowerCase())) {
+                          if (i == users.length - 1) {
+                            return Column(
+                              children: [
+                                MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark
+                                    ? Image.asset(
+                                        'assets/darkMode/search_followers.png')
+                                    : Image.asset(
+                                        'assets/images/search_followers.png'),
+                                const Center(
+                                  child: Text('No followers found'),
+                                ),
+                              ],
+                            );
+                          }
+                          i++;
+                          return const SizedBox.shrink();
                         }
-                        i++;
-                        return const SizedBox.shrink();
-                      }
 
-                      return asyncFollowing.when(
-                        loading: () => const CupertinoActivityIndicator(),
-                        error: (err, stack) => Text('Error: $err'),
-                        data: (following) {
-                          return UserTile(
-                            user: user,
-                            isFollowing: following.any((u) => u.uid == user.uid)
-                                ? 1
-                                : user.isPublic == false &&
-                                        user.requests!.contains(uid)
-                                    ? 2
-                                    : 0,
-                          );
-                        },
-                      );
-                    },
-                  ),
-              ],
-            );
-          },
+                        return asyncFollowing.when(
+                          loading: () => const CupertinoActivityIndicator(),
+                          error: (err, stack) => Text('Error: $err'),
+                          data: (following) {
+                            return UserTile(
+                              user: user,
+                              isFollowing:
+                                  following.any((u) => u.uid == user.uid)
+                                      ? 1
+                                      : user.isPublic == false &&
+                                              user.requests!.contains(uid)
+                                          ? 2
+                                          : 0,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
