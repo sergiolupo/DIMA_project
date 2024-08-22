@@ -117,7 +117,13 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                                     : Image.asset(
                                         'assets/images/search_following.png'),
                                 const Center(
-                                  child: Text('Not following found'),
+                                  child: Text(
+                                    'Not following found',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey2),
+                                  ),
                                 ),
                               ],
                             );

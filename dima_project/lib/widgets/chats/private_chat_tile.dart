@@ -160,7 +160,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
               ),
               (widget.privateChat.lastMessage != null)
                   ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -192,7 +192,8 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                         const SizedBox(height: 1),
                         widget.privateChat.lastMessage!.unreadMessages! > 0
                             ? Container(
-                                padding: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color:
                                       CupertinoTheme.of(context).primaryColor,

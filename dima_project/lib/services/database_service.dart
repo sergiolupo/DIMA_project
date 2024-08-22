@@ -1430,19 +1430,6 @@ class DatabaseService {
     return eventsList;
   }
 
-  Future<bool> checkIfJoined(bool isGroup, String? id, String uuid) async {
-    if (id == null) return false;
-    if (isGroup) {
-      final doc = await groupsRef.doc(id).get();
-      return (doc['members'].contains(uuid));
-    } else {
-      final doc = await eventsRef.doc(id).get();
-      return (await Event.fromSnapshot(doc))
-          .details!
-          .any((element) => element.members!.contains(uuid));
-    }
-  }
-
   Future shareNewsOnGroups(String title, String description, String imageUrl,
       String blogUrl, String id) async {
     Message message = Message(

@@ -113,7 +113,13 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                             ? Image.asset(
                                 'assets/darkMode/search_followers.png')
                             : Image.asset('assets/images/search_followers.png'),
-                        const Text('No followers'),
+                        const Text(
+                          'No followers',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: CupertinoColors.systemGrey2),
+                        ),
                       ],
                     ),
                   ),
@@ -133,7 +139,13 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                         ? Image.asset('assets/darkMode/no_followers.png')
                         : Image.asset('assets/images/no_followers.png'),
                     const Center(
-                      child: Text('No followers found'),
+                      child: Text(
+                        'No followers found',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: CupertinoColors.systemGrey2),
+                      ),
                     ),
                   ],
                 );

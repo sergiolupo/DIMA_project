@@ -26,12 +26,13 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
   String searchText = '';
   @override
   void initState() {
+    ref.read(groupsProvider(AuthService.uid));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final groups = ref.watch(groupsProvider(AuthService.uid));
+    final asyncGroups = ref.watch(groupsProvider(AuthService.uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoNavigationBarBackButton(
@@ -49,26 +50,28 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 16.0,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CupertinoSearchTextField(
-                  controller: _searchController,
-                  placeholder: "Search groups...",
-                  onChanged: (_) {
-                    setState(() {
-                      searchText = _searchController.text;
-                    });
-                  },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 16.0,
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CupertinoSearchTextField(
+                    controller: _searchController,
+                    placeholder: "Search groups...",
+                    onChanged: (_) {
+                      setState(() {
+                        searchText = _searchController.text;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              getGroups(groups),
-            ],
+                getGroups(asyncGroups),
+              ],
+            ),
           ),
         ),
       ),
@@ -89,7 +92,13 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
                     ? Image.asset('assets/darkMode/search_groups.png')
                     : Image.asset('assets/images/search_groups.png'),
                 const Center(
-                  child: Text('No groups'),
+                  child: Text(
+                    'No groups',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey2),
+                  ),
                 ),
               ],
             ),
@@ -108,7 +117,13 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
                     ? Image.asset('assets/darkMode/no_groups_found.png')
                     : Image.asset('assets/images/no_groups_found.png'),
                 const Center(
-                  child: Text('No groups found'),
+                  child: Text(
+                    'No groups found',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey2),
+                  ),
                 ),
               ],
             ),

@@ -113,7 +113,13 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                                     : Image.asset(
                                         'assets/images/search_followers.png'),
                                 const Center(
-                                  child: Text('No followers found'),
+                                  child: Text(
+                                    'No followers found',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey2),
+                                  ),
                                 ),
                               ],
                             );

@@ -125,7 +125,7 @@ class PrivateChatTileTablet extends StatelessWidget {
               ),
               (privateChat.lastMessage != null)
                   ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -155,8 +155,8 @@ class PrivateChatTileTablet extends StatelessWidget {
                         const SizedBox(height: 1),
                         privateChat.lastMessage!.unreadMessages! > 0
                             ? Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
+padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),                                decoration: BoxDecoration(
                                   color:
                                       CupertinoTheme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(50),

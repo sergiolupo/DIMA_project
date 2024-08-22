@@ -167,7 +167,7 @@ class GroupChatTileState extends State<GroupChatTile> {
               ),
               (widget.group.lastMessage != null)
                   ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -197,7 +197,8 @@ class GroupChatTileState extends State<GroupChatTile> {
                         const SizedBox(height: 1),
                         widget.group.lastMessage!.unreadMessages! > 0
                             ? Container(
-                                padding: const EdgeInsets.all(4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color:
                                       CupertinoTheme.of(context).primaryColor,
@@ -207,8 +208,9 @@ class GroupChatTileState extends State<GroupChatTile> {
                                   widget.group.lastMessage!.unreadMessages!
                                       .toString(),
                                   style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                      fontSize: 12),
+                                    color: CupertinoColors.white,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               )
                             : const SizedBox(),

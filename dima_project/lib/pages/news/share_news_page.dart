@@ -2,12 +2,14 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:dima_project/widgets/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShareNewsPage extends StatefulWidget {
+class ShareNewsPage extends ConsumerStatefulWidget {
   final DatabaseService databaseService;
   @override
   const ShareNewsPage({
@@ -16,10 +18,10 @@ class ShareNewsPage extends StatefulWidget {
   });
 
   @override
-  State<ShareNewsPage> createState() => ShareNewsPageState();
+  ConsumerState<ShareNewsPage> createState() => ShareNewsPageState();
 }
 
-class ShareNewsPageState extends State<ShareNewsPage> {
+class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
   List<String> uuids = [];
   List<String> groupsIds = [];
   int index = 0;
@@ -29,32 +31,15 @@ class ShareNewsPageState extends State<ShareNewsPage> {
   final String uid = AuthService.uid;
   @override
   void initState() {
+    ref.read(groupsProvider(uid));
+    ref.read(followerProvider(uid));
     super.initState();
-    fetchGroups();
-    fetchUsers();
-  }
-
-  void fetchGroups() async {
-    groups = await widget.databaseService.getGroups(uid);
-    setState(() {});
-  }
-
-  void fetchUsers() async {
-    final doc = await widget.databaseService.getFollowersUser(uid);
-    if (doc.exists &&
-        doc.data() != null &&
-        (doc.data() as Map<String, dynamic>)['followers'] != null) {
-      final followers =
-          List<String>.from((doc.data() as Map<String, dynamic>)['followers']);
-      users = await Future.wait(followers
-          .map((uuid) => widget.databaseService.getUserData(uuid))
-          .toList());
-      setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final asyncGroups = ref.watch(groupsProvider(uid));
+    final asyncUsers = ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Padding(
@@ -113,8 +98,8 @@ class ShareNewsPageState extends State<ShareNewsPage> {
                     });
                   },
                 ),
-                if (index == 0) getGroups(),
-                if (index == 1) getUsers(),
+                if (index == 0) getGroups(asyncGroups),
+                if (index == 1) getUsers(asyncUsers),
               ],
             ),
           ],
@@ -123,149 +108,166 @@ class ShareNewsPageState extends State<ShareNewsPage> {
     );
   }
 
-  Widget getUsers() {
+  Widget getUsers(AsyncValue<List<UserData>> asyncUsers) {
     int i = 0;
-    if (users == null) {
-      return const Center(child: CupertinoActivityIndicator());
-    }
-    if (users!.isEmpty) {
-      return Center(
-        child: Column(
-          children: [
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? Image.asset('assets/darkMode/search_followers.png')
-                : Image.asset('assets/images/search_followers.png'),
-            const Text("No followers"),
-          ],
-        ),
-      );
-    }
-    return Container(
-      height: users!.length * 50,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: CupertinoTheme.of(context).primaryContrastingColor),
-      child: ListView.builder(
-        physics: const ClampingScrollPhysics(),
-        itemCount: users!.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (!users![index]
-              .username
-              .toLowerCase()
-              .contains(_searchText.toLowerCase())) {
-            i += 1;
-            if (i == users!.length) {
-              return Center(
-                child: Column(
-                  children: [
-                    MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Image.asset('assets/darkMode/no_followers.png')
-                        : Image.asset('assets/images/no_followers.png'),
-                    const Text("No followers found"),
-                  ],
+    return asyncUsers.when(
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (error, stack) => const Center(child: Text('Error')),
+        data: (users) {
+          if (users.isEmpty) {
+            return Column(
+              children: [
+                MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Image.asset('assets/darkMode/search_followers.png')
+                    : Image.asset('assets/images/search_followers.png'),
+                const Text(
+                  "No followers",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: CupertinoColors.systemGrey2),
                 ),
-              );
-            }
-            return const SizedBox.shrink();
+              ],
+            );
           }
-          return Column(
-            children: [
-              ShareUserTile(
-                user: users![index],
-                onSelected: (String uuid) {
-                  setState(() {
-                    if (uuids.contains(uuid)) {
-                      uuids.remove(uuid);
-                    } else {
-                      uuids.add(uuid);
-                    }
-                  });
-                },
-                active: uuids.contains(users![index].uid!),
-              ),
-              if (index != users!.length - 1)
-                Container(
-                  height: 1,
-                  color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                ),
-            ],
+          return Container(
+            height: users.length * 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: CupertinoTheme.of(context).primaryContrastingColor),
+            child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
+              itemCount: users.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                if (!users[index]
+                    .username
+                    .toLowerCase()
+                    .contains(_searchText.toLowerCase())) {
+                  i += 1;
+                  if (i == users.length) {
+                    return Column(
+                      children: [
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Image.asset('assets/darkMode/no_followers.png')
+                            : Image.asset('assets/images/no_followers.png'),
+                        const Center(
+                            child: Text(
+                          "No followers found",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: CupertinoColors.systemGrey2),
+                        )),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    ShareUserTile(
+                      user: users[index],
+                      onSelected: (String uuid) {
+                        setState(() {
+                          if (uuids.contains(uuid)) {
+                            uuids.remove(uuid);
+                          } else {
+                            uuids.add(uuid);
+                          }
+                        });
+                      },
+                      active: uuids.contains(users[index].uid!),
+                    ),
+                    if (index != users.length - 1)
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
+                      ),
+                  ],
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 
-  Widget getGroups() {
+  Widget getGroups(AsyncValue<List<Group>> asyncGroups) {
     int i = 0;
-    if (groups == null) {
-      return const Center(child: CupertinoActivityIndicator());
-    }
-    if (groups!.isEmpty) {
-      return Center(
-        child: Column(
-          children: [
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? Image.asset('assets/darkMode/search_groups.png')
-                : Image.asset('assets/images/search_groups.png'),
-            const Text("No groups"),
-          ],
-        ),
-      );
-    }
-    return Container(
-      height: groups!.length * 50,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: CupertinoTheme.of(context).primaryContrastingColor),
-      child: ListView.builder(
-        physics: const ClampingScrollPhysics(),
-        itemCount: groups!.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (!groups![index]
-              .name
-              .toLowerCase()
-              .contains(_searchText.toLowerCase())) {
-            i += 1;
-            if (i == groups!.length) {
-              return Center(
-                child: Column(
-                  children: [
-                    MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Image.asset('assets/darkMode/no_groups_found.png')
-                        : Image.asset('assets/images/no_groups_found.png'),
-                    const Text("No groups found"),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }
-          return Column(
-            children: [
-              ShareGroupTile(
-                group: groups![index],
-                onSelected: (String id) {
-                  setState(() {
-                    if (groupsIds.contains(id)) {
-                      groupsIds.remove(id);
-                    } else {
-                      groupsIds.add(id);
-                    }
-                  });
-                },
-                active: groupsIds.contains(groups![index].id),
+    return asyncGroups.when(
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (error, stack) => const Center(child: Text('Error')),
+        data: (groups) {
+          if (groups.isEmpty) {
+            return Center(
+              child: Column(
+                children: [
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset('assets/darkMode/search_groups.png')
+                      : Image.asset('assets/images/search_groups.png'),
+                  const Text("No groups"),
+                ],
               ),
-              if (index != groups!.length - 1)
-                Container(
-                  height: 1,
-                  color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                ),
-            ],
+            );
+          }
+          return Container(
+            height: groups.length * 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: CupertinoTheme.of(context).primaryContrastingColor),
+            child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
+              itemCount: groups.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                if (!groups[index]
+                    .name
+                    .toLowerCase()
+                    .contains(_searchText.toLowerCase())) {
+                  i += 1;
+                  if (i == groups.length) {
+                    return Center(
+                      child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset(
+                                  'assets/darkMode/no_groups_found.png')
+                              : Image.asset(
+                                  'assets/images/no_groups_found.png'),
+                          const Text("No groups found"),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    ShareGroupTile(
+                      group: groups[index],
+                      onSelected: (String id) {
+                        setState(() {
+                          if (groupsIds.contains(id)) {
+                            groupsIds.remove(id);
+                          } else {
+                            groupsIds.add(id);
+                          }
+                        });
+                      },
+                      active: groupsIds.contains(groups[index].id),
+                    ),
+                    if (index != groups.length - 1)
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
+                      ),
+                  ],
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 }

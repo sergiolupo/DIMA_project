@@ -125,7 +125,7 @@ class GroupChatTileTablet extends StatelessWidget {
                       constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.05),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
@@ -157,7 +157,8 @@ class GroupChatTileTablet extends StatelessWidget {
                           const SizedBox(height: 1),
                           group.lastMessage!.unreadMessages! > 0
                               ? Container(
-                                  padding: const EdgeInsets.all(4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color:
                                         CupertinoTheme.of(context).primaryColor,
