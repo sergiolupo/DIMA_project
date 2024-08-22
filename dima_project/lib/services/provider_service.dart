@@ -1,5 +1,6 @@
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
+import 'package:dima_project/models/message.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
@@ -63,6 +64,43 @@ final groupsProvider =
   try {
     final groups = await DatabaseService().getGroups(uuid);
     return groups;
+  } catch (e) {
+    return [];
+  }
+});
+
+final imagesGroupProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
+  try {
+    final images = DatabaseService().getGroupMessagesType(id, Type.image);
+    return images;
+  } catch (e) {
+    return [];
+  }
+});
+final requestsGroupProvider =
+    FutureProvider.family<List<UserData>, String>((ref, id) async {
+  try {
+    final requests = DatabaseService().getGroupRequestsForGroup(id);
+    return requests;
+  } catch (e) {
+    return [];
+  }
+});
+final newsGroupProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
+  try {
+    final news = DatabaseService().getGroupMessagesType(id, Type.news);
+    return news;
+  } catch (e) {
+    return [];
+  }
+});
+final eventsGroupProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
+  try {
+    final events = DatabaseService().getGroupMessagesType(id, Type.event);
+    return events;
   } catch (e) {
     return [];
   }

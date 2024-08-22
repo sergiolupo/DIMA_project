@@ -82,6 +82,11 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
           padding: const EdgeInsets.all(0),
           onPressed: () async {
             ref.invalidate(userProvider);
+            ref.invalidate(imagesGroupProvider);
+            ref.invalidate(requestsGroupProvider);
+            ref.invalidate(eventsGroupProvider);
+            ref.invalidate(newsGroupProvider);
+
             if (!widget.canNavigate) {
               final Group? newGroup = await Navigator.of(context).push(
                 CupertinoPageRoute(

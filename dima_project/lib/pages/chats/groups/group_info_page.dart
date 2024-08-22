@@ -77,6 +77,14 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
     for (var member in group.members!) {
       members.add(ref.watch(userProvider(member)));
     }
+    final AsyncValue<List<Message>> images =
+        ref.watch(imagesGroupProvider(group.id));
+    final AsyncValue<List<Message>> news =
+        ref.watch(newsGroupProvider(group.id));
+    final AsyncValue<List<Message>> events =
+        ref.watch(eventsGroupProvider(group.id));
+    final AsyncValue<List<UserData>> requests =
+        ref.watch(requestsGroupProvider(group.id));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         transitionBetweenRoutes: false,
@@ -247,10 +255,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                       child: Column(
                         children: [
                           if (!group.isPublic && group.admin == uid)
-                            FutureBuilder(
-                              future: _databaseService
-                                  .getGroupRequestsForGroup(group.id),
-                              builder: (context, snapshot) {
+                            requests.when(
+                              loading: () => const CupertinoActivityIndicator(),
+                              error: (error, stack) => const Text("Error"),
+                              data: (data) {
                                 return CupertinoListTile(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
@@ -267,13 +275,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                   ),
                                   trailing: Row(
                                     children: [
-                                      (snapshot.connectionState ==
-                                                  ConnectionState.waiting ||
-                                              snapshot.hasError ||
-                                              snapshot.data!.isEmpty)
+                                      (data.isEmpty)
                                           ? const SizedBox()
                                           : Text(
-                                              snapshot.data!.length.toString(),
+                                              data.length.toString(),
                                               style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.normal,
@@ -291,15 +296,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                     ],
                                   ),
                                   onTap: () async {
-                                    if (snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        snapshot.hasError) return;
-                                    final List<UserData> requests =
-                                        snapshot.data!;
                                     if (widget.canNavigate) {
                                       widget.navigateToPage!(GroupRequestsPage(
                                         group: group,
-                                        requests: requests,
+                                        requests: data,
                                         canNavigate: widget.canNavigate,
                                         navigateToPage: widget.navigateToPage,
                                         notificationService:
@@ -314,7 +314,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                       CupertinoPageRoute(
                                         builder: (context) => GroupRequestsPage(
                                           group: group,
-                                          requests: requests,
+                                          requests: data,
                                           canNavigate: widget.canNavigate,
                                           notificationService:
                                               widget.notificationService,
@@ -336,10 +336,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                               color: CupertinoColors.opaqueSeparator
                                   .withOpacity(0.2),
                             ),
-                          FutureBuilder(
-                            future: _databaseService.getGroupMessagesType(
-                                group.id, Type.image),
-                            builder: (context, snapshot) {
+                          images.when(
+                            loading: () => const CupertinoActivityIndicator(),
+                            error: (error, stack) => const Text("Error"),
+                            data: (medias) {
                               return CupertinoListTile(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
@@ -356,13 +356,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                 ),
                                 trailing: Row(
                                   children: [
-                                    (snapshot.connectionState ==
-                                                ConnectionState.waiting ||
-                                            snapshot.hasError ||
-                                            snapshot.data!.isEmpty)
+                                    (medias.isEmpty)
                                         ? const SizedBox()
                                         : Text(
-                                            snapshot.data!.length.toString(),
+                                            medias.length.toString(),
                                             style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.normal,
@@ -380,14 +377,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.waiting ||
-                                      snapshot.hasError) return;
-                                  final List<Message> media = snapshot.data!;
                                   if (widget.canNavigate) {
                                     widget.navigateToPage!(ShowImagesPage(
                                       isGroup: true,
-                                      medias: media,
+                                      medias: medias,
                                       canNavigate: true,
                                       navigateToPage: widget.navigateToPage,
                                       group: group,
@@ -401,7 +394,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                     CupertinoPageRoute(
                                       builder: (context) => ShowImagesPage(
                                         isGroup: true,
-                                        medias: media,
+                                        medias: medias,
                                         group: group,
                                         canNavigate: false,
                                         databaseService: _databaseService,
@@ -419,10 +412,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                             color: CupertinoColors.opaqueSeparator
                                 .withOpacity(0.2),
                           ),
-                          FutureBuilder(
-                            future: _databaseService.getGroupMessagesType(
-                                group.id, Type.event),
-                            builder: (context, snapshot) {
+                          events.when(
+                            loading: () => const CupertinoActivityIndicator(),
+                            error: (error, stack) => const Text("Error"),
+                            data: (data) {
                               return CupertinoListTile(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0),
@@ -439,13 +432,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                 ),
                                 trailing: Row(
                                   children: [
-                                    (snapshot.connectionState ==
-                                                ConnectionState.waiting ||
-                                            snapshot.hasError ||
-                                            snapshot.data!.isEmpty)
+                                    data.isEmpty
                                         ? const SizedBox()
                                         : Text(
-                                            snapshot.data!.length.toString(),
+                                            data.length.toString(),
                                             style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.normal,
@@ -463,15 +453,11 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.waiting ||
-                                      snapshot.hasError) return;
-                                  final List<Message> events = snapshot.data!;
                                   if (widget.canNavigate) {
                                     widget.navigateToPage!(ShowEventsPage(
                                       group: group,
                                       isGroup: true,
-                                      events: events,
+                                      events: data,
                                       canNavigate: true,
                                       navigateToPage: widget.navigateToPage,
                                       databaseService: _databaseService,
@@ -486,7 +472,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                         group: group,
                                         canNavigate: false,
                                         isGroup: true,
-                                        events: events,
+                                        events: data,
                                         databaseService: _databaseService,
                                         notificationService:
                                             widget.notificationService,
@@ -502,10 +488,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                             color: CupertinoColors.opaqueSeparator
                                 .withOpacity(0.2),
                           ),
-                          FutureBuilder(
-                            future: _databaseService.getGroupMessagesType(
-                                group.id, Type.news),
-                            builder: (context, snapshot) {
+                          news.when(
+                            loading: () => const CupertinoActivityIndicator(),
+                            error: (error, stack) => const Text("Error"),
+                            data: (data) {
                               return Column(
                                 children: [
                                   CupertinoListTile(
@@ -524,14 +510,10 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                     ),
                                     trailing: Row(
                                       children: [
-                                        (snapshot.connectionState ==
-                                                    ConnectionState.waiting ||
-                                                snapshot.hasError ||
-                                                snapshot.data!.isEmpty)
+                                        (data.isEmpty)
                                             ? const SizedBox()
                                             : Text(
-                                                snapshot.data!.length
-                                                    .toString(),
+                                                data.length.toString(),
                                                 style: const TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.normal,
@@ -549,15 +531,11 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                       ],
                                     ),
                                     onTap: () {
-                                      if (snapshot.connectionState ==
-                                              ConnectionState.waiting ||
-                                          snapshot.hasError) return;
-                                      final List<Message> news = snapshot.data!;
                                       if (widget.canNavigate) {
                                         widget.navigateToPage!(ShowNewsPage(
                                           group: group,
                                           isGroup: true,
-                                          news: news,
+                                          news: data,
                                           canNavigate: true,
                                           navigateToPage: widget.navigateToPage,
                                           databaseService: _databaseService,
@@ -572,7 +550,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             group: group,
                                             canNavigate: false,
                                             isGroup: true,
-                                            news: news,
+                                            news: data,
                                             databaseService: _databaseService,
                                             notificationService:
                                                 widget.notificationService,
