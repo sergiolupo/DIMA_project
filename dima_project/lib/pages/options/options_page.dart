@@ -54,7 +54,7 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 OptionTile(
-                  leading: const Icon(CupertinoIcons.bell),
+                  leading: const Icon(CupertinoIcons.square_list),
                   onTap: () => {
                     Navigator.of(context, rootNavigator: true).push(
                         CupertinoPageRoute(

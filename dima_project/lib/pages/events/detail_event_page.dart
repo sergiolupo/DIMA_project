@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/pages/events/event_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
@@ -288,7 +289,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   ),
                 ),
               const SizedBox(height: 30),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 CupertinoButton(
                   onPressed: () async {
                     debugPrint('Adding event to calendar');
@@ -326,61 +327,209 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   ),
                 ),
                 event.admin == uid
-                    ? CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        child: Icon(CupertinoIcons.trash,
-                            color: CupertinoTheme.of(context).primaryColor),
-                        onPressed: () async {
-                          // Show confirmation dialog
-                          showCupertinoDialog(
-                            context: context,
-                            builder: (newContext) => CupertinoAlertDialog(
-                              title: const Text('Date cancellation'),
-                              content: const Text(
-                                  'Are you sure you want to delete this date?'),
-                              actions: <Widget>[
-                                CupertinoDialogAction(
-                                  child: const Text('Cancel'),
-                                  onPressed: () =>
-                                      Navigator.of(newContext).pop(),
-                                ),
-                                CupertinoDialogAction(
-                                  child: const Text('Yes'),
-                                  onPressed: () async {
-                                    Navigator.of(newContext).pop();
-                                    BuildContext buildContext = context;
-                                    // Show the loading dialog
-                                    showCupertinoDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (BuildContext newContext) {
-                                        buildContext = newContext;
-                                        return const CupertinoAlertDialog(
-                                          content: CupertinoActivityIndicator(),
-                                        );
-                                      },
-                                    );
-                                    await notificationService
-                                        .sendEventNotification(event.name,
-                                            event.id!, true, widget.detailId);
-                                    await databaseService.deleteDetail(
-                                        event.id!, widget.detailId);
+                    ? Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
+                        ),
+                        child: event.isPublic == false
+                            ? Column(
+                                children: [
+                                  CupertinoListTile(
+                                    trailing: Row(
+                                      children: [
+                                        detail.requests!.isNotEmpty
+                                            ? Container(
+                                                padding:
+                                                    const EdgeInsets.all(6),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color:
+                                                      CupertinoTheme.of(context)
+                                                          .primaryColor,
+                                                ),
+                                                child: Text(
+                                                  detail.requests!.length
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                    color:
+                                                        CupertinoColors.white,
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Icon(CupertinoIcons.forward),
+                                      ],
+                                    ),
+                                    title: const Row(children: [
+                                      Icon(CupertinoIcons.square_list),
+                                      SizedBox(width: 10),
+                                      Text('Requests'),
+                                    ]),
+                                    onTap: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              EventRequestsPage(
+                                            eventId: widget.eventId,
+                                            detailId: widget.detailId,
+                                            requests: detail.requests!,
+                                            databaseService: databaseService,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    color: CupertinoColors.opaqueSeparator
+                                        .withOpacity(0.2),
+                                  ),
+                                  CupertinoListTile(
+                                    trailing:
+                                        const Icon(CupertinoIcons.forward),
+                                    title: const Row(children: [
+                                      Icon(CupertinoIcons.trash),
+                                      SizedBox(width: 10),
+                                      Text('Delete'),
+                                    ]),
+                                    onTap: () async {
+                                      // Show confirmation dialog
+                                      showCupertinoDialog(
+                                        context: context,
+                                        builder: (newContext) =>
+                                            CupertinoAlertDialog(
+                                          title:
+                                              const Text('Date cancellation'),
+                                          content: const Text(
+                                              'Are you sure you want to delete this date?'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                              child: const Text('Cancel'),
+                                              onPressed: () =>
+                                                  Navigator.of(newContext)
+                                                      .pop(),
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: const Text('Yes'),
+                                              onPressed: () async {
+                                                Navigator.of(newContext).pop();
+                                                BuildContext buildContext =
+                                                    context;
+                                                // Show the loading dialog
+                                                showCupertinoDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (BuildContext
+                                                      newContext) {
+                                                    buildContext = newContext;
+                                                    return const CupertinoAlertDialog(
+                                                      content:
+                                                          CupertinoActivityIndicator(),
+                                                    );
+                                                  },
+                                                );
+                                                await notificationService
+                                                    .sendEventNotification(
+                                                        event.name,
+                                                        event.id!,
+                                                        true,
+                                                        widget.detailId);
+                                                await databaseService
+                                                    .deleteDetail(event.id!,
+                                                        widget.detailId);
 
-                                    ref.invalidate(eventProvider(event.id!));
-                                    ref.invalidate(createdEventsProvider(uid));
+                                                ref.invalidate(
+                                                    eventProvider(event.id!));
+                                                ref.invalidate(
+                                                    createdEventsProvider(uid));
 
-                                    if (buildContext.mounted) {
-                                      Navigator.of(buildContext).pop();
-                                    }
-                                    if (context.mounted) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                                if (buildContext.mounted) {
+                                                  Navigator.of(buildContext)
+                                                      .pop();
+                                                }
+                                                if (context.mounted) {
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              )
+                            : CupertinoListTile(
+                                trailing: const Icon(CupertinoIcons.forward),
+                                title: const Row(children: [
+                                  Icon(CupertinoIcons.trash),
+                                  SizedBox(width: 10),
+                                  Text('Delete'),
+                                ]),
+                                onTap: () async {
+                                  // Show confirmation dialog
+                                  showCupertinoDialog(
+                                    context: context,
+                                    builder: (newContext) =>
+                                        CupertinoAlertDialog(
+                                      title: const Text('Date cancellation'),
+                                      content: const Text(
+                                          'Are you sure you want to delete this date?'),
+                                      actions: <Widget>[
+                                        CupertinoDialogAction(
+                                          child: const Text('Cancel'),
+                                          onPressed: () =>
+                                              Navigator.of(newContext).pop(),
+                                        ),
+                                        CupertinoDialogAction(
+                                          child: const Text('Yes'),
+                                          onPressed: () async {
+                                            Navigator.of(newContext).pop();
+                                            BuildContext buildContext = context;
+                                            // Show the loading dialog
+                                            showCupertinoDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder:
+                                                  (BuildContext newContext) {
+                                                buildContext = newContext;
+                                                return const CupertinoAlertDialog(
+                                                  content:
+                                                      CupertinoActivityIndicator(),
+                                                );
+                                              },
+                                            );
+                                            await notificationService
+                                                .sendEventNotification(
+                                                    event.name,
+                                                    event.id!,
+                                                    true,
+                                                    widget.detailId);
+                                            await databaseService.deleteDetail(
+                                                event.id!, widget.detailId);
+
+                                            ref.invalidate(
+                                                eventProvider(event.id!));
+                                            ref.invalidate(
+                                                createdEventsProvider(uid));
+
+                                            if (buildContext.mounted) {
+                                              Navigator.of(buildContext).pop();
+                                            }
+                                            if (context.mounted) {
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                       )
                     : Container(),
               ]),

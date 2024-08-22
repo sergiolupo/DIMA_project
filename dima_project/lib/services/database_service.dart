@@ -1110,20 +1110,60 @@ class DatabaseService {
     });
   }
 
-  Future<void> acceptEventRequest(
+  Future<void> denyEventRequest(
       String eventId, String detailId, String uuid) async {
+    if ((await eventsRef
+            .doc(eventId)
+            .collection('details')
+            .doc(detailId)
+            .get())['requests']
+        .contains(uuid)) {
+      await eventsRef.doc(eventId).collection('details').doc(detailId).update({
+        'requests': FieldValue.arrayRemove([uuid])
+      });
+    }
+  }
+
+  Future<void> acceptEventRequest(
+      String eventId, String detailId, String uid) async {
+    if ((await eventsRef
+            .doc(eventId)
+            .collection('details')
+            .doc(detailId)
+            .get())['members']
+        .contains(uid)) {
+      if ((await eventsRef
+              .doc(eventId)
+              .collection('details')
+              .doc(detailId)
+              .get())['requests']
+          .contains(uid)) {
+        await eventsRef
+            .doc(eventId)
+            .collection('details')
+            .doc(detailId)
+            .update({
+          'requests': FieldValue.arrayRemove([uid])
+        });
+      }
+      throw Exception('User is already a member of the event');
+    }
+
     await Future.wait([
       eventsRef.doc(eventId).collection('details').doc(detailId).update({
-        'members': FieldValue.arrayUnion([uuid]),
+        'members': FieldValue.arrayUnion([uid]),
+      }),
+      usersRef.doc(uid).update({
+        'events': FieldValue.arrayUnion(["$eventId:$detailId"])
       }),
       if ((await eventsRef
               .doc(eventId)
               .collection('details')
               .doc(detailId)
               .get())['requests']
-          .contains(uuid))
+          .contains(uid))
         eventsRef.doc(eventId).collection('details').doc(detailId).update({
-          'requests': FieldValue.arrayRemove([uuid])
+          'requests': FieldValue.arrayRemove([uid])
         }),
     ]);
   }
@@ -1562,7 +1602,11 @@ class DatabaseService {
       for (var key in requests.keys) {
         List<String> ids = requests[key]!;
         for (var id in ids) {
-          await acceptEventRequest(event.id!, key, id);
+          try {
+            await acceptEventRequest(event.id!, key, id);
+          } catch (e) {
+            debugPrint('User is already a member of the event');
+          }
           members.add(id);
         }
       }

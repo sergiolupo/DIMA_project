@@ -1,0 +1,165 @@
+import 'package:dima_project/models/user.dart';
+import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class EventRequestsPage extends ConsumerStatefulWidget {
+  final List<String> requests;
+  final DatabaseService databaseService;
+  final String eventId;
+  final String detailId;
+  const EventRequestsPage({
+    super.key,
+    required this.requests,
+    required this.databaseService,
+    required this.eventId,
+    required this.detailId,
+  });
+
+  @override
+  EventRequestsPageState createState() => EventRequestsPageState();
+}
+
+class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
+  late final DatabaseService _databaseService;
+  List<String> users = [];
+  @override
+  void initState() {
+    _databaseService = widget.databaseService;
+    users = widget.requests;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: const Icon(CupertinoIcons.back),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
+        ),
+        middle: Text(
+          'Event Requests',
+          style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+        ),
+      ),
+      child: ListView.builder(
+        itemCount: widget.requests.length,
+        itemBuilder: (context, index) {
+          return FutureBuilder(
+              future: _databaseService.getUserData(widget.requests[index]),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CupertinoActivityIndicator();
+                }
+                if (snapshot.hasError) {
+                  return const Text("Error");
+                }
+                final UserData user = snapshot.data as UserData;
+                return Row(
+                  children: [
+                    Expanded(
+                      child: CupertinoListTile(
+                        leading: ClipOval(
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            color: CupertinoColors.lightBackgroundGray,
+                            child: CreateImageWidget.getUserImage(
+                                user.imagePath!, 1),
+                          ),
+                        ),
+                        title: Text(
+                          user.username,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text("${user.name} ${user.surname}"),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        try {
+                          await _databaseService.acceptEventRequest(
+                              widget.eventId, widget.detailId, user.uid!);
+                          ref.invalidate(eventProvider(widget.eventId));
+                          ref.invalidate(joinedEventsProvider(user.uid!));
+                          ref.invalidate(
+                              createdEventsProvider(AuthService.uid));
+                        } catch (error) {
+                          debugPrint(error.toString());
+                          if (!context.mounted) return;
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) {
+                                return CupertinoAlertDialog(
+                                  title: const Text("Error"),
+                                  content:
+                                      const Text("User deleted his account"),
+                                  actions: [
+                                    CupertinoDialogAction(
+                                      child: const Text("Ok"),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
+                        setState(() {
+                          users.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CupertinoTheme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: const Text(
+                            "Accept",
+                            style: TextStyle(color: CupertinoColors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        await _databaseService.denyEventRequest(
+                            widget.eventId, widget.detailId, user.uid!);
+                        setState(() {
+                          users.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CupertinoTheme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: const Text(
+                            "Deny",
+                            style: TextStyle(color: CupertinoColors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              });
+        },
+      ),
+    );
+  }
+}

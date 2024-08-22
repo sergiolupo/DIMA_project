@@ -251,7 +251,7 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                   title: Row(
                                     children: [
                                       Icon(
-                                        CupertinoIcons.bell,
+                                        CupertinoIcons.square_list,
                                         color: CupertinoTheme.of(context)
                                             .primaryColor,
                                       ),
