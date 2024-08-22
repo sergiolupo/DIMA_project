@@ -46,6 +46,9 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
   int index = 0;
   late final DatabaseService databaseService;
   late final NotificationService notificationService;
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
+
   @override
   void dispose() {
     _groupNameController.dispose();
@@ -212,6 +215,10 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
               CupertinoTextField(
                 placeholder: widget.group.name,
                 controller: _groupNameController,
+                focusNode: _nameFocus,
+                onTapOutside: (pointer) {
+                  _nameFocus.unfocus();
+                },
                 padding: const EdgeInsets.all(16),
                 maxLines: 3,
                 minLines: 1,
@@ -228,6 +235,10 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
               CupertinoTextField(
                 placeholder: widget.group.description,
                 controller: _groupDescriptionController,
+                focusNode: _descriptionFocus,
+                onTapOutside: (pointer) {
+                  _descriptionFocus.unfocus();
+                },
                 padding: const EdgeInsets.all(16),
                 maxLines: 3,
                 minLines: 1,

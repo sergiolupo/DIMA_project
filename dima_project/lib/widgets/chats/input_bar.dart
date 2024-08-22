@@ -60,6 +60,9 @@ class InputBar extends StatelessWidget {
                   border: Border.all(color: CupertinoColors.white),
                   borderRadius: BorderRadius.circular(20),
                 ),
+                onTapOutside: (pointer) {
+                  focusNode.unfocus();
+                },
                 suffix: Container(
                   padding: const EdgeInsets.only(right: 10),
                   child: Row(

@@ -442,6 +442,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
     if (_clipboardOverlay?.mounted ?? false) {
       _clipboardOverlay?.remove();
     }
+    _focusNode.dispose();
     super.dispose();
   }
 

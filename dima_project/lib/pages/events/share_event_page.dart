@@ -231,6 +231,10 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
             );
           }
           return Container(
+            constraints: BoxConstraints(
+              maxHeight: groups.length * 50,
+            ),
+            height: groups.length * 50,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),

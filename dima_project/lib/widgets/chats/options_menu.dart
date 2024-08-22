@@ -49,7 +49,7 @@ class OptionsMenu extends StatelessWidget {
                         Icon(CupertinoIcons.calendar,
                             color: CupertinoTheme.of(context).primaryColor),
                         Text(
-                          "Create Event",
+                          "Event",
                           style: TextStyle(
                             color: CupertinoTheme.of(context)
                                 .textTheme

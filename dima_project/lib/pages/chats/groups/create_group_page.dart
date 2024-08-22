@@ -40,8 +40,24 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   final imageInsertPageKey = GlobalKey<ImageCropPageState>();
   List<String> selectedCategories = [];
   bool isPublic = true;
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
 
   List<String> uuids = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameFocus.dispose();
+    _descriptionFocus.dispose();
+    _groupNameController.dispose();
+    _groupDescriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +172,8 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
           child: Column(
             children: [
               CupertinoTextField(
+                focusNode: _nameFocus,
+                onTapOutside: (event) => _nameFocus.unfocus(),
                 controller: _groupNameController,
                 minLines: 1,
                 maxLines: 3,
@@ -192,6 +210,8 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               const SizedBox(height: 10),
               CupertinoTextField(
                 minLines: 1,
+                focusNode: _descriptionFocus,
+                onTapOutside: (event) => _descriptionFocus.unfocus(),
                 controller: _groupDescriptionController,
                 placeholder: 'Group Description',
                 maxLines: 5,

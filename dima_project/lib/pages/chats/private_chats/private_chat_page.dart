@@ -61,7 +61,6 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
   @override
   void initState() {
     _databaseService = widget.databaseService;
-
     _checkPrivateChatId();
 
     super.initState();
@@ -436,6 +435,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
     if (_clipboardOverlay?.mounted ?? false) {
       _clipboardOverlay?.remove();
     }
+    _focusNode.dispose();
     super.dispose();
   }
 }
