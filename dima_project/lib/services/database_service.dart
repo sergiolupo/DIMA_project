@@ -1176,6 +1176,9 @@ class DatabaseService {
   Future<void> acceptUserGroupRequest(
     String groupId,
   ) async {
+    await usersRef.doc(AuthService.uid).update({
+      'groupsRequests': FieldValue.arrayRemove([groupId])
+    });
     if ((await groupsRef.doc(groupId).get())['members']
         .contains(AuthService.uid)) {
       return;
