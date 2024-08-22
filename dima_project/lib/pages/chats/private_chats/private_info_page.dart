@@ -8,13 +8,15 @@ import 'package:dima_project/pages/chats/show_news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class PrivateInfoPage extends StatefulWidget {
+class PrivateInfoPage extends ConsumerStatefulWidget {
   final PrivateChat privateChat;
   final Function? navigateToPage;
   final bool canNavigate;
@@ -35,7 +37,7 @@ class PrivateInfoPage extends StatefulWidget {
   PrivateInfoPageState createState() => PrivateInfoPageState();
 }
 
-class PrivateInfoPageState extends State<PrivateInfoPage> {
+class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
   final String uid = AuthService.uid;
   late final DatabaseService _databaseService;
   bool notify = true;
@@ -58,6 +60,12 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final AsyncValue<List<Message>> images =
+        ref.watch(imagesPrivateChatProvider(widget.privateChat.id!));
+    final AsyncValue<List<Message>> news =
+        ref.watch(newsPrivateChatProvider(widget.privateChat.id!));
+    final AsyncValue<List<Message>> events =
+        ref.watch(eventsPrivateChatProvider(widget.privateChat.id!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
@@ -124,10 +132,12 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      FutureBuilder(
-                        future: _databaseService.getPrivateMessagesType(
-                            widget.privateChat.id!, Type.image),
-                        builder: (context, snapshot) {
+                      images.when(
+                        loading: () => const CupertinoActivityIndicator(),
+                        error: (error, stack) => Text(
+                          "Error",
+                        ),
+                        data: (data) {
                           return CupertinoListTile(
                             padding: const EdgeInsets.all(0),
                             title: Row(
@@ -143,13 +153,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                             ),
                             trailing: Row(
                               children: [
-                                snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        snapshot.hasError ||
-                                        snapshot.data!.isEmpty
+                                data.isEmpty
                                     ? const SizedBox()
                                     : Text(
-                                        snapshot.data!.length.toString(),
+                                        data.length.toString(),
                                         style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.normal,
@@ -167,16 +174,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                               ],
                             ),
                             onTap: () {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  snapshot.hasError) {
-                                return;
-                              }
-                              List<Message> media = snapshot.data!;
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowImagesPage(
                                   privateChat: widget.privateChat,
-                                  medias: media,
+                                  medias: data,
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
@@ -193,7 +194,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     privateChat: widget.privateChat,
                                     canNavigate: false,
                                     isGroup: false,
-                                    medias: media,
+                                    medias: data,
                                     user: widget.user,
                                     databaseService: _databaseService,
                                     notificationService:
@@ -206,10 +207,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      FutureBuilder(
-                        future: _databaseService.getPrivateMessagesType(
-                            widget.privateChat.id!, Type.event),
-                        builder: (context, snapshot) {
+                      events.when(
+                        loading: () => const CupertinoActivityIndicator(),
+                        error: (error, stack) => Text('Error'),
+                        data: (data) {
                           return CupertinoListTile(
                             padding: const EdgeInsets.all(0),
                             title: Row(
@@ -225,13 +226,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                             ),
                             trailing: Row(
                               children: [
-                                snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        snapshot.hasError ||
-                                        snapshot.data!.isEmpty
+                                data.isEmpty
                                     ? const SizedBox()
                                     : Text(
-                                        snapshot.data!.length.toString(),
+                                        data.length.toString(),
                                         style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.normal,
@@ -249,16 +247,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                               ],
                             ),
                             onTap: () {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  snapshot.hasError) {
-                                return;
-                              }
-                              List<Message> events = snapshot.data!;
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowEventsPage(
                                   privateChat: widget.privateChat,
-                                  events: events,
+                                  events: data,
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
@@ -276,7 +268,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     privateChat: widget.privateChat,
                                     canNavigate: false,
                                     isGroup: false,
-                                    events: events,
+                                    events: data,
                                     user: widget.user,
                                     databaseService: _databaseService,
                                     notificationService:
@@ -289,10 +281,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      FutureBuilder(
-                        future: _databaseService.getPrivateMessagesType(
-                            widget.privateChat.id!, Type.news),
-                        builder: (context, snapshot) {
+                      news.when(
+                        loading: () => const CupertinoActivityIndicator(),
+                        error: (error, stack) => Text('Error'),
+                        data: (data) {
                           return CupertinoListTile(
                             padding: const EdgeInsets.all(0),
                             title: Row(
@@ -308,13 +300,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                             ),
                             trailing: Row(
                               children: [
-                                snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        snapshot.hasError ||
-                                        snapshot.data!.isEmpty
+                                data.isEmpty
                                     ? const SizedBox()
                                     : Text(
-                                        snapshot.data!.length.toString(),
+                                        data.length.toString(),
                                         style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.normal,
@@ -332,16 +321,10 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                               ],
                             ),
                             onTap: () {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  snapshot.hasError) {
-                                return;
-                              }
-                              List<Message> news = snapshot.data!;
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowNewsPage(
                                   privateChat: widget.privateChat,
-                                  news: news,
+                                  news: data,
                                   canNavigate: true,
                                   navigateToPage: widget.navigateToPage,
                                   isGroup: false,
@@ -359,7 +342,7 @@ class PrivateInfoPageState extends State<PrivateInfoPage> {
                                     privateChat: widget.privateChat,
                                     canNavigate: false,
                                     isGroup: false,
-                                    news: news,
+                                    news: data,
                                     user: widget.user,
                                     databaseService: _databaseService,
                                     notificationService:

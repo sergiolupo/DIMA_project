@@ -8,6 +8,7 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
@@ -19,9 +20,10 @@ import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:dima_project/widgets/messages/text_message_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class PrivateChatPage extends StatefulWidget {
+class PrivateChatPage extends ConsumerStatefulWidget {
   final PrivateChat privateChat;
   final bool canNavigate;
   final Function? navigateToPage;
@@ -46,7 +48,7 @@ class PrivateChatPage extends StatefulWidget {
   PrivateChatPageState createState() => PrivateChatPageState();
 }
 
-class PrivateChatPageState extends State<PrivateChatPage> {
+class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
   Stream<List<Message>>? chats;
   TextEditingController messageEditingController = TextEditingController();
   final String uid = AuthService.uid;
@@ -72,6 +74,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         middle: GestureDetector(
           onTap: () {
             if (widget.privateChat.id != null) {
+              ref.invalidate(newsPrivateChatProvider);
+              ref.invalidate(eventsPrivateChatProvider);
+              ref.invalidate(newsPrivateChatProvider);
               if (!widget.canNavigate) {
                 Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => PrivateInfoPage(
@@ -385,7 +390,9 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         ],
         type: Type.text,
       );
-
+      setState(() {
+        messageEditingController.clear();
+      });
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
       await _databaseService.sendMessage(widget.privateChat.id!, message);
@@ -393,10 +400,6 @@ class PrivateChatPageState extends State<PrivateChatPage> {
         widget.privateChat,
         message,
       );
-
-      setState(() {
-        messageEditingController.clear();
-      });
     }
   }
 

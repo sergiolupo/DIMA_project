@@ -69,20 +69,39 @@ final groupsProvider =
   }
 });
 
-final imagesGroupProvider =
+final newsPrivateChatProvider =
     FutureProvider.family<List<Message>, String>((ref, id) async {
   try {
-    final images = DatabaseService().getGroupMessagesType(id, Type.image);
+    final news = DatabaseService().getPrivateMessagesType(id, Type.news);
+    return news;
+  } catch (e) {
+    return [];
+  }
+});
+final eventsPrivateChatProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
+  try {
+    final events = DatabaseService().getPrivateMessagesType(id, Type.event);
+    return events;
+  } catch (e) {
+    return [];
+  }
+});
+final imagesPrivateChatProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
+  try {
+    final images = DatabaseService().getPrivateMessagesType(id, Type.image);
     return images;
   } catch (e) {
     return [];
   }
 });
-final requestsGroupProvider =
-    FutureProvider.family<List<UserData>, String>((ref, id) async {
+
+final imagesGroupProvider =
+    FutureProvider.family<List<Message>, String>((ref, id) async {
   try {
-    final requests = DatabaseService().getGroupRequestsForGroup(id);
-    return requests;
+    final images = DatabaseService().getGroupMessagesType(id, Type.image);
+    return images;
   } catch (e) {
     return [];
   }
@@ -101,6 +120,15 @@ final eventsGroupProvider =
   try {
     final events = DatabaseService().getGroupMessagesType(id, Type.event);
     return events;
+  } catch (e) {
+    return [];
+  }
+});
+final requestsGroupProvider =
+    FutureProvider.family<List<UserData>, String>((ref, id) async {
+  try {
+    final requests = DatabaseService().getGroupRequestsForGroup(id);
+    return requests;
   } catch (e) {
     return [];
   }

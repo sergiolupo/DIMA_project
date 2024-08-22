@@ -414,13 +414,12 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         ],
         type: Type.text,
       );
-
-      await _databaseService.sendMessage(group.id, message);
-      await widget.notificationService
-          .sendNotificationOnGroup(widget.group.id, message);
       setState(() {
         messageEditingController.clear();
       });
+      await _databaseService.sendMessage(group.id, message);
+      await widget.notificationService
+          .sendNotificationOnGroup(widget.group.id, message);
     }
   }
 
