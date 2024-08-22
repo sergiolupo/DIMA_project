@@ -35,6 +35,10 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<AsyncValue<UserData>> users = [];
+    for (var user in widget.requests) {
+      users.add(ref.watch(userProvider(user)));
+    }
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
@@ -52,16 +56,11 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
       child: ListView.builder(
         itemCount: widget.requests.length,
         itemBuilder: (context, index) {
-          return FutureBuilder(
-              future: _databaseService.getUserData(widget.requests[index]),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CupertinoActivityIndicator();
-                }
-                if (snapshot.hasError) {
-                  return const Text("Error");
-                }
-                final UserData user = snapshot.data as UserData;
+          final userData = users[index];
+          return userData.when(
+              loading: () => const CupertinoActivityIndicator(),
+              error: (error, stack) => const Text("Error"),
+              data: (user) {
                 return Row(
                   children: [
                     Expanded(

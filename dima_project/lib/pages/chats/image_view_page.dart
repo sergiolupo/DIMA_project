@@ -6,10 +6,12 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/show_images_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ImageViewPage extends StatefulWidget {
+class ImageViewPage extends ConsumerStatefulWidget {
   final Message media;
   final List<Message> messages;
   final bool canNavigate;
@@ -35,7 +37,7 @@ class ImageViewPage extends StatefulWidget {
   ImageViewPageState createState() => ImageViewPageState();
 }
 
-class ImageViewPageState extends State<ImageViewPage> {
+class ImageViewPageState extends ConsumerState<ImageViewPage> {
   late PageController _pageController;
   late int initialPage;
   late final DatabaseService _databaseService;
@@ -51,6 +53,10 @@ class ImageViewPageState extends State<ImageViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<AsyncValue<UserData>> users = [];
+    for (var message in widget.messages) {
+      users.add(ref.watch(userProvider(message.sender)));
+    }
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.messages.length,
@@ -82,26 +88,14 @@ class ImageViewPageState extends State<ImageViewPage> {
                         CupertinoTheme.of(context).textTheme.textStyle.color),
               ),
               middle: SingleChildScrollView(
-                child: FutureBuilder<UserData>(
-                  future: _databaseService.getUserData(message.sender),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CupertinoActivityIndicator());
-                    } else if (snapshot.hasError) {
-                      return _buildUserInfoRow(
-                        'Account Deleted',
-                        message.time.microsecondsSinceEpoch.toString(),
-                      );
-                    } else if (snapshot.hasData) {
-                      final user = snapshot.data!;
-                      return _buildUserInfoRow(user.username,
-                          message.time.microsecondsSinceEpoch.toString());
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-              ),
+                  child: users[index].when(
+                      loading: () =>
+                          const Center(child: CupertinoActivityIndicator()),
+                      error: (error, stack) => const Text('Error'),
+                      data: (user) {
+                        return _buildUserInfoRow(user.username,
+                            message.time.microsecondsSinceEpoch.toString());
+                      })),
             ),
             child: _buildImageView(message));
       },
