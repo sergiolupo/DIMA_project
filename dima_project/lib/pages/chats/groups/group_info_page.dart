@@ -666,7 +666,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                                   onTap: () {
                                                     ref.invalidate(
                                                         followerProvider(
-                                                            widget.groupId));
+                                                            AuthService.uid));
                                                     Navigator.of(context,
                                                             rootNavigator: true)
                                                         .push(
