@@ -357,7 +357,6 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
       final RenderBox renderBox =
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
-      debugPrint(size.toString());
       _clipboardOverlay = OverlayEntry(
         builder: (context) =>
             BannerMessage(size: size, canNavigate: false, isCopy: isCopy),

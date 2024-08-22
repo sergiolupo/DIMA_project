@@ -1074,7 +1074,6 @@ class DatabaseService {
           //check if the event is still valid
           final event = await eventsRef.doc(doc['content']).get();
           if (!event.exists) {
-            debugPrint('Event does not exist');
             messages.removeWhere((element) => element.id == doc.id);
           }
         }
@@ -1642,17 +1641,25 @@ class DatabaseService {
         members.add(id);
       }
     }
+
     await inviteUserToGroup(group.id, uuids, members);
   }
 
   Future<void> inviteUserToGroup(
       String groupId, List<String> uids, List<dynamic> members) async {
-    for (var id in uids) {
-      if (!members.contains(id)) {
-        await usersRef.doc(id).update({
-          'groupsRequests': FieldValue.arrayUnion([groupId])
-        });
+    try {
+      for (var id in uids) {
+        if (!members.contains(id)) {
+          final user = await usersRef.doc(id).get();
+          if (user.exists && !user['groupsRequests'].contains(groupId)) {
+            await usersRef.doc(id).update({
+              'groupsRequests': FieldValue.arrayUnion([groupId])
+            });
+          }
+        }
       }
+    } catch (e) {
+      debugPrint('Error while inviting user to group: $e');
     }
   }
 
