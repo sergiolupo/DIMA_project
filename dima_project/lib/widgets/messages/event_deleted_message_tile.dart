@@ -20,8 +20,8 @@ class EventDeletedMessageTile extends StatelessWidget {
       children: [
         Container(
           padding: EdgeInsets.only(
-            top: 8,
-            bottom: 8,
+            top: 4,
+            bottom: 4,
             left: message.sentByMe! ? 24 : 0,
             right: message.sentByMe! ? 0 : 24,
           ),
@@ -37,14 +37,10 @@ class EventDeletedMessageTile extends StatelessWidget {
               if (!message.sentByMe! && message.isGroupMessage)
                 Padding(
                   padding: const EdgeInsets.only(right: 3.0),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        CreateImageWidget.getUserImage(
-                          message.senderImage!,
-                          0,
-                        ),
-                      ]),
+                  child: CreateImageWidget.getUserImage(
+                    message.senderImage!,
+                    0,
+                  ),
                 ),
               Stack(
                 children: [
@@ -89,6 +85,8 @@ class EventDeletedMessageTile extends StatelessWidget {
                                 ? CupertinoColors.white.withOpacity(0.5)
                                 : CupertinoColors.black.withOpacity(0.3),
                             fontSize: 16,
+                            letterSpacing: -0.5,
+                            fontWeight: FontWeight.bold,
                           ),
                           softWrap: true,
                           overflow: TextOverflow.visible,

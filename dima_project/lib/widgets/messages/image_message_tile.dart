@@ -50,16 +50,17 @@ class ImageMessageTile extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-              top: 8,
-              bottom: 8,
+              top: 4,
+              bottom: 4,
               left: message.sentByMe! ? 24 : 0,
               right: message.sentByMe! ? 0 : 24,
             ),
             alignment: message.sentByMe!
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
+                ? Alignment.bottomRight
+                : Alignment.bottomLeft,
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: message.sentByMe!
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
@@ -67,14 +68,9 @@ class ImageMessageTile extends StatelessWidget {
                 if (!message.sentByMe! && message.isGroupMessage)
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 240),
-                        CreateImageWidget.getUserImage(
-                          message.senderImage!,
-                          0,
-                        ),
-                      ],
+                    child: CreateImageWidget.getUserImage(
+                      message.senderImage!,
+                      0,
                     ),
                   ),
                 Container(
@@ -116,6 +112,7 @@ class ImageMessageTile extends StatelessWidget {
                                     ? CupertinoColors.white
                                     : CupertinoColors.black,
                                 letterSpacing: -0.5,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -138,7 +135,7 @@ class ImageMessageTile extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: message.sentByMe! ? 8 : 25,
+            bottom: message.sentByMe! ? 8 : 10,
             right: message.sentByMe! ? 2 : null,
             left: message.sentByMe!
                 ? null

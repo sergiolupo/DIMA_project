@@ -51,8 +51,8 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
               children: [
                 Container(
                   padding: EdgeInsets.only(
-                    top: 8,
-                    bottom: 8,
+                    top: 7,
+                    bottom: 7,
                     left: widget.message.sentByMe! ? 24 : 0,
                     right: widget.message.sentByMe! ? 0 : 24,
                   ),
@@ -61,6 +61,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                       : Alignment.centerLeft,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: widget.message.sentByMe!
                         ? MainAxisAlignment.end
                         : MainAxisAlignment.start,
@@ -69,13 +70,10 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                           widget.message.isGroupMessage)
                         Padding(
                           padding: const EdgeInsets.only(right: 3),
-                          child: Column(children: [
-                            const SizedBox(height: 100),
-                            CreateImageWidget.getUserImage(
-                              widget.message.senderImage!,
-                              0,
-                            ),
-                          ]),
+                          child: CreateImageWidget.getUserImage(
+                            widget.message.senderImage!,
+                            0,
+                          ),
                         ),
                       Container(
                         margin: widget.message.sentByMe!
