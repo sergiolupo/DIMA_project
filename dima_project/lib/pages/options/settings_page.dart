@@ -9,6 +9,7 @@ import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +37,10 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   bool isPublic = true;
   String? defaultImage;
   final String uid = AuthService.uid;
+  FocusNode nameFocus = FocusNode();
+  FocusNode surnameFocus = FocusNode();
+  FocusNode usernameFocus = FocusNode();
+  bool initialized = false;
 
   @override
   void initState() {
@@ -101,12 +106,17 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) => Text('Error: $error'),
         data: (user) {
-          _nameController = TextEditingController(text: user.name);
-          _surnameController = TextEditingController(text: user.surname);
-          _usernameController = TextEditingController(text: user.username);
-          _oldUsername = user.username;
-          _oldIsPublic = user.isPublic!;
-          selectedCategories = user.categories;
+          if (!initialized) {
+            _nameController = TextEditingController(text: user.name);
+            _surnameController = TextEditingController(text: user.surname);
+            _usernameController = TextEditingController(text: user.username);
+            _oldUsername = user.username;
+            _oldIsPublic = user.isPublic!;
+            selectedCategories = user.categories;
+          }
+
+          initialized = true;
+
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -146,9 +156,11 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildTextField('Name', user.name, _nameController),
-                _buildTextField('Surname', user.surname, _surnameController),
-                _buildTextField('Username', user.username, _usernameController),
+                _buildTextField('Name', user.name, _nameController, nameFocus),
+                _buildTextField(
+                    'Surname', user.surname, _surnameController, surnameFocus),
+                _buildTextField('Username', user.username, _usernameController,
+                    usernameFocus),
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0, left: 10),
@@ -202,8 +214,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         });
   }
 
-  Widget _buildTextField(
-      String labelText, String? placeholder, TextEditingController controller) {
+  Widget _buildTextField(String labelText, String? placeholder,
+      TextEditingController controller, FocusNode focusNode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
@@ -218,6 +230,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           const SizedBox(height: 5),
           CupertinoTextField(
+            focusNode: focusNode,
+            onTapOutside: (event) => focusNode.unfocus(),
             placeholder: placeholder,
             controller: controller,
             padding: const EdgeInsets.all(15),
