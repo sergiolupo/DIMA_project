@@ -36,6 +36,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   bool isPublic = true;
   String? defaultImage;
   final String uid = AuthService.uid;
+
   @override
   void initState() {
     super.initState();
@@ -106,94 +107,97 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
           _oldUsername = user.username;
           _oldIsPublic = user.isPublic!;
           selectedCategories = user.categories;
-          return Column(
-            children: [
-              GestureDetector(
-                onTap: () => {
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => ImageCropPage(
-                        defaultImage: defaultImage ?? user.imagePath!,
-                        imageType: 0,
-                        imagePath: selectedImagePath,
-                        imagePicker: ImagePicker(),
-                        imageInsertPageKey: (Uint8List selectedImagePath) {
-                          setState(() {
-                            this.selectedImagePath = selectedImagePath;
-                            defaultImage = '';
-                          });
-                        },
-                      ),
-                    ),
-                  )
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: selectedImagePath == null
-                      ? CreateImageWidget.getUserImage(
-                          user.imagePath!,
-                          MediaQuery.of(context).size.width >
-                                  Constants.limitWidth
-                              ? 2
-                              : 1)
-                      : CreateImageWidget.getUserImageMemory(
-                          selectedImagePath!,
-                          MediaQuery.of(context).size.width >
-                              Constants.limitWidth),
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildTextField('Name', user.name, _nameController),
-              _buildTextField('Surname', user.surname, _surnameController),
-              _buildTextField('Username', user.username, _usernameController),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0, left: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: CupertinoTheme.of(context).primaryContrastingColor,
-                  ),
-                  child: Column(children: [
-                    CupertinoListTile(
-                      title: const Text('Categories'),
-                      leading: const Icon(FontAwesomeIcons.tableList),
-                      trailing: const Icon(CupertinoIcons.forward),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (context) => CategoriesPage(
-                              selectedCategories: selectedCategories,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.separator,
-                    ),
-                    CupertinoListTile(
-                      title: const Text('Public Profile'),
-                      leading: isPublic
-                          ? const Icon(CupertinoIcons.lock_open_fill)
-                          : const Icon(CupertinoIcons.lock_fill),
-                      trailing: Transform.scale(
-                        scale: 0.75,
-                        child: CupertinoSwitch(
-                          value: isPublic,
-                          onChanged: (bool value) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => ImageCropPage(
+                          defaultImage: defaultImage ?? user.imagePath!,
+                          imageType: 0,
+                          imagePath: selectedImagePath,
+                          imagePicker: ImagePicker(),
+                          imageInsertPageKey: (Uint8List selectedImagePath) {
                             setState(() {
-                              isPublic = value;
+                              this.selectedImagePath = selectedImagePath;
+                              defaultImage = '';
                             });
                           },
                         ),
                       ),
-                    ),
-                  ]),
+                    )
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: selectedImagePath == null
+                        ? CreateImageWidget.getUserImage(
+                            user.imagePath!,
+                            MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? 2
+                                : 1)
+                        : CreateImageWidget.getUserImageMemory(
+                            selectedImagePath!,
+                            MediaQuery.of(context).size.width >
+                                Constants.limitWidth),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                _buildTextField('Name', user.name, _nameController),
+                _buildTextField('Surname', user.surname, _surnameController),
+                _buildTextField('Username', user.username, _usernameController),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0, left: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: CupertinoTheme.of(context).primaryContrastingColor,
+                    ),
+                    child: Column(children: [
+                      CupertinoListTile(
+                        title: const Text('Categories'),
+                        leading: const Icon(FontAwesomeIcons.tableList),
+                        trailing: const Icon(CupertinoIcons.forward),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => CategoriesPage(
+                                selectedCategories: selectedCategories,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.separator,
+                      ),
+                      CupertinoListTile(
+                        title: const Text('Public Profile'),
+                        leading: isPublic
+                            ? const Icon(CupertinoIcons.lock_open_fill)
+                            : const Icon(CupertinoIcons.lock_fill),
+                        trailing: Transform.scale(
+                          scale: 0.75,
+                          child: CupertinoSwitch(
+                            value: isPublic,
+                            onChanged: (bool value) {
+                              setState(() {
+                                isPublic = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
           );
         });
   }
@@ -241,6 +245,22 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _showDialog('Invalid choice', 'Username is already taken.');
       return false;
     }
+    if (_nameController.text.length > 20) {
+      _showDialog(
+          'Invalid choice', 'The name can be a maximum of 20 characters.');
+      return false;
+    }
+    if (_surnameController.text.length > 20) {
+      _showDialog(
+          'Invalid choice', 'The surname can be a maximum of 20 characters.');
+      return false;
+    }
+    if (_usernameController.text.length > 20) {
+      _showDialog(
+          'Invalid choice', 'The username can be a maximum of 20 characters.');
+      return false;
+    }
+
     return true;
   }
 
@@ -301,6 +321,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     _nameController.dispose();
     _surnameController.dispose();
     _usernameController.dispose();
+
     super.dispose();
   }
 }

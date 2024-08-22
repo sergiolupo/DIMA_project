@@ -140,38 +140,30 @@ class UserProfileState extends ConsumerState<UserProfile> {
             child: Column(
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            CreateImageWidget.getUserImage(user.imagePath!, 1),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                '${user.name} ${user.surname}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle
-                                      .color,
-                                ),
-                              ),
-                            ),
-                          ],
+                    CreateImageWidget.getUserImage(user.imagePath!, 1),
+                    const SizedBox(width: 35),
+                    getGroups(),
+                    const SizedBox(width: 20),
+                    getFollowers(),
+                    const SizedBox(width: 20),
+                    getFollowings(),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Text(
+                        '${user.name} ${user.surname}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .color,
                         ),
-                        const SizedBox(width: 35),
-                        getGroups(),
-                        const SizedBox(width: 20),
-                        getFollowers(),
-                        const SizedBox(width: 20),
-                        getFollowings(),
-                      ],
+                      ),
                     ),
                   ],
                 ),

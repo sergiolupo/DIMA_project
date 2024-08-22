@@ -79,8 +79,11 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                         margin: widget.message.sentByMe!
                             ? const EdgeInsets.only(left: 30)
                             : const EdgeInsets.only(right: 30),
-                        padding: const EdgeInsets.only(
-                            top: 10, left: 15, right: 8, bottom: 10),
+                        padding: EdgeInsets.only(
+                            top: widget.message.sentByMe! ? 15 : 8,
+                            left: 15,
+                            right: 8,
+                            bottom: 10),
                         decoration: BoxDecoration(
                           borderRadius: widget.message.sentByMe!
                               ? const BorderRadius.only(
@@ -106,7 +109,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 4.0),
+                                    padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
                                       widget.senderUsername!,
                                       textAlign: TextAlign.center,
@@ -139,6 +142,8 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                   child: Column(
                                     children: [
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Transform.scale(
                                             scale: 1.4,
@@ -150,6 +155,8 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                           ),
                                           const SizedBox(width: 10),
                                           Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               SizedBox(
                                                 width: 150,
@@ -186,11 +193,59 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                                   ),
                                                 ),
                                               ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    event.details!
+                                                        .map((e) =>
+                                                            e.members!.length)
+                                                        .reduce((a, b) => a + b)
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: widget
+                                                              .message.sentByMe!
+                                                          ? CupertinoColors
+                                                              .white
+                                                          : CupertinoColors
+                                                              .black,
+                                                    ),
+                                                  ),
+                                                  event.details!
+                                                              .map((e) => e
+                                                                  .members!
+                                                                  .length)
+                                                              .reduce((a, b) =>
+                                                                  a + b) >
+                                                          1
+                                                      ? Text(" Participants",
+                                                          style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: widget
+                                                                    .message
+                                                                    .sentByMe!
+                                                                ? CupertinoColors
+                                                                    .white
+                                                                : CupertinoColors
+                                                                    .black,
+                                                          ))
+                                                      : Text(" Participant",
+                                                          style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: widget
+                                                                    .message
+                                                                    .sentByMe!
+                                                                ? CupertinoColors
+                                                                    .white
+                                                                : CupertinoColors
+                                                                    .black,
+                                                          )),
+                                                ],
+                                              ),
                                             ],
                                           )
                                         ],
                                       ),
-                                      const SizedBox(height: 30),
                                     ],
                                   ),
                                 ),
@@ -203,7 +258,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                   ),
                 ),
                 Positioned(
-                  bottom: widget.message.sentByMe! ? 7 : 20,
+                  bottom: widget.message.sentByMe! ? 7 : 10,
                   right: widget.message.sentByMe! ? 2 : null,
                   left: widget.message.sentByMe!
                       ? 20
