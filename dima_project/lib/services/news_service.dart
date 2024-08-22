@@ -43,6 +43,7 @@ class NewsService {
 
   Future<void> getCategoriesNews(String category) async {
     try {
+      categories = [];
       String url =
           "https://newsapi.org/v2/everything?q=$category&apiKey=$newsApiKey";
       var response = await http.get(Uri.parse(url));
