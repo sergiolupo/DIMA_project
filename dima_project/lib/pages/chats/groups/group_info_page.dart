@@ -12,6 +12,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/utils/constants.dart';
@@ -20,10 +21,11 @@ import 'package:dima_project/widgets/user_tile.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
-class GroupInfoPage extends StatefulWidget {
+class GroupInfoPage extends ConsumerStatefulWidget {
   final Group group;
   final Function? navigateToPage;
   final bool canNavigate;
@@ -44,7 +46,7 @@ class GroupInfoPage extends StatefulWidget {
   GroupInfoPageState createState() => GroupInfoPageState();
 }
 
-class GroupInfoPageState extends State<GroupInfoPage> {
+class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
   late Group group;
 
   final String uid = AuthService.uid;
@@ -71,6 +73,10 @@ class GroupInfoPageState extends State<GroupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<AsyncValue<UserData>> members = [];
+    for (var member in group.members!) {
+      members.add(ref.watch(userProvider(member)));
+    }
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         transitionBetweenRoutes: false,
@@ -700,10 +706,10 @@ class GroupInfoPageState extends State<GroupInfoPage> {
                                 color: CupertinoColors.opaqueSeparator
                                     .withOpacity(0.2),
                               ),
-                              memberList(),
+                              memberList(members),
                             ],
                           )
-                        : memberList(),
+                        : memberList(members),
                   ),
                 ],
               ),
@@ -728,90 +734,81 @@ class GroupInfoPageState extends State<GroupInfoPage> {
     );
   }
 
-  Widget memberList() {
+  Widget memberList(List<AsyncValue<UserData>> members) {
     return ListView.builder(
-      primary: false,
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: group.members!.length,
-      itemBuilder: (context, index) {
-        return FutureBuilder(
-            future: _databaseService.getUserData(group.members![index]),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Shimmer.fromColors(
-                  baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-                  highlightColor:
-                      CupertinoTheme.of(context).primaryContrastingColor,
-                  child: CupertinoListTile(
-                    leading: ClipOval(
-                      child: Container(
-                        color:
-                            CupertinoTheme.of(context).primaryContrastingColor,
-                        width: 50.0,
-                        height: 50.0,
+        primary: false,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: group.members!.length,
+        itemBuilder: (context, index) {
+          return members[index].when(loading: () {
+            return Shimmer.fromColors(
+              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+              highlightColor:
+                  CupertinoTheme.of(context).primaryContrastingColor,
+              child: CupertinoListTile(
+                leading: ClipOval(
+                  child: Container(
+                    color: CupertinoTheme.of(context).primaryContrastingColor,
+                    width: 50.0,
+                    height: 50.0,
+                  ),
+                ),
+                title: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      shape: BoxShape.rectangle,
+                      color:
+                          CupertinoTheme.of(context).primaryContrastingColor),
+                  width: 50.0,
+                  height: 15.0,
+                ),
+                subtitle: Container(
+                  width: 70.0,
+                  height: 10.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color:
+                          CupertinoTheme.of(context).primaryContrastingColor),
+                ),
+              ),
+            );
+          }, error: (error, stack) {
+            return const Text('Error');
+          }, data: (userData) {
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: UserTile(
+                        user: userData,
+                        isFollowing: null,
                       ),
                     ),
-                    title: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          shape: BoxShape.rectangle,
-                          color: CupertinoTheme.of(context)
-                              .primaryContrastingColor),
-                      width: 50.0,
-                      height: 15.0,
-                    ),
-                    subtitle: Container(
-                      width: 70.0,
-                      height: 10.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: CupertinoTheme.of(context)
-                              .primaryContrastingColor),
-                    ),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                final UserData userData = snapshot.data!;
-
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: UserTile(
-                            user: userData,
-                            isFollowing: null,
+                    if (group.admin == userData.uid)
+                      const Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text(
+                          "Admin",
+                          style: TextStyle(
+                            color: CupertinoColors.systemGrey4,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (group.admin == userData.uid)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Text(
-                              "Admin",
-                              style: TextStyle(
-                                color: CupertinoColors.systemGrey4,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    (index == group.members!.length - 1)
-                        ? const SizedBox()
-                        : Container(
-                            height: 1,
-                            color: CupertinoColors.opaqueSeparator
-                                .withOpacity(0.2),
-                          ),
+                      ),
                   ],
-                );
-              }
-            });
-      },
-    );
+                ),
+                (index == group.members!.length - 1)
+                    ? const SizedBox()
+                    : Container(
+                        height: 1,
+                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
+                      ),
+              ],
+            );
+          });
+        });
   }
 
   void showLeaveGroupDialog(BuildContext context) {
