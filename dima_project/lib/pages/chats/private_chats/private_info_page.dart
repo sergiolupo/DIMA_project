@@ -132,48 +132,51 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      images.when(
-                        loading: () => const CupertinoActivityIndicator(),
-                        error: (error, stack) => Text(
-                          "Error",
+                      CupertinoListTile(
+                        padding: const EdgeInsets.all(0),
+                        title: Row(
+                          children: [
+                            Icon(
+                              CupertinoIcons.photo_on_rectangle,
+                              color: CupertinoTheme.of(context).primaryColor,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text("Media"),
+                          ],
                         ),
-                        data: (data) {
-                          return CupertinoListTile(
-                            padding: const EdgeInsets.all(0),
-                            title: Row(
-                              children: [
-                                Icon(
-                                  CupertinoIcons.photo_on_rectangle,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                ),
-                                const SizedBox(width: 10),
-                                const Text("Media"),
-                              ],
+                        trailing: Row(
+                          children: [
+                            images.when(
+                                loading: () => const SizedBox(),
+                                error: (error, stack) => const Text(
+                                      "Error",
+                                    ),
+                                data: (data) {
+                                  return data.isEmpty
+                                      ? const SizedBox()
+                                      : Text(
+                                          data.length.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.normal,
+                                            color:
+                                                CupertinoColors.opaqueSeparator,
+                                          ),
+                                        );
+                                }),
+                            const SizedBox(width: 10),
+                            Icon(
+                              CupertinoIcons.right_chevron,
+                              color: CupertinoTheme.of(context).primaryColor,
+                              size: 18,
                             ),
-                            trailing: Row(
-                              children: [
-                                data.isEmpty
-                                    ? const SizedBox()
-                                    : Text(
-                                        data.length.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.normal,
-                                          color:
-                                              CupertinoColors.opaqueSeparator,
-                                        ),
-                                      ),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  size: 18,
-                                ),
-                              ],
-                            ),
-                            onTap: () {
+                          ],
+                        ),
+                        onTap: () {
+                          images.when(
+                            loading: () => (),
+                            error: (error, stack) => (),
+                            data: (data) {
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowImagesPage(
                                   privateChat: widget.privateChat,
@@ -207,46 +210,49 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      events.when(
-                        loading: () => const CupertinoActivityIndicator(),
-                        error: (error, stack) => Text('Error'),
-                        data: (data) {
-                          return CupertinoListTile(
-                            padding: const EdgeInsets.all(0),
-                            title: Row(
-                              children: [
-                                Icon(
-                                  CupertinoIcons.calendar,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                ),
-                                const SizedBox(width: 10),
-                                const Text("Events"),
-                              ],
+                      CupertinoListTile(
+                        padding: const EdgeInsets.all(0),
+                        title: Row(
+                          children: [
+                            Icon(
+                              CupertinoIcons.calendar,
+                              color: CupertinoTheme.of(context).primaryColor,
                             ),
-                            trailing: Row(
-                              children: [
-                                data.isEmpty
-                                    ? const SizedBox()
-                                    : Text(
-                                        data.length.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.normal,
-                                          color:
-                                              CupertinoColors.opaqueSeparator,
-                                        ),
-                                      ),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  size: 18,
-                                ),
-                              ],
+                            const SizedBox(width: 10),
+                            const Text("Events"),
+                          ],
+                        ),
+                        trailing: Row(
+                          children: [
+                            events.when(
+                                loading: () => const SizedBox(),
+                                error: (error, stack) => const Text('Error'),
+                                data: (data) {
+                                  return data.isEmpty
+                                      ? const SizedBox()
+                                      : Text(
+                                          data.length.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.normal,
+                                            color:
+                                                CupertinoColors.opaqueSeparator,
+                                          ),
+                                        );
+                                }),
+                            const SizedBox(width: 10),
+                            Icon(
+                              CupertinoIcons.right_chevron,
+                              color: CupertinoTheme.of(context).primaryColor,
+                              size: 18,
                             ),
-                            onTap: () {
+                          ],
+                        ),
+                        onTap: () {
+                          events.when(
+                            loading: () => (),
+                            error: (error, stack) => (),
+                            data: (data) {
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowEventsPage(
                                   privateChat: widget.privateChat,
@@ -281,46 +287,49 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      news.when(
-                        loading: () => const CupertinoActivityIndicator(),
-                        error: (error, stack) => Text('Error'),
-                        data: (data) {
-                          return CupertinoListTile(
-                            padding: const EdgeInsets.all(0),
-                            title: Row(
-                              children: [
-                                Icon(
-                                  CupertinoIcons.photo_on_rectangle,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                ),
-                                const SizedBox(width: 10),
-                                const Text("News"),
-                              ],
+                      CupertinoListTile(
+                        padding: const EdgeInsets.all(0),
+                        title: Row(
+                          children: [
+                            Icon(
+                              CupertinoIcons.photo_on_rectangle,
+                              color: CupertinoTheme.of(context).primaryColor,
                             ),
-                            trailing: Row(
-                              children: [
-                                data.isEmpty
-                                    ? const SizedBox()
-                                    : Text(
-                                        data.length.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.normal,
-                                          color:
-                                              CupertinoColors.opaqueSeparator,
-                                        ),
-                                      ),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  size: 18,
-                                ),
-                              ],
+                            const SizedBox(width: 10),
+                            const Text("News"),
+                          ],
+                        ),
+                        trailing: Row(
+                          children: [
+                            news.when(
+                                loading: () => const SizedBox(),
+                                error: (error, stack) => const Text('Error'),
+                                data: (data) {
+                                  return data.isEmpty
+                                      ? const SizedBox()
+                                      : Text(
+                                          data.length.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.normal,
+                                            color:
+                                                CupertinoColors.opaqueSeparator,
+                                          ),
+                                        );
+                                }),
+                            const SizedBox(width: 10),
+                            Icon(
+                              CupertinoIcons.right_chevron,
+                              color: CupertinoTheme.of(context).primaryColor,
+                              size: 18,
                             ),
-                            onTap: () {
+                          ],
+                        ),
+                        onTap: () {
+                          news.when(
+                            loading: () => (),
+                            error: (error, stack) => (),
+                            data: (data) {
                               if (widget.canNavigate) {
                                 widget.navigateToPage!(ShowNewsPage(
                                   privateChat: widget.privateChat,
