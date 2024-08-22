@@ -1,5 +1,6 @@
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/pages/events/event_page.dart';
+import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -79,11 +80,8 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                         margin: widget.message.sentByMe!
                             ? const EdgeInsets.only(left: 30)
                             : const EdgeInsets.only(right: 30),
-                        padding: EdgeInsets.only(
-                            top: widget.message.sentByMe! ? 15 : 8,
-                            left: 15,
-                            right: 8,
-                            bottom: 10),
+                        padding: const EdgeInsets.only(
+                            top: 8, left: 15, right: 8, bottom: 10),
                         decoration: BoxDecoration(
                           borderRadius: widget.message.sentByMe!
                               ? const BorderRadius.only(
@@ -129,6 +127,11 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
+                                    ref.invalidate(eventProvider(event.id!));
+                                    ref.invalidate(
+                                        joinedEventsProvider(AuthService.uid));
+                                    ref.invalidate(
+                                        createdEventsProvider(AuthService.uid));
                                     Navigator.of(context).push(
                                       CupertinoPageRoute(
                                         builder: (context) => EventPage(
@@ -143,7 +146,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                     children: [
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Transform.scale(
                                             scale: 1.4,

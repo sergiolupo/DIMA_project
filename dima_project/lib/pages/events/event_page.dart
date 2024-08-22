@@ -118,7 +118,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                   ),
                                   Text(
                                     event.description,
-                                    maxLines: 3,
+                                    maxLines: 5,
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
