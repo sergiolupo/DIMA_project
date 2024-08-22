@@ -10,6 +10,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -150,6 +151,12 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
                 )
               : Container(),
           InputBar(
+            padding: EdgeInsets.only(
+                right: 10,
+                bottom: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 5
+                    : 20,
+                top: 5),
             key: _inputBarKey,
             focusNode: _focusNode,
             messageEditingController: messageEditingController,
@@ -157,7 +164,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
             sendMessage: sendMessage,
             showOverlay: () => showOverlay(context),
             buttonColor: CupertinoTheme.of(context).primaryColor,
-          )
+          ),
         ],
       ),
     );
@@ -262,7 +269,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
             reverse: true,
             itemCount: snapshot.data!.length,

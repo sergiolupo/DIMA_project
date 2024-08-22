@@ -49,6 +49,18 @@ class InputBar extends StatelessWidget {
             child: SizedBox(
               height: height,
               child: CupertinoTextField(
+                onTapOutside: (event) {
+                  final renderBox = context.findRenderObject() as RenderBox?;
+                  final localTapPosition =
+                      renderBox?.globalToLocal(event.position);
+                  final textFieldTop = renderBox?.localToGlobal(Offset.zero).dy;
+                  final textFieldBottom = textFieldTop! + height;
+
+                  if (localTapPosition != null &&
+                      localTapPosition.dy < textFieldBottom - 10) {
+                    focusNode.unfocus();
+                  }
+                },
                 focusNode: focusNode,
                 minLines: 1,
                 maxLines: 3,

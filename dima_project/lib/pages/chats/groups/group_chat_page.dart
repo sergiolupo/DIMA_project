@@ -11,6 +11,7 @@ import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
@@ -173,8 +174,12 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
             onTapCamera: onTapCamera,
             sendMessage: sendMessage,
             showOverlay: () => showOverlay(context),
-            padding:
-                const EdgeInsets.only(left: 15, right: 25, bottom: 25, top: 5),
+            padding: EdgeInsets.only(
+                right: 10,
+                bottom: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 5
+                    : 20,
+                top: 5),
             height: 50,
             buttonColor: CupertinoTheme.of(context).primaryColor,
             isGroupChat: true,
@@ -327,7 +332,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
             reverse: true,
             itemCount: snapshot.data!.length,
