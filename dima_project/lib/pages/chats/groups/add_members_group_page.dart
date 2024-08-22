@@ -41,6 +41,8 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
+                  ref.invalidate(groupProvider(widget.group.id));
+                  ref.invalidate(userProvider(uid));
                   Navigator.of(context).pop();
                 },
               )

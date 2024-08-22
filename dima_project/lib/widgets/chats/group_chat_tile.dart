@@ -3,14 +3,16 @@ import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class GroupChatTile extends StatefulWidget {
+class GroupChatTile extends ConsumerStatefulWidget {
   final Group group;
   final String? username;
   final DatabaseService databaseService;
@@ -31,7 +33,7 @@ class GroupChatTile extends StatefulWidget {
   GroupChatTileState createState() => GroupChatTileState();
 }
 
-class GroupChatTileState extends State<GroupChatTile> {
+class GroupChatTileState extends ConsumerState<GroupChatTile> {
   Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
         color: CupertinoColors.inactiveGray, size: 16),
@@ -72,11 +74,12 @@ class GroupChatTileState extends State<GroupChatTile> {
               widget.group.lastMessage!.unreadMessages = 0;
             }
           });
+          ref.invalidate(groupProvider(widget.group.id));
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
                 storageService: widget.storageService,
-                group: widget.group,
+                groupId: widget.group.id,
                 canNavigate: false,
                 databaseService: widget.databaseService,
                 notificationService: widget.notificationService,

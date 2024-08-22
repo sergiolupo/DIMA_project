@@ -1,4 +1,3 @@
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -8,15 +7,17 @@ import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ShowEventsPage extends StatelessWidget {
+class ShowEventsPage extends ConsumerWidget {
   final bool isGroup;
   final List<Message> events;
-  final Group? group;
+  final String? groupId;
   final Function? navigateToPage;
   final bool canNavigate;
   final PrivateChat? privateChat;
@@ -33,10 +34,10 @@ class ShowEventsPage extends StatelessWidget {
       required this.databaseService,
       required this.notificationService,
       this.user,
-      this.group});
+      this.groupId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -47,10 +48,13 @@ class ShowEventsPage extends StatelessWidget {
           ),
           leading: CupertinoButton(
             onPressed: () {
+              if (isGroup) {
+                ref.invalidate(groupProvider(groupId!));
+              }
               if (canNavigate) {
                 if (isGroup) {
                   navigateToPage!(GroupInfoPage(
-                    group: group!,
+                    groupId: groupId!,
                     canNavigate: canNavigate,
                     navigateToPage: navigateToPage,
                     databaseService: databaseService,

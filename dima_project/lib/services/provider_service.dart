@@ -159,6 +159,21 @@ final eventProvider =
   final event = await DatabaseService().getEvent(eventId);
   return event;
 });
+final groupProvider =
+    FutureProvider.family<Group, String>((ref, groupId) async {
+  try {
+    final group = await DatabaseService().getGroupFromId(groupId);
+    return group;
+  } catch (e) {
+    return Group(
+        name: '',
+        id: '',
+        admin: '',
+        members: [],
+        isPublic: false,
+        requests: []);
+  }
+});
 
 final followingsStreamProvider =
     StreamProvider.family<List<dynamic>, String>((ref, uuid) {

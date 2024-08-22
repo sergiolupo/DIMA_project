@@ -80,7 +80,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                 onPressed: () {
                   if (widget.canNavigate) {
                     widget.navigateToPage!(GroupInfoPage(
-                      group: widget.group,
+                      groupId: widget.group.id,
                       canNavigate: widget.canNavigate,
                       navigateToPage: widget.navigateToPage,
                       databaseService: databaseService,
@@ -133,9 +133,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                     );
                     await updateGroup(databaseService);
                     ref.invalidate(groupsProvider(AuthService.uid));
-                    Group newGroup =
-                        await databaseService.getGroupFromId(widget.group.id);
-
+                    ref.invalidate(groupProvider(widget.group.id));
                     if (buildContext.mounted) {
                       Navigator.of(buildContext).pop();
                     }
@@ -143,7 +141,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                     if (context.mounted) {
                       if (widget.canNavigate) {
                         widget.navigateToPage!(GroupInfoPage(
-                            group: newGroup,
+                            groupId: widget.group.id,
                             canNavigate: widget.canNavigate,
                             databaseService: databaseService,
                             notificationService: notificationService,
@@ -151,7 +149,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                             imagePicker: widget.imagePicker));
                       } else {
                         if (context.mounted) {
-                          Navigator.of(context).pop(newGroup);
+                          Navigator.of(context).pop();
                         }
                       }
                     }

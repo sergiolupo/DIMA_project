@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -8,16 +7,18 @@ import 'package:dima_project/pages/chats/image_view_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ShowImagesPage extends StatelessWidget {
+class ShowImagesPage extends ConsumerWidget {
   final bool isGroup;
   final List<Message> medias;
   final bool canNavigate;
   final Function? navigateToPage;
-  final Group? group;
+  final String? groupId;
   final PrivateChat? privateChat;
   final UserData? user;
   final DatabaseService databaseService;
@@ -29,13 +30,13 @@ class ShowImagesPage extends StatelessWidget {
       required this.canNavigate,
       this.privateChat,
       this.user,
-      this.group,
+      this.groupId,
       this.navigateToPage,
       required this.databaseService,
       required this.notificationService});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -46,10 +47,15 @@ class ShowImagesPage extends StatelessWidget {
           ),
           leading: CupertinoButton(
             onPressed: () {
+              if (isGroup) {
+                ref.invalidate(groupProvider(groupId!));
+              }
               if (canNavigate) {
                 if (isGroup) {
+                  ref.invalidate(groupProvider(groupId!));
+
                   navigateToPage!(GroupInfoPage(
-                    group: group!,
+                    groupId: groupId!,
                     canNavigate: canNavigate,
                     navigateToPage: navigateToPage,
                     databaseService: databaseService,
@@ -140,7 +146,7 @@ class ShowImagesPage extends StatelessWidget {
                                     if (canNavigate) {
                                       navigateToPage!(ImageViewPage(
                                         isGroup: isGroup,
-                                        group: group,
+                                        groupId: groupId,
                                         privateChat: privateChat,
                                         canNavigate: canNavigate,
                                         navigateToPage: navigateToPage,
@@ -157,7 +163,7 @@ class ShowImagesPage extends StatelessWidget {
                                         CupertinoPageRoute(
                                           builder: (context) => ImageViewPage(
                                             isGroup: isGroup,
-                                            group: group,
+                                            groupId: groupId,
                                             privateChat: privateChat,
                                             canNavigate: canNavigate,
                                             navigateToPage: navigateToPage,

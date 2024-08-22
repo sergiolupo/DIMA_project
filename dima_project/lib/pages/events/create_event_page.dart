@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/events/share_event_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/pages/image_crop_page.dart';
@@ -23,14 +22,14 @@ import 'package:lottie/lottie.dart';
 import 'package:dima_project/services/notification_service.dart';
 
 class CreateEventPage extends ConsumerStatefulWidget {
-  final Group? group;
+  final String? groupId;
   final bool canNavigate;
   final Function? navigateToPage;
   final ImagePicker imagePicker;
   final EventService eventService;
   const CreateEventPage({
     super.key,
-    this.group,
+    this.groupId,
     required this.canNavigate,
     this.navigateToPage,
     required this.imagePicker,
@@ -74,7 +73,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   @override
   void initState() {
     setState(() {
-      if (widget.group != null) groupIds.add(widget.group!.id);
+      if (widget.groupId != null) groupIds.add(widget.groupId!);
     });
 
     animationController = AnimationController(
@@ -157,7 +156,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
               widget.navigateToPage!(GroupChatPage(
                 storageService: StorageService(),
                 canNavigate: widget.canNavigate,
-                group: widget.group!,
+                groupId: widget.groupId!,
                 navigateToPage: widget.navigateToPage,
                 databaseService: databaseService,
                 notificationService: notificationService,
@@ -459,7 +458,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                     widget.navigateToPage!(GroupChatPage(
                       storageService: StorageService(),
                       canNavigate: widget.canNavigate,
-                      group: widget.group!,
+                      groupId: widget.groupId!,
                       navigateToPage: widget.navigateToPage,
                       databaseService: databaseService,
                       notificationService: notificationService,

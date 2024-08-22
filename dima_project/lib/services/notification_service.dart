@@ -178,7 +178,7 @@ class NotificationService {
           CupertinoPageRoute(
               builder: (context) => GroupChatPage(
                     storageService: StorageService(),
-                    group: group,
+                    groupId: group.id,
                     canNavigate: false,
                     databaseService: DatabaseService(),
                     notificationService:

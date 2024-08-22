@@ -38,7 +38,7 @@ class GroupTile extends ConsumerWidget {
                   CupertinoPageRoute(
                     builder: (context) => GroupChatPage(
                       storageService: StorageService(),
-                      group: group,
+                      groupId: group.id,
                       canNavigate: false,
                       databaseService: databaseService,
                       notificationService: notificationService,

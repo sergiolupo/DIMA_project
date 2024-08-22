@@ -1,14 +1,15 @@
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class GroupRequestsPage extends StatefulWidget {
-  final Group group;
+class GroupRequestsPage extends ConsumerStatefulWidget {
+  final String groupId;
   final List<UserData> requests;
   final bool canNavigate;
   final Function? navigateToPage;
@@ -17,7 +18,7 @@ class GroupRequestsPage extends StatefulWidget {
 
   const GroupRequestsPage({
     super.key,
-    required this.group,
+    required this.groupId,
     required this.requests,
     required this.canNavigate,
     this.navigateToPage,
@@ -29,7 +30,7 @@ class GroupRequestsPage extends StatefulWidget {
   GroupRequestsPageState createState() => GroupRequestsPageState();
 }
 
-class GroupRequestsPageState extends State<GroupRequestsPage> {
+class GroupRequestsPageState extends ConsumerState<GroupRequestsPage> {
   late List<UserData> users;
   late final DatabaseService _databaseService;
 
@@ -48,11 +49,10 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
           padding: EdgeInsets.zero,
           child: const Icon(CupertinoIcons.back),
           onPressed: () async {
-            Group group =
-                await _databaseService.getGroupFromId(widget.group.id);
+            ref.invalidate(groupProvider(widget.groupId));
             if (widget.canNavigate) {
               widget.navigateToPage!(GroupInfoPage(
-                group: group,
+                groupId: widget.groupId,
                 canNavigate: widget.canNavigate,
                 navigateToPage: widget.navigateToPage,
                 databaseService: _databaseService,
@@ -62,7 +62,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
               return;
             }
             if (!context.mounted) return;
-            Navigator.of(context).pop(group);
+            Navigator.of(context).pop();
           },
         ),
         middle: Text(
@@ -97,7 +97,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
                 onTap: () async {
                   try {
                     await _databaseService.acceptGroupRequest(
-                        widget.group.id, user.uid!);
+                        widget.groupId, user.uid!);
                   } catch (error) {
                     if (!context.mounted) return;
                     showCupertinoDialog(
@@ -138,7 +138,7 @@ class GroupRequestsPageState extends State<GroupRequestsPage> {
               GestureDetector(
                 onTap: () async {
                   await _databaseService.denyGroupRequest(
-                      widget.group.id, user.uid!);
+                      widget.groupId, user.uid!);
                   setState(() {
                     users.removeAt(index);
                   });

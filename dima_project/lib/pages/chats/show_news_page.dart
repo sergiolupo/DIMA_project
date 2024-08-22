@@ -1,4 +1,3 @@
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -6,15 +5,17 @@ import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/news/news_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ShowNewsPage extends StatelessWidget {
+class ShowNewsPage extends ConsumerWidget {
   final bool isGroup;
   final List<Message> news;
-  final Group? group;
+  final String? groupId;
   final bool canNavigate;
   final Function? navigateToPage;
   final PrivateChat? privateChat;
@@ -25,7 +26,7 @@ class ShowNewsPage extends StatelessWidget {
       {super.key,
       required this.isGroup,
       required this.news,
-      this.group,
+      this.groupId,
       this.user,
       required this.canNavigate,
       required this.databaseService,
@@ -34,7 +35,7 @@ class ShowNewsPage extends StatelessWidget {
       this.navigateToPage});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
@@ -45,10 +46,13 @@ class ShowNewsPage extends StatelessWidget {
           ),
           leading: CupertinoButton(
             onPressed: () {
+              if (isGroup) {
+                ref.invalidate(groupProvider(groupId!));
+              }
               if (canNavigate) {
                 if (isGroup) {
                   navigateToPage!(GroupInfoPage(
-                    group: group!,
+                    groupId: groupId!,
                     canNavigate: canNavigate,
                     navigateToPage: navigateToPage,
                     databaseService: databaseService,

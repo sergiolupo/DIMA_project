@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
@@ -17,7 +16,7 @@ class ImageViewPage extends ConsumerStatefulWidget {
   final bool canNavigate;
   final Function? navigateToPage;
   final bool isGroup;
-  final Group? group;
+  final String? groupId;
   final PrivateChat? privateChat;
   final DatabaseService databaseService;
   final NotificationService notificationService;
@@ -28,7 +27,7 @@ class ImageViewPage extends ConsumerStatefulWidget {
       required this.canNavigate,
       required this.isGroup,
       this.privateChat,
-      this.group,
+      this.groupId,
       this.navigateToPage,
       required this.databaseService,
       required this.notificationService});
@@ -72,7 +71,7 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
                         isGroup: widget.isGroup,
                         medias: widget.messages,
                         canNavigate: widget.canNavigate,
-                        group: widget.group,
+                        groupId: widget.groupId,
                         privateChat: widget.privateChat,
                         navigateToPage: widget.navigateToPage,
                         databaseService: _databaseService,

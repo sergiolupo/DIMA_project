@@ -25,8 +25,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupChatPage extends ConsumerStatefulWidget {
-  final Group group;
   final bool canNavigate;
+  final String groupId;
   final Function? navigateToPage;
   final DatabaseService databaseService;
   final NotificationService notificationService;
@@ -36,13 +36,13 @@ class GroupChatPage extends ConsumerStatefulWidget {
   const GroupChatPage({
     super.key,
     required this.canNavigate,
-    required this.group,
     this.navigateToPage,
     required this.databaseService,
     required this.notificationService,
     required this.imagePicker,
     required this.storageService,
     required this.eventService,
+    required this.groupId,
   });
 
   @override
@@ -59,22 +59,23 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
   final GlobalKey _inputBarKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
   late final DatabaseService _databaseService;
-  late Group group;
 
   @override
   void initState() {
     _databaseService = widget.databaseService;
-    group = widget.group;
     getChats();
     super.initState();
   }
 
   void getChats() {
-    chats = _databaseService.getChats(group.id);
+    chats = _databaseService.getChats(widget.groupId);
   }
 
   @override
   Widget build(BuildContext context) {
+    final AsyncValue<Group> asyncValue =
+        ref.watch(groupProvider(widget.groupId));
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         key: _navigationBarKey,
@@ -86,12 +87,13 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
             ref.invalidate(requestsGroupProvider);
             ref.invalidate(eventsGroupProvider);
             ref.invalidate(newsGroupProvider);
+            ref.invalidate(groupProvider);
 
             if (!widget.canNavigate) {
-              final Group? newGroup = await Navigator.of(context).push(
+              Navigator.of(context).push(
                 CupertinoPageRoute(
                   builder: (context) => GroupInfoPage(
-                    group: group,
+                    groupId: widget.groupId,
                     notificationService: widget.notificationService,
                     databaseService: _databaseService,
                     canNavigate: widget.canNavigate,
@@ -100,15 +102,10 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
                   ),
                 ),
               );
-              if (newGroup != null) {
-                setState(() {
-                  group = newGroup;
-                });
-              }
             } else {
               widget.navigateToPage!(
                 GroupInfoPage(
-                  group: group,
+                  groupId: widget.groupId,
                   canNavigate: widget.canNavigate,
                   notificationService: widget.notificationService,
                   databaseService: _databaseService,
@@ -119,22 +116,28 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
               return;
             }
           },
-          child: Row(
-            children: [
-              CreateImageWidget.getGroupImage(group.imagePath!, small: true),
-              const SizedBox(width: 10),
-              Container(
-                constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.6),
-                child: Text(group.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color:
-                          CupertinoTheme.of(context).textTheme.textStyle.color,
-                    ),
-                    overflow: TextOverflow.ellipsis),
-              ),
-            ],
+          child: asyncValue.when(
+            loading: () => const CupertinoActivityIndicator(),
+            error: (_, __) => const Icon(CupertinoIcons.arrow_left),
+            data: (group) => Row(
+              children: [
+                CreateImageWidget.getGroupImage(group.imagePath!, small: true),
+                const SizedBox(width: 10),
+                Container(
+                  constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.6),
+                  child: Text(group.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .color,
+                      ),
+                      overflow: TextOverflow.ellipsis),
+                ),
+              ],
+            ),
           ),
         ),
         backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
@@ -210,7 +213,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
     if (widget.canNavigate) {
       widget.navigateToPage!(
         CreateEventPage(
-          group: group,
+          groupId: widget.groupId,
           canNavigate: widget.canNavigate,
           navigateToPage: widget.navigateToPage,
           imagePicker: widget.imagePicker,
@@ -222,7 +225,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
     await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => CreateEventPage(
-          group: group,
+          groupId: widget.groupId,
           canNavigate: false,
           imagePicker: widget.imagePicker,
           eventService: widget.eventService,
@@ -243,7 +246,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
       }
       final bytes = await image.readAsBytes();
       final String imageUrl = await widget.storageService.uploadImageToStorage(
-          'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
+          'chat_images/${widget.groupId}/${AuthService.uid}/${Timestamp.now()}.jpg',
           Uint8List.fromList(bytes));
       ReadBy readBy = ReadBy(
         readAt: Timestamp.now(),
@@ -260,9 +263,9 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         ],
         type: Type.image,
       );
-      await _databaseService.sendMessage(group.id, message);
+      await _databaseService.sendMessage(widget.groupId, message);
       await widget.notificationService
-          .sendNotificationOnGroup(widget.group.id, message);
+          .sendNotificationOnGroup(widget.groupId, message);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -286,7 +289,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         final bytes = await image.readAsBytes();
 
         final String imageUrl = await widget.storageService.uploadImageToStorage(
-            'chat_images/${group.id}/${AuthService.uid}/${Timestamp.now()}.jpg',
+            'chat_images/${widget.groupId}/${AuthService.uid}/${Timestamp.now()}.jpg',
             Uint8List.fromList(bytes));
         ReadBy readBy = ReadBy(
           readAt: Timestamp.now(),
@@ -303,9 +306,9 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
           ],
           type: Type.image,
         );
-        await _databaseService.sendMessage(group.id, message);
+        await _databaseService.sendMessage(widget.groupId, message);
         await widget.notificationService
-            .sendNotificationOnGroup(widget.group.id, message);
+            .sendNotificationOnGroup(widget.groupId, message);
         if (mounted) {
           setState(() {
             isUploading = false;
@@ -417,9 +420,9 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
       setState(() {
         messageEditingController.clear();
       });
-      await _databaseService.sendMessage(group.id, message);
+      await _databaseService.sendMessage(widget.groupId, message);
       await widget.notificationService
-          .sendNotificationOnGroup(widget.group.id, message);
+          .sendNotificationOnGroup(widget.groupId, message);
     }
   }
 

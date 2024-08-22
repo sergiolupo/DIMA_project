@@ -5,23 +5,24 @@ import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/chats/groups/create_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
-import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/pages/chats/private_chats/private_info_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/chats/private_chat_tile_tablet.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:dima_project/services/notification_service.dart';
 
-class ChatTabletPage extends StatefulWidget {
+class ChatTabletPage extends ConsumerStatefulWidget {
   final Group? selectedGroup;
   final PrivateChat? selectedPrivateChat;
   final UserData? selectedUser;
@@ -46,7 +47,7 @@ class ChatTabletPage extends StatefulWidget {
   ChatTabletPageState createState() => ChatTabletPageState();
 }
 
-class ChatTabletPageState extends State<ChatTabletPage> {
+class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
   late final Stream<List<PrivateChat>> _privateChatsStream;
   late final Stream<List<Group>> _groupsStream;
   String searchedText = "";
@@ -70,7 +71,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
         page = GroupChatPage(
           eventService: widget.eventService,
           storageService: widget.storageService,
-          group: selectedGroup!,
+          groupId: selectedGroup!.id,
           key: UniqueKey(),
           navigateToPage: _navigateToPage,
           canNavigate: true,
@@ -258,32 +259,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 group.members!.length)) {
                       selectedGroup = group;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        setState(() {
-                          if (page is GroupChatPage) {
-                            page = GroupChatPage(
-                              eventService: widget.eventService,
-                              storageService: widget.storageService,
-                              group: group,
-                              key: UniqueKey(),
-                              navigateToPage: _navigateToPage,
-                              canNavigate: true,
-                              databaseService: _databaseService,
-                              notificationService: widget.notificationService,
-                              imagePicker: widget.imagePicker,
-                            );
-                          }
-                          if (page is GroupInfoPage) {
-                            page = GroupInfoPage(
-                              group: group,
-                              key: UniqueKey(),
-                              navigateToPage: _navigateToPage,
-                              canNavigate: true,
-                              databaseService: _databaseService,
-                              notificationService: widget.notificationService,
-                              imagePicker: widget.imagePicker,
-                            );
-                          }
-                        });
+                        ref.invalidate(groupProvider(group.id));
                       });
                     }
 
@@ -307,7 +283,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                             page = GroupChatPage(
                               eventService: widget.eventService,
                               storageService: widget.storageService,
-                              group: group,
+                              groupId: group.id,
                               key: UniqueKey(),
                               navigateToPage: _navigateToPage,
                               canNavigate: true,
@@ -355,7 +331,7 @@ class ChatTabletPageState extends State<ChatTabletPage> {
                                 page = GroupChatPage(
                                   eventService: widget.eventService,
                                   storageService: widget.storageService,
-                                  group: group,
+                                  groupId: group.id,
                                   key: UniqueKey(),
                                   navigateToPage: _navigateToPage,
                                   canNavigate: true,

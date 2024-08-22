@@ -217,29 +217,33 @@ class NewsPageState extends ConsumerState<NewsPage> {
                   ),
                 )
               else
-                CarouselSlider.builder(
-                    itemCount: numberOfNews,
-                    itemBuilder: (context, index, realIndex) {
-                      String? image = sliders![index].urlToImage;
-                      String? title = sliders![index].title;
-                      return buildNews(image, index, title);
-                    },
-                    options: CarouselOptions(
-                        height: MediaQuery.of(context).size.width >
-                                Constants.limitWidth
-                            ? 400
-                            : 200,
-                        autoPlay: true,
-                        enlargeCenterPage: false,
-                        enlargeStrategy: CenterPageEnlargeStrategy.height,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            activeIndex = index;
-                          });
-                        })),
+                (sliders!.isNotEmpty)
+                    ? CarouselSlider.builder(
+                        itemCount: numberOfNews,
+                        itemBuilder: (context, index, realIndex) {
+                          String? image = sliders![index].urlToImage;
+                          String? title = sliders![index].title;
+                          return buildNews(image, index, title);
+                        },
+                        options: CarouselOptions(
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? 400
+                                : 200,
+                            autoPlay: true,
+                            enlargeCenterPage: false,
+                            enlargeStrategy: CenterPageEnlargeStrategy.height,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                activeIndex = index;
+                              });
+                            }))
+                    : const Text("No news available"),
               const SizedBox(height: 30.0),
               Center(
-                child: buildIndicator(),
+                child: sliders == null || sliders!.isEmpty
+                    ? const SizedBox.shrink()
+                    : buildIndicator(),
               ),
               const SizedBox(
                 height: 30.0,
@@ -429,7 +433,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
 
   Widget buildIndicator() => AnimatedSmoothIndicator(
       activeIndex: activeIndex,
-      count: numberOfNews,
+      count: sliders == null ? 0 : sliders!.length,
       effect: SlideEffect(
         dotWidth: 15,
         dotHeight: 15,
