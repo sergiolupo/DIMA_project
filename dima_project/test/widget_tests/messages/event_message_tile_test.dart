@@ -11,9 +11,11 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
+import '../../mocks/mock_notification_service.mocks.dart';
 
 void main() {
-  testWidgets('EventMessageTile displays event data correctly',
+  testWidgets(
+      'EventMessageTile displays event data correctly and navigates on tap',
       (WidgetTester tester) async {
     AuthService.setUid('test_uid');
     final message = Message(
@@ -42,6 +44,11 @@ void main() {
         details: [
           EventDetails(
             members: ['test_uid'],
+            startDate: DateTime(2021, 1, 1, 1, 1),
+            startTime: DateTime(2021, 1, 1, 1, 1),
+            endDate: DateTime(2021, 1, 1, 1, 1),
+            endTime: DateTime(2021, 1, 1, 1, 1),
+            location: 'Location',
           ),
         ]);
 
@@ -53,6 +60,8 @@ void main() {
               (ref, id) => Future(() => eventMock),
             ),
             databaseServiceProvider.overrideWithValue(MockDatabaseService()),
+            notificationServiceProvider
+                .overrideWithValue(MockNotificationService()),
           ],
           child: CupertinoApp(
             home: EventMessageTile(
@@ -67,6 +76,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(Image), findsOneWidget);
+    expect(find.text('Sample Event'), findsOneWidget);
+    expect(find.text('Event Description'), findsOneWidget);
+
+    await tester.tap(find.text('Sample Event'));
+    await tester.pumpAndSettle();
+
     expect(find.text('Sample Event'), findsOneWidget);
     expect(find.text('Event Description'), findsOneWidget);
   });
