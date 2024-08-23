@@ -1,3 +1,4 @@
+import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/group_tile.dart';
@@ -29,7 +30,10 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final groups = ref.watch(groupsProvider(widget.user));
+    final AsyncValue<List<Group>> groups =
+        ref.watch(groupsProvider(widget.user));
+    final AsyncValue<List<Group>> joinedGroups =
+        ref.watch(groupsProvider(AuthService.uid));
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -54,82 +58,91 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
         child: SingleChildScrollView(
           child: groups.when(
             data: (groups) {
-              int i = 0;
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: CupertinoSearchTextField(
-                      controller: _searchController,
-                      onChanged: (_) => setState(() {
-                        _searchText = _searchController.text;
-                        i = 0;
-                      }),
-                    ),
-                  ),
-                  if (groups.isEmpty)
-                    Column(
-                      children: [
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Image.asset('assets/darkMode/search_groups.png')
-                            : Image.asset('assets/images/search_groups.png'),
-                        const Center(
-                          child: Text(
-                            'No groups',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: CupertinoColors.systemGrey2),
-                          ),
+              return joinedGroups.when(
+                loading: () => const SizedBox.shrink(),
+                error: (error, stackTrace) => const SizedBox.shrink(),
+                data: (joinedGroups) {
+                  int i = 0;
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: CupertinoSearchTextField(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {
+                            _searchText = _searchController.text;
+                            i = 0;
+                          }),
                         ),
-                      ],
-                    )
-                  else
-                    ListView.builder(
-                      physics: const ClampingScrollPhysics(),
-                      itemCount: groups.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final group = groups[index];
-                        if (!group.name
-                            .toLowerCase()
-                            .contains(_searchText.toLowerCase())) {
-                          if (i == groups.length - 1) {
-                            return Column(
-                              children: [
-                                MediaQuery.of(context).platformBrightness ==
-                                        Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/no_groups_found.png')
-                                    : Image.asset(
-                                        'assets/images/no_groups_found.png'),
-                                const Center(
-                                  child: Text(
-                                    'No groups found',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: CupertinoColors.systemGrey2),
-                                  ),
-                                ),
-                              ],
+                      ),
+                      if (groups.isEmpty)
+                        Column(
+                          children: [
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/search_groups.png')
+                                : Image.asset(
+                                    'assets/images/search_groups.png'),
+                            const Center(
+                              child: Text(
+                                'No groups',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: CupertinoColors.systemGrey2),
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        ListView.builder(
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: groups.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            final group = groups[index];
+                            if (!group.name
+                                .toLowerCase()
+                                .contains(_searchText.toLowerCase())) {
+                              if (i == groups.length - 1) {
+                                return Column(
+                                  children: [
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Image.asset(
+                                            'assets/darkMode/no_groups_found.png')
+                                        : Image.asset(
+                                            'assets/images/no_groups_found.png'),
+                                    const Center(
+                                      child: Text(
+                                        'No groups found',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: CupertinoColors.systemGrey2),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              i++;
+                              return const SizedBox.shrink();
+                            }
+                            return GroupTile(
+                              group: group,
+                              isJoined:
+                                  joinedGroups.any((g) => g.id == group.id)
+                                      ? 1
+                                      : group.requests!.contains(uid)
+                                          ? 2
+                                          : 0,
                             );
-                          }
-                          i++;
-                          return const SizedBox.shrink();
-                        }
-                        return GroupTile(
-                          group: group,
-                          isJoined: group.members!.contains(uid)
-                              ? 1
-                              : group.requests!.contains(uid)
-                                  ? 2
-                                  : 0,
-                        );
-                      },
-                    ),
-                ],
+                          },
+                        ),
+                    ],
+                  );
+                },
               );
             },
             loading: () => const CupertinoActivityIndicator(),

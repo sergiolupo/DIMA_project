@@ -80,7 +80,27 @@ class GroupTile extends ConsumerWidget {
               await databaseService.toggleGroupJoin(group.id);
               ref.invalidate(groupsProvider(uid));
             } catch (error) {
-              debugPrint("Error occurred: $error");
+              if (!context.mounted) return;
+              showCupertinoDialog(
+                  context: context,
+                  builder: (newContext) {
+                    return CupertinoAlertDialog(
+                      title: const Text('Failed to Join Group'),
+                      content: const Text(
+                          "Unable to join group as it has been deleted."),
+                      actions: <Widget>[
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          child: const Text('OK'),
+                          onPressed: () {
+                            ref.invalidate(groupsProvider);
+                            ref.invalidate(groupProvider);
+                            Navigator.of(newContext).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
             }
           },
           child: Container(
