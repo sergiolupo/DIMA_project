@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,7 @@ import 'package:network_image_mock/network_image_mock.dart';
 import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
-  testWidgets('NewsMessageTile displays correctly',
+  testWidgets('NewsMessageTile displays correctly and navigates on tap',
       (WidgetTester tester) async {
     AuthService.setUid('test_uid');
     final message = Message(
@@ -39,8 +40,12 @@ void main() {
       );
     });
 
-    // Verify the presence of the title and description
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Description'), findsOneWidget);
+
+    await tester.tap(find.text('Title'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ArticleView), findsOneWidget);
   });
 }

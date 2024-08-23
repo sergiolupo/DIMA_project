@@ -1,3 +1,4 @@
+import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/widgets/news/show_all.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +15,6 @@ void main() {
     const title = 'Test Title';
     const url = 'https://example.com/article';
 
-    // Use the mockNetworkImagesFor function to mock network images
     await mockNetworkImagesFor(() async {
       await tester.pumpWidget(
         CupertinoApp(
@@ -33,6 +33,11 @@ void main() {
       expect(find.byType(CachedNetworkImage), findsOneWidget);
       expect(find.text(title), findsOneWidget);
       expect(find.text(description), findsOneWidget);
+
+      await tester.tap(find.text("Test Title"));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ArticleView), findsOneWidget);
     });
   });
 }

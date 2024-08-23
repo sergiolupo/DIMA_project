@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/pages/news/article_view.dart';
 import 'package:dima_project/widgets/news/show_category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +33,11 @@ void main() {
       expect(find.byType(CachedNetworkImage), findsOneWidget);
       expect(find.text(title), findsOneWidget);
       expect(find.text(description), findsOneWidget);
+
+      await tester.tap(find.text("Test Title for ShowCategory"));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ArticleView), findsOneWidget);
     });
   });
 }
