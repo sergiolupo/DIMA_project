@@ -74,7 +74,7 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
             ),
             const SizedBox(height: 10),
             asyncUsers.when(
-              loading: () => const CupertinoActivityIndicator(),
+              loading: () => const SizedBox.shrink(),
               error: (err, stack) => Text('Error: $err'),
               data: (followers) {
                 if (followers.isEmpty) {

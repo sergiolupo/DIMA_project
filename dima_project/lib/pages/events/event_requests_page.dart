@@ -59,7 +59,7 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
         itemBuilder: (context, index) {
           final userData = users[index];
           return userData.when(
-              loading: () => const CupertinoActivityIndicator(),
+              loading: () => const SizedBox.shrink(),
               error: (error, stack) => const Text("Error"),
               data: (user) {
                 return Row(

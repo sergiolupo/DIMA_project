@@ -133,7 +133,7 @@ class ShowEventsPage extends ConsumerWidget {
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return const CupertinoActivityIndicator();
+                                  return const SizedBox.shrink();
                                 }
                                 if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');

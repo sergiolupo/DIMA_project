@@ -88,8 +88,7 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
               ),
               middle: SingleChildScrollView(
                   child: users[index].when(
-                      loading: () =>
-                          const Center(child: CupertinoActivityIndicator()),
+                      loading: () => const Center(child: SizedBox.shrink()),
                       error: (error, stack) => const Text('Error'),
                       data: (user) {
                         return _buildUserInfoRow(user.username,

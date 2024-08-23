@@ -64,9 +64,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
-                  ref.invalidate(eventProvider(widget.eventId));
                   ref.invalidate(joinedEventsProvider(uid));
                   ref.invalidate(createdEventsProvider(uid));
+                  ref.invalidate(eventProvider(widget.eventId));
                   Navigator.of(context).pop();
                 },
               )

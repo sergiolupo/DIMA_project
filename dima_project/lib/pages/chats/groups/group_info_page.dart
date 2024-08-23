@@ -80,7 +80,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
     final AsyncValue<List<UserData>> requests =
         ref.watch(requestsGroupProvider(widget.groupId));
     return asyncValue.when(
-        loading: () => const CupertinoActivityIndicator(),
+        loading: () => const SizedBox.shrink(),
         error: (error, stack) => const Text("Error"),
         data: (group) {
           final List<AsyncValue<UserData>> members = [];
