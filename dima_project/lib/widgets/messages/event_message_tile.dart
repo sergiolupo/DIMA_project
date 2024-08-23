@@ -298,7 +298,9 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
         },
         loading: () => Shimmer.fromColors(
             baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-            highlightColor: CupertinoTheme.of(context).primaryContrastingColor,
+            highlightColor: CupertinoTheme.of(context)
+                .primaryContrastingColor
+                .withOpacity(0.5),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
@@ -309,8 +311,8 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                   margin: widget.message.sentByMe!
                       ? const EdgeInsets.only(left: 30)
                       : const EdgeInsets.only(right: 30),
-                  height: 150,
-                  width: 150,
+                  height: 75,
+                  width: 200,
                   decoration: BoxDecoration(
                     color: CupertinoTheme.of(context).primaryContrastingColor,
                     borderRadius: widget.message.sentByMe!
