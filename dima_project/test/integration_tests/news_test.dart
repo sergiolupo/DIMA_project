@@ -263,7 +263,7 @@ void main() {
       expect(find.text("name"), findsOneWidget);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.paperplane), findsOneWidget);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
       expect(find.byIcon(LineAwesomeIcons.paper_plane), findsNothing);

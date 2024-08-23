@@ -166,7 +166,7 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: filteredUsers.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -250,7 +250,7 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: filteredGroups.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
