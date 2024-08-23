@@ -97,4 +97,36 @@ void main() {
     await tester.pumpAndSettle();
     verify(mockDatabaseService.toggleGroupJoin(testGroup.id)).called(1);
   });
+  testWidgets("GroupTile prevents joining a non-existent group",
+      (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.toggleGroupJoin(any)).thenAnswer((_) async {
+      throw Exception();
+    });
+
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        databaseServiceProvider.overrideWithValue(mockDatabaseService),
+        notificationServiceProvider
+            .overrideWithValue(MockNotificationService()),
+      ],
+      child: CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: GroupTile(group: testGroup, isJoined: 0),
+          ),
+        ),
+      ),
+    ));
+    await tester.tap(find.text('Join'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+    expect(find.text("Failed to Join Group"), findsOneWidget);
+    expect(find.text("Unable to join group as it has been deleted."),
+        findsOneWidget);
+
+    await tester.tap(find.text("OK"));
+    await tester.pumpAndSettle();
+    expect(find.byType(CupertinoAlertDialog), findsNothing);
+  });
 }

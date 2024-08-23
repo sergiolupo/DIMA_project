@@ -96,4 +96,25 @@ void main() {
     verify(mockDatabaseService.toggleFollowUnfollow('test_user', 'user_id'))
         .called(1);
   });
+  testWidgets("UserTile prevents following a non-existent user",
+      (WidgetTester tester) async {
+    AuthService.setUid('user_id');
+    when(mockDatabaseService.toggleFollowUnfollow(any, any))
+        .thenAnswer((_) async {
+      throw Exception();
+    });
+
+    await tester.pumpWidget(createWidgetForTesting(
+      child: UserTile(user: testUser, isFollowing: 0),
+    ));
+    await tester.tap(find.text('Follow'));
+    await tester.pumpAndSettle();
+    verify(mockDatabaseService.toggleFollowUnfollow('test_user', 'user_id'))
+        .called(1);
+    expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+    expect(find.text('Failed to follow the user'), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CupertinoAlertDialog), findsNothing);
+  });
 }
