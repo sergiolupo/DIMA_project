@@ -48,14 +48,14 @@ class NewsPageState extends ConsumerState<NewsPage> {
   getNews() async {
     await widget.newsService.getNews();
     setState(() {
-      //articles = widget.newsService.news;
+      articles = widget.newsService.news;
     });
   }
 
   getSliders() async {
     await widget.newsService.getSliders();
     setState(() {
-      //sliders = widget.newsService.sliders;
+      sliders = widget.newsService.sliders;
     });
   }
 

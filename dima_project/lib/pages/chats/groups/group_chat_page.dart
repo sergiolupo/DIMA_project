@@ -117,7 +117,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
             }
           },
           child: asyncValue.when(
-            loading: () => const CupertinoActivityIndicator(),
+            loading: () => const SizedBox.shrink(),
             error: (_, __) => const Icon(CupertinoIcons.arrow_left),
             data: (group) => Row(
               children: [

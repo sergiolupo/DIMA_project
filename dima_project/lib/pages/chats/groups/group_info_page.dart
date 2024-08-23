@@ -765,34 +765,56 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
         itemBuilder: (context, index) {
           return members[index].when(loading: () {
             return Shimmer.fromColors(
-              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-              highlightColor:
-                  CupertinoTheme.of(context).primaryContrastingColor,
-              child: CupertinoListTile(
-                leading: ClipOval(
-                  child: Container(
-                    color: CupertinoTheme.of(context).primaryContrastingColor,
-                    width: 50.0,
-                    height: 50.0,
+              baseColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
+              highlightColor: CupertinoTheme.of(context)
+                  .scaffoldBackgroundColor
+                  .withOpacity(0.25),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, top: 10.0, bottom: 4.0),
+                    child: Row(
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            color: CupertinoTheme.of(context)
+                                .scaffoldBackgroundColor,
+                            height: 32,
+                            width: 32,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .scaffoldBackgroundColor
+                                    .withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              height: 15,
+                              width: 100,
+                            ),
+                            const SizedBox(height: 5),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .scaffoldBackgroundColor
+                                    .withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              height: 10,
+                              width: 150,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                title: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      shape: BoxShape.rectangle,
-                      color:
-                          CupertinoTheme.of(context).primaryContrastingColor),
-                  width: 50.0,
-                  height: 15.0,
-                ),
-                subtitle: Container(
-                  width: 70.0,
-                  height: 10.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color:
-                          CupertinoTheme.of(context).primaryContrastingColor),
-                ),
+                ],
               ),
             );
           }, error: (error, stack) {

@@ -198,15 +198,83 @@ class ChatPageState extends State<ChatPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Shimmer.fromColors(
-              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-              highlightColor:
-                  CupertinoTheme.of(context).primaryContrastingColor,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.8,
-                color: CupertinoTheme.of(context).primaryColor,
-              ),
-            );
+            return ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return Shimmer.fromColors(
+                    baseColor:
+                        CupertinoTheme.of(context).primaryContrastingColor,
+                    highlightColor: CupertinoTheme.of(context)
+                        .primaryContrastingColor
+                        .withOpacity(0.5),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor
+                                      .withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 50,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Container(
+                                        color: CupertinoTheme.of(context)
+                                            .primaryContrastingColor,
+                                        height: 32,
+                                        width: 32,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 15,
+                                          width: 100,
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 10,
+                                          width: 150,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                });
           } else {
             return Container();
           }
@@ -380,15 +448,83 @@ class ChatPageState extends State<ChatPage> {
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Shimmer.fromColors(
-              baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-              highlightColor:
-                  CupertinoTheme.of(context).primaryContrastingColor,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.8,
-                color: CupertinoTheme.of(context).primaryColor,
-              ),
-            );
+            return ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return Shimmer.fromColors(
+                    baseColor:
+                        CupertinoTheme.of(context).primaryContrastingColor,
+                    highlightColor: CupertinoTheme.of(context)
+                        .primaryContrastingColor
+                        .withOpacity(0.5),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor
+                                      .withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 50,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Container(
+                                        color: CupertinoTheme.of(context)
+                                            .primaryContrastingColor,
+                                        height: 32,
+                                        width: 32,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 15,
+                                          width: 100,
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 10,
+                                          width: 150,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                });
           } else {
             return Container();
           }

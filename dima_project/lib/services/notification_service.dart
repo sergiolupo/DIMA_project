@@ -307,7 +307,6 @@ class NotificationService {
       },
       body: jsonEncode(message),
     );
-    debugPrint(response.body);
     if (response.statusCode == 200) {
       debugPrint('Notification sent');
     } else {
