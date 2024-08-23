@@ -168,6 +168,7 @@ void main() {
         'requests': ['request1', 'request2'],
         'token': 'token',
         'isSignedInWithGoogle': false,
+        'groups': [],
       });
 
       when(mockDatabaseService.searchByUsernameStream(usernameTest))

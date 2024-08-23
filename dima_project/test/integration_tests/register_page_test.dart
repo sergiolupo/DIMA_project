@@ -176,7 +176,7 @@ void main() {
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
     expect(find.byType(CategoriesForm), findsOneWidget);
-    expect(find.text("Category Selection"), findsOneWidget);
+    expect(find.text("Categories"), findsOneWidget);
     //scroll down
     await tester.fling(
         find.byType(CategoriesForm), const Offset(0, -400), 1000);

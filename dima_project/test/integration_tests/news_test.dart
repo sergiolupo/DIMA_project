@@ -217,6 +217,30 @@ void main() {
                   surname: 'surname')),
             ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([
+                Group(
+                    name: "name",
+                    id: "id",
+                    isPublic: true,
+                    members: ["test", "user"],
+                    imagePath: "",
+                    description: "description",
+                    admin: "test"),
+              ]),
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([
+                UserData(
+                    uid: 'test',
+                    email: 'mail',
+                    username: 'username',
+                    imagePath: '',
+                    categories: [CategoryUtil.categories.first],
+                    name: 'name',
+                    surname: 'surname')
+              ]),
+            ),
           ],
           child: CupertinoApp(
             home: ArticleView(
@@ -237,7 +261,6 @@ void main() {
       expect(find.text("Groups"), findsOneWidget);
       expect(find.text("Followers"), findsOneWidget);
       expect(find.text("name"), findsOneWidget);
-      await tester.pumpAndSettle();
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
       expect(find.byIcon(LineAwesomeIcons.paper_plane), findsOneWidget);

@@ -502,8 +502,7 @@ void main() {
         (_) => Future.value([]),
       );
 
-      when(mockDatabaseService.updateEvent(any, any, any, any, any, any))
-          .thenAnswer((_) {
+      when(mockDatabaseService.updateEvent(any, any, any, any)).thenAnswer((_) {
         return Future.value();
       });
 

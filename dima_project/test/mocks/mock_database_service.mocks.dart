@@ -709,15 +709,15 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
       ) as _i8.Future<List<_i3.UserData>>);
 
   @override
-  _i8.Future<Map<String, List<String>>> getEventRequests(String? id) =>
+  _i8.Future<Map<String, List<dynamic>>> getEventRequests(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEventRequests,
           [id],
         ),
-        returnValue: _i8.Future<Map<String, List<String>>>.value(
-            <String, List<String>>{}),
-      ) as _i8.Future<Map<String, List<String>>>);
+        returnValue: _i8.Future<Map<String, List<dynamic>>>.value(
+            <String, List<dynamic>>{}),
+      ) as _i8.Future<Map<String, List<dynamic>>>);
 
   @override
   _i8.Future<void> denyGroupRequest(
@@ -806,10 +806,29 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
       ) as _i8.Future<void>);
 
   @override
-  _i8.Future<void> acceptEventRequest(
+  _i8.Future<void> denyEventRequest(
     String? eventId,
     String? detailId,
     String? uuid,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #denyEventRequest,
+          [
+            eventId,
+            detailId,
+            uuid,
+          ],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
+
+  @override
+  _i8.Future<void> acceptEventRequest(
+    String? eventId,
+    String? detailId,
+    String? uid,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -817,7 +836,7 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
           [
             eventId,
             detailId,
-            uuid,
+            uid,
           ],
         ),
         returnValue: _i8.Future<void>.value(),
@@ -959,24 +978,6 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
       ) as _i8.Future<List<_i6.Event>>);
 
   @override
-  _i8.Future<bool> checkIfJoined(
-    bool? isGroup,
-    String? id,
-    String? uuid,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #checkIfJoined,
-          [
-            isGroup,
-            id,
-            uuid,
-          ],
-        ),
-        returnValue: _i8.Future<bool>.value(false),
-      ) as _i8.Future<bool>);
-
-  @override
   _i8.Future<dynamic> shareNewsOnGroups(
     String? title,
     String? description,
@@ -1026,8 +1027,6 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
     _i9.Uint8List? uint8list,
     bool? sameImage,
     bool? visibilityHasChanged,
-    List<String>? uuids,
-    List<String>? groupIds,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1037,8 +1036,6 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
             uint8list,
             sameImage,
             visibilityHasChanged,
-            uuids,
-            groupIds,
           ],
         ),
         returnValue: _i8.Future<void>.value(),
@@ -1078,6 +1075,25 @@ class MockDatabaseService extends _i1.Mock implements _i7.DatabaseService {
           uuids,
         ],
       ));
+
+  @override
+  _i8.Future<void> inviteUserToGroup(
+    String? groupId,
+    List<String>? uids,
+    List<dynamic>? members,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #inviteUserToGroup,
+          [
+            groupId,
+            uids,
+            members,
+          ],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
   _i8.Future<void> deletePrivateChat(_i5.PrivateChat? chat) =>

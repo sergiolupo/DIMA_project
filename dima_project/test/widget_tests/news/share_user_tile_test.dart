@@ -50,7 +50,7 @@ void main() {
     expect(find.byIcon(CupertinoIcons.checkmark), findsNothing);
     expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
 
-    await tester.tap(find.byType(GestureDetector));
+    await tester.tap(find.byIcon(CupertinoIcons.circle));
     await tester.pump();
 
     expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
@@ -58,7 +58,7 @@ void main() {
 
     expect(selectedUserId, equals('user1'));
 
-    await tester.tap(find.byType(GestureDetector));
+    await tester.tap(find.byIcon(CupertinoIcons.checkmark));
     await tester.pump();
 
     expect(find.byIcon(CupertinoIcons.checkmark), findsNothing);

@@ -117,7 +117,7 @@ void main() {
 
       expect(find.text('Options'), findsOneWidget);
       expect(find.byType(OptionTile), findsNWidgets(4));
-      await tester.tap(find.byIcon(CupertinoIcons.bell));
+      await tester.tap(find.byIcon(CupertinoIcons.square_list));
       await tester.pumpAndSettle();
       expect(find.text('Requests'), findsOneWidget); //Request page
       await tester.tap(find.byIcon(CupertinoIcons.person)); //Follow requests
@@ -560,7 +560,7 @@ void main() {
       );
 
       expect(find.text('Options'), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.bell));
+      await tester.tap(find.byIcon(CupertinoIcons.square_list));
       await tester.pumpAndSettle();
       expect(find.text('Requests'), findsOneWidget); //Request page
       await tester.tap(find.byIcon(CupertinoIcons.person)); //Follow requests

@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:mockito/mockito.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 
@@ -37,10 +36,6 @@ void main() {
       (WidgetTester tester) async {
     AuthService.setUid('test');
     List<String> users = [];
-    when(mockDatabaseService.checkIfJoined(false, null, '1'))
-        .thenAnswer((_) => Future.value(false));
-    when(mockDatabaseService.checkIfJoined(false, null, '2'))
-        .thenAnswer((_) => Future.value(false));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

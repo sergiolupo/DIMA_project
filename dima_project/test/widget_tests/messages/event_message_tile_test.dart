@@ -32,15 +32,18 @@ void main() {
       type: Type.event,
     );
 
-    // Create a mock event to return from the provider
     final eventMock = Event(
-      id: 'event_id',
-      name: 'Sample Event',
-      description: 'Event Description',
-      imagePath: '',
-      admin: 'test_uid',
-      isPublic: true,
-    );
+        id: 'event_id',
+        name: 'Sample Event',
+        description: 'Event Description',
+        imagePath: '',
+        admin: 'test_uid',
+        isPublic: true,
+        details: [
+          EventDetails(
+            members: ['test_uid'],
+          ),
+        ]);
 
     await mockNetworkImagesFor(() async {
       await tester.pumpWidget(

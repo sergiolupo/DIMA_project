@@ -20,7 +20,7 @@ void main() {
       if (overlayEntry.mounted) overlayEntry.remove();
     });
 
-    testWidgets('renders OptionsMenu with Create Event option',
+    testWidgets('It renders OptionsMenu with Event option',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
@@ -37,7 +37,7 @@ void main() {
       );
 
       expect(find.byType(OptionsMenu), findsOneWidget);
-      expect(find.text('Create Event'), findsOneWidget);
+      expect(find.text('Event'), findsOneWidget);
       expect(find.text('Camera'), findsOneWidget);
       expect(find.text('Photo'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.calendar), findsOneWidget);
@@ -45,7 +45,7 @@ void main() {
       expect(find.byIcon(CupertinoIcons.photo_fill), findsOneWidget);
     });
 
-    testWidgets('renders OptionsMenu without Create Event option',
+    testWidgets('It renders OptionsMenu without Event option',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
@@ -61,11 +61,10 @@ void main() {
       );
 
       expect(find.byType(OptionsMenu), findsOneWidget);
-      expect(find.text('Create Event'),
-          findsNothing); // Create Event should not be rendered
+      expect(find.text('Event'), findsNothing);
     });
 
-    testWidgets('calls onTapCreateEvent when Create Event is tapped',
+    testWidgets('It calls onTapCreateEvent when Event is tapped',
         (WidgetTester tester) async {
       bool createEventTapped = false;
 
@@ -87,13 +86,13 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Create Event'));
+      await tester.tap(find.text('Event'));
       await tester.pumpAndSettle();
 
       expect(createEventTapped, true);
     });
 
-    testWidgets('calls onTapCamera when Camera is tapped',
+    testWidgets('It calls onTapCamera when Camera is tapped',
         (WidgetTester tester) async {
       bool cameraTapped = false;
 
@@ -121,7 +120,7 @@ void main() {
       expect(cameraTapped, true);
     });
 
-    testWidgets('calls onTapPhoto when Photo is tapped',
+    testWidgets('It calls onTapPhoto when Photo is tapped',
         (WidgetTester tester) async {
       bool photoTapped = false;
 

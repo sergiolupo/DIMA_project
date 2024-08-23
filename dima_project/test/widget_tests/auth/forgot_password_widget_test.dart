@@ -67,8 +67,8 @@ void main() {
 
   testWidgets('Displays error message when password reset fails',
       (WidgetTester tester) async {
-    when(mockAuthService.sendPasswordResetEmail(any))
-        .thenThrow(Exception('Network error'));
+    when(mockAuthService.sendPasswordResetEmail(any)).thenThrow(Exception(
+        "[ERROR 101] Failed to connect to the server. Please check your internet connection."));
 
     await tester.pumpWidget(
       CupertinoApp(
@@ -89,7 +89,7 @@ void main() {
     expect(find.text('Error'), findsOneWidget);
     expect(
         find.textContaining(
-            'Failed to send password reset email: Network error'),
+            'Failed to send password reset email: Failed to connect to the server. Please check your internet connection'),
         findsOneWidget);
   });
 }

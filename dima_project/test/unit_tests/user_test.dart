@@ -47,6 +47,7 @@ void main() {
         'requests': ['request1', 'request2'],
         'token': 'token',
         'isSignedInWithGoogle': false,
+        'groups': [],
       });
 
       final snapshot = await firestore.collection('users').doc('userId').get();
@@ -63,6 +64,7 @@ void main() {
       expect(userData.isPublic, true);
       expect(userData.requests, ['request1', 'request2']);
       expect(userData.token, 'token');
+      expect(userData.groups, []);
     });
     test("Ensure fromSnapshot handles non-existent user data correctly",
         () async {

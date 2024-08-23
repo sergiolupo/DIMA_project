@@ -54,6 +54,9 @@ void main() {
       overrides: [
         databaseServiceProvider.overrideWithValue(mockDatabaseService),
         notificationServiceProvider.overrideWithValue(mockNotificationService),
+        groupProvider.overrideWith(
+          (ref, uid) => Future.value(testGroup),
+        ),
       ],
       child: CupertinoApp(
         home: CupertinoPageScaffold(

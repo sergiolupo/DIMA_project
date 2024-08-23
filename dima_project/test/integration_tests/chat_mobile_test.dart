@@ -1417,7 +1417,7 @@ void main() {
           child: CupertinoApp(
             home: GroupInfoPage(
               canNavigate: false,
-              group: fakeGroup1,
+              groupId: fakeGroup1.id,
               databaseService: mockDatabaseService,
               notificationService: mockNotificationService,
               imagePicker: mockImagePicker,

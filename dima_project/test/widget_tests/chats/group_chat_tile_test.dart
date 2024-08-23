@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/last_message.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/chats/group_chat_tile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
@@ -92,14 +94,21 @@ void main() {
         imagePath: "",
         lastMessage: null);
     await tester.pumpWidget(
-      CupertinoApp(
-        home: CupertinoPageScaffold(
-          child: GroupChatTile(
-            storageService: MockStorageService(),
-            group: testGroup,
-            databaseService: mockDatabaseService,
-            notificationService: MockNotificationService(),
-            imagePicker: MockImagePicker(),
+      ProviderScope(
+        overrides: [
+          groupProvider.overrideWith(
+            (ref, id) => Future.value(testGroup),
+          ),
+        ],
+        child: CupertinoApp(
+          home: CupertinoPageScaffold(
+            child: GroupChatTile(
+              storageService: MockStorageService(),
+              group: testGroup,
+              databaseService: mockDatabaseService,
+              notificationService: MockNotificationService(),
+              imagePicker: MockImagePicker(),
+            ),
           ),
         ),
       ),
