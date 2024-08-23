@@ -40,9 +40,7 @@ class OptionsMenu extends StatelessWidget {
                 top: MediaQuery.of(context).size.width > Constants.limitWidth
                     ? 5
                     : 10),
-            height: MediaQuery.of(context).size.width > Constants.limitWidth
-                ? 55
-                : 70,
+            height: 70,
             color: CupertinoColors.inactiveGray,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
