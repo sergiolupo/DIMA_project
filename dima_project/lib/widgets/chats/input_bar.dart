@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
@@ -49,16 +50,16 @@ class InputBar extends StatelessWidget {
             child: SizedBox(
               height: height,
               child: CupertinoTextField(
-                onTapOutside: (event) {
-                  final renderBox = context.findRenderObject() as RenderBox?;
-                  final localTapPosition =
-                      renderBox?.globalToLocal(event.position);
-                  final textFieldTop = renderBox?.localToGlobal(Offset.zero).dy;
-                  final textFieldBottom = textFieldTop! + height;
-
-                  if (localTapPosition != null &&
-                      localTapPosition.dy < textFieldBottom - 10) {
-                    focusNode.unfocus();
+                onTapOutside: (pointer) {
+                  if (MediaQuery.of(context).size.width >
+                      Constants.limitWidth) {
+                    if (pointer.position.dy < 330) {
+                      focusNode.unfocus();
+                    }
+                  } else {
+                    if (pointer.position.dy < 486) {
+                      focusNode.unfocus();
+                    }
                   }
                 },
                 focusNode: focusNode,
