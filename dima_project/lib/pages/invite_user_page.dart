@@ -39,6 +39,7 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
         ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(

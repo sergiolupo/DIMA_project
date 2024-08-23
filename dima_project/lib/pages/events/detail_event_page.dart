@@ -47,31 +47,28 @@ class DetailPageState extends ConsumerState<DetailPage> {
     final event = ref.watch(eventProvider(widget.eventId));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        transitionBetweenRoutes: false,
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        middle: event.when(
-          data: (event) {
-            return Text(event.name,
-                style:
-                    TextStyle(color: CupertinoTheme.of(context).primaryColor));
-          },
-          loading: () => const SizedBox.shrink(),
-          error: (error, stackTrace) {
-            return const SizedBox.shrink();
-          },
-        ),
-        leading: Navigator.canPop(context)
-            ? CupertinoNavigationBarBackButton(
-                color: CupertinoTheme.of(context).primaryColor,
-                onPressed: () {
-                  ref.invalidate(joinedEventsProvider(uid));
-                  ref.invalidate(createdEventsProvider(uid));
-                  ref.invalidate(eventProvider(widget.eventId));
-                  Navigator.of(context).pop();
-                },
-              )
-            : null,
-      ),
+          transitionBetweenRoutes: false,
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+          middle: event.when(
+            data: (event) {
+              return Text(event.name,
+                  style: TextStyle(
+                      color: CupertinoTheme.of(context).primaryColor));
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (error, stackTrace) {
+              return const SizedBox.shrink();
+            },
+          ),
+          leading: CupertinoNavigationBarBackButton(
+            color: CupertinoTheme.of(context).primaryColor,
+            onPressed: () {
+              ref.invalidate(joinedEventsProvider(uid));
+              ref.invalidate(createdEventsProvider(uid));
+              ref.invalidate(eventProvider(widget.eventId));
+              Navigator.of(context).pop();
+            },
+          )),
       child: event.when(data: (event) {
         final detail = event.details!.firstWhere(
           (element) => element.id == widget.detailId,

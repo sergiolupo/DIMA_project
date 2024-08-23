@@ -122,8 +122,6 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
   }
 
   Widget getUsers(AsyncValue<List<UserData>> asyncFollowers) {
-    int i = 0;
-
     return asyncFollowers.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) => const Center(child: Text('Error')),
@@ -146,48 +144,46 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               ],
             );
           }
+          final filteredUsers = users.where((user) {
+            return user.username
+                .toLowerCase()
+                .contains(_searchText.toLowerCase());
+          }).toList();
+          if (filteredUsers.isEmpty) {
+            return Column(
+              children: [
+                MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Image.asset('assets/darkMode/no_followers.png')
+                    : Image.asset('assets/images/no_followers.png'),
+                const Center(
+                  child: Text(
+                    "No followers found",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey2),
+                  ),
+                ),
+              ],
+            );
+          }
           return Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             constraints: BoxConstraints(
-              maxHeight: users.length * 50,
+              maxHeight: filteredUsers.length * 50,
             ),
-            height: users.length * 50,
+            height: filteredUsers.length * 50,
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount: users.length,
+              itemCount: filteredUsers.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                if (!users[index]
-                    .username
-                    .toLowerCase()
-                    .contains(_searchText.toLowerCase())) {
-                  i += 1;
-                  if (i == users.length) {
-                    return Column(
-                      children: [
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Image.asset('assets/darkMode/no_followers.png')
-                            : Image.asset('assets/images/no_followers.png'),
-                        const Center(
-                            child: Text(
-                          "No followers found",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: CupertinoColors.systemGrey2),
-                        )),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
                 return Column(
                   children: [
                     ShareUserTile(
-                      user: users[index],
+                      user: filteredUsers[index],
                       onSelected: (String uuid) {
                         setState(() {
                           if (uuids.contains(uuid)) {
@@ -197,9 +193,9 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                           }
                         });
                       },
-                      active: uuids.contains(users[index].uid!),
+                      active: uuids.contains(filteredUsers[index].uid!),
                     ),
-                    if (index != users.length - 1)
+                    if (index != filteredUsers.length - 1)
                       Container(
                         height: 1,
                         color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
@@ -213,7 +209,6 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
   }
 
   Widget getGroups(AsyncValue<List<Group>> asyncGroups) {
-    int i = 0;
     return asyncGroups.when(
         error: (error, stack) => const Center(child: Text('Error')),
         loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -230,45 +225,39 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               ),
             );
           }
+          final List<Group> filteredGroups = groups
+              .where((group) =>
+                  group.name.toLowerCase().contains(_searchText.toLowerCase()))
+              .toList();
+          if (filteredGroups.isEmpty) {
+            return Center(
+              child: Column(
+                children: [
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset('assets/darkMode/no_groups_found.png')
+                      : Image.asset('assets/images/no_groups_found.png'),
+                  const Text("No groups found"),
+                ],
+              ),
+            );
+          }
           return Container(
             constraints: BoxConstraints(
-              maxHeight: groups.length * 50,
+              maxHeight: filteredGroups.length * 50,
             ),
-            height: groups.length * 50,
+            height: filteredGroups.length * 50,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount: groups.length,
+              itemCount: filteredGroups.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                if (!groups[index]
-                    .name
-                    .toLowerCase()
-                    .contains(_searchText.toLowerCase())) {
-                  i += 1;
-                  if (i == groups.length) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset(
-                                  'assets/darkMode/no_groups_found.png')
-                              : Image.asset(
-                                  'assets/images/no_groups_found.png'),
-                          const Text("No groups found"),
-                        ],
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
                 return Column(
                   children: [
                     ShareGroupTile(
-                      group: groups[index],
+                      group: filteredGroups[index],
                       onSelected: (String id) {
                         setState(() {
                           if (groupsIds.contains(id)) {
@@ -278,9 +267,9 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                           }
                         });
                       },
-                      active: groupsIds.contains(groups[index].id),
+                      active: groupsIds.contains(filteredGroups[index].id),
                     ),
-                    if (index != groups.length - 1)
+                    if (index != filteredGroups.length - 1)
                       Container(
                         height: 1,
                         color: CupertinoColors.opaqueSeparator.withOpacity(0.2),

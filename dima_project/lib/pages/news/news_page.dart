@@ -263,7 +263,24 @@ class NewsPageState extends ConsumerState<NewsPage> {
                                 activeIndex = index;
                               });
                             }))
-                    : const Text("No news available"),
+                    : Center(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? 200
+                              : 100,
+                          child: CupertinoTheme.of(context).brightness ==
+                                  Brightness.dark
+                              ? Image.asset(
+                                  fit: BoxFit.cover,
+                                  "assets/no_news_dark.png",
+                                )
+                              : Image.asset(
+                                  fit: BoxFit.cover,
+                                  "assets/no_news_light.png",
+                                ),
+                        ),
+                      ),
               const SizedBox(height: 30.0),
               Center(
                 child: sliders == null || sliders!.isEmpty

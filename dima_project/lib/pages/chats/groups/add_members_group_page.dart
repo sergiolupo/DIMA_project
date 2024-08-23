@@ -85,188 +85,197 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CupertinoSearchTextField(
-              controller: _searchController,
-              placeholder: "Search followers...",
-              onChanged: (_) {
-                setState(() {
-                  searchText = _searchController.text;
-                });
-              },
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CupertinoSearchTextField(
+                controller: _searchController,
+                placeholder: "Search followers...",
+                onChanged: (_) {
+                  setState(() {
+                    searchText = _searchController.text;
+                  });
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          asyncUsers.when(
-            loading: () => ListView.builder(
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return Shimmer.fromColors(
-                    baseColor:
-                        CupertinoTheme.of(context).primaryContrastingColor,
-                    highlightColor: CupertinoTheme.of(context)
-                        .primaryContrastingColor
-                        .withOpacity(0.5),
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: CupertinoTheme.of(context)
-                                    .primaryContrastingColor
-                                    .withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(10),
+            const SizedBox(height: 10),
+            asyncUsers.when(
+              loading: () => ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Shimmer.fromColors(
+                      baseColor:
+                          CupertinoTheme.of(context).primaryContrastingColor,
+                      highlightColor: CupertinoTheme.of(context)
+                          .primaryContrastingColor
+                          .withOpacity(0.5),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor
+                                      .withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 50,
                               ),
-                              height: 50,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, left: 8.0),
-                              child: Row(
-                                children: [
-                                  ClipOval(
-                                    child: Container(
-                                      color: CupertinoTheme.of(context)
-                                          .primaryContrastingColor,
-                                      height: 32,
-                                      width: 32,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 8.0, left: 8.0),
+                                child: Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Container(
+                                        color: CupertinoTheme.of(context)
+                                            .primaryContrastingColor,
+                                        height: 32,
+                                        width: 32,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: CupertinoTheme.of(context)
-                                              .primaryContrastingColor
-                                              .withOpacity(0.5),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 15,
+                                          width: 100,
                                         ),
-                                        height: 15,
-                                        width: 100,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: CupertinoTheme.of(context)
-                                              .primaryContrastingColor
-                                              .withOpacity(0.5),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                        const SizedBox(height: 5),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor
+                                                .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 10,
+                                          width: 150,
                                         ),
-                                        height: 10,
-                                        width: 150,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+              error: (err, stack) => Text('Error: $err'),
+              data: (followers) {
+                if (followers.isEmpty) {
+                  return SingleChildScrollView(
+                    reverse: false,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Image.asset(
+                                  'assets/darkMode/search_followers.png')
+                              : Image.asset(
+                                  'assets/images/search_followers.png'),
+                          const Text(
+                            'No followers',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.systemGrey2),
+                          ),
+                        ],
+                      ),
                     ),
                   );
-                }),
-            error: (err, stack) => Text('Error: $err'),
-            data: (followers) {
-              if (followers.isEmpty) {
-                return SingleChildScrollView(
-                  reverse: false,
-                  physics: const NeverScrollableScrollPhysics(),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Image.asset(
-                                'assets/darkMode/search_followers.png')
-                            : Image.asset('assets/images/search_followers.png'),
-                        const Text(
-                          'No followers',
+                }
+                final filteredUsers = followers.where((user) {
+                  return user.username
+                      .toLowerCase()
+                      .contains(_searchController.text.toLowerCase());
+                }).toList();
+
+                if (filteredUsers.isEmpty) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Image.asset('assets/darkMode/no_followers.png')
+                          : Image.asset('assets/images/no_followers.png'),
+                      const Center(
+                        child: Text(
+                          'No followers found',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: CupertinoColors.systemGrey2),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  );
+                }
+                return Container(
+                  height: filteredUsers.length * 50.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color:
+                          CupertinoTheme.of(context).primaryContrastingColor),
+                  child: ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredUsers.length,
+                    itemBuilder: (context, index) {
+                      final userData = filteredUsers[index];
+
+                      return Column(
+                        children: [
+                          AddMemberTile(
+                            user: userData,
+                            onSelected: (String uuid) {
+                              setState(() {
+                                if (uids.contains(uuid)) {
+                                  uids.remove(uuid);
+                                } else {
+                                  uids.add(uuid);
+                                }
+                              });
+                            },
+                            active: uids.contains(userData.uid!),
+                            isJoining:
+                                userData.groups!.contains(widget.group.id),
+                          ),
+                          if (index != filteredUsers.length - 1)
+                            Container(
+                              height: 1,
+                              color: CupertinoColors.opaqueSeparator
+                                  .withOpacity(0.2),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 );
-              }
-              final filteredUsers = followers.where((user) {
-                return user.username
-                    .toLowerCase()
-                    .contains(_searchController.text.toLowerCase());
-              }).toList();
-
-              if (filteredUsers.isEmpty) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Image.asset('assets/darkMode/no_followers.png')
-                        : Image.asset('assets/images/no_followers.png'),
-                    const Center(
-                      child: Text(
-                        'No followers found',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: CupertinoColors.systemGrey2),
-                      ),
-                    ),
-                  ],
-                );
-              }
-              return Container(
-                height: filteredUsers.length * 50.0,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: CupertinoTheme.of(context).primaryContrastingColor),
-                child: ListView.builder(
-                  itemCount: filteredUsers.length,
-                  itemBuilder: (context, index) {
-                    final userData = filteredUsers[index];
-
-                    return Column(
-                      children: [
-                        AddMemberTile(
-                          user: userData,
-                          onSelected: (String uuid) {
-                            setState(() {
-                              if (uids.contains(uuid)) {
-                                uids.remove(uuid);
-                              } else {
-                                uids.add(uuid);
-                              }
-                            });
-                          },
-                          active: uids.contains(userData.uid!),
-                          isJoining: userData.groups!.contains(widget.group.id),
-                        ),
-                        if (index != filteredUsers.length - 1)
-                          Container(
-                            height: 1,
-                            color: CupertinoColors.opaqueSeparator
-                                .withOpacity(0.2),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

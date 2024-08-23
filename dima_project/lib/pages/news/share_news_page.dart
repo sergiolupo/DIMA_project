@@ -109,7 +109,6 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
   }
 
   Widget getUsers(AsyncValue<List<UserData>> asyncUsers) {
-    int i = 0;
     return asyncUsers.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) => const Center(child: Text('Error')),
@@ -120,55 +119,61 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                 MediaQuery.of(context).platformBrightness == Brightness.dark
                     ? Image.asset('assets/darkMode/search_followers.png')
                     : Image.asset('assets/images/search_followers.png'),
-                const Text(
-                  "No followers",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: CupertinoColors.systemGrey2),
+                const Column(
+                  children: [
+                    Text(
+                      "No followers",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.systemGrey2),
+                    ),
+                    SizedBox(height: 10),
+                    Text("Follow other accounts to share news",
+                        style: TextStyle(
+                            fontSize: 15, color: CupertinoColors.systemGrey2)),
+                  ],
+                ),
+              ],
+            );
+          }
+          final filteredUsers = users.where((user) {
+            return user.username
+                .toLowerCase()
+                .contains(_searchText.toLowerCase());
+          }).toList();
+          if (filteredUsers.isEmpty) {
+            return Column(
+              children: [
+                MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Image.asset('assets/darkMode/no_followers.png')
+                    : Image.asset('assets/images/no_followers.png'),
+                const Center(
+                  child: Text(
+                    "No followers found",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey2),
+                  ),
                 ),
               ],
             );
           }
           return Container(
-            height: users.length * 50,
+            height: filteredUsers.length * 50,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount: users.length,
+              itemCount: filteredUsers.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                if (!users[index]
-                    .username
-                    .toLowerCase()
-                    .contains(_searchText.toLowerCase())) {
-                  i += 1;
-                  if (i == users.length) {
-                    return Column(
-                      children: [
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Image.asset('assets/darkMode/no_followers.png')
-                            : Image.asset('assets/images/no_followers.png'),
-                        const Center(
-                            child: Text(
-                          "No followers found",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: CupertinoColors.systemGrey2),
-                        )),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
                 return Column(
                   children: [
                     ShareUserTile(
-                      user: users[index],
+                      user: filteredUsers[index],
                       onSelected: (String uuid) {
                         setState(() {
                           if (uuids.contains(uuid)) {
@@ -178,9 +183,9 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                           }
                         });
                       },
-                      active: uuids.contains(users[index].uid!),
+                      active: uuids.contains(filteredUsers[index].uid!),
                     ),
-                    if (index != users.length - 1)
+                    if (index != filteredUsers.length - 1)
                       Container(
                         height: 1,
                         color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
@@ -194,7 +199,6 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
   }
 
   Widget getGroups(AsyncValue<List<Group>> asyncGroups) {
-    int i = 0;
     return asyncGroups.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) => const Center(child: Text('Error')),
@@ -206,47 +210,54 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                   MediaQuery.of(context).platformBrightness == Brightness.dark
                       ? Image.asset('assets/darkMode/search_groups.png')
                       : Image.asset('assets/images/search_groups.png'),
-                  const Text("No groups"),
+                  const Column(
+                    children: [
+                      Text("No groups",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: CupertinoColors.systemGrey2)),
+                      SizedBox(height: 10),
+                      Text("Join in a group to share news",
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: CupertinoColors.systemGrey2)),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+          final List<Group> filteredGroups = groups
+              .where((group) =>
+                  group.name.toLowerCase().contains(_searchText.toLowerCase()))
+              .toList();
+          if (filteredGroups.isEmpty) {
+            return Center(
+              child: Column(
+                children: [
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Image.asset('assets/darkMode/no_groups_found.png')
+                      : Image.asset('assets/images/no_groups_found.png'),
+                  const Text("No groups found"),
                 ],
               ),
             );
           }
           return Container(
-            height: groups.length * 50,
+            height: filteredGroups.length * 50,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CupertinoTheme.of(context).primaryContrastingColor),
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount: groups.length,
+              itemCount: filteredGroups.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                if (!groups[index]
-                    .name
-                    .toLowerCase()
-                    .contains(_searchText.toLowerCase())) {
-                  i += 1;
-                  if (i == groups.length) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Image.asset(
-                                  'assets/darkMode/no_groups_found.png')
-                              : Image.asset(
-                                  'assets/images/no_groups_found.png'),
-                          const Text("No groups found"),
-                        ],
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
                 return Column(
                   children: [
                     ShareGroupTile(
-                      group: groups[index],
+                      group: filteredGroups[index],
                       onSelected: (String id) {
                         setState(() {
                           if (groupsIds.contains(id)) {
@@ -256,9 +267,9 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                           }
                         });
                       },
-                      active: groupsIds.contains(groups[index].id),
+                      active: groupsIds.contains(filteredGroups[index].id),
                     ),
-                    if (index != groups.length - 1)
+                    if (index != filteredGroups.length - 1)
                       Container(
                         height: 1,
                         color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
