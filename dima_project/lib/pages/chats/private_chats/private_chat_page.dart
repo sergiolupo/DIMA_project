@@ -425,7 +425,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
   void showOverlay(BuildContext context) {
     _optionsMenuOverlay = OverlayEntry(
         builder: (context) => OptionsMenu(
-            isTablet: false,
+            isTablet: widget.canNavigate,
             onTapCamera: onTapCamera,
             onTapPhoto: onTapPhoto,
             overlayEntry: _optionsMenuOverlay));

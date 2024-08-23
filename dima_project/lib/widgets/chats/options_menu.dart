@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class OptionsMenu extends StatelessWidget {
@@ -5,7 +6,7 @@ class OptionsMenu extends StatelessWidget {
   final VoidCallback onTapCamera;
   final VoidCallback onTapPhoto;
   final OverlayEntry? overlayEntry;
-  final bool? isTablet;
+  final bool isTablet;
 
   const OptionsMenu({
     super.key,
@@ -13,7 +14,7 @@ class OptionsMenu extends StatelessWidget {
     required this.onTapCamera,
     required this.onTapPhoto,
     required this.overlayEntry,
-    this.isTablet,
+    required this.isTablet,
   });
 
   @override
@@ -32,11 +33,16 @@ class OptionsMenu extends StatelessWidget {
         ),
         Positioned(
           bottom: 0,
-          left: isTablet! ? MediaQuery.of(context).size.width * 0.4 : 0,
+          left: isTablet ? MediaQuery.of(context).size.width * 0.4 : 0,
           right: 0,
           child: Container(
-            padding: const EdgeInsets.only(top: 10),
-            height: 80,
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.width > Constants.limitWidth
+                    ? 5
+                    : 10),
+            height: MediaQuery.of(context).size.width > Constants.limitWidth
+                ? 55
+                : 70,
             color: CupertinoColors.inactiveGray,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
