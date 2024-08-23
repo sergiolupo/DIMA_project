@@ -25,11 +25,11 @@ class EventRequestsPage extends ConsumerStatefulWidget {
 
 class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
   late final DatabaseService _databaseService;
-  List<String> users = [];
+  List<String> requests = [];
   @override
   void initState() {
     _databaseService = widget.databaseService;
-    users = widget.requests;
+    requests = widget.requests;
     super.initState();
   }
 
@@ -44,7 +44,8 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           child: const Icon(CupertinoIcons.back),
-          onPressed: () async {
+          onPressed: () {
+            ref.invalidate(eventProvider(widget.eventId));
             Navigator.of(context).pop();
           },
         ),
@@ -54,7 +55,7 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
         ),
       ),
       child: ListView.builder(
-        itemCount: widget.requests.length,
+        itemCount: requests.length,
         itemBuilder: (context, index) {
           final userData = users[index];
           return userData.when(
@@ -111,7 +112,7 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
                               });
                         }
                         setState(() {
-                          users.removeAt(index);
+                          requests.removeAt(index);
                         });
                       },
                       child: Container(
@@ -134,8 +135,10 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
                       onTap: () async {
                         await _databaseService.denyEventRequest(
                             widget.eventId, widget.detailId, user.uid!);
+                        ref.invalidate(eventProvider(widget.eventId));
+
                         setState(() {
-                          users.removeAt(index);
+                          requests.removeAt(index);
                         });
                       },
                       child: Container(

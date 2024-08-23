@@ -378,7 +378,6 @@ class NotificationService {
     } else {
       devicesTokens = await DatabaseService().getDevicesTokensEvent(eventId);
     }
-    debugPrint(devicesTokens.toString());
     if (devicesTokens == []) return;
     final String serverAccessTokenKey = await getAccessToken();
     const endpoint =
@@ -391,7 +390,6 @@ class NotificationService {
             : 'Event has been deleted';
 
     for (String deviceToken in devicesTokens) {
-      debugPrint(deviceToken);
       if (deviceToken == '') continue;
       Map<String, dynamic> message = {
         "message": {
@@ -415,7 +413,6 @@ class NotificationService {
         },
         body: jsonEncode(message),
       );
-      debugPrint(response.body);
       if (response.statusCode == 200) {
         debugPrint('Notification sent');
       } else {

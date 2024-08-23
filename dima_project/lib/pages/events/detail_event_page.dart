@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dima_project/pages/events/event_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
   final String eventId;
@@ -42,30 +45,39 @@ class DetailPageState extends ConsumerState<DetailPage> {
     final NotificationService notificationService =
         ref.watch(notificationServiceProvider);
     final event = ref.watch(eventProvider(widget.eventId));
-    return event.when(data: (event) {
-      final detail = event.details!.firstWhere(
-        (element) => element.id == widget.detailId,
-        orElse: () => throw Exception('Detail not found'),
-      );
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          transitionBetweenRoutes: false,
-          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-          middle: Text(event.name,
-              style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-          leading: Navigator.canPop(context)
-              ? CupertinoNavigationBarBackButton(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  onPressed: () {
-                    ref.invalidate(eventProvider(event.id!));
-                    ref.invalidate(joinedEventsProvider(uid));
-                    ref.invalidate(createdEventsProvider(uid));
-                    Navigator.of(context).pop();
-                  },
-                )
-              : null,
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        middle: event.when(
+          data: (event) {
+            return Text(event.name,
+                style:
+                    TextStyle(color: CupertinoTheme.of(context).primaryColor));
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (error, stackTrace) {
+            return const SizedBox.shrink();
+          },
         ),
-        child: SingleChildScrollView(
+        leading: Navigator.canPop(context)
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
+                onPressed: () {
+                  ref.invalidate(eventProvider(widget.eventId));
+                  ref.invalidate(joinedEventsProvider(uid));
+                  ref.invalidate(createdEventsProvider(uid));
+                  Navigator.of(context).pop();
+                },
+              )
+            : null,
+      ),
+      child: event.when(data: (event) {
+        final detail = event.details!.firstWhere(
+          (element) => element.id == widget.detailId,
+          orElse: () => throw Exception('Detail not found'),
+        );
+        return SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -328,6 +340,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                 ),
                 event.admin == uid
                     ? Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: CupertinoTheme.of(context)
@@ -416,44 +429,11 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                             CupertinoDialogAction(
                                               child: const Text('Yes'),
                                               onPressed: () async {
-                                                Navigator.of(newContext).pop();
-                                                BuildContext buildContext =
-                                                    context;
-                                                // Show the loading dialog
-                                                showCupertinoDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (BuildContext
-                                                      newContext) {
-                                                    buildContext = newContext;
-                                                    return const CupertinoAlertDialog(
-                                                      content:
-                                                          CupertinoActivityIndicator(),
-                                                    );
-                                                  },
-                                                );
-                                                await notificationService
-                                                    .sendEventNotification(
-                                                        event.name,
-                                                        event.id!,
-                                                        true,
-                                                        widget.detailId);
-                                                await databaseService
-                                                    .deleteDetail(event.id!,
-                                                        widget.detailId);
-
-                                                ref.invalidate(
-                                                    eventProvider(event.id!));
-                                                ref.invalidate(
-                                                    createdEventsProvider(uid));
-
-                                                if (buildContext.mounted) {
-                                                  Navigator.of(buildContext)
-                                                      .pop();
-                                                }
-                                                if (context.mounted) {
-                                                  Navigator.of(context).pop();
-                                                }
+                                                await delete(
+                                                    newContext,
+                                                    databaseService,
+                                                    notificationService,
+                                                    event);
                                               },
                                             ),
                                           ],
@@ -481,50 +461,19 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                           'Are you sure you want to delete this date?'),
                                       actions: <Widget>[
                                         CupertinoDialogAction(
-                                          child: const Text('Cancel'),
+                                          child: const Text('No'),
                                           onPressed: () =>
                                               Navigator.of(newContext).pop(),
                                         ),
                                         CupertinoDialogAction(
-                                          child: const Text('Yes'),
-                                          onPressed: () async {
-                                            Navigator.of(newContext).pop();
-                                            BuildContext buildContext = context;
-                                            // Show the loading dialog
-                                            showCupertinoDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder:
-                                                  (BuildContext newContext) {
-                                                buildContext = newContext;
-                                                return const CupertinoAlertDialog(
-                                                  content:
-                                                      CupertinoActivityIndicator(),
-                                                );
-                                              },
-                                            );
-                                            await notificationService
-                                                .sendEventNotification(
-                                                    event.name,
-                                                    event.id!,
-                                                    true,
-                                                    widget.detailId);
-                                            await databaseService.deleteDetail(
-                                                event.id!, widget.detailId);
-
-                                            ref.invalidate(
-                                                eventProvider(event.id!));
-                                            ref.invalidate(
-                                                createdEventsProvider(uid));
-
-                                            if (buildContext.mounted) {
-                                              Navigator.of(buildContext).pop();
-                                            }
-                                            if (context.mounted) {
-                                              Navigator.of(context).pop();
-                                            }
-                                          },
-                                        ),
+                                            child: const Text('Yes'),
+                                            onPressed: () async {
+                                              await delete(
+                                                  newContext,
+                                                  databaseService,
+                                                  notificationService,
+                                                  event);
+                                            }),
                                       ],
                                     ),
                                   );
@@ -535,17 +484,114 @@ class DetailPageState extends ConsumerState<DetailPage> {
               ]),
             ],
           ),
-        ),
-      );
-    }, loading: () {
-      return const Center(
-        child: CupertinoActivityIndicator(),
-      );
-    }, error: (error, stackTrace) {
-      return Center(
-        child: Text('Error: $error'),
-      );
-    });
+        );
+      }, loading: () {
+        return Shimmer.fromColors(
+          baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+          highlightColor: CupertinoTheme.of(context)
+              .primaryContrastingColor
+              .withOpacity(0.5),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SafeArea(
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 100,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor,
+                                  borderRadius: BorderRadius.circular(10)),
+                              height: 100,
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 100,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: CupertinoTheme.of(context)
+                                      .primaryContrastingColor,
+                                  borderRadius: BorderRadius.circular(10)),
+                              height: 100,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: 180,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: CupertinoTheme.of(context)
+                                  .primaryContrastingColor,
+                              borderRadius: BorderRadius.circular(10)),
+                          height: 20,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: CupertinoTheme.of(context)
+                                  .primaryContrastingColor,
+                              borderRadius: BorderRadius.circular(10)),
+                          height: 200,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }, error: (error, stackTrace) {
+        return Center(
+          child: Text('Error: $error'),
+        );
+      }),
+    );
+  }
+
+  Future<void> delete(BuildContext newContext, DatabaseService databaseService,
+      NotificationService notificationService, event) async {
+    Navigator.of(newContext).pop();
+    BuildContext buildContext = context;
+    // Show the loading dialog
+    showCupertinoDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext newContext) {
+        buildContext = newContext;
+        return const CupertinoAlertDialog(
+          content: CupertinoActivityIndicator(),
+        );
+      },
+    );
+    await notificationService.sendEventNotification(
+        event.name, event.id!, true, widget.detailId);
+    await databaseService.deleteDetail(event.id!, widget.detailId);
+
+    ref.invalidate(eventProvider(event.id!));
+    ref.invalidate(createdEventsProvider(uid));
+
+    if (buildContext.mounted) {
+      Navigator.of(buildContext).pop();
+    }
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   TileLayer get openStreetMapTileLayer => TileLayer(

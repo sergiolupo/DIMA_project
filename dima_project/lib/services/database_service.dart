@@ -1001,8 +1001,8 @@ class DatabaseService {
     return users;
   }
 
-  Future<Map<String, List<String>>> getEventRequests(String id) async {
-    Map<String, List<String>> requests = {};
+  Future<Map<String, List<dynamic>>> getEventRequests(String id) async {
+    Map<String, List<dynamic>> requests = {};
     final det = await eventsRef.doc(id).collection('details').get();
     for (var detail in det.docs) {
       requests.putIfAbsent(detail.id, () => detail['requests']);
@@ -1602,20 +1602,23 @@ class DatabaseService {
     for (EventDetails detail in event.details!) {
       members.addAll(detail.members!);
     }
-
-    if (visibilityHasChanged && event.isPublic) {
-      Map<String, List<String>> requests = await getEventRequests(event.id!);
-      for (var key in requests.keys) {
-        List<String> ids = requests[key]!;
-        for (var id in ids) {
-          try {
-            await acceptEventRequest(event.id!, key, id);
-          } catch (e) {
-            debugPrint('User is already a member of the event');
+    try {
+      if (visibilityHasChanged && event.isPublic) {
+        Map<String, List<dynamic>> requests = await getEventRequests(event.id!);
+        for (var key in requests.keys) {
+          List<dynamic> ids = requests[key]!;
+          for (var id in ids) {
+            try {
+              await acceptEventRequest(event.id!, key, id);
+            } catch (e) {
+              debugPrint('User is already a member of the event');
+            }
+            members.add(id);
           }
-          members.add(id);
         }
       }
+    } catch (e) {
+      debugPrint('Error while accepting event requests: $e');
     }
   }
 
