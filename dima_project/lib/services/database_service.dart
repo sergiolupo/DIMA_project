@@ -694,6 +694,10 @@ class DatabaseService {
 
     DocumentSnapshot doc = await usersRef.doc(user).get();
 
+    if (!userDoc.exists || !doc.exists) {
+      throw Exception('User does not exist');
+    }
+
     // Check if the visitor is already following the user
     List<dynamic> followers = userDoc['followers'];
     List<dynamic> following = visitorDoc['following'];

@@ -214,11 +214,37 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 8),
                             onPressed: () async {
-                              await databaseService.toggleFollowUnfollow(
-                                  widget.user, uid);
-                              ref.invalidate(followingProvider(uid));
-                              ref.invalidate(followerProvider(widget.user));
-                              ref.invalidate(userProvider(widget.user));
+                              try {
+                                await databaseService.toggleFollowUnfollow(
+                                    widget.user, uid);
+                                ref.invalidate(followingProvider(uid));
+                                ref.invalidate(followerProvider(widget.user));
+                                ref.invalidate(userProvider(widget.user));
+                              } catch (e) {
+                                if (!mounted) return;
+
+                                showCupertinoDialog(
+                                    context: context,
+                                    builder: (newContext) {
+                                      return CupertinoAlertDialog(
+                                        title: const Text('Error'),
+                                        content: const Text(
+                                            'User deleted his/her account'),
+                                        actions: <Widget>[
+                                          CupertinoDialogAction(
+                                            isDefaultAction: true,
+                                            child: const Text('OK'),
+                                            onPressed: () {
+                                              ref.invalidate(followingProvider);
+                                              ref.invalidate(followerProvider);
+                                              ref.invalidate(userProvider);
+                                              Navigator.of(newContext).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    });
+                              }
                             },
                             child: followings.when(
                               data: (followings) {

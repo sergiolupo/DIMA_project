@@ -94,14 +94,44 @@ class UserTileState extends ConsumerState<UserTile> {
         widget.user.uid != uid && widget.isFollowing != null
             ? GestureDetector(
                 onTap: () async {
-                  await databaseService.toggleFollowUnfollow(
-                    widget.user.uid!,
-                    uid,
-                  );
-                  ref.invalidate(followingProvider(uid));
-                  ref.invalidate(followerProvider(widget.user.uid!));
-                  ref.invalidate(followerProvider(uid));
-                  ref.invalidate(userProvider(widget.user.uid!));
+                  try {
+                    await databaseService.toggleFollowUnfollow(
+                      widget.user.uid!,
+                      uid,
+                    );
+                    ref.invalidate(followingProvider(uid));
+                    ref.invalidate(followerProvider(widget.user.uid!));
+                    ref.invalidate(followerProvider(uid));
+                    ref.invalidate(userProvider(widget.user.uid!));
+                    ref.invalidate(userProvider(uid));
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    final String state = widget.isFollowing == 0
+                        ? "follow"
+                        : widget.isFollowing == 1
+                            ? "unfollow"
+                            : "cancel request to";
+                    showCupertinoDialog(
+                        context: context,
+                        builder: (newContext) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Error'),
+                            content: Text('Failed to $state the user'),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                isDefaultAction: true,
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  ref.invalidate(followingProvider);
+                                  ref.invalidate(followerProvider);
+                                  ref.invalidate(userProvider);
+                                  Navigator.of(newContext).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.only(right: 20),
