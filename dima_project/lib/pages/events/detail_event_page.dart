@@ -18,11 +18,11 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:shimmer/shimmer.dart';
 
-class DetailPage extends ConsumerStatefulWidget {
+class DetailEventPage extends ConsumerStatefulWidget {
   final String eventId;
   final String detailId;
 
-  const DetailPage({
+  const DetailEventPage({
     super.key,
     required this.eventId,
     required this.detailId,
@@ -31,7 +31,7 @@ class DetailPage extends ConsumerStatefulWidget {
   DetailPageState createState() => DetailPageState();
 }
 
-class DetailPageState extends ConsumerState<DetailPage> {
+class DetailPageState extends ConsumerState<DetailEventPage> {
   final String uid = AuthService.uid;
   @override
   void initState() {
@@ -418,7 +418,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                                               'Are you sure you want to delete this date?'),
                                           actions: <Widget>[
                                             CupertinoDialogAction(
-                                              child: const Text('Cancel'),
+                                              child: const Text('No'),
                                               onPressed: () =>
                                                   Navigator.of(newContext)
                                                       .pop(),

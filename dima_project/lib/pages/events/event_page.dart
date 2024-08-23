@@ -183,7 +183,8 @@ class EventPageState extends ConsumerState<EventPage> {
                                       onTap: () {
                                         Navigator.of(context).push(
                                           CupertinoPageRoute(
-                                            builder: (context) => DetailPage(
+                                            builder: (context) =>
+                                                DetailEventPage(
                                               eventId: event.id!,
                                               detailId: detail.id!,
                                             ),
@@ -262,7 +263,7 @@ class EventPageState extends ConsumerState<EventPage> {
                                                     'Are you sure you want to delete this event?'),
                                                 actions: <Widget>[
                                                   CupertinoDialogAction(
-                                                    child: const Text('Cancel'),
+                                                    child: const Text('No'),
                                                     onPressed: () =>
                                                         Navigator.of(newContext)
                                                             .pop(),

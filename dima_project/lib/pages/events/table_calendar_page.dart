@@ -429,7 +429,8 @@ class TableCalendarPageState extends ConsumerState<TableCalendarPage> {
                                         onTap: () {
                                           Navigator.of(context).push(
                                             CupertinoPageRoute(
-                                              builder: (context) => DetailPage(
+                                              builder: (context) =>
+                                                  DetailEventPage(
                                                 eventId: event.id!,
                                                 detailId: detail.id!,
                                               ),

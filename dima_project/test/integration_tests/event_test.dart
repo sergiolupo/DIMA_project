@@ -174,7 +174,7 @@ void main() {
       expect(find.text("Event"), findsOneWidget);
       await tester.tap(find.byType(CupertinoListTile));
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       expect(find.text("Location: Test Location"), findsOneWidget);
       expect(find.textContaining("Add to calendar"), findsOneWidget);
       expect(find.text("Participants"), findsOneWidget);
@@ -188,7 +188,7 @@ void main() {
       expect(find.text("Host"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.back));
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.location_solid));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoActionSheet), findsOneWidget);
@@ -237,14 +237,14 @@ void main() {
       expect(find.text("Are you sure you want to delete this event?"),
           findsOneWidget);
 
-      await tester.tap(find.text("Cancel"));
+      await tester.tap(find.text("No"));
       await tester.pumpAndSettle();
       expect(find.text("Event"), findsOneWidget);
       await tester.tap(find.text("Delete Event"));
       await tester.pumpAndSettle();
       expect(find.text("Are you sure you want to delete this event?"),
           findsOneWidget);
-      await tester.tap(find.text("Delete"));
+      await tester.tap(find.text("Yes"));
       await tester.pumpAndSettle();
     });
 
@@ -283,9 +283,9 @@ void main() {
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-      await tester.tap(find.byType(CupertinoListTile));
+      await tester.tap(find.byType(CupertinoListTile).first);
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       expect(find.text("Location: Test Location"), findsOneWidget);
       expect(find.textContaining("Add to calendar"), findsOneWidget);
       expect(find.text("Participant"), findsOneWidget);
@@ -294,9 +294,9 @@ void main() {
       expect(find.text("Are you sure you want to delete this date?"),
           findsOneWidget);
 
-      await tester.tap(find.text("Cancel"));
+      await tester.tap(find.text("No"));
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.trash));
       await tester.pumpAndSettle();
       expect(find.text("Are you sure you want to delete this date?"),
@@ -344,15 +344,15 @@ void main() {
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-      await tester.tap(find.byType(CupertinoListTile));
+      await tester.tap(find.byType(CupertinoListTile).first);
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       expect(find.text("Location: Test Location"), findsOneWidget);
       expect(find.textContaining("Add to calendar"), findsOneWidget);
       expect(find.text("Participant"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.calendar));
+      await tester.tap(find.byIcon(CupertinoIcons.calendar_badge_plus));
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
       expect(find.text("Location: Test Location"), findsOneWidget);
       expect(find.textContaining("Add to calendar"), findsOneWidget);
       expect(find.text("Participant"), findsOneWidget);
@@ -394,15 +394,15 @@ void main() {
             findsOneWidget);
         expect(find.text('Test Location'), findsOneWidget);
         expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-        await tester.tap(find.byType(CupertinoListTile));
+        await tester.tap(find.byType(CupertinoListTile).first);
         await tester.pumpAndSettle();
-        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Test Event"), findsOneWidget);
         expect(find.text("Location: Test Location"), findsOneWidget);
         expect(find.textContaining("Add to calendar"), findsOneWidget);
         expect(find.text("Participant"), findsOneWidget);
         await tester.tap(find.text("Subscribe"));
         await tester.pumpAndSettle();
-        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Test Event"), findsOneWidget);
         expect(find.text("Location: Test Location"), findsOneWidget);
         expect(find.textContaining("Add to calendar"), findsOneWidget);
         expect(find.text("Participant"), findsOneWidget);
@@ -441,7 +441,7 @@ void main() {
               ),
             ],
             child: CupertinoApp(
-              home: DetailPage(
+              home: DetailEventPage(
                 eventId: event.id!,
                 detailId: event.details![0].id!,
               ),
@@ -450,7 +450,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Test Event"), findsOneWidget);
         expect(find.text("Location: Test Location"), findsOneWidget);
         expect(find.textContaining("Add to calendar"), findsOneWidget);
         expect(find.text("Participant"), findsOneWidget);
@@ -474,7 +474,7 @@ void main() {
               ),
             ],
             child: CupertinoApp(
-              home: DetailPage(
+              home: DetailEventPage(
                 eventId: fakeEvent3.id!,
                 detailId: fakeEvent3.details![0].id!,
               ),
@@ -483,7 +483,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text("Detail Page"), findsOneWidget);
+        expect(find.text("Test Event"), findsOneWidget);
         expect(find.text("Location: Test Location"), findsOneWidget);
         expect(find.textContaining("Add to calendar"), findsOneWidget);
         expect(find.text("Participant"), findsOneWidget);
@@ -541,7 +541,7 @@ void main() {
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
-      await tester.tap(find.text("Edit"));
+      await tester.tap(find.text("Edit Event"));
       await tester.pumpAndSettle();
       expect(find.text("Edit Event"), findsOneWidget);
       await tester.enterText(find.byType(CupertinoTextField).at(0), "");
@@ -675,7 +675,7 @@ void main() {
       expect(find.text("Event1"), findsOneWidget);
       await tester.tap(find.byType(CupertinoListTile));
       await tester.pumpAndSettle();
-      expect(find.text("Detail Page"), findsOneWidget);
+      expect(find.text("Event1"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
@@ -726,6 +726,18 @@ void main() {
             ),
             joinedEventsProvider.overrideWith(
               (ref, uid) async => [],
+            ),
+            groupsProvider.overrideWith(
+              (ref, uid) async => [
+                Group(
+                    name: "name",
+                    id: "id",
+                    isPublic: true,
+                    members: ["uid"],
+                    admin: "uid",
+                    imagePath: "",
+                    description: "description")
+              ],
             ),
           ],
           child: CupertinoApp(
@@ -802,20 +814,21 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text("Participants"));
       await tester.pumpAndSettle();
-      expect(find.text("Add Members"), findsOneWidget);
+      expect(find.text("Invite Followers"), findsOneWidget);
       expect(find.text("No followers"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Groups"));
       await tester.pumpAndSettle();
       expect(find.text("name"), findsOneWidget);
-      await tester.tap(find.text("name"));
+      expect(find.text("Invite Groups"), findsOneWidget);
+
+      await tester.tap(find.text("Invite"));
       await tester.pumpAndSettle();
-      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
-      await tester.tap(find.text("name"));
-      await tester.pumpAndSettle();
-      expect(find.byIcon(CupertinoIcons.checkmark), findsNothing);
-      expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
+      expect(find.text("Invited"), findsOneWidget);
+      await tester.tap(find.text("Invited"));
+      expect(find.text("Invite"), findsOneWidget);
+
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
