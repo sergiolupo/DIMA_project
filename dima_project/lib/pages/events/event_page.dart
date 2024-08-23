@@ -11,6 +11,7 @@ import 'package:dima_project/pages/events/edit_event_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class EventPage extends ConsumerStatefulWidget {
   final String eventId;
@@ -40,51 +41,52 @@ class EventPageState extends ConsumerState<EventPage> {
     final databaseService = ref.read(databaseServiceProvider);
     final notificationService = ref.read(notificationServiceProvider);
     final event = ref.watch(eventProvider(widget.eventId));
-    return event.when(
-      data: (event) {
-        return CupertinoPageScaffold(
-          navigationBar: CupertinoNavigationBar(
-            transitionBetweenRoutes: false,
-            backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-            trailing: CupertinoButton(
-              padding: const EdgeInsets.all(0),
-              onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => ShareEventPage(
-                      databaseService: databaseService,
-                      eventId: widget.eventId,
-                    ),
-                  ),
-                );
-              },
-              child: const Icon(
-                CupertinoIcons.share,
+
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        transitionBetweenRoutes: false,
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+        trailing: CupertinoButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ShareEventPage(
+                  databaseService: databaseService,
+                  eventId: widget.eventId,
+                ),
               ),
-            ),
-            leading: Navigator.canPop(context)
-                ? CupertinoNavigationBarBackButton(
-                    color: CupertinoTheme.of(context).primaryColor,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                : null,
-            middle: Text(
-              'Event',
-              style: TextStyle(
-                  color: CupertinoTheme.of(context).primaryColor, fontSize: 18),
-            ),
+            );
+          },
+          child: const Icon(
+            CupertinoIcons.share,
           ),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: SafeArea(
-                    child: Container(
-                      padding: const EdgeInsets.all(30),
-                      child: Column(
+        ),
+        leading: Navigator.canPop(context)
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            : null,
+        middle: Text(
+          'Event',
+          style: TextStyle(
+              color: CupertinoTheme.of(context).primaryColor, fontSize: 18),
+        ),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.all(30),
+                  child: event.when(
+                    data: (event) {
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CreateImageWidget.getEventImage(event.imagePath!),
@@ -330,38 +332,126 @@ class EventPageState extends ConsumerState<EventPage> {
                                 )
                               : Container(),
                         ],
+                      );
+                    },
+                    loading: () => Shimmer.fromColors(
+                      baseColor:
+                          CupertinoTheme.of(context).primaryContrastingColor,
+                      highlightColor: CupertinoTheme.of(context)
+                          .primaryContrastingColor
+                          .withOpacity(0.5),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SafeArea(
+                              child: Container(
+                                padding: const EdgeInsets.all(30),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: ClipOval(
+                                        child: Container(
+                                            width: 100,
+                                            height: 100,
+                                            color: CupertinoTheme.of(context)
+                                                .primaryContrastingColor),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 180,
+                                      alignment: Alignment.centerLeft,
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: CupertinoTheme.of(context)
+                                              .primaryContrastingColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      height: 20,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      alignment: Alignment.centerLeft,
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: CupertinoTheme.of(context)
+                                              .primaryContrastingColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      height: 100,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: 3,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: CupertinoTheme.of(context)
+                                                  .primaryContrastingColor,
+                                            ),
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.9,
+                                            height: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    error: (error, stackTrace) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        color:
+                            CupertinoTheme.of(context).scaffoldBackgroundColor,
+                        child: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/event_canceled_tablet.png',
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/images/event_canceled_tablet.png',
+                                    fit: BoxFit.cover)
+                            : MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Image.asset(
+                                    'assets/darkMode/event_canceled.png',
+                                    fit: BoxFit.cover)
+                                : Image.asset(
+                                    'assets/images/event_canceled.png',
+                                    fit: BoxFit.cover),
+                      );
+                    },
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        );
-      },
-      loading: () => const Center(
-        child: CupertinoActivityIndicator(),
+        ],
       ),
-      error: (error, stackTrace) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-          child: MediaQuery.of(context).size.width > Constants.limitWidth
-              ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset(
-                      'assets/darkMode/event_canceled_tablet.png',
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset('assets/images/event_canceled_tablet.png',
-                      fit: BoxFit.cover)
-              : MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Image.asset('assets/darkMode/event_canceled.png',
-                      fit: BoxFit.cover)
-                  : Image.asset('assets/images/event_canceled.png',
-                      fit: BoxFit.cover),
-        );
-      },
     );
   }
 }

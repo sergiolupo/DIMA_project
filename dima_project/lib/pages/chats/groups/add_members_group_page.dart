@@ -6,6 +6,7 @@ import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/add_member_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AddMembersGroupPage extends ConsumerStatefulWidget {
   final Group group;
@@ -100,7 +101,81 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
           ),
           const SizedBox(height: 10),
           asyncUsers.when(
-            loading: () => const CupertinoActivityIndicator(),
+            loading: () => ListView.builder(
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Shimmer.fromColors(
+                    baseColor:
+                        CupertinoTheme.of(context).primaryContrastingColor,
+                    highlightColor: CupertinoTheme.of(context)
+                        .primaryContrastingColor
+                        .withOpacity(0.5),
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor
+                                    .withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              height: 50,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 8.0, left: 8.0),
+                              child: Row(
+                                children: [
+                                  ClipOval(
+                                    child: Container(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryContrastingColor,
+                                      height: 32,
+                                      width: 32,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: CupertinoTheme.of(context)
+                                              .primaryContrastingColor
+                                              .withOpacity(0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 15,
+                                        width: 100,
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: CupertinoTheme.of(context)
+                                              .primaryContrastingColor
+                                              .withOpacity(0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 10,
+                                        width: 150,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }),
             error: (err, stack) => Text('Error: $err'),
             data: (followers) {
               if (followers.isEmpty) {
