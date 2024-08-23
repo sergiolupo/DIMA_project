@@ -48,14 +48,14 @@ class NewsPageState extends ConsumerState<NewsPage> {
   getNews() async {
     await widget.newsService.getNews();
     setState(() {
-      articles = widget.newsService.news;
+      //articles = widget.newsService.news;
     });
   }
 
   getSliders() async {
     await widget.newsService.getSliders();
     setState(() {
-      sliders = widget.newsService.sliders;
+      //sliders = widget.newsService.sliders;
     });
   }
 
@@ -196,23 +196,48 @@ class NewsPageState extends ConsumerState<NewsPage> {
               if (sliders == null)
                 Shimmer.fromColors(
                   baseColor: CupertinoTheme.of(context).primaryContrastingColor,
-                  highlightColor:
-                      CupertinoTheme.of(context).primaryContrastingColor,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular((10)),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            color: CupertinoTheme.of(context)
-                                .primaryContrastingColor),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.width >
-                                Constants.limitWidth
-                            ? 400
-                            : 200,
-                      ),
+                  highlightColor: CupertinoTheme.of(context)
+                      .primaryContrastingColor
+                      .withOpacity(0.5),
+                  child: Center(
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular((10)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor
+                                    .withOpacity(0.5),
+                              ),
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              height: MediaQuery.of(context).size.width >
+                                      Constants.limitWidth
+                                  ? 380
+                                  : 180,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? 50
+                                : 30,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 )
@@ -297,8 +322,9 @@ class NewsPageState extends ConsumerState<NewsPage> {
                       return Shimmer.fromColors(
                         baseColor:
                             CupertinoTheme.of(context).primaryContrastingColor,
-                        highlightColor:
-                            CupertinoTheme.of(context).primaryContrastingColor,
+                        highlightColor: CupertinoTheme.of(context)
+                            .primaryContrastingColor
+                            .withOpacity(0.5),
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           child: Padding(
@@ -308,7 +334,8 @@ class NewsPageState extends ConsumerState<NewsPage> {
                               elevation: 3.0,
                               borderRadius: BorderRadius.circular(10),
                               color: CupertinoTheme.of(context)
-                                  .primaryContrastingColor,
+                                  .primaryContrastingColor
+                                  .withOpacity(0.5),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10.0, horizontal: 5.0),
@@ -341,6 +368,94 @@ class NewsPageState extends ConsumerState<NewsPage> {
                                                         .width /
                                                     2.5,
                                           )),
+                                      const SizedBox(width: 8.0),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                2,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: CupertinoTheme.of(
+                                                          context)
+                                                      .primaryContrastingColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              height: MediaQuery.of(context)
+                                                          .size
+                                                          .width >
+                                                      Constants.limitWidth
+                                                  ? 40
+                                                  : 20,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 7.0,
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                2,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: CupertinoTheme.of(
+                                                          context)
+                                                      .primaryContrastingColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              height: MediaQuery.of(context)
+                                                          .size
+                                                          .width >
+                                                      Constants.limitWidth
+                                                  ? 20
+                                                  : 10,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 7.0,
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                3,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: CupertinoTheme.of(
+                                                          context)
+                                                      .primaryContrastingColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              height: MediaQuery.of(context)
+                                                          .size
+                                                          .width >
+                                                      Constants.limitWidth
+                                                  ? 20
+                                                  : 10,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  3,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ]),
                               ),
                             ),
