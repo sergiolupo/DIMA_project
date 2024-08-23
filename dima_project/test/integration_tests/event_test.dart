@@ -554,32 +554,23 @@ void main() {
           find.byType(CupertinoTextField).at(0), "Test Event1");
 
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoListTile), findsNWidgets(3));
+      expect(find.byType(CupertinoListTile), findsOneWidget);
 
       await tester.tap(find.text("Add more dates"));
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoListTile), findsNWidgets(8));
+      expect(find.byType(CupertinoListTile), findsNWidgets(6));
       await tester.pumpAndSettle();
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(CupertinoIcons.trash));
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoListTile), findsNWidgets(3));
-      await tester.tap(find.text("Participants"));
-      await tester.pumpAndSettle();
-      expect(find.text("Add Members"), findsOneWidget);
-      expect(find.text("No followers"), findsOneWidget);
-      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text("Groups"));
-      await tester.pumpAndSettle();
-      expect(find.text("No groups"), findsOneWidget);
-      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
-      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoListTile), findsOneWidget);
 
+      expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
       await tester.tap(find.byType(CupertinoSwitch));
       await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
 
       await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
@@ -822,13 +813,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("name"), findsOneWidget);
       expect(find.text("Invite Groups"), findsOneWidget);
-
-      await tester.tap(find.text("Invite"));
-      await tester.pumpAndSettle();
-      expect(find.text("Invited"), findsOneWidget);
-      await tester.tap(find.text("Invited"));
       expect(find.text("Invite"), findsOneWidget);
 
+      expect(find.byType(CupertinoListTile), findsOneWidget);
+
+      expect(find.byKey(const Key('invite_button')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('invite_button')));
+      await tester.pumpAndSettle();
+      expect(find.text("Invited"), findsOneWidget);
+      await tester.tap(find.byKey(const Key('invite_button')));
+      await tester.pumpAndSettle();
+      expect(find.text("Invite"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);

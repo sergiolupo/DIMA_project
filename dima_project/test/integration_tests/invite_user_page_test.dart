@@ -67,8 +67,11 @@ void main() {
     await tester.enterText(find.byType(CupertinoSearchTextField), 'test_user1');
     await tester.pumpAndSettle();
     expect(find.text("Invite"), findsOneWidget);
-    await tester.tap(find.byKey(const Key('invite_button')).last);
+    expect(find.text("test_user1"), findsNWidgets(2));
+
+    await tester.tap(find.byKey(const Key('invite_button')));
     await tester.pumpAndSettle();
+
     expect(find.text("Invited"), findsOneWidget);
   });
 }
