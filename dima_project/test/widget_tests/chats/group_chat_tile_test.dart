@@ -44,6 +44,9 @@ void main() {
   testWidgets(
       "GroupChatTile correctly displays the latest message content and accurately reflects the count of unread messages",
       (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     Group testGroup = Group(
         id: "1",
         isPublic: true,
@@ -67,7 +70,7 @@ void main() {
             storageService: MockStorageService(),
             group: testGroup,
             username: username,
-            databaseService: MockDatabaseService(),
+            databaseService: mockDatabaseService,
             notificationService: MockNotificationService(),
             imagePicker: MockImagePicker(),
           ),

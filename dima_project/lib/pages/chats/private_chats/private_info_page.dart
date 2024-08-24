@@ -110,7 +110,7 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              CreateImageWidget.getUserImage(
+                              CreateImageUtils.getUserImage(
                                   widget.user.imagePath!, 1),
                               const SizedBox(width: 20),
                               Text(

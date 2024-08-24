@@ -93,7 +93,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getUserImage(
+                  CreateImageUtils.getUserImage(
                     widget.other.imagePath!,
                     0,
                   ),
@@ -170,8 +170,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                                 ConnectionState.waiting ||
                             snapshot.hasError ||
                             !snapshot.hasData ||
-                            snapshot.data == null 
-                            ) {
+                            snapshot.data == null) {
                           return const SizedBox();
                         }
                         return Column(

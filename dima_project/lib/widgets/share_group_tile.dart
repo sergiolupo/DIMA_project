@@ -59,7 +59,7 @@ class ShareGroupTileState extends State<ShareGroupTile> {
                 width: 100,
                 height: 100,
                 color: CupertinoColors.lightBackgroundGray,
-                child: CreateImageWidget.getGroupImage(widget.group.imagePath!),
+                child: CreateImageUtils.getGroupImage(widget.group.imagePath!),
               ),
             ),
           ],

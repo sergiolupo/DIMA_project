@@ -7,7 +7,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -60,7 +60,7 @@ class GroupTile extends ConsumerWidget {
                         MediaQuery.of(context).size.width > Constants.limitWidth
                             ? 1.3
                             : 1,
-                    child: CreateImageWidget.getGroupImage(group.imagePath!)),
+                    child: CreateImageUtils.getGroupImage(group.imagePath!)),
                 title: Text(
                   group.name,
                   style: TextStyle(

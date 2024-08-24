@@ -55,7 +55,7 @@ class UserInvitationTileState extends State<UserInvitationTile> {
                   height: 100,
                   color: CupertinoColors.lightBackgroundGray,
                   child:
-                      CreateImageWidget.getUserImage(widget.user.imagePath!, 1),
+                      CreateImageUtils.getUserImage(widget.user.imagePath!, 1),
                 ),
               ),
               title: Text(

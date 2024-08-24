@@ -62,7 +62,7 @@ class PrivateChatTileTablet extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getUserImage(
+                  CreateImageUtils.getUserImage(
                     other.imagePath!,
                     0,
                   ),

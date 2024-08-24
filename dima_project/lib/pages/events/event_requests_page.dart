@@ -100,7 +100,7 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
                                   width: 100,
                                   height: 100,
                                   color: CupertinoColors.lightBackgroundGray,
-                                  child: CreateImageWidget.getUserImage(
+                                  child: CreateImageUtils.getUserImage(
                                       user.imagePath!, 1),
                                 ),
                               ),

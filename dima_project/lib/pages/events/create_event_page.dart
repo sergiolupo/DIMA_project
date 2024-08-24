@@ -212,7 +212,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                     this.selectedImagePath = selectedImagePath;
                                   });
                                 },
-                                child: CreateImageWidget.getEventImageMemory(
+                                child: CreateImageUtils.getEventImageMemory(
                                   selectedImagePath,
                                   context,
                                 ),

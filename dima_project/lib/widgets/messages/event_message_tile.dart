@@ -74,7 +74,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                           widget.message.isGroupMessage)
                         Padding(
                           padding: const EdgeInsets.only(right: 3),
-                          child: CreateImageWidget.getUserImage(
+                          child: CreateImageUtils.getUserImage(
                             widget.message.senderImage!,
                             0,
                           ),
@@ -154,7 +154,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                           Transform.scale(
                                             scale: 1.4,
                                             child:
-                                                CreateImageWidget.getEventImage(
+                                                CreateImageUtils.getEventImage(
                                               event.imagePath!,
                                               context,
                                               small: true,

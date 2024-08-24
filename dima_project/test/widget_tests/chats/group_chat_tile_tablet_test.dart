@@ -5,6 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('GroupChatTileTablet displays group name',
@@ -21,6 +24,8 @@ void main() {
         child: CupertinoApp(
           home: CupertinoPageScaffold(
             child: GroupChatTileTablet(
+              selectedGroupId: '',
+              databaseService: MockDatabaseService(),
               group: testGroup,
               onPressed: (Group group) {},
               username: "",
@@ -39,6 +44,9 @@ void main() {
   testWidgets(
       "GroupChatTileTablet correctly displays the latest message content and accurately reflects the count of unread messages",
       (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     Group testGroup = Group(
         id: "1",
         isPublic: true,
@@ -61,6 +69,8 @@ void main() {
         child: CupertinoApp(
           home: CupertinoPageScaffold(
             child: GroupChatTileTablet(
+              databaseService: mockDatabaseService,
+              selectedGroupId: '',
               group: testGroup,
               onPressed: (Group group) {},
               username: username,
@@ -81,6 +91,9 @@ void main() {
 
   testWidgets('GroupChatTileTablet can be dismissed',
       (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     Group testGroup = Group(
         id: "1",
         isPublic: true,
@@ -103,6 +116,8 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: GroupChatTileTablet(
+            databaseService: mockDatabaseService,
+            selectedGroupId: '',
             group: testGroup,
             onPressed: (Group group) {},
             username: username,

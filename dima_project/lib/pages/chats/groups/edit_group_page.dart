@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/notification_service.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
 import 'package:dima_project/pages/invite_user_page.dart';
@@ -11,7 +12,6 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
 import 'package:dima_project/widgets/button_image_widget.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -221,7 +221,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                                   ),
                           ),
                         )
-                      : CreateImageWidget.getGroupImageMemory(
+                      : CreateImageUtils.getGroupImageMemory(
                           selectedImagePath!, context,
                           small: false),
                 ),

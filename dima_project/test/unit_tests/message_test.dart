@@ -13,6 +13,14 @@ void main() {
       expect(readBy.username, 'sender');
       expect(readBy.readAt, Timestamp.fromDate(DateTime(2021, 12, 12, 12, 12)));
     });
+    test('Test ReadBy fromMap', () {
+      ReadBy readBy = ReadBy.fromMap({
+        'username': 'sender',
+        'readAt': Timestamp.fromDate(DateTime(2021, 12, 12, 12, 12)),
+      });
+      expect(readBy.username, 'sender');
+      expect(readBy.readAt, Timestamp.fromDate(DateTime(2021, 12, 12, 12, 12)));
+    });
     test('Test Message constructor', () {
       ReadBy readBy = ReadBy(
         username: 'sender',

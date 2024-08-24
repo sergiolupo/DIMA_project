@@ -104,7 +104,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
           },
           child: Row(
             children: [
-              CreateImageWidget.getUserImage(
+              CreateImageUtils.getUserImage(
                 widget.user.imagePath!,
                 0,
               ),

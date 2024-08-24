@@ -101,7 +101,7 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getGroupImage(widget.group.imagePath!,
+                  CreateImageUtils.getGroupImage(widget.group.imagePath!,
                       small: true),
                   const SizedBox(width: 16),
                   Container(
@@ -207,28 +207,30 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
                                       : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                               style: TextStyle(
                                 fontSize: 12,
-                                color: snapshot.data! > 0 
+                                color: snapshot.data! > 0
                                     ? CupertinoTheme.of(context).primaryColor
                                     : CupertinoColors.inactiveGray,
                               ),
                             ),
                             const SizedBox(height: 1),
-                                snapshot.data! > 0 ?
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: CupertinoTheme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text(
-                                snapshot.data!.toString(),
-                                style: const TextStyle(
-                                  color: CupertinoColors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ) : const SizedBox(),
+                            snapshot.data! > 0
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Text(
+                                      snapshot.data!.toString(),
+                                      style: const TextStyle(
+                                        color: CupertinoColors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(),
                           ],
                         );
                       })

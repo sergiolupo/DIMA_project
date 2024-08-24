@@ -181,7 +181,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                                 ),
                         ),
                       )
-                    : CreateImageWidget.getEventImageMemory(
+                    : CreateImageUtils.getEventImageMemory(
                         selectedImagePath!, context,
                         small: false),
               ),

@@ -61,8 +61,7 @@ class GroupChatTileTablet extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CreateImageWidget.getGroupImage(group.imagePath!,
-                      small: true),
+                  CreateImageUtils.getGroupImage(group.imagePath!, small: true),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -98,7 +98,7 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            CreateImageWidget.getUserImage(
+                            CreateImageUtils.getUserImage(
                                 widget.userData.imagePath!, 0),
                             const SizedBox(width: 10.0),
                             Text(

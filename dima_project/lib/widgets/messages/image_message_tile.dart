@@ -68,7 +68,7 @@ class ImageMessageTile extends StatelessWidget {
                 if (!message.sentByMe! && message.isGroupMessage)
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
-                    child: CreateImageWidget.getUserImage(
+                    child: CreateImageUtils.getUserImage(
                       message.senderImage!,
                       0,
                     ),
@@ -120,7 +120,7 @@ class ImageMessageTile extends StatelessWidget {
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CreateImageWidget.getImage(
+                          CreateImageUtils.getImage(
                             message.content,
                             message.sentByMe!,
                             small: false,

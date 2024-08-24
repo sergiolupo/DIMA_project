@@ -144,7 +144,7 @@ class ShowEventsPage extends ConsumerWidget {
                                       padding: const EdgeInsets.all(10),
                                       child: Row(
                                         children: [
-                                          CreateImageWidget.getEventImage(
+                                          CreateImageUtils.getEventImage(
                                               event!.imagePath!, context),
                                           Column(
                                             crossAxisAlignment:

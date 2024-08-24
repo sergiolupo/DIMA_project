@@ -49,7 +49,7 @@ class NewsMessageTile extends StatelessWidget {
                 if (!message.sentByMe! && message.isGroupMessage)
                   Padding(
                     padding: const EdgeInsets.only(right: 3.0),
-                    child: CreateImageWidget.getUserImage(
+                    child: CreateImageUtils.getUserImage(
                       message.senderImage!,
                       0,
                     ),
@@ -149,7 +149,7 @@ class NewsMessageTile extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                CreateImageWidget.getImage(
+                                CreateImageUtils.getImage(
                                   message.content.split('\n')[3],
                                   message.sentByMe!,
                                   small: false,

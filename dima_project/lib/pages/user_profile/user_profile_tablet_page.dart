@@ -141,7 +141,7 @@ class UserProfileTabletState extends ConsumerState<UserProfileTablet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CreateImageWidget.getUserImage(user.imagePath!, 2),
+                CreateImageUtils.getUserImage(user.imagePath!, 2),
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 10),
                   child: Text(

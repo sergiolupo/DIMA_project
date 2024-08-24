@@ -135,13 +135,13 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         });
                       },
                       child: selectedImagePath == null
-                          ? CreateImageWidget.getUserImage(
+                          ? CreateImageUtils.getUserImage(
                               user.imagePath!,
                               MediaQuery.of(context).size.width >
                                       Constants.limitWidth
                                   ? 2
                                   : 1)
-                          : CreateImageWidget.getUserImageMemory(
+                          : CreateImageUtils.getUserImageMemory(
                               selectedImagePath!,
                               MediaQuery.of(context).size.width >
                                   Constants.limitWidth),

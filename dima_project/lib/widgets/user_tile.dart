@@ -6,7 +6,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,7 +68,7 @@ class UserTileState extends ConsumerState<UserTile> {
                     width: 100,
                     height: 100,
                     color: CupertinoColors.lightBackgroundGray,
-                    child: CreateImageWidget.getUserImage(
+                    child: CreateImageUtils.getUserImage(
                         widget.user.imagePath!, 1),
                   ),
                 ),

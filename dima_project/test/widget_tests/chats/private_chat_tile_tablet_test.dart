@@ -6,6 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',
@@ -32,13 +35,17 @@ void main() {
       surname: 'surname',
       email: 'email',
     );
-
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(size: Size(1200, 700)),
         child: CupertinoApp(
           home: CupertinoPageScaffold(
             child: PrivateChatTileTablet(
+              databaseService: mockDatabaseService,
+              selectedChatId: '',
               privateChat: privateChat,
               onPressed: (chat) {},
               other: user,
@@ -59,7 +66,9 @@ void main() {
   testWidgets(
       'PrivateChatTileTablet displays correct icon for event message type',
       (WidgetTester tester) async {
-    // Arrange
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     final privateChatEvent = PrivateChat(
       id: "1",
       members: ['uid1', 'uid2'],
@@ -88,6 +97,8 @@ void main() {
         child: CupertinoApp(
           home: CupertinoPageScaffold(
             child: PrivateChatTileTablet(
+              databaseService: mockDatabaseService,
+              selectedChatId: '',
               privateChat: privateChatEvent,
               onPressed: (chat) {},
               other: user,
@@ -128,13 +139,17 @@ void main() {
     );
 
     bool isDismissed = false;
-
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(size: Size(1200, 700)),
         child: CupertinoApp(
           home: CupertinoPageScaffold(
             child: PrivateChatTileTablet(
+              databaseService: mockDatabaseService,
+              selectedChatId: '',
               privateChat: privateChat,
               onPressed: (chat) {},
               other: user,

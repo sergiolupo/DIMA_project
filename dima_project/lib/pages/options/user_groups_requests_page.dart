@@ -74,7 +74,7 @@ class UserGroupsRequestsPageState
                       children: [
                         Expanded(
                           child: CupertinoListTile(
-                            leading: CreateImageWidget.getGroupImage(
+                            leading: CreateImageUtils.getGroupImage(
                                 group.imagePath!),
                             title: Text(
                               group.name,

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 
-class CreateImageWidget {
+class CreateImageUtils {
   static Widget getUserImage(String imagePath, int size) {
     return ClipOval(
       child: Container(

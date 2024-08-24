@@ -61,7 +61,7 @@ class ReadTileState extends State<ReadTile> {
             ),
           )
         : CupertinoListTile(
-            leading: CreateImageWidget.getUserImage(_userData!.imagePath!, 0),
+            leading: CreateImageUtils.getUserImage(_userData!.imagePath!, 0),
             title: Text(
               _userData!.username,
               style: const TextStyle(

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/private_chat.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/models/message.dart';
+import 'package:mockito/mockito.dart';
 
 import '../../mocks/mock_database_service.mocks.dart';
 import '../../mocks/mock_image_picker.mocks.dart';
@@ -15,6 +16,9 @@ import '../../mocks/mock_storage_service.mocks.dart';
 void main() {
   testWidgets('PrivateChatTileTablet displays username and last message',
       (WidgetTester tester) async {
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(1));
     final privateChat = PrivateChat(
         id: "1",
         members: ['uid1', 'uid2'],
@@ -45,7 +49,7 @@ void main() {
             storageService: MockStorageService(),
             privateChat: privateChat,
             other: user,
-            databaseService: MockDatabaseService(),
+            databaseService: mockDatabaseService,
             notificationService: MockNotificationService(),
             imagePicker: MockImagePicker(),
           ),
@@ -63,7 +67,9 @@ void main() {
   testWidgets(
       'PrivateChatTileTablet displays correct icon for event message type',
       (WidgetTester tester) async {
-    // Arrange
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(0));
     final privateChatEvent = PrivateChat(
       id: "1",
       members: ['uid1', 'uid2'],
@@ -93,7 +99,7 @@ void main() {
             storageService: MockStorageService(),
             privateChat: privateChatEvent,
             other: user,
-            databaseService: MockDatabaseService(),
+            databaseService: mockDatabaseService,
             notificationService: MockNotificationService(),
             imagePicker: MockImagePicker(),
           ),

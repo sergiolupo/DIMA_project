@@ -141,7 +141,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
               children: [
                 Row(
                   children: [
-                    CreateImageWidget.getUserImage(user.imagePath!, 1),
+                    CreateImageUtils.getUserImage(user.imagePath!, 1),
                     const SizedBox(width: 35),
                     getGroups(),
                     const SizedBox(width: 20),

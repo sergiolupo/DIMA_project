@@ -90,7 +90,7 @@ class EventPageState extends ConsumerState<EventPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CreateImageWidget.getEventImage(
+                          CreateImageUtils.getEventImage(
                               event.imagePath!, context),
                           const SizedBox(height: 10),
                           Text(

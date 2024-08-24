@@ -18,7 +18,7 @@ import 'package:dima_project/utils/category_util.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/notification_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -167,7 +167,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              CreateImageWidget.getGroupImage(
+                              CreateImageUtils.getGroupImage(
                                 group.imagePath!,
                               ),
                               const SizedBox(width: 20),

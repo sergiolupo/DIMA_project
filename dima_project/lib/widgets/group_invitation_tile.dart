@@ -36,8 +36,7 @@ class GroupInvitationTileState extends State<GroupInvitationTile> {
                 scale: MediaQuery.of(context).size.width > Constants.limitWidth
                     ? 1.3
                     : 1,
-                child:
-                    CreateImageWidget.getGroupImage(widget.group.imagePath!)),
+                child: CreateImageUtils.getGroupImage(widget.group.imagePath!)),
             title: Text(
               widget.group.name,
               style: TextStyle(

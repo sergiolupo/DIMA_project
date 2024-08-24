@@ -73,7 +73,7 @@ class RegisterPageState extends State<RegisterPage> {
                 this.selectedImagePath = selectedImagePath;
               });
             },
-            child: CreateImageWidget.getUserImageMemory(selectedImagePath,
+            child: CreateImageUtils.getUserImageMemory(selectedImagePath,
                 MediaQuery.of(context).size.width > Constants.limitWidth),
           ),
         ]);

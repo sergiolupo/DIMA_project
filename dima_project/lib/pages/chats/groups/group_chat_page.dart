@@ -11,11 +11,11 @@ import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:dima_project/utils/date_util.dart';
 import 'package:dima_project/widgets/chats/banner_message.dart';
 import 'package:dima_project/widgets/chats/input_bar.dart';
 import 'package:dima_project/widgets/chats/options_menu.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/messages/event_message_tile.dart';
 import 'package:dima_project/widgets/messages/image_message_tile.dart';
 import 'package:dima_project/widgets/messages/news_message_tile.dart';
@@ -121,7 +121,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
             error: (_, __) => const Icon(CupertinoIcons.arrow_left),
             data: (group) => Row(
               children: [
-                CreateImageWidget.getGroupImage(group.imagePath!, small: true),
+                CreateImageUtils.getGroupImage(group.imagePath!, small: true),
                 const SizedBox(width: 10),
                 Container(
                   constraints: BoxConstraints(
