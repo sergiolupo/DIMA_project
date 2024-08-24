@@ -129,18 +129,72 @@ class PrivateChatTileTablet extends StatelessWidget {
                 ],
               ),
               (privateChat.lastMessage != null)
-                  ? StreamBuilder(
-                      stream: databaseService.getUnreadMessages(
-                          false, privateChat.id!),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            snapshot.hasError ||
-                            !snapshot.hasData ||
-                            snapshot.data == null) {
-                          return const SizedBox();
-                        }
-                        return Column(
+                  ? privateChat.id! != selectedChatId
+                      ? StreamBuilder(
+                          stream: databaseService.getUnreadMessages(
+                              false, privateChat.id!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                snapshot.hasError ||
+                                !snapshot.hasData ||
+                                snapshot.data == null) {
+                              return const SizedBox();
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                              .isBefore(DateTime.now()) &&
+                                          DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                              .isAfter(DateTime.now().subtract(
+                                                  const Duration(days: 1)))
+                                      ? DateFormat.jm().format(
+                                          DateTime.fromMicrosecondsSinceEpoch(
+                                              privateChat
+                                                  .lastMessage!
+                                                  .recentMessageTimestamp
+                                                  .microsecondsSinceEpoch))
+                                      : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                              DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                                  .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                          ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                          : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: snapshot.data! > 0 &&
+                                            privateChat.id != selectedChatId
+                                        ? CupertinoTheme.of(context)
+                                            .primaryColor
+                                        : CupertinoColors.inactiveGray,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                snapshot.data! > 0 &&
+                                        privateChat.id != selectedChatId
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: CupertinoTheme.of(context)
+                                              .primaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        child: Text(
+                                          snapshot.data!.toString(),
+                                          style: const TextStyle(
+                                              color: CupertinoColors.white,
+                                              fontSize: 12),
+                                        ),
+                                      )
+                                    : const SizedBox(),
+                              ],
+                            );
+                          })
+                      : Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -160,36 +214,13 @@ class PrivateChatTileTablet extends StatelessWidget {
                                               .isAfter(DateTime.now().subtract(const Duration(days: 7)))
                                       ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
                                       : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
-                                color: snapshot.data! > 0 &&
-                                        privateChat.id != selectedChatId
-                                    ? CupertinoTheme.of(context).primaryColor
-                                    : CupertinoColors.inactiveGray,
+                                color: CupertinoColors.inactiveGray,
                               ),
                             ),
-                            const SizedBox(height: 1),
-                            snapshot.data! > 0 &&
-                                    privateChat.id != selectedChatId
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor,
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: Text(
-                                      snapshot.data!.toString(),
-                                      style: const TextStyle(
-                                          color: CupertinoColors.white,
-                                          fontSize: 12),
-                                    ),
-                                  )
-                                : const SizedBox(),
                           ],
-                        );
-                      })
+                        )
                   : const SizedBox(),
             ],
           ),

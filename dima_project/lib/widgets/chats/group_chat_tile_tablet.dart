@@ -126,73 +126,108 @@ class GroupChatTileTablet extends StatelessWidget {
                 ],
               ),
               (group.lastMessage != null)
-                  ? StreamBuilder(
-                      stream: databaseService.getUnreadMessages(true, group.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            snapshot.hasError ||
-                            !snapshot.hasData ||
-                            snapshot.data == null) {
-                          return const SizedBox();
-                        }
-                        return Container(
-                          constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.05),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateTime.fromMicrosecondsSinceEpoch(group
-                                                .lastMessage!
-                                                .recentMessageTimestamp
-                                                .microsecondsSinceEpoch)
-                                            .isBefore(DateTime.now()) &&
-                                        DateTime.fromMicrosecondsSinceEpoch(group
-                                                .lastMessage!
-                                                .recentMessageTimestamp
-                                                .microsecondsSinceEpoch)
-                                            .isAfter(DateTime.now().subtract(
-                                                const Duration(days: 1)))
-                                    ? DateFormat.jm().format(
-                                        DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                    : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 2)))
-                                        ? 'Yesterday'
-                                        : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                            ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                            : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: snapshot.data! > 0 &&
+                  ? selectedGroupId != group.id
+                      ? StreamBuilder(
+                          stream:
+                              databaseService.getUnreadMessages(true, group.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                snapshot.hasError ||
+                                !snapshot.hasData ||
+                                snapshot.data == null) {
+                              return const SizedBox();
+                            }
+                            return Container(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.05),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateTime.fromMicrosecondsSinceEpoch(group
+                                                    .lastMessage!
+                                                    .recentMessageTimestamp
+                                                    .microsecondsSinceEpoch)
+                                                .isBefore(DateTime.now()) &&
+                                            DateTime.fromMicrosecondsSinceEpoch(
+                                                    group
+                                                        .lastMessage!
+                                                        .recentMessageTimestamp
+                                                        .microsecondsSinceEpoch)
+                                                .isAfter(DateTime.now().subtract(
+                                                    const Duration(days: 1)))
+                                        ? DateFormat.jm().format(
+                                            DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                        : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                            ? 'Yesterday'
+                                            : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                                ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                                : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: snapshot.data! > 0 &&
+                                              group.id != selectedGroupId
+                                          ? CupertinoTheme.of(context)
+                                              .primaryColor
+                                          : CupertinoColors.inactiveGray,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
+                                  snapshot.data! > 0 &&
                                           group.id != selectedGroupId
-                                      ? CupertinoTheme.of(context).primaryColor
-                                      : CupertinoColors.inactiveGray,
-                                ),
+                                      ? Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
+                                          child: Text(
+                                            snapshot.data!.toString(),
+                                            style: const TextStyle(
+                                                color: CupertinoColors.white,
+                                                fontSize: 12),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
                               ),
-                              const SizedBox(height: 1),
-                              snapshot.data! > 0 && group.id != selectedGroupId
-                                  ? Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: CupertinoTheme.of(context)
-                                            .primaryColor,
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Text(
-                                        snapshot.data!.toString(),
-                                        style: const TextStyle(
-                                            color: CupertinoColors.white,
-                                            fontSize: 12),
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        );
-                      })
+                            );
+                          })
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                          .isBefore(DateTime.now()) &&
+                                      DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 1)))
+                                  ? DateFormat.jm().format(DateTime.fromMicrosecondsSinceEpoch(group
+                                      .lastMessage!
+                                      .recentMessageTimestamp
+                                      .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(group
+                                              .lastMessage!
+                                              .recentMessageTimestamp
+                                              .microsecondsSinceEpoch)
+                                          .isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                      ? 'Yesterday'
+                                      : DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                          ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                          : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: CupertinoColors.inactiveGray,
+                              ),
+                            )
+                          ],
+                        )
                   : const SizedBox(),
             ],
           ),
