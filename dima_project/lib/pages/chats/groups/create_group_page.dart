@@ -8,7 +8,7 @@ import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:dima_project/widgets/start_messaging_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,7 +37,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   final TextEditingController _groupDescriptionController =
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
-  final imageInsertPageKey = GlobalKey<ImageCropPageState>();
+  final imageInsertPageKey = GlobalKey<ButtonImageWidgetState>();
   List<String> selectedCategories = [];
   bool isPublic = true;
   final FocusNode _nameFocus = FocusNode();
@@ -77,6 +77,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         trailing: _currentPage == 1
             ? CupertinoButton(
@@ -104,7 +105,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                       fontWeight: FontWeight.bold),
                 ),
               )
-            : CupertinoButton(
+            : CupertinoNavigationBarBackButton(
                 onPressed: () {
                   if (_currentPage == 1) {
                     Navigator.of(context).pop();
@@ -114,17 +115,20 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                     });
                   }
                 },
-                child: Icon(CupertinoIcons.back,
-                    color: CupertinoTheme.of(context).primaryColor),
+                color: CupertinoTheme.of(context).primaryColor,
               ),
         middle: Text(
           'Create Group',
-          style: TextStyle(color: CupertinoTheme.of(context).primaryColor),
+          style: TextStyle(
+            color: CupertinoTheme.of(context).primaryColor,
+            fontSize: 25,
+          ),
         ),
       ),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.only(
+              top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -171,26 +175,19 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
           alignment: Alignment.center,
           child: Column(
             children: [
-              CupertinoTextField(
-                focusNode: _nameFocus,
-                onTapOutside: (event) => _nameFocus.unfocus(),
-                controller: _groupNameController,
-                minLines: 1,
-                maxLines: 3,
-                textInputAction: TextInputAction.next,
-                padding: const EdgeInsets.all(16),
-                placeholder: 'Group Name',
+              Container(
                 decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
                   color: CupertinoTheme.of(context).primaryContrastingColor,
-                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                prefix: GestureDetector(
-                  onTap: () => {
-                    _nameFocus.unfocus(),
-                    _descriptionFocus.unfocus(),
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => ImageCropPage(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(children: [
+                        ButtonImageWidget(
                           imagePicker: widget.imagePicker,
                           defaultImage: '',
                           imageType: 1,
@@ -200,36 +197,58 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                               this.selectedImagePath = selectedImagePath;
                             });
                           },
+                          child: CreateImageWidget.getGroupImageMemory(
+                            selectedImagePath,
+                            context,
+                          ),
+                        ),
+                      ]),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.75,
+                      child: CupertinoTextField(
+                        focusNode: _nameFocus,
+                        onTapOutside: (event) => _nameFocus.unfocus(),
+                        controller: _groupNameController,
+                        minLines: 1,
+                        maxLines: 3,
+                        textInputAction: TextInputAction.next,
+                        padding: const EdgeInsets.all(16),
+                        placeholder: 'Group Name',
+                        suffix: CupertinoButton(
+                          onPressed: () => _groupNameController.clear(),
+                          child: const Icon(CupertinoIcons.clear_circled_solid),
+                        ),
+                        decoration: BoxDecoration(
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
-                    )
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: CreateImageWidget.getGroupImageMemory(
-                      selectedImagePath,
-                      context,
                     ),
-                  ),
+                  ],
                 ),
               ),
               const SizedBox(height: 10),
-              CupertinoTextField(
-                minLines: 1,
-                focusNode: _descriptionFocus,
-                onTapOutside: (event) => _descriptionFocus.unfocus(),
-                controller: _groupDescriptionController,
-                placeholder: 'Group Description',
-                maxLines: 5,
-                maxLength: 200,
-                decoration: BoxDecoration(
-                  color: CupertinoTheme.of(context).primaryContrastingColor,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                padding: const EdgeInsets.all(16.0),
-                suffix: CupertinoButton(
-                  onPressed: () => _groupDescriptionController.clear(),
-                  child: const Icon(CupertinoIcons.clear_circled_solid),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75 + 76,
+                child: CupertinoTextField(
+                  minLines: 1,
+                  focusNode: _descriptionFocus,
+                  onTapOutside: (event) => _descriptionFocus.unfocus(),
+                  controller: _groupDescriptionController,
+                  placeholder: 'Group Description',
+                  maxLines: 5,
+                  maxLength: 200,
+                  decoration: BoxDecoration(
+                    color: CupertinoTheme.of(context).primaryContrastingColor,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  suffix: CupertinoButton(
+                    onPressed: () => _groupDescriptionController.clear(),
+                    child: const Icon(CupertinoIcons.clear_circled_solid),
+                  ),
                 ),
               ),
             ],

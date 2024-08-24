@@ -84,11 +84,12 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getEventImageMemory(Uint8List image, BuildContext context) {
+  static Widget getEventImageMemory(Uint8List image, BuildContext context,
+      {bool small = true}) {
     return ClipOval(
       child: Container(
-        width: 80,
-        height: 80,
+        width: small ? 60 : 100,
+        height: small ? 60 : 100,
         color: CupertinoTheme.of(context).primaryColor.withOpacity(0.2),
         child: image.isNotEmpty
             ? Image.memory(
@@ -99,7 +100,7 @@ class CreateImageWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Icon(
                   CupertinoIcons.camera_fill,
-                  size: 30,
+                  size: small ? 30 : 40,
                   color:
                       CupertinoTheme.of(context).primaryColor.withOpacity(0.5),
                 ),
@@ -127,11 +128,12 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getGroupImageMemory(Uint8List image, BuildContext context) {
+  static Widget getGroupImageMemory(Uint8List image, BuildContext context,
+      {small = true}) {
     return ClipOval(
       child: Container(
-        width: 80,
-        height: 80,
+        width: small ? 60 : 100,
+        height: small ? 60 : 100,
         color: CupertinoTheme.of(context).primaryColor.withOpacity(0.2),
         child: image.isNotEmpty
             ? Image.memory(
@@ -142,7 +144,7 @@ class CreateImageWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Icon(
                   CupertinoIcons.camera_fill,
-                  size: 30,
+                  size: small ? 30 : 40,
                   color:
                       CupertinoTheme.of(context).primaryColor.withOpacity(0.5),
                 ),

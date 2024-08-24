@@ -1,30 +1,30 @@
 import 'dart:typed_data';
 
-import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageCropPage extends StatefulWidget {
+class ButtonImageWidget extends StatefulWidget {
   final Uint8List? imagePath;
   final ValueChanged<Uint8List> imageInsertPageKey;
   final int imageType; // 0 for user, 1 for group, 2 for event
   final String defaultImage;
   final ImagePicker imagePicker;
-  const ImageCropPage({
+  final Widget child;
+  const ButtonImageWidget({
     super.key,
     this.imagePath,
     required this.imageInsertPageKey,
     required this.imageType,
     required this.defaultImage,
     required this.imagePicker,
+    required this.child,
   });
 
   @override
-  ImageCropPageState createState() => ImageCropPageState();
+  ButtonImageWidgetState createState() => ButtonImageWidgetState();
 }
 
-class ImageCropPageState extends State<ImageCropPage> {
+class ButtonImageWidgetState extends State<ButtonImageWidget> {
   late final ImagePicker _picker;
   Uint8List _selectedImagePath = Uint8List(0);
   String defaultImage = '';
@@ -50,103 +50,15 @@ class ImageCropPageState extends State<ImageCropPage> {
         widget.imageInsertPageKey(_selectedImagePath);
       });
     }
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        trailing: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () => showSheet(),
-          child: Text(
-            'Edit',
-            style: TextStyle(
-                color: CupertinoTheme.of(context).textTheme.textStyle.color,
-                fontWeight: FontWeight.bold),
-          ),
-        ),
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Row(
-            children: [
-              Icon(
-                CupertinoIcons.back,
-                color: CupertinoTheme.of(context).textTheme.textStyle.color,
-                size: 30.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Text(
-                  'Back',
-                  style: TextStyle(
-                      color:
-                          CupertinoTheme.of(context).textTheme.textStyle.color),
-                ),
-              ),
-            ],
-          ),
-        ),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      ),
-      child: Stack(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Center(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? MediaQuery.of(context).size.height
-                    : MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? MediaQuery.of(context).size.height * 0.83
-                    : MediaQuery.of(context).size.width,
-                child: _selectedImagePath.isNotEmpty
-                    ? Image.memory(
-                        _selectedImagePath,
-                        fit: BoxFit.cover,
-                      )
-                    : _getDefaultImage(),
-              ),
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: 15,
-          right: 5,
-          child: CupertinoButton(
-            onPressed: () {
-              setState(() {
-                _selectedImagePath = Uint8List(0);
-                widget.imageInsertPageKey(_selectedImagePath);
-                defaultImage = '';
-              });
-            },
-            child: Icon(
-              CupertinoIcons.delete,
-              color: CupertinoTheme.of(context).textTheme.textStyle.color,
-              size: 20,
-            ),
-          ),
-        ),
-      ]),
+    return CupertinoButton(
+      padding: const EdgeInsets.all(0),
+      onPressed: () => showSheet(),
+      child: widget.child,
     );
-  }
-
-  Widget _getDefaultImage() {
-    switch (widget.imageType) {
-      case 1:
-        return CreateImageWidget.getGroupImage(defaultImage);
-      case 2:
-        return CreateImageWidget.getEventImage(defaultImage, context);
-      default:
-        return CreateImageWidget.getUserImage(defaultImage, 1);
-    }
   }
 
   void showSheet() {

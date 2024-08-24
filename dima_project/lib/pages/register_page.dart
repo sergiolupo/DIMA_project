@@ -5,7 +5,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/auth/registration_form_widget.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,27 +62,22 @@ class RegisterPageState extends State<RegisterPage> {
         pageName = 'Personal Information';
         break;
       case 3:
-        page = GestureDetector(
-          onTap: () => {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => ImageCropPage(
-                  defaultImage: '',
-                  imageType: 0,
-                  imagePath: selectedImagePath,
-                  imagePicker: ImagePicker(),
-                  imageInsertPageKey: (Uint8List selectedImagePath) {
-                    setState(() {
-                      this.selectedImagePath = selectedImagePath;
-                    });
-                  },
-                ),
-              ),
-            )
-          },
-          child: CreateImageWidget.getUserImageMemory(selectedImagePath,
-              MediaQuery.of(context).size.width > Constants.limitWidth),
-        );
+        page = Stack(children: [
+          ButtonImageWidget(
+            defaultImage: '',
+            imageType: 0,
+            imagePath: selectedImagePath,
+            imagePicker: ImagePicker(),
+            imageInsertPageKey: (Uint8List selectedImagePath) {
+              setState(() {
+                this.selectedImagePath = selectedImagePath;
+              });
+            },
+            child: CreateImageWidget.getUserImageMemory(selectedImagePath,
+                MediaQuery.of(context).size.width > Constants.limitWidth),
+          ),
+        ]);
+
         pageName = 'Profile Image';
         break;
       case 4:

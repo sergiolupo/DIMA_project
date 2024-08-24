@@ -6,7 +6,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,39 +120,33 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => ImageCropPage(
-                          defaultImage: defaultImage ?? user.imagePath!,
-                          imageType: 0,
-                          imagePath: selectedImagePath,
-                          imagePicker: ImagePicker(),
-                          imageInsertPageKey: (Uint8List selectedImagePath) {
-                            setState(() {
-                              this.selectedImagePath = selectedImagePath;
-                              defaultImage = '';
-                            });
-                          },
-                        ),
-                      ),
-                    )
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: selectedImagePath == null
-                        ? CreateImageWidget.getUserImage(
-                            user.imagePath!,
-                            MediaQuery.of(context).size.width >
-                                    Constants.limitWidth
-                                ? 2
-                                : 1)
-                        : CreateImageWidget.getUserImageMemory(
-                            selectedImagePath!,
-                            MediaQuery.of(context).size.width >
-                                Constants.limitWidth),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Stack(children: [
+                    ButtonImageWidget(
+                      defaultImage: defaultImage ?? user.imagePath!,
+                      imageType: 0,
+                      imagePath: selectedImagePath,
+                      imagePicker: ImagePicker(),
+                      imageInsertPageKey: (Uint8List selectedImagePath) {
+                        setState(() {
+                          this.selectedImagePath = selectedImagePath;
+                          defaultImage = '';
+                        });
+                      },
+                      child: selectedImagePath == null
+                          ? CreateImageWidget.getUserImage(
+                              user.imagePath!,
+                              MediaQuery.of(context).size.width >
+                                      Constants.limitWidth
+                                  ? 2
+                                  : 1)
+                          : CreateImageWidget.getUserImageMemory(
+                              selectedImagePath!,
+                              MediaQuery.of(context).size.width >
+                                  Constants.limitWidth),
+                    ),
+                  ]),
                 ),
                 const SizedBox(height: 20),
                 _buildTextField('Name', user.name, _nameController, nameFocus),

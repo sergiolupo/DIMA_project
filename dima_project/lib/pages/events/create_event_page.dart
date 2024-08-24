@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/pages/events/share_event_group_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -46,7 +46,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   Uint8List selectedImagePath = Uint8List(0);
-  final imageInsertPageKey = GlobalKey<ImageCropPageState>();
+  final imageInsertPageKey = GlobalKey<ButtonImageWidgetState>();
   late AnimationController animationController;
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _descriptionFocus = FocusNode();
@@ -185,83 +185,90 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                 alignment: Alignment.center,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    CupertinoTextField(
-                      controller: _eventNameController,
-                      onTap: () => _nameFocus.requestFocus(),
-                      focusNode: _nameFocus,
-                      onTapOutside: (PointerDownEvent event) =>
-                          _nameFocus.unfocus(),
-                      textInputAction: TextInputAction.next,
-                      padding: const EdgeInsets.all(16),
-                      placeholder: 'Event Name',
-                      minLines: 1,
-                      maxLines: 3,
-                      prefix: Focus(
-                        child: GestureDetector(
-                          onTap: () => {
-                            if (!_nameFocus.hasFocus &&
-                                !_descriptionFocus.hasFocus)
-                              {
-                                Navigator.of(context).push(
-                                  CupertinoPageRoute(
-                                    builder: (context) => ImageCropPage(
-                                      defaultImage: '',
-                                      imageType: 2,
-                                      imagePath: selectedImagePath,
-                                      imagePicker: widget.imagePicker,
-                                      imageInsertPageKey:
-                                          (Uint8List selectedImagePath) {
-                                        setState(() {
-                                          this.selectedImagePath =
-                                              selectedImagePath;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                )
-                              }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: CreateImageWidget.getEventImageMemory(
-                              selectedImagePath,
-                              context,
-                            ),
-                          ),
-                        ),
-                      ),
-                      suffix: CupertinoButton(
-                        onPressed: () => _eventNameController.clear(),
-                        child: const Icon(CupertinoIcons.clear_circled_solid),
-                      ),
+                    Container(
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
                         color:
                             CupertinoTheme.of(context).primaryContrastingColor,
-                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Stack(children: [
+                              ButtonImageWidget(
+                                defaultImage: '',
+                                imageType: 2,
+                                imagePath: selectedImagePath,
+                                imagePicker: widget.imagePicker,
+                                imageInsertPageKey:
+                                    (Uint8List selectedImagePath) {
+                                  setState(() {
+                                    this.selectedImagePath = selectedImagePath;
+                                  });
+                                },
+                                child: CreateImageWidget.getEventImageMemory(
+                                  selectedImagePath,
+                                  context,
+                                ),
+                              ),
+                            ]),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.75,
+                            child: CupertinoTextField(
+                              controller: _eventNameController,
+                              onTap: () => _nameFocus.requestFocus(),
+                              focusNode: _nameFocus,
+                              onTapOutside: (PointerDownEvent event) =>
+                                  _nameFocus.unfocus(),
+                              textInputAction: TextInputAction.next,
+                              padding: const EdgeInsets.all(16),
+                              placeholder: 'Event Name',
+                              minLines: 1,
+                              maxLines: 3,
+                              suffix: CupertinoButton(
+                                onPressed: () => _eventNameController.clear(),
+                                child: const Icon(
+                                    CupertinoIcons.clear_circled_solid),
+                              ),
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context)
+                                    .primaryContrastingColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),
-                    CupertinoTextField(
-                      onTap: () => _descriptionFocus.requestFocus(),
-                      focusNode: _descriptionFocus,
-                      onTapOutside: (PointerDownEvent event) =>
-                          _descriptionFocus.unfocus(),
-                      controller: _eventDescriptionController,
-                      padding: const EdgeInsets.all(16),
-                      placeholder: 'Event Description',
-                      maxLines: 3,
-                      minLines: 1,
-                      suffix: CupertinoButton(
-                        onPressed: () => _eventDescriptionController.clear(),
-                        child: const Icon(CupertinoIcons.clear_circled_solid),
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            CupertinoTheme.of(context).primaryContrastingColor,
-                        borderRadius: BorderRadius.circular(10),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.75 + 76,
+                      child: CupertinoTextField(
+                        onTap: () => _descriptionFocus.requestFocus(),
+                        focusNode: _descriptionFocus,
+                        onTapOutside: (PointerDownEvent event) =>
+                            _descriptionFocus.unfocus(),
+                        controller: _eventDescriptionController,
+                        padding: const EdgeInsets.all(16),
+                        placeholder: 'Event Description',
+                        maxLines: 3,
+                        minLines: 1,
+                        suffix: CupertinoButton(
+                          onPressed: () => _eventDescriptionController.clear(),
+                          child: const Icon(CupertinoIcons.clear_circled_solid),
+                        ),
+                        decoration: BoxDecoration(
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                     ListView.builder(

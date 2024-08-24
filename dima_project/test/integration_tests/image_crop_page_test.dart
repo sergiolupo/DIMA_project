@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +19,7 @@ void main() {
       MediaQuery(
         data: const MediaQueryData(size: Size(600, 200)),
         child: CupertinoApp(
-          home: ImageCropPage(
+          home: ButtonImageWidget(
             imageInsertPageKey: (Uint8List image) {
               insertedImage = image;
             },

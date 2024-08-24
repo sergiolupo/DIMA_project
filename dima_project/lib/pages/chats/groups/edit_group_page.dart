@@ -10,7 +10,7 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/widgets/categories_form_widget.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,30 +186,46 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => ImageCropPage(
-                        imagePicker: widget.imagePicker,
-                        defaultImage: defaultImage ?? widget.group.imagePath!,
-                        imageType: 1,
-                        imagePath: selectedImagePath,
-                        imageInsertPageKey: (Uint8List selectedImagePath) {
-                          setState(() {
-                            this.selectedImagePath = selectedImagePath;
-                            defaultImage = '';
-                          });
-                        },
-                      ),
-                    ),
-                  );
-                },
-                child: selectedImagePath == null
-                    ? CreateImageWidget.getGroupImage(widget.group.imagePath!)
-                    : CreateImageWidget.getGroupImageMemory(
-                        selectedImagePath!, context),
-              ),
+              Stack(children: [
+                ButtonImageWidget(
+                  imageInsertPageKey: (Uint8List image) {
+                    setState(() {
+                      selectedImagePath = image;
+                    });
+                  },
+                  imageType: 0,
+                  defaultImage: widget.group.imagePath!,
+                  imagePicker: widget.imagePicker,
+                  child: selectedImagePath == null
+                      ? ClipOval(
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            color: CupertinoTheme.of(context)
+                                .primaryColor
+                                .withOpacity(0.2),
+                            child: widget.group.imagePath != ''
+                                ? Image.network(
+                                    widget.group.imagePath!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Icon(
+                                      CupertinoIcons.camera_fill,
+                                      size: 40,
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                          ),
+                        )
+                      : CreateImageWidget.getGroupImageMemory(
+                          selectedImagePath!, context,
+                          small: false),
+                ),
+              ]),
               const SizedBox(height: 20),
               CupertinoTextField(
                 placeholder: widget.group.name,

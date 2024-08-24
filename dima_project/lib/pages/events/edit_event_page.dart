@@ -6,7 +6,7 @@ import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/pages/image_crop_page.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
 import 'package:dima_project/pages/events/location_page.dart';
 import 'package:dima_project/widgets/create_image_widget.dart';
@@ -44,6 +44,9 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   String? defaultImage;
   final String uid = AuthService.uid;
   late final Event oldEvent;
+
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -141,33 +144,52 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
           alignment: Alignment.topCenter,
           padding: const EdgeInsets.all(16),
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            GestureDetector(
-              onTap: () => {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => ImageCropPage(
-                      defaultImage: defaultImage ?? widget.event.imagePath!,
-                      imageType: 2,
-                      imagePath: selectedImagePath,
-                      imagePicker: widget.imagePicker,
-                      imageInsertPageKey: (Uint8List selectedImagePath) {
-                        setState(() {
-                          this.selectedImagePath = selectedImagePath;
-                          defaultImage = '';
-                        });
-                      },
-                    ),
-                  ),
-                )
-              },
-              child: selectedImagePath == null
-                  ? CreateImageWidget.getEventImage(
-                      widget.event.imagePath!, context)
-                  : CreateImageWidget.getEventImageMemory(
-                      selectedImagePath!, context),
-            ),
+            Stack(children: [
+              ButtonImageWidget(
+                defaultImage: defaultImage ?? widget.event.imagePath!,
+                imageType: 2,
+                imagePath: selectedImagePath,
+                imagePicker: widget.imagePicker,
+                imageInsertPageKey: (Uint8List selectedImagePath) {
+                  setState(() {
+                    this.selectedImagePath = selectedImagePath;
+                    defaultImage = '';
+                  });
+                },
+                child: selectedImagePath == null
+                    ? ClipOval(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          color: CupertinoTheme.of(context)
+                              .primaryColor
+                              .withOpacity(0.2),
+                          child: widget.event.imagePath != ''
+                              ? Image.network(
+                                  widget.event.imagePath!,
+                                  fit: BoxFit.cover,
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Icon(
+                                    CupertinoIcons.camera_fill,
+                                    size: 40,
+                                    color: CupertinoTheme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.5),
+                                  ),
+                                ),
+                        ),
+                      )
+                    : CreateImageWidget.getEventImageMemory(
+                        selectedImagePath!, context,
+                        small: false),
+              ),
+            ]),
             const SizedBox(height: 20),
             CupertinoTextField(
+              focusNode: _nameFocus,
+              onTapOutside: (event) => _nameFocus.unfocus(),
               placeholder: widget.event.name,
               controller: _eventNameController,
               padding: const EdgeInsets.all(16),
@@ -184,6 +206,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
             ),
             const SizedBox(height: 10),
             CupertinoTextField(
+              focusNode: _descriptionFocus,
+              onTapOutside: (event) => _descriptionFocus.unfocus(),
               placeholder: widget.event.description,
               controller: _eventDescriptionController,
               padding: const EdgeInsets.all(16),
