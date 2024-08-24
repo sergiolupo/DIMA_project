@@ -64,10 +64,13 @@ class PrivateChatTileState extends State<PrivateChatTile> {
       },
       child: CupertinoButton(
         padding: const EdgeInsets.all(0),
-        onPressed: () {
+        onPressed: () async {
           setState(() {
             widget.privateChat.lastMessage!.unreadMessages = 0;
           });
+          widget.databaseService
+              .updatePrivateChatMessagesReadStatus(widget.privateChat.id!);
+          if (!context.mounted) return;
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => PrivateChatPage(
@@ -159,57 +162,67 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                 ],
               ),
               (widget.privateChat.lastMessage != null)
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isBefore(DateTime.now()) &&
-                                  DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isAfter(DateTime.now()
-                                          .subtract(const Duration(days: 1)))
-                              ? DateFormat.jm().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(widget
-                                      .privateChat
-                                      .lastMessage!
-                                      .recentMessageTimestamp
-                                      .microsecondsSinceEpoch))
-                              : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                  ? StreamBuilder(
+                      stream: widget.databaseService
+                          .getUnreadMessages(false, widget.privateChat.id!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.hasError ||
+                            !snapshot.hasData ||
+                            snapshot.data == null 
+                            ) {
+                          return const SizedBox();
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                          .isBefore(DateTime.now()) &&
                                       DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: widget.privateChat.lastMessage!
-                                        .unreadMessages! >
-                                    0
-                                ? CupertinoTheme.of(context).primaryColor
-                                : CupertinoColors.inactiveGray,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        widget.privateChat.lastMessage!.unreadMessages! > 0
-                            ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  widget
-                                      .privateChat.lastMessage!.unreadMessages!
-                                      .toString(),
-                                  style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                      fontSize: 12),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
+                                          .isAfter(DateTime.now().subtract(
+                                              const Duration(days: 1)))
+                                  ? DateFormat.jm().format(
+                                      DateTime.fromMicrosecondsSinceEpoch(widget
+                                          .privateChat
+                                          .lastMessage!
+                                          .recentMessageTimestamp
+                                          .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                          DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                              .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                      ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                      : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: snapshot.data! > 0
+                                    ? CupertinoTheme.of(context).primaryColor
+                                    : CupertinoColors.inactiveGray,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            snapshot.data! > 0
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Text(
+                                      snapshot.data!.toString(),
+                                      style: const TextStyle(
+                                          color: CupertinoColors.white,
+                                          fontSize: 12),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        );
+                      },
                     )
                   : const SizedBox(),
             ],

@@ -4,18 +4,23 @@ import 'package:dima_project/widgets/create_image_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:intl/intl.dart';
+import 'package:dima_project/services/database_service.dart';
 
 class PrivateChatTileTablet extends StatelessWidget {
   final PrivateChat privateChat;
   final Function(PrivateChat) onPressed;
   final UserData other;
   final Function(DismissDirection) onDismissed;
+  final DatabaseService databaseService;
+  final String selectedChatId;
   PrivateChatTileTablet({
     super.key,
     required this.privateChat,
     required this.onPressed,
     required this.other,
     required this.onDismissed,
+    required this.databaseService,
+    required this.selectedChatId,
   });
 
   final Map<Type, Icon> map = {
@@ -124,54 +129,67 @@ class PrivateChatTileTablet extends StatelessWidget {
                 ],
               ),
               (privateChat.lastMessage != null)
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isBefore(DateTime.now()) &&
-                                  DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isAfter(DateTime.now()
+                  ? StreamBuilder(
+                      stream: databaseService.getUnreadMessages(
+                          false, privateChat.id!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.hasError ||
+                            !snapshot.hasData ||
+                            snapshot.data == null) {
+                          return const SizedBox();
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                          .isBefore(DateTime.now()) &&
+                                      DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
                                           .subtract(const Duration(days: 1)))
-                              ? DateFormat.jm().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(
-                                      privateChat
+                                  ? DateFormat.jm().format(
+                                      DateTime.fromMicrosecondsSinceEpoch(privateChat
                                           .lastMessage!
                                           .recentMessageTimestamp
                                           .microsecondsSinceEpoch))
-                              : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                      DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: privateChat.lastMessage!.unreadMessages! > 0
-                                ? CupertinoTheme.of(context).primaryColor
-                                : CupertinoColors.inactiveGray,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        privateChat.lastMessage!.unreadMessages! > 0
-                            ? Container(
-padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),                                decoration: BoxDecoration(
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  privateChat.lastMessage!.unreadMessages
-                                      .toString(),
-                                  style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                      fontSize: 12),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
-                    )
+                                  : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                          DateTime.fromMicrosecondsSinceEpoch(
+                                                  privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                              .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                      ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                      : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: snapshot.data! > 0 &&
+                                        privateChat.id != selectedChatId
+                                    ? CupertinoTheme.of(context).primaryColor
+                                    : CupertinoColors.inactiveGray,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            snapshot.data! > 0 &&
+                                    privateChat.id != selectedChatId
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryColor,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Text(
+                                      snapshot.data!.toString(),
+                                      style: const TextStyle(
+                                          color: CupertinoColors.white,
+                                          fontSize: 12),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        );
+                      })
                   : const SizedBox(),
             ],
           ),

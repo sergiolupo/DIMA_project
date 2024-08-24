@@ -23,6 +23,13 @@ class ReadBy {
     };
   }
 
+  static ReadBy fromMap(read) {
+    return ReadBy(
+      username: read['username'],
+      readAt: read['readAt'],
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

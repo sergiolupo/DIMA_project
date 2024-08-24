@@ -17,10 +17,12 @@ import 'package:shimmer/shimmer.dart';
 class EventMessageTile extends ConsumerStatefulWidget {
   final Message message;
   final String? senderUsername;
+  final DatabaseService databaseService;
 
   const EventMessageTile({
     required this.message,
     this.senderUsername,
+    required this.databaseService,
     super.key,
   });
 
@@ -29,16 +31,17 @@ class EventMessageTile extends ConsumerStatefulWidget {
 }
 
 class EventMessageTileState extends ConsumerState<EventMessageTile> {
+  late final DatabaseService databaseService;
   @override
   void initState() {
     ref.read(eventProvider(widget.message.content));
+    databaseService = widget.databaseService;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final event = ref.watch(eventProvider(widget.message.content));
-    final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return event.when(
         data: (event) {
           return GestureDetector(

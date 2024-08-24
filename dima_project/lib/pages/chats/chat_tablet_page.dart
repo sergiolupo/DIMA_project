@@ -58,6 +58,7 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
   int idx = 0;
   Widget page = const StartMessagingWidget();
   late final DatabaseService _databaseService;
+
   @override
   void initState() {
     super.initState();
@@ -265,6 +266,9 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
 
                     if (group.lastMessage == null) {
                       return GroupChatTileTablet(
+                        selectedGroupId:
+                            selectedGroup != null ? selectedGroup!.id : '',
+                        databaseService: _databaseService,
                         onDismissed: (DismissDirection direction) async {
                           await _databaseService.toggleGroupJoin(group.id);
                           setState(() {
@@ -278,6 +282,8 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                         username: '',
                         group: group,
                         onPressed: (Group group) {
+                          _databaseService
+                              .updateGroupMessagesReadStatus(group.id);
                           setState(() {
                             selectedGroup = group;
                             page = GroupChatPage(
@@ -312,6 +318,9 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                                 UserData.fromSnapshot(snapshot.data!).username;
                           }
                           return GroupChatTileTablet(
+                            selectedGroupId:
+                                selectedGroup != null ? selectedGroup!.id : '',
+                            databaseService: _databaseService,
                             onDismissed: (DismissDirection direction) async {
                               await _databaseService.toggleGroupJoin(group.id);
                               setState(() {
@@ -325,6 +334,8 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                             group: group,
                             username: username,
                             onPressed: (Group group) {
+                              _databaseService
+                                  .updateGroupMessagesReadStatus(group.id);
                               setState(() {
                                 selectedGroup = group;
                                 group.lastMessage!.unreadMessages = 0;
@@ -525,6 +536,10 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                         }
 
                         return PrivateChatTileTablet(
+                          databaseService: _databaseService,
+                          selectedChatId: selectedPrivateChat != null
+                              ? selectedPrivateChat!.id!
+                              : '',
                           onDismissed: (DismissDirection direction) async {
                             await _databaseService
                                 .deletePrivateChat(privateChat);
@@ -538,6 +553,9 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                             });
                           },
                           onPressed: (PrivateChat privateChat) => {
+                            _databaseService
+                                .updatePrivateChatMessagesReadStatus(
+                                    privateChat.id),
                             setState(() {
                               selectedUser = other;
                               selectedPrivateChat = privateChat;
@@ -580,6 +598,10 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                             return const SizedBox.shrink();
                           }
                           return PrivateChatTileTablet(
+                            databaseService: _databaseService,
+                            selectedChatId: selectedPrivateChat != null
+                                ? selectedPrivateChat!.id!
+                                : '',
                             onDismissed: (DismissDirection direction) async {
                               await _databaseService
                                   .deletePrivateChat(privateChat);
@@ -594,6 +616,9 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                               });
                             },
                             onPressed: (PrivateChat privateChat) => {
+                              _databaseService
+                                  .updatePrivateChatMessagesReadStatus(
+                                      privateChat.id),
                               setState(() {
                                 selectedUser = null;
                                 selectedPrivateChat = privateChat;

@@ -65,6 +65,7 @@ void main() {
           ],
           child: CupertinoApp(
             home: EventMessageTile(
+              databaseService: MockDatabaseService(),
               message: message,
               senderUsername: 'Sender Username',
             ),
@@ -114,6 +115,7 @@ void main() {
         ],
         child: CupertinoApp(
           home: EventMessageTile(
+            databaseService: MockDatabaseService(),
             message: message,
             senderUsername: 'Sender Username',
           ),

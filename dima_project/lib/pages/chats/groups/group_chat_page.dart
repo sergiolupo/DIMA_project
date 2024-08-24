@@ -481,6 +481,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         return EventMessageTile(
           message: message,
           senderUsername: senderUsername,
+          databaseService: _databaseService,
         );
     }
   }

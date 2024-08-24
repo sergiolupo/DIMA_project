@@ -339,6 +339,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
                                     message: message,
                                   )
                                 : EventMessageTile(
+                                    databaseService: _databaseService,
                                     message: message,
                                   ),
                   ],

@@ -75,6 +75,10 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
             }
           });
           ref.invalidate(groupProvider(widget.group.id));
+          widget.databaseService.updateGroupMessagesReadStatus(
+            widget.group.id,
+          );
+          if (!context.mounted) return;
           Navigator.of(context, rootNavigator: true).push(
             CupertinoPageRoute(
               builder: (context) => GroupChatPage(
@@ -169,56 +173,65 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
                 ],
               ),
               (widget.group.lastMessage != null)
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isBefore(DateTime.now()) &&
-                                  DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                      .isAfter(DateTime.now()
-                                          .subtract(const Duration(days: 1)))
-                              ? DateFormat.jm().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(widget
-                                      .group
-                                      .lastMessage!
-                                      .recentMessageTimestamp
-                                      .microsecondsSinceEpoch))
-                              : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                  ? StreamBuilder(
+                      stream: widget.databaseService
+                          .getUnreadMessages(true, widget.group.id),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.hasError ||
+                            !snapshot.hasData ||
+                            snapshot.data == null) {
+                          return const SizedBox();
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                          .isBefore(DateTime.now()) &&
                                       DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                  ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                  : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: widget.group.lastMessage!.unreadMessages! > 0
-                                ? CupertinoTheme.of(context).primaryColor
-                                : CupertinoColors.inactiveGray,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        widget.group.lastMessage!.unreadMessages! > 0
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color:
-                                      CupertinoTheme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(50),
+                                          .isAfter(DateTime.now().subtract(
+                                              const Duration(days: 1)))
+                                  ? DateFormat.jm().format(
+                                      DateTime.fromMicrosecondsSinceEpoch(widget
+                                          .group
+                                          .lastMessage!
+                                          .recentMessageTimestamp
+                                          .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
+                                          DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
+                                              .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                      ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                      : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: snapshot.data! > 0 
+                                    ? CupertinoTheme.of(context).primaryColor
+                                    : CupertinoColors.inactiveGray,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                                snapshot.data! > 0 ?
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: CupertinoTheme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text(
+                                snapshot.data!.toString(),
+                                style: const TextStyle(
+                                  color: CupertinoColors.white,
+                                  fontSize: 12,
                                 ),
-                                child: Text(
-                                  widget.group.lastMessage!.unreadMessages!
-                                      .toString(),
-                                  style: const TextStyle(
-                                    color: CupertinoColors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
-                    )
+                              ),
+                            ) : const SizedBox(),
+                          ],
+                        );
+                      })
                   : const SizedBox(),
             ],
           ),

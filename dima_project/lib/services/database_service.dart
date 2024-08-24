@@ -11,6 +11,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:synchronized/synchronized.dart';
 import '../models/event.dart';
 
 class DatabaseService {
@@ -20,7 +21,8 @@ class DatabaseService {
   late final CollectionReference followersRef;
   late final CollectionReference privateChatRef;
   late final CollectionReference eventsRef;
-
+  late final Lock groupLock = Lock();
+  late final Lock privateChatLock = Lock();
   DatabaseService() {
     _firestore = FirebaseFirestore.instance;
     groupsRef = _firestore.collection('groups');
@@ -498,8 +500,6 @@ class DatabaseService {
         if (group.lastMessage != null) {
           group.lastMessage!.sentByMe =
               group.lastMessage!.recentMessageSender == AuthService.uid;
-          group.lastMessage!.unreadMessages =
-              await getUnreadMessages(true, group.id);
         }
         groupsList.add(group);
       }
@@ -535,8 +535,6 @@ class DatabaseService {
             if (group.lastMessage != null) {
               group.lastMessage!.sentByMe =
                   group.lastMessage!.recentMessageSender == AuthService.uid;
-              group.lastMessage!.unreadMessages =
-                  await getUnreadMessages(true, group.id);
             }
             // DocumentChangeType.added or DocumentChangeType.modified
             final existingGroupIndex =
@@ -584,8 +582,6 @@ class DatabaseService {
           privateChat = PrivateChat.fromSnapshot(snapshot);
           privateChat.lastMessage!.sentByMe =
               privateChat.lastMessage!.recentMessageSender == AuthService.uid;
-          privateChat.lastMessage!.unreadMessages =
-              await getUnreadMessages(false, privateChat.id!);
 
           chatsList.add(privateChat);
         }
@@ -625,8 +621,7 @@ class DatabaseService {
               privateChat.lastMessage!.sentByMe =
                   privateChat.lastMessage!.recentMessageSender ==
                       AuthService.uid;
-              privateChat.lastMessage!.unreadMessages =
-                  await getUnreadMessages(false, privateChat.id!);
+
               // DocumentChangeType.added or DocumentChangeType.modified
               final existingGroupIndex =
                   chatsList.indexWhere((g) => g.id == id);
@@ -784,7 +779,7 @@ class DatabaseService {
     }
   }
 
-  Future<int> getUnreadMessages(bool isGroup, String id) async {
+  Stream<int> getUnreadMessages(bool isGroup, String id) async* {
     if (!isGroup) {
       var snapshot = await privateChatRef.doc(id).collection('messages').get();
       int unreadCount = 0;
@@ -802,7 +797,26 @@ class DatabaseService {
           unreadCount++;
         }
       }
-      return unreadCount;
+      yield unreadCount;
+      await for (var snapshot
+          in privateChatRef.doc(id).collection('messages').snapshots()) {
+        unreadCount = 0;
+        for (var doc in snapshot.docs) {
+          var readBy = doc.data()['readBy'] ?? {};
+          // Check if the message hasn't been read by the user
+          var read = false;
+          for (var value in readBy) {
+            if ((AuthService.uid == value['username'])) {
+              read = true;
+              break;
+            }
+          }
+          if (!read) {
+            unreadCount++;
+          }
+        }
+        yield unreadCount;
+      }
     } else {
       var snapshot = await groupsRef.doc(id).collection('messages').get();
       int unreadCount = 0;
@@ -820,7 +834,26 @@ class DatabaseService {
           unreadCount++;
         }
       }
-      return unreadCount;
+      yield unreadCount;
+      await for (var snapshot
+          in groupsRef.doc(id).collection('messages').snapshots()) {
+        unreadCount = 0;
+        for (var doc in snapshot.docs) {
+          var readBy = doc.data()['readBy'] ?? {};
+          // Check if the message hasn't been read by the user
+          var read = false;
+          for (var value in readBy) {
+            if ((AuthService.uid == value['username'])) {
+              read = true;
+              break;
+            }
+          }
+          if (!read) {
+            unreadCount++;
+          }
+        }
+        yield unreadCount;
+      }
     }
   }
 
@@ -828,22 +861,52 @@ class DatabaseService {
     ReadBy readBy = ReadBy(readAt: Timestamp.now(), username: AuthService.uid);
 
     if (message.isGroupMessage) {
-      await groupsRef
-          .doc(message.chatID)
-          .collection('messages')
-          .doc(message.id)
-          .update({
-        'readBy': FieldValue.arrayUnion([
-          readBy.toMap(),
-        ])
+      await groupLock.synchronized(() async {
+        final value = await groupsRef
+            .doc(message.chatID)
+            .collection('messages')
+            .doc(message.id)
+            .get();
+        final readByDoc = value['readBy'] ?? [];
+        List<ReadBy> readByList = [];
+        for (var read in readByDoc) {
+          readByList.add(ReadBy.fromMap(read));
+        }
+        if (!readByList.any((element) => element.username == AuthService.uid)) {
+          await groupsRef
+              .doc(message.chatID)
+              .collection('messages')
+              .doc(message.id)
+              .update({
+            'readBy': FieldValue.arrayUnion([
+              readBy.toMap(),
+            ])
+          });
+        }
       });
     } else {
-      await privateChatRef
-          .doc(message.chatID)
-          .collection('messages')
-          .doc(message.id)
-          .update({
-        'readBy': FieldValue.arrayUnion([readBy.toMap()])
+      await privateChatLock.synchronized(() async {
+        final value = await privateChatRef
+            .doc(message.chatID)
+            .collection('messages')
+            .doc(message.id)
+            .get();
+        final readByDoc = value['readBy'] ?? [];
+        List<ReadBy> readByList = [];
+        for (var read in readByDoc) {
+          readByList.add(ReadBy.fromMap(read));
+        }
+        if (!readByList.any((element) => element.username == AuthService.uid)) {
+          await privateChatRef
+              .doc(message.chatID)
+              .collection('messages')
+              .doc(message.id)
+              .update({
+            'readBy': FieldValue.arrayUnion([
+              readBy.toMap(),
+            ])
+          });
+        }
       });
     }
   }
@@ -1054,7 +1117,6 @@ class DatabaseService {
         //check if the event is still valid
         final event = await eventsRef.doc(doc['content']).get();
         if (!event.exists) {
-          debugPrint('Event does not exist');
           messages.removeWhere((element) => element.id == doc.id);
         }
       }
@@ -1882,5 +1944,58 @@ class DatabaseService {
         return value['notifications'].contains(AuthService.uid);
       });
     }
+  }
+
+  Future<void> updateGroupMessagesReadStatus(String id) async {
+    final ReadBy readBy = ReadBy(
+      readAt: Timestamp.now(),
+      username: AuthService.uid,
+    );
+    await groupLock.synchronized(() async {
+      await groupsRef.doc(id).collection('messages').get().then((value) async {
+        for (var doc in value.docs) {
+          final readByDoc = doc['readBy'] ?? [];
+          List<ReadBy> readByList = [];
+          for (var read in readByDoc) {
+            readByList.add(ReadBy.fromMap(read));
+          }
+          if (!readByList
+              .any((element) => element.username == AuthService.uid)) {
+            await groupsRef.doc(id).collection('messages').doc(doc.id).update({
+              'readBy': FieldValue.arrayUnion([
+                readBy.toMap(),
+              ])
+            });
+          }
+        }
+      });
+    });
+  }
+
+  Future<void> updatePrivateChatMessagesReadStatus(String? id) async {
+    if (id == null) return;
+    final ReadBy readBy = ReadBy(
+      readAt: Timestamp.now(),
+      username: AuthService.uid,
+    );
+    await privateChatLock.synchronized(() async {
+      await privateChatRef.doc(id).collection('messages').get().then((value) {
+        for (var doc in value.docs) {
+          final readByDoc = doc['readBy'] ?? [];
+          List<ReadBy> readByList = [];
+          for (var read in readByDoc) {
+            readByList.add(ReadBy.fromMap(read));
+          }
+          if (!readByList
+              .any((element) => element.username == AuthService.uid)) {
+            privateChatRef.doc(id).collection('messages').doc(doc.id).update({
+              'readBy': FieldValue.arrayUnion([
+                readBy.toMap(),
+              ])
+            });
+          }
+        }
+      });
+    });
   }
 }
