@@ -4,7 +4,7 @@ import 'package:dima_project/pages/chats/private_chats/private_chat_page.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/storage_service.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:image_picker/image_picker.dart';

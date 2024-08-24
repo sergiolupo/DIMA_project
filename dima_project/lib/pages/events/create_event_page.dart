@@ -13,7 +13,7 @@ import 'package:dima_project/services/storage_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/events/event_info_widget.dart';
 import 'package:dima_project/pages/events/location_page.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';

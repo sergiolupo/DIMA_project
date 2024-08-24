@@ -6,7 +6,7 @@ import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/date_util.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:dima_project/widgets/messages/event_deleted_message_tile.dart';
 import 'package:dima_project/utils/message_utils.dart';
 import 'package:flutter/cupertino.dart';

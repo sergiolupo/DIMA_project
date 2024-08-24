@@ -5,7 +5,7 @@ import 'package:dima_project/services/event_service.dart';
 import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/services/storage_service.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dima_project/models/message.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

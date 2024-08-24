@@ -1,5 +1,5 @@
 import 'package:dima_project/models/user.dart';
-import 'package:dima_project/widgets/create_image_widget.dart';
+import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:flutter/cupertino.dart';
 
 class AddMemberTile extends StatefulWidget {
