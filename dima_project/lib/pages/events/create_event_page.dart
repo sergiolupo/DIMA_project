@@ -220,7 +220,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                             ]),
                           ),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.75,
+                            width: (MediaQuery.of(context).size.width >
+                                    Constants.limitWidth)
+                                ? MediaQuery.of(context).size.width - 92
+                                : MediaQuery.of(context).size.width * 0.75,
                             child: CupertinoTextField(
                               controller: _eventNameController,
                               onTap: () => _nameFocus.requestFocus(),
@@ -249,7 +252,10 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.75 + 76,
+                      width: (MediaQuery.of(context).size.width >
+                              Constants.limitWidth)
+                          ? MediaQuery.of(context).size.width - 16
+                          : MediaQuery.of(context).size.width * 0.75 + 76,
                       child: CupertinoTextField(
                         onTap: () => _descriptionFocus.requestFocus(),
                         focusNode: _descriptionFocus,

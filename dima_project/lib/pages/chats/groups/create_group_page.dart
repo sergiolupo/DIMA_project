@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/pages/categories_page.dart';
 import 'package:dima_project/services/auth_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -205,7 +206,10 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                       ]),
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.75,
+                      width: (MediaQuery.of(context).size.width >
+                              Constants.limitWidth)
+                          ? MediaQuery.of(context).size.width * 0.5
+                          : MediaQuery.of(context).size.width * 0.75,
                       child: CupertinoTextField(
                         focusNode: _nameFocus,
                         onTapOutside: (event) => _nameFocus.unfocus(),
@@ -231,7 +235,10 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               ),
               const SizedBox(height: 10),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75 + 76,
+                width:
+                    (MediaQuery.of(context).size.width > Constants.limitWidth)
+                        ? MediaQuery.of(context).size.width * 0.5 + 76
+                        : MediaQuery.of(context).size.width * 0.75 + 76,
                 child: CupertinoTextField(
                   minLines: 1,
                   focusNode: _descriptionFocus,

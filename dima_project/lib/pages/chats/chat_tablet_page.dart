@@ -109,6 +109,11 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       child: Row(
@@ -216,6 +221,7 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
             return const SizedBox.shrink();
           }
           int i = 0;
+          int changePage = 0;
 
           if (snapshot.hasData) {
             var data = snapshot.data!;
@@ -258,12 +264,22 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                             selectedGroup!.imagePath != group.imagePath ||
                             selectedGroup!.members!.length !=
                                 group.members!.length)) {
-                      selectedGroup = group;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         ref.invalidate(groupProvider(group.id));
                       });
                     }
-
+                    if (selectedGroup != null &&
+                        selectedGroup!.id != group.id) {
+                      changePage++;
+                    }
+                    if (changePage == data.length) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          selectedGroup = null;
+                          page = const StartMessagingWidget();
+                        });
+                      });
+                    }
                     if (group.lastMessage == null) {
                       return GroupChatTileTablet(
                         selectedGroupId:
@@ -357,6 +373,14 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                         });
                   });
             } else {
+              if (selectedGroup != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    selectedGroup = null;
+                    page = const StartMessagingWidget();
+                  });
+                });
+              }
               return noChatWidget();
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
