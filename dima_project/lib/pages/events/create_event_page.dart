@@ -60,6 +60,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
   late final DatabaseService databaseService;
   late final NotificationService notificationService;
   final String uid = AuthService.uid;
+
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -198,27 +199,38 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                       placeholder: 'Event Name',
                       minLines: 1,
                       maxLines: 3,
-                      prefix: GestureDetector(
-                        onTap: () => {
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => ImageCropPage(
-                                defaultImage: '',
-                                imageType: 2,
-                                imagePath: selectedImagePath,
-                                imagePicker: widget.imagePicker,
-                                imageInsertPageKey:
-                                    (Uint8List selectedImagePath) {
-                                  setState(() {
-                                    this.selectedImagePath = selectedImagePath;
-                                  });
-                                },
-                              ),
+                      prefix: Focus(
+                        child: GestureDetector(
+                          onTap: () => {
+                            if (!_nameFocus.hasFocus &&
+                                !_descriptionFocus.hasFocus)
+                              {
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => ImageCropPage(
+                                      defaultImage: '',
+                                      imageType: 2,
+                                      imagePath: selectedImagePath,
+                                      imagePicker: widget.imagePicker,
+                                      imageInsertPageKey:
+                                          (Uint8List selectedImagePath) {
+                                        setState(() {
+                                          this.selectedImagePath =
+                                              selectedImagePath;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                )
+                              }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: CreateImageWidget.getEventImageMemory(
+                              selectedImagePath,
+                              context,
                             ),
-                          )
-                        },
-                        child: CreateImageWidget.getEventImageMemory(
-                          selectedImagePath,
+                          ),
                         ),
                       ),
                       suffix: CupertinoButton(

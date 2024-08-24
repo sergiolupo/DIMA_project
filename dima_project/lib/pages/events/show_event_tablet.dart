@@ -124,12 +124,13 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                                     )
                                   : Image.asset(
                                       'assets/default_event_image.png',
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.scaleDown,
                                     ),
                             ),
                             Container(
                               margin: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.width * 0.3),
+                                  top: MediaQuery.of(context).size.width / 3 -
+                                      48),
                               width: MediaQuery.of(context).size.width / 3,
                               child: CupertinoButton.filled(
                                 padding: const EdgeInsets.symmetric(

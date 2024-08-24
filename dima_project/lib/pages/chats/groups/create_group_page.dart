@@ -186,6 +186,8 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 ),
                 prefix: GestureDetector(
                   onTap: () => {
+                    _nameFocus.unfocus(),
+                    _descriptionFocus.unfocus(),
                     Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => ImageCropPage(
@@ -202,8 +204,12 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                       ),
                     )
                   },
-                  child: CreateImageWidget.getGroupImageMemory(
-                    selectedImagePath,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: CreateImageWidget.getGroupImageMemory(
+                      selectedImagePath,
+                      context,
+                    ),
                   ),
                 ),
               ),

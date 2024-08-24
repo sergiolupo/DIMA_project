@@ -50,39 +50,59 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getEventImage(String imagePath, {bool small = false}) {
+  static Widget getEventImage(String imagePath, BuildContext context,
+      {bool small = false}) {
     return ClipOval(
       child: Container(
         width: small ? 30 : 100,
         height: small ? 30 : 100,
-        color: CupertinoColors.lightBackgroundGray,
+        color: CupertinoTheme.of(context).primaryContrastingColor,
         child: imagePath != ''
             ? Image.network(
                 imagePath,
                 fit: BoxFit.cover,
               )
-            : Image.asset(
-                'assets/default_event_image.png',
-                fit: BoxFit.cover,
+            : Padding(
+                padding: small
+                    ? const EdgeInsets.all(2.0)
+                    : const EdgeInsets.all(15.0),
+                child: CupertinoTheme.of(context).brightness == Brightness.light
+                    ? Image.asset(
+                        'assets/default_event_image_icon.png',
+                        fit: BoxFit.scaleDown,
+                        width: small ? 30 : 100,
+                        height: small ? 30 : 100,
+                      )
+                    : Image.asset(
+                        'assets/default_event_image_icon_dark.png',
+                        fit: BoxFit.scaleDown,
+                        width: small ? 30 : 100,
+                        height: small ? 30 : 100,
+                      ),
               ),
       ),
     );
   }
 
-  static Widget getEventImageMemory(Uint8List image) {
+  static Widget getEventImageMemory(Uint8List image, BuildContext context) {
     return ClipOval(
       child: Container(
-        width: 100,
-        height: 100,
-        color: CupertinoColors.lightBackgroundGray,
+        width: 80,
+        height: 80,
+        color: CupertinoTheme.of(context).primaryColor.withOpacity(0.2),
         child: image.isNotEmpty
             ? Image.memory(
                 image,
                 fit: BoxFit.cover,
               )
-            : Image.asset(
-                'assets/default_event_image.png',
-                fit: BoxFit.cover,
+            : Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Icon(
+                  CupertinoIcons.camera_fill,
+                  size: 30,
+                  color:
+                      CupertinoTheme.of(context).primaryColor.withOpacity(0.5),
+                ),
               ),
       ),
     );
@@ -107,20 +127,25 @@ class CreateImageWidget {
     );
   }
 
-  static Widget getGroupImageMemory(Uint8List image) {
+  static Widget getGroupImageMemory(Uint8List image, BuildContext context) {
     return ClipOval(
       child: Container(
-        width: 100,
-        height: 100,
-        color: CupertinoColors.lightBackgroundGray,
+        width: 80,
+        height: 80,
+        color: CupertinoTheme.of(context).primaryColor.withOpacity(0.2),
         child: image.isNotEmpty
             ? Image.memory(
                 image,
                 fit: BoxFit.cover,
               )
-            : Image.asset(
-                'assets/default_group_image.png',
-                fit: BoxFit.cover,
+            : Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Icon(
+                  CupertinoIcons.camera_fill,
+                  size: 30,
+                  color:
+                      CupertinoTheme.of(context).primaryColor.withOpacity(0.5),
+                ),
               ),
       ),
     );

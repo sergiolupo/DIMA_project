@@ -143,7 +143,7 @@ class ImageCropPageState extends State<ImageCropPage> {
       case 1:
         return CreateImageWidget.getGroupImage(defaultImage);
       case 2:
-        return CreateImageWidget.getEventImage(defaultImage);
+        return CreateImageWidget.getEventImage(defaultImage, context);
       default:
         return CreateImageWidget.getUserImage(defaultImage, 1);
     }

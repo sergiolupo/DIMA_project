@@ -207,7 +207,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                 },
                 child: selectedImagePath == null
                     ? CreateImageWidget.getGroupImage(widget.group.imagePath!)
-                    : CreateImageWidget.getGroupImageMemory(selectedImagePath!),
+                    : CreateImageWidget.getGroupImageMemory(
+                        selectedImagePath!, context),
               ),
               const SizedBox(height: 20),
               CupertinoTextField(

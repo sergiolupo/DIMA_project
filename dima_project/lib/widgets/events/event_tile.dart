@@ -49,7 +49,9 @@ class EventTile extends ConsumerWidget {
                         MediaQuery.of(context).size.width > Constants.limitWidth
                             ? 1.3
                             : 1,
-                    child: CreateImageWidget.getEventImage(event.imagePath!)),
+                    child: CreateImageWidget.getEventImage(
+                        event.imagePath!, context,
+                        small: true)),
                 title: Text(
                   event.name,
                   style: TextStyle(

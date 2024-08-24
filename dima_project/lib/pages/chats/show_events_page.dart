@@ -145,7 +145,7 @@ class ShowEventsPage extends ConsumerWidget {
                                       child: Row(
                                         children: [
                                           CreateImageWidget.getEventImage(
-                                              event!.imagePath!),
+                                              event!.imagePath!, context),
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,

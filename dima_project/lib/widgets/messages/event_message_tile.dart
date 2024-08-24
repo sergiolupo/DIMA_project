@@ -156,6 +156,7 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                                             child:
                                                 CreateImageWidget.getEventImage(
                                               event.imagePath!,
+                                              context,
                                               small: true,
                                             ),
                                           ),

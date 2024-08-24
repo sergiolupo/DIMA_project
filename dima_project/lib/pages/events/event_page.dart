@@ -44,6 +44,7 @@ class EventPageState extends ConsumerState<EventPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         trailing: CupertinoButton(
@@ -89,7 +90,8 @@ class EventPageState extends ConsumerState<EventPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CreateImageWidget.getEventImage(event.imagePath!),
+                          CreateImageWidget.getEventImage(
+                              event.imagePath!, context),
                           const SizedBox(height: 10),
                           Text(
                             textAlign: TextAlign.start,

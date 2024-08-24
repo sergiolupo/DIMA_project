@@ -11,8 +11,8 @@ class EventGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: CupertinoColors.white),
+      decoration: const BoxDecoration(
+        color: CupertinoColors.white,
       ),
       width: 30,
       height: 30,
@@ -23,7 +23,6 @@ class EventGrid extends StatelessWidget {
             )
           : Image.asset(
               'assets/default_event_image.png',
-              fit: BoxFit.cover,
             ),
     );
   }

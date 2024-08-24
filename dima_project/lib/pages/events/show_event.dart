@@ -125,7 +125,7 @@ class ShowEventState extends ConsumerState<ShowEvent> {
                                     )
                                   : Image.asset(
                                       'assets/default_event_image.png',
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.scaleDown,
                                     ),
                             ),
                             Container(

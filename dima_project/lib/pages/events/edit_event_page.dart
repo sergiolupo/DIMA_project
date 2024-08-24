@@ -70,19 +70,13 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
     final DatabaseService databaseService = ref.read(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CupertinoButton(
-          padding: const EdgeInsets.all(0),
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              fontSize: 18,
-              color: CupertinoTheme.of(context).primaryColor,
-            ),
-          ),
         ),
         trailing: CupertinoButton(
             padding: const EdgeInsets.all(0),
@@ -167,8 +161,10 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                 )
               },
               child: selectedImagePath == null
-                  ? CreateImageWidget.getEventImage(widget.event.imagePath!)
-                  : CreateImageWidget.getEventImageMemory(selectedImagePath!),
+                  ? CreateImageWidget.getEventImage(
+                      widget.event.imagePath!, context)
+                  : CreateImageWidget.getEventImageMemory(
+                      selectedImagePath!, context),
             ),
             const SizedBox(height: 20),
             CupertinoTextField(
