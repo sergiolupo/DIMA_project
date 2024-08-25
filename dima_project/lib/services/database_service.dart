@@ -585,10 +585,13 @@ class DatabaseService {
         final snapshot = await privateChatRef.doc(id).get();
         if (snapshot.exists) {
           privateChat = PrivateChat.fromSnapshot(snapshot);
-          privateChat.lastMessage!.sentByMe =
-              privateChat.lastMessage!.recentMessageSender == AuthService.uid;
+          try {
+            privateChat.lastMessage!.sentByMe =
+                privateChat.lastMessage!.recentMessageSender == AuthService.uid;
 
-          chatsList.add(privateChat);
+            chatsList.add(privateChat);
+            // ignore: empty_catches
+          } catch (e) {}
         }
       }
       chatsList.sort((a, b) {

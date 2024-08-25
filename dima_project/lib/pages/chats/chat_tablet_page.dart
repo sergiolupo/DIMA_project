@@ -785,11 +785,17 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
           children: <Widget>[
             idx == 0
                 ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset(
-                        'assets/darkMode/search_groups_chat.png',
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/darkMode/search_groups_chat.png',
+                        ),
                       )
-                    : Image.asset(
-                        'assets/images/search_groups_chat.png',
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/images/search_groups_chat.png',
+                        ),
                       )
                 : MediaQuery.of(context).platformBrightness == Brightness.dark
                     ? Image.asset(
