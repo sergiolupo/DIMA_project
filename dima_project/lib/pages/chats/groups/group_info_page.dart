@@ -867,7 +867,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
               onPressed: () {
                 Navigator.of(newContext).pop();
               },
-              child: const Text("Cancel"),
+              child: const Text("No"),
             ),
             CupertinoDialogAction(
               onPressed: () async {
@@ -885,7 +885,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                 );
 
                 await _databaseService.toggleGroupJoin(widget.groupId);
-                if (!context.mounted) return;
+                if (!buildContext.mounted) return;
                 Navigator.of(buildContext).pop();
                 if (widget.canNavigate) {
                   widget.navigateToPage!(const StartMessagingWidget());

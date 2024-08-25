@@ -127,11 +127,14 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     ],
                   ),
                   onTap: () => {
-                    Navigator.of(context, rootNavigator: true)
-                        .push(CupertinoPageRoute(
-                            builder: (context) => UserGroupsRequestsPage(
-                                groupRequests: _groupRequests!)))
-                        .then((value) => init())
+                    if (_groupRequests != null)
+                      {
+                        Navigator.of(context, rootNavigator: true)
+                            .push(CupertinoPageRoute(
+                                builder: (context) => UserGroupsRequestsPage(
+                                    groupRequests: _groupRequests!)))
+                            .then((value) => init())
+                      }
                   },
                 ),
               ],
