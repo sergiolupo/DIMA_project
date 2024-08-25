@@ -47,6 +47,8 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+          automaticallyImplyLeading: false,
+          transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text(
             'Requests',

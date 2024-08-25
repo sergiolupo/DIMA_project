@@ -28,6 +28,8 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         middle: Text('Follow Requests',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
         leading: CupertinoButton(

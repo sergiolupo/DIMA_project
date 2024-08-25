@@ -47,6 +47,7 @@ class DetailPageState extends ConsumerState<DetailEventPage> {
     final event = ref.watch(eventProvider(widget.eventId));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+          automaticallyImplyLeading: false,
           transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: event.when(

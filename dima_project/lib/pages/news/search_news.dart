@@ -31,6 +31,8 @@ class SearchNewsPageState extends State<SearchNewsPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         leading: Navigator.canPop(context)
             ? CupertinoNavigationBarBackButton(
                 color: CupertinoTheme.of(context).primaryColor,

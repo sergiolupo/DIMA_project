@@ -22,6 +22,7 @@ class ArticleView extends ConsumerWidget {
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
           automaticallyImplyLeading: false,
+          transitionBetweenRoutes: false,
           leading: Navigator.canPop(context)
               ? CupertinoNavigationBarBackButton(
                   color: CupertinoTheme.of(context).primaryColor,

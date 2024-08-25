@@ -70,6 +70,8 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         middle: GestureDetector(
           onTap: () {
             if (widget.privateChat.id != null) {

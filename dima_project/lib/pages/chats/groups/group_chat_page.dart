@@ -78,6 +78,8 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         key: _navigationBarKey,
         middle: CupertinoButton(
           padding: const EdgeInsets.all(0),

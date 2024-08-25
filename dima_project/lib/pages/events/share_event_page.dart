@@ -40,6 +40,8 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
     final asyncGroups = ref.watch(groupsProvider(AuthService.uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         middle: Padding(
           padding: const EdgeInsets.only(bottom: 4.0),
           child: Text('Send To',

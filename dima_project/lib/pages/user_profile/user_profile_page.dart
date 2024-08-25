@@ -89,6 +89,7 @@ class UserProfileState extends ConsumerState<UserProfile> {
     final followings = ref.watch(followingProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: (navigatorCanPop)

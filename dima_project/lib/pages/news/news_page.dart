@@ -65,6 +65,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         trailing: GestureDetector(
           onTap: () {

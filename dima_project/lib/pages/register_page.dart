@@ -98,6 +98,8 @@ class RegisterPageState extends State<RegisterPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         trailing: _currentPage == 4
             ? CupertinoButton(
                 padding: const EdgeInsets.all(3),

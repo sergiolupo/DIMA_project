@@ -73,6 +73,8 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: index == 0
             ? CupertinoButton(

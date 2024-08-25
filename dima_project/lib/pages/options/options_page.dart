@@ -33,6 +33,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+          automaticallyImplyLeading: false,
+          transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text(
             'Options',

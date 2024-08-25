@@ -224,6 +224,8 @@ class TableCalendarPageState extends ConsumerState<TableCalendarPage> {
   Widget _buildCalendar() {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         middle: Text(
           'Calendar',

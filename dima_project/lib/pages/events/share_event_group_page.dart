@@ -35,6 +35,8 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
     final asyncGroups = ref.watch(groupsProvider(AuthService.uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         leading: CupertinoNavigationBarBackButton(
           color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {

@@ -52,6 +52,7 @@ class ChatPageState extends State<ChatPage> {
     return CupertinoPageScaffold(
       backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         trailing: idx == 0
             ? CupertinoButton(

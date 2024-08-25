@@ -133,6 +133,8 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
     final DatabaseService databaseService = ref.watch(databaseServiceProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         trailing: CupertinoButton(
           onPressed: () async {

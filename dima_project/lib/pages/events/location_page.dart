@@ -39,6 +39,8 @@ class LocationPageState extends State<LocationPage> {
         ? const CupertinoActivityIndicator()
         : CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              automaticallyImplyLeading: false,
+              transitionBetweenRoutes: false,
               leading: CupertinoButton(
                 onPressed: () {
                   Navigator.of(context).pop();

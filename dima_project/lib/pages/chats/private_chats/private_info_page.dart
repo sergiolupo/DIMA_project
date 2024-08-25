@@ -68,6 +68,8 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
         ref.watch(eventsPrivateChatProvider(widget.privateChat.id!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         leading: CupertinoButton(
           onPressed: () {
             if (widget.canNavigate) {

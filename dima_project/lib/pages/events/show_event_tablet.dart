@@ -47,6 +47,8 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
         : ref.watch(joinedEventsProvider(widget.userData.uid!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CupertinoNavigationBarBackButton(
           color: CupertinoTheme.of(context).primaryColor,

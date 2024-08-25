@@ -76,6 +76,8 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         middle: Text(
           "Search",
           style: TextStyle(

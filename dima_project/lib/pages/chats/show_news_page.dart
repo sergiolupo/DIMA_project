@@ -38,6 +38,8 @@ class ShowNewsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+          automaticallyImplyLeading: false,
+          transitionBetweenRoutes: false,
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           middle: Text(
             'News',

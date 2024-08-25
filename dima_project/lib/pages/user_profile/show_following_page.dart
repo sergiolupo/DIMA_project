@@ -40,6 +40,8 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         leading: asyncUsers.when(
           data: (data) => CupertinoButton(
             padding: EdgeInsets.zero,

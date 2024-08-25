@@ -42,6 +42,8 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
     final asyncUsers = ref.watch(followerProvider(uid));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        transitionBetweenRoutes: false,
         middle: Padding(
           padding: const EdgeInsets.only(bottom: 4.0),
           child: Text('Send To',

@@ -89,6 +89,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
           }
           return CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              automaticallyImplyLeading: false,
               transitionBetweenRoutes: false,
               leading: CupertinoButton(
                 padding: const EdgeInsets.all(0),

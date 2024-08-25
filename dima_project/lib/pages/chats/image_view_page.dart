@@ -63,6 +63,8 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
         final message = widget.messages[index];
         return CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              automaticallyImplyLeading: false,
+              transitionBetweenRoutes: false,
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
               leading: CupertinoButton(
                 onPressed: () {
