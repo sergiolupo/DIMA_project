@@ -32,10 +32,9 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
         transitionBetweenRoutes: false,
         middle: Text('Follow Requests',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-        leading: CupertinoButton(
+        leading: CupertinoNavigationBarBackButton(
           onPressed: () => Navigator.of(context).pop(),
-          padding: const EdgeInsets.only(left: 10),
-          child: const Icon(CupertinoIcons.back),
+          color: CupertinoTheme.of(context).primaryColor,
         ),
       ),
       child: (followRequests.isEmpty)

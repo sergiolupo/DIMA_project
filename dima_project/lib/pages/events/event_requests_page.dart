@@ -44,9 +44,8 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.back),
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             ref.invalidate(eventProvider(widget.eventId));
             Navigator.of(context).pop();

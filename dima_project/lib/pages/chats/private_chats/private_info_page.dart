@@ -70,7 +70,8 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
-        leading: CupertinoButton(
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             if (widget.canNavigate) {
               widget.navigateToPage!(PrivateChatPage(
@@ -87,8 +88,6 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
             }
             Navigator.of(context).pop();
           },
-          child: Icon(CupertinoIcons.back,
-              color: CupertinoTheme.of(context).primaryColor),
         ),
         middle: Text("Private Chat Info",
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),

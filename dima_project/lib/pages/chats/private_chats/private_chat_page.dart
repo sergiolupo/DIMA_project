@@ -125,15 +125,13 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: (!widget.canNavigate)
-            ? CupertinoButton(
-                padding: const EdgeInsets.all(0),
+            ? CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   if (Navigator.of(context).canPop()) {
                     Navigator.of(context).pop();
                   }
                 },
-                child: Icon(CupertinoIcons.back,
-                    color: CupertinoTheme.of(context).primaryColor),
               )
             : null,
       ),

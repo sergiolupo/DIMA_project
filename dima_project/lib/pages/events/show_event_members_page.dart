@@ -37,9 +37,8 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.back),
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () {
             Navigator.of(context).pop();
           },

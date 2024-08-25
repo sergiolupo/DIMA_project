@@ -43,9 +43,8 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         leading: asyncUsers.when(
-          data: (data) => CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.back),
+          data: (data) => CupertinoNavigationBarBackButton(
+            color: CupertinoTheme.of(context).primaryColor,
             onPressed: () {
               Navigator.of(context).pop();
             },

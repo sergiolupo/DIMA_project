@@ -33,10 +33,9 @@ class UserGroupsRequestsPageState
         transitionBetweenRoutes: false,
         middle: Text('Group Requests',
             style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-        leading: CupertinoButton(
+        leading: CupertinoNavigationBarBackButton(
           onPressed: () => Navigator.of(context).pop(),
-          padding: const EdgeInsets.only(left: 10),
-          child: const Icon(CupertinoIcons.back),
+          color: CupertinoTheme.of(context).primaryColor,
         ),
       ),
       child: groupsRequests.isEmpty

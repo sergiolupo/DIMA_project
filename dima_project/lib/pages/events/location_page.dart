@@ -41,11 +41,11 @@ class LocationPageState extends State<LocationPage> {
             navigationBar: CupertinoNavigationBar(
               automaticallyImplyLeading: false,
               transitionBetweenRoutes: false,
-              leading: CupertinoButton(
+              leading: CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Icon(CupertinoIcons.back),
               ),
             ),
             child: Stack(

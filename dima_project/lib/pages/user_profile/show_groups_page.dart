@@ -40,9 +40,8 @@ class ShowGroupsPageState extends ConsumerState<ShowGroupsPage> {
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
         leading: groups.when(
-          data: (data) => CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.back),
+          data: (data) => CupertinoNavigationBarBackButton(
+            color: CupertinoTheme.of(context).primaryColor,
             onPressed: () {
               Navigator.of(context).pop();
             },

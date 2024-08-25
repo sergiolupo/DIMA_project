@@ -39,13 +39,9 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
             fontSize: 18,
           ),
         ),
-        leading: CupertinoButton(
+        leading: CupertinoNavigationBarBackButton(
           onPressed: () => Navigator.of(context).pop(),
-          padding: const EdgeInsets.only(left: 10),
-          child: Icon(
-            CupertinoIcons.back,
-            color: CupertinoTheme.of(context).primaryColor,
-          ),
+          color: CupertinoTheme.of(context).primaryColor,
         ),
       ),
       child: SafeArea(

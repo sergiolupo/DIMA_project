@@ -91,8 +91,8 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
             navigationBar: CupertinoNavigationBar(
               automaticallyImplyLeading: false,
               transitionBetweenRoutes: false,
-              leading: CupertinoButton(
-                padding: const EdgeInsets.all(0),
+              leading: CupertinoNavigationBarBackButton(
+                color: CupertinoTheme.of(context).primaryColor,
                 onPressed: () {
                   if (widget.canNavigate) {
                     widget.navigateToPage!(GroupChatPage(
@@ -109,8 +109,6 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                   }
                   Navigator.of(context).pop();
                 },
-                child: Icon(CupertinoIcons.back,
-                    color: CupertinoTheme.of(context).primaryColor),
               ),
               middle: Text(
                 "Group Info",

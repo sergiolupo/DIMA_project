@@ -66,7 +66,7 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
               automaticallyImplyLeading: false,
               transitionBetweenRoutes: false,
               backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-              leading: CupertinoButton(
+              leading: CupertinoNavigationBarBackButton(
                 onPressed: () {
                   if (widget.canNavigate) {
                     widget.navigateToPage!(ShowImagesPage(
@@ -83,10 +83,7 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
                   }
                   Navigator.of(context).pop();
                 },
-                padding: const EdgeInsets.only(left: 10),
-                child: Icon(CupertinoIcons.back,
-                    color:
-                        CupertinoTheme.of(context).textTheme.textStyle.color),
+                color: CupertinoTheme.of(context).primaryColor,
               ),
               middle: SingleChildScrollView(
                   child: users[index].when(

@@ -48,9 +48,8 @@ class GroupRequestsPageState extends ConsumerState<GroupRequestsPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         transitionBetweenRoutes: false,
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.back),
+        leading: CupertinoNavigationBarBackButton(
+          color: CupertinoTheme.of(context).primaryColor,
           onPressed: () async {
             ref.invalidate(groupProvider(widget.groupId));
             if (widget.canNavigate) {

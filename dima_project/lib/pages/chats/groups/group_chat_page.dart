@@ -145,13 +145,11 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
         leading: widget.canNavigate
             ? null
-            : CupertinoButton(
-                padding: const EdgeInsets.all(0),
+            : CupertinoNavigationBarBackButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Icon(CupertinoIcons.back,
-                    color: CupertinoTheme.of(context).primaryColor),
+                color: CupertinoTheme.of(context).primaryColor,
               ),
       ),
       child: Column(

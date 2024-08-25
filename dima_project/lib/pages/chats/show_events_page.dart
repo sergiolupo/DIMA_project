@@ -48,7 +48,7 @@ class ShowEventsPage extends ConsumerWidget {
             style: TextStyle(
                 fontSize: 18, color: CupertinoTheme.of(context).primaryColor),
           ),
-          leading: CupertinoButton(
+          leading: CupertinoNavigationBarBackButton(
             onPressed: () {
               if (isGroup) {
                 ref.invalidate(groupProvider(groupId!));
@@ -77,9 +77,7 @@ class ShowEventsPage extends ConsumerWidget {
                 Navigator.of(context).pop();
               }
             },
-            padding: const EdgeInsets.only(left: 10),
-            child: Icon(CupertinoIcons.back,
-                color: CupertinoTheme.of(context).primaryColor),
+            color: CupertinoTheme.of(context).primaryColor,
           )),
       child: SafeArea(
         child: Builder(
