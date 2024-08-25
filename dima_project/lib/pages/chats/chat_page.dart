@@ -144,10 +144,18 @@ class ChatPageState extends State<ChatPage> {
                         children: [
                           MediaQuery.of(context).platformBrightness ==
                                   Brightness.dark
-                              ? Image.asset(
-                                  'assets/darkMode/no_groups_chat_found.png')
-                              : Image.asset(
-                                  'assets/images/no_groups_chat_found.png'),
+                              ? SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.5,
+                                  child: Image.asset(
+                                      'assets/darkMode/no_groups_chat_found.png'),
+                                )
+                              : SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.5,
+                                  child: Image.asset(
+                                      'assets/images/no_groups_chat_found.png'),
+                                ),
                           const Text(
                             'No groups found',
                             style: TextStyle(
@@ -295,18 +303,30 @@ class ChatPageState extends State<ChatPage> {
           children: <Widget>[
             idx == 0
                 ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset(
-                        'assets/darkMode/search_groups_chat.png',
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/darkMode/search_groups_chat.png',
+                        ),
                       )
-                    : Image.asset(
-                        'assets/images/search_groups_chat.png',
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/images/search_groups_chat.png',
+                        ),
                       )
                 : MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset(
-                        'assets/darkMode/search_chat.png',
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/darkMode/search_chat.png',
+                        ),
                       )
-                    : Image.asset(
-                        'assets/images/search_chat.png',
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/images/search_chat.png',
+                        ),
                       ),
             Text(
               "No ${idx == 0 ? "groups" : "chats"} yet",
@@ -339,8 +359,9 @@ class ChatPageState extends State<ChatPage> {
           if (idx == 0) {
             return const SizedBox.shrink();
           }
-          int i = 0;
           if (snapshot.hasData) {
+            bool found = false;
+
             var data = snapshot.data!;
 
             if (data.isNotEmpty) {
@@ -366,17 +387,26 @@ class ChatPageState extends State<ChatPage> {
                         if (!other.username
                             .toLowerCase()
                             .contains(searchedText.toLowerCase())) {
-                          i += 1;
-                          if (i == data.length) {
+                          if (index == data.length - 1 && !found) {
                             return Center(
                                 child: Column(
                               children: [
                                 MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/no_chat_found.png')
-                                    : Image.asset(
-                                        'assets/images/no_chat_found.png'),
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        child: Image.asset(
+                                            'assets/darkMode/no_chat_found.png'),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        child: Image.asset(
+                                            'assets/images/no_chat_found.png'),
+                                      ),
                                 const Text(
                                   'No private chats found',
                                   style: TextStyle(
@@ -389,6 +419,7 @@ class ChatPageState extends State<ChatPage> {
                           }
                           return const SizedBox.shrink();
                         }
+                        found = true;
                         return PrivateChatTile(
                           storageService: widget.storageService,
                           privateChat: privateChat,
@@ -402,17 +433,28 @@ class ChatPageState extends State<ChatPage> {
                           if (!("Deleted Account")
                               .toLowerCase()
                               .contains(searchedText.toLowerCase())) {
-                            i += 1;
-                            if (i == data.length) {
+                            if (index == data.length - 1 && !found) {
                               return Center(
                                   child: Column(
                                 children: [
                                   MediaQuery.of(context).platformBrightness ==
                                           Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_chat_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_chat_found.png'),
+                                      ? SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.5,
+                                          child: Image.asset(
+                                              'assets/darkMode/no_chat_found.png'),
+                                        )
+                                      : SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.5,
+                                          child: Image.asset(
+                                              'assets/images/no_chat_found.png'),
+                                        ),
                                   const Text(
                                     'No private chats found',
                                     style: TextStyle(

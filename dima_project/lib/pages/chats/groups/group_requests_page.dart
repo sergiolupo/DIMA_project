@@ -74,30 +74,42 @@ class GroupRequestsPageState extends ConsumerState<GroupRequestsPage> {
       ),
       child: users.isEmpty
           ? Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.width > Constants.limitWidth
-                            ? 600
-                            : 400,
-                    child:
-                        CupertinoTheme.of(context).brightness == Brightness.dark
-                            ? Image.asset(
-                                "assets/darkMode/no_group_requests.png",
-                                fit: BoxFit.contain,
-                              )
-                            : Image.asset(
-                                "assets/images/no_group_requests.png",
-                                fit: BoxFit.contain,
-                              ),
-                  ),
-                  const Text("No group requests",
-                      style: TextStyle(
-                          color: CupertinoColors.systemGrey2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20)),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Column(
+                  mainAxisAlignment:
+                      MediaQuery.of(context).size.width > Constants.limitWidth
+                          ? MainAxisAlignment.center
+                          : MainAxisAlignment.start,
+                  children: [
+                    CupertinoTheme.of(context).brightness == Brightness.dark
+                        ? SizedBox(
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? MediaQuery.of(context).size.height * 0.7
+                                : MediaQuery.of(context).size.height * 0.4,
+                            child: Image.asset(
+                              "assets/darkMode/no_group_requests.png",
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : SizedBox(
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? MediaQuery.of(context).size.height * 0.7
+                                : MediaQuery.of(context).size.height * 0.4,
+                            child: Image.asset(
+                              "assets/images/no_group_requests.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                    const Text("No group requests",
+                        style: TextStyle(
+                            color: CupertinoColors.systemGrey2,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20)),
+                  ],
+                ),
               ),
             )
           : ListView.builder(

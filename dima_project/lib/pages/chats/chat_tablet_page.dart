@@ -243,10 +243,18 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                           children: [
                             MediaQuery.of(context).platformBrightness ==
                                     Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/no_groups_chat_found.png')
-                                : Image.asset(
-                                    'assets/images/no_groups_chat_found.png'),
+                                ? SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    child: Image.asset(
+                                        'assets/darkMode/no_groups_chat_found.png'),
+                                  )
+                                : SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    child: Image.asset(
+                                        'assets/images/no_groups_chat_found.png'),
+                                  ),
                             const Text(
                               'No groups found',
                               style: TextStyle(
@@ -512,11 +520,26 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                               children: [
                                 MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/no_chat_found.png')
-                                    : Image.asset(
-                                        'assets/images/no_chat_found.png'),
-                                const Text("No private chats found"),
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        child: Image.asset(
+                                            'assets/darkMode/no_chat_found.png'),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        child: Image.asset(
+                                            'assets/images/no_chat_found.png'),
+                                      ),
+                                const Text("No private chats found",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.systemGrey2,
+                                    )),
                               ],
                             ));
                           }
@@ -613,11 +636,28 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                                 children: [
                                   MediaQuery.of(context).platformBrightness ==
                                           Brightness.dark
-                                      ? Image.asset(
-                                          'assets/darkMode/no_chat_found.png')
-                                      : Image.asset(
-                                          'assets/images/no_chat_found.png'),
-                                  const Text('No private chats found'),
+                                      ? SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.5,
+                                          child: Image.asset(
+                                              'assets/darkMode/no_chat_found.png'),
+                                        )
+                                      : SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.5,
+                                          child: Image.asset(
+                                              'assets/images/no_chat_found.png'),
+                                        ),
+                                  const Text('No private chats found',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey2,
+                                      )),
                                 ],
                               ));
                             }
@@ -798,11 +838,17 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                         ),
                       )
                 : MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset(
-                        'assets/darkMode/search_chat.png',
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/darkMode/search_chat.png',
+                        ),
                       )
-                    : Image.asset(
-                        'assets/images/search_chat.png',
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset(
+                          'assets/images/search_chat.png',
+                        ),
                       ),
             Text(
               "No ${idx == 0 ? "groups" : "chats"} yet",

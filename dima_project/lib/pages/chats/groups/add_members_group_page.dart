@@ -3,6 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/user_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -192,10 +193,19 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                         children: [
                           MediaQuery.of(context).platformBrightness ==
                                   Brightness.dark
-                              ? Image.asset(
-                                  'assets/darkMode/search_followers.png')
-                              : Image.asset(
-                                  'assets/images/search_followers.png'),
+                              ? SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.5,
+                                  child: Image.asset(
+                                      'assets/darkMode/search_followers.png'),
+                                )
+                              : SizedBox(
+                                  child: Image.asset(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.5,
+                                      'assets/images/search_followers.png'),
+                                ),
                           const Text(
                             'No followers',
                             style: TextStyle(
@@ -215,63 +225,80 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                 }).toList();
 
                 if (filteredUsers.isEmpty) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
-                          ? Image.asset('assets/darkMode/no_followers.png')
-                          : Image.asset('assets/images/no_followers.png'),
-                      const Center(
-                        child: Text(
-                          'No followers found',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: CupertinoColors.systemGrey2),
-                        ),
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Column(
+                        children: [
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  child: Image.asset(
+                                      'assets/darkMode/no_followers.png'))
+                              : SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  child: Image.asset(
+                                      'assets/images/no_followers.png')),
+                          MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? const SizedBox(height: 10)
+                              : const SizedBox.shrink(),
+                          const Text(
+                            'No followers found',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CupertinoColors.systemGrey2),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   );
                 }
-                return Container(
-                  height: filteredUsers.length * 50.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color:
-                          CupertinoTheme.of(context).primaryContrastingColor),
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filteredUsers.length,
-                    itemBuilder: (context, index) {
-                      final userData = filteredUsers[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    height: filteredUsers.length * 50.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color:
+                            CupertinoTheme.of(context).primaryContrastingColor),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final userData = filteredUsers[index];
 
-                      return Column(
-                        children: [
-                          UserInvitationTile(
-                            user: userData,
-                            invitePageKey: (String uuid) {
-                              setState(() {
-                                if (uids.contains(uuid)) {
-                                  uids.remove(uuid);
-                                } else {
-                                  uids.add(uuid);
-                                }
-                              });
-                            },
-                            invited: uids.contains(userData.uid!),
-                            isJoining:
-                                userData.groups!.contains(widget.group.id),
-                          ),
-                          if (index != filteredUsers.length - 1)
-                            Container(
-                              height: 1,
-                              color: CupertinoColors.opaqueSeparator
-                                  .withOpacity(0.2),
+                        return Column(
+                          children: [
+                            UserInvitationTile(
+                              user: userData,
+                              invitePageKey: (String uuid) {
+                                setState(() {
+                                  if (uids.contains(uuid)) {
+                                    uids.remove(uuid);
+                                  } else {
+                                    uids.add(uuid);
+                                  }
+                                });
+                              },
+                              invited: uids.contains(userData.uid!),
+                              isJoining:
+                                  userData.groups!.contains(widget.group.id),
                             ),
-                        ],
-                      );
-                    },
+                            if (index != filteredUsers.length - 1)
+                              Container(
+                                height: 1,
+                                color: CupertinoColors.opaqueSeparator
+                                    .withOpacity(0.2),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 );
               },
