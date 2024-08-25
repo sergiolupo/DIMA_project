@@ -1,9 +1,11 @@
 import 'package:dima_project/pages/news/share_news_page.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ArticleView extends StatelessWidget {
+class ArticleView extends ConsumerWidget {
   final String description, imageUrl, title, blogUrl;
   final DatabaseService databaseService;
   const ArticleView({
@@ -16,7 +18,7 @@ class ArticleView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
           automaticallyImplyLeading: false,
@@ -31,6 +33,8 @@ class ArticleView extends StatelessWidget {
           trailing: GestureDetector(
             child: const Icon(CupertinoIcons.share),
             onTap: () async {
+              ref.invalidate(groupsProvider);
+              ref.invalidate(followerProvider);
               final ids = await Navigator.of(context, rootNavigator: true)
                   .push(CupertinoPageRoute(
                       builder: (context) => ShareNewsPage(

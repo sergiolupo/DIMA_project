@@ -384,8 +384,11 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               ],
                             ),
                             trailing: const Icon(CupertinoIcons.forward),
-                            onTap: () {
-                              Navigator.of(context, rootNavigator: true).push(
+                            onTap: () async {
+                              final List<String>? groups = await Navigator.of(
+                                      context,
+                                      rootNavigator: true)
+                                  .push(
                                 CupertinoPageRoute(
                                   builder: (context) => ShareEventGroupPage(
                                     groupIds: groupIds,
@@ -393,6 +396,11 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                   ),
                                 ),
                               );
+                              if (groups != null) {
+                                setState(() {
+                                  groupIds = groups;
+                                });
+                              }
                             },
                           ),
                           Container(

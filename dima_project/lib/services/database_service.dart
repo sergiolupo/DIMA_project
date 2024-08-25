@@ -1327,21 +1327,25 @@ class DatabaseService {
         ),
       ],
     );
-
     for (var id in groupIds) {
-      await groupsRef.doc(id).collection('messages').add(
-            message.toMap(),
-          );
-      await groupsRef.doc(id).update({
-        'recentMessage': 'Event',
-        'recentMessageSender': message.sender,
-        'recentMessageTime': message.time,
-        'recentMessageType': message.type.toString(),
-      });
-      await NotificationService(databaseService: this).sendNotificationOnGroup(
-        id,
-        message,
-      );
+      try {
+        await groupsRef.doc(id).collection('messages').add(
+              message.toMap(),
+            );
+        await groupsRef.doc(id).update({
+          'recentMessage': 'Event',
+          'recentMessageSender': message.sender,
+          'recentMessageTime': message.time,
+          'recentMessageType': message.type.toString(),
+        });
+        await NotificationService(databaseService: this)
+            .sendNotificationOnGroup(
+          id,
+          message,
+        );
+      } catch (e) {
+        debugPrint('Group does not exist');
+      }
     }
   }
 
@@ -1362,28 +1366,32 @@ class DatabaseService {
     );
 
     for (var uuid in uuids) {
-      final PrivateChat privateChat =
-          await getPrivateChatsFromMember([uuid, AuthService.uid]);
-      if (privateChat.id == null) {
-        final id = await createPrivateChat(privateChat);
-        privateChat.id = id;
+      try {
+        final PrivateChat privateChat =
+            await getPrivateChatsFromMember([uuid, AuthService.uid]);
+        if (privateChat.id == null) {
+          final id = await createPrivateChat(privateChat);
+          privateChat.id = id;
+        }
+        await Future.wait([
+          privateChatRef.doc(privateChat.id).collection('messages').add(
+                message.toMap(),
+              ),
+          privateChatRef.doc(privateChat.id).update({
+            'recentMessage': 'Event',
+            'recentMessageSender': message.sender,
+            'recentMessageTime': message.time,
+            'recentMessageType': message.type.toString(),
+          }),
+          NotificationService(databaseService: this)
+              .sendNotificationOnPrivateChat(
+            privateChat,
+            message,
+          ),
+        ]);
+      } catch (e) {
+        debugPrint('User does not exist');
       }
-      await Future.wait([
-        privateChatRef.doc(privateChat.id).collection('messages').add(
-              message.toMap(),
-            ),
-        privateChatRef.doc(privateChat.id).update({
-          'recentMessage': 'Event',
-          'recentMessageSender': message.sender,
-          'recentMessageTime': message.time,
-          'recentMessageType': message.type.toString(),
-        }),
-        NotificationService(databaseService: this)
-            .sendNotificationOnPrivateChat(
-          privateChat,
-          message,
-        ),
-      ]);
     }
   }
 
@@ -1602,28 +1610,34 @@ class DatabaseService {
         ),
       ],
     );
-    final PrivateChat privateChat = await getPrivateChatsFromMember(
-        [uid, FirebaseAuth.instance.currentUser!.uid]);
+    try {
+      final PrivateChat privateChat = await getPrivateChatsFromMember(
+          [uid, FirebaseAuth.instance.currentUser!.uid]);
 
-    if (privateChat.id == null) {
-      final id = await createPrivateChat(privateChat);
-      privateChat.id = id;
+      if (privateChat.id == null) {
+        final id = await createPrivateChat(privateChat);
+        privateChat.id = id;
+      }
+      return await Future.wait([
+        privateChatRef.doc(privateChat.id).collection('messages').add(
+              message.toMap(),
+            ),
+        privateChatRef.doc(privateChat.id).update({
+          'recentMessage': 'News',
+          'recentMessageSender': message.sender,
+          'recentMessageTime': message.time,
+          'recentMessageType': message.type.toString(),
+        }),
+        NotificationService(databaseService: this)
+            .sendNotificationOnPrivateChat(
+          privateChat,
+          message,
+        ),
+      ]);
+    } catch (e) {
+      debugPrint(
+          'Not possible to share news on follower since user does not exist');
     }
-    return await Future.wait([
-      privateChatRef.doc(privateChat.id).collection('messages').add(
-            message.toMap(),
-          ),
-      privateChatRef.doc(privateChat.id).update({
-        'recentMessage': 'News',
-        'recentMessageSender': message.sender,
-        'recentMessageTime': message.time,
-        'recentMessageType': message.type.toString(),
-      }),
-      NotificationService(databaseService: this).sendNotificationOnPrivateChat(
-        privateChat,
-        message,
-      ),
-    ]);
   }
 
   Future<void> updateEvent(
@@ -1735,6 +1749,7 @@ class DatabaseService {
       for (var id in uids) {
         if (!members.contains(id)) {
           final user = await usersRef.doc(id).get();
+
           if (user.exists && !user['groupsRequests'].contains(groupId)) {
             try {
               await usersRef.doc(id).update({
