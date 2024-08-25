@@ -156,19 +156,21 @@ class ChatTabletPageState extends ConsumerState<ChatTabletPage> {
                     ),
                   ),
                 ),
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  borderRadius: BorderRadius.circular(30),
-                  minSize: 30,
-                  child: const Icon(CupertinoIcons.add),
-                  onPressed: () {
-                    _navigateToPage(CreateGroupPage(
-                      canNavigate: true,
-                      navigateToPage: _navigateToPage,
-                      imagePicker: widget.imagePicker,
-                    ));
-                  },
-                ),
+                idx == 0
+                    ? CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        borderRadius: BorderRadius.circular(30),
+                        minSize: 30,
+                        child: const Icon(CupertinoIcons.add_circled_solid),
+                        onPressed: () {
+                          _navigateToPage(CreateGroupPage(
+                            canNavigate: true,
+                            navigateToPage: _navigateToPage,
+                            imagePicker: widget.imagePicker,
+                          ));
+                        },
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
             SizedBox(

@@ -53,22 +53,24 @@ class ChatPageState extends State<ChatPage> {
       backgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
       navigationBar: CupertinoNavigationBar(
         transitionBetweenRoutes: false,
-        trailing: CupertinoButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => CreateGroupPage(
-                          canNavigate: false,
-                          imagePicker: widget.imagePicker,
-                        )));
-          },
-          child: const Icon(
-            CupertinoIcons.add_circled_solid,
-            size: 30,
-          ),
-        ),
+        trailing: idx == 0
+            ? CupertinoButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => CreateGroupPage(
+                                canNavigate: false,
+                                imagePicker: widget.imagePicker,
+                              )));
+                },
+                child: const Icon(
+                  CupertinoIcons.add_circled_solid,
+                  size: 30,
+                ),
+              )
+            : null,
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         middle: Text(
           "Chats",

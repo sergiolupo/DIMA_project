@@ -312,7 +312,7 @@ class DatabaseService {
 
   Future<void> deleteUserGroupRequests(String groupId) async {
     QuerySnapshot<Object?> value =
-        await usersRef.where("requests", arrayContains: groupId).get();
+        await usersRef.where("groupsRequests", arrayContains: groupId).get();
     for (var doc in value.docs) {
       await usersRef.doc(doc.id).update({
         'groupsRequests': FieldValue.arrayRemove([groupId])
