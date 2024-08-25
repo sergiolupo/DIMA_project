@@ -212,12 +212,17 @@ class DatabaseService {
           docRef.id,
         ])
       });
+
       for (String uuid in uuids) {
-        await usersRef.doc(uuid).update({
-          'groupsRequests': FieldValue.arrayUnion([
-            docRef.id,
-          ])
-        });
+        try {
+          await usersRef.doc(uuid).update({
+            'groupsRequests': FieldValue.arrayUnion([
+              docRef.id,
+            ])
+          });
+        } catch (e) {
+          debugPrint("User doesn't exist: $uuid");
+        }
       }
     } catch (e) {
       debugPrint("Error while creating the group: $e");
@@ -1731,9 +1736,13 @@ class DatabaseService {
         if (!members.contains(id)) {
           final user = await usersRef.doc(id).get();
           if (user.exists && !user['groupsRequests'].contains(groupId)) {
-            await usersRef.doc(id).update({
-              'groupsRequests': FieldValue.arrayUnion([groupId])
-            });
+            try {
+              await usersRef.doc(id).update({
+                'groupsRequests': FieldValue.arrayUnion([groupId])
+              });
+            } catch (e) {
+              debugPrint('User does not exist');
+            }
           }
         }
       }

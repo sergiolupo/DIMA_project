@@ -3,7 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
-import 'package:dima_project/widgets/add_member_tile.dart';
+import 'package:dima_project/widgets/user_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
@@ -243,13 +243,12 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                     itemCount: filteredUsers.length,
                     itemBuilder: (context, index) {
                       final userData = filteredUsers[index];
-                      debugPrint(userData.groups.toString());
-                      debugPrint(widget.group.id);
+
                       return Column(
                         children: [
-                          AddMemberTile(
+                          UserInvitationTile(
                             user: userData,
-                            onSelected: (String uuid) {
+                            invitePageKey: (String uuid) {
                               setState(() {
                                 if (uids.contains(uuid)) {
                                   uids.remove(uuid);
@@ -258,7 +257,7 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                                 }
                               });
                             },
-                            active: uids.contains(userData.uid!),
+                            invited: uids.contains(userData.uid!),
                             isJoining:
                                 userData.groups!.contains(widget.group.id),
                           ),
