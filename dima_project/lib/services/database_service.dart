@@ -1050,7 +1050,12 @@ class DatabaseService {
     final doc = await usersRef.doc(id).get();
     List<Group> groups = [];
     for (var group in doc['groupsRequests']) {
-      groups.add(await getGroupFromId(group));
+      try {
+        Group g = await getGroupFromId(group);
+        groups.add(g);
+      } catch (e) {
+        debugPrint('Group does not exist');
+      }
     }
     return groups;
   }

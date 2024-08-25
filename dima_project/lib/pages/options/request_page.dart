@@ -18,8 +18,8 @@ class ShowRequestPage extends StatefulWidget {
 }
 
 class ShowRequestPageState extends State<ShowRequestPage> {
-  List<UserData>? _followRequests;
-  List<Group>? _groupRequests;
+  List<UserData> _followRequests = [];
+  List<Group> _groupRequests = [];
   final String uid = AuthService.uid;
   @override
   void initState() {
@@ -28,9 +28,10 @@ class ShowRequestPageState extends State<ShowRequestPage> {
   }
 
   init() async {
-    List<UserData>? followRequests;
-    List<Group>? groupRequests;
+    List<UserData> followRequests;
+    List<Group> groupRequests;
     followRequests = (await widget.databaseService.getFollowRequests(uid));
+
     followRequests.removeWhere(
         (user) => user.email == "" && user.username == "Deleted Account");
     setState(() {
@@ -67,11 +68,11 @@ class ShowRequestPageState extends State<ShowRequestPage> {
               children: [
                 OptionTile(
                   leading: const Icon(CupertinoIcons.person),
-                  onTap: () => {
-                    Navigator.of(context, rootNavigator: true)
+                  onTap: () async => {
+                    await Navigator.of(context, rootNavigator: true)
                         .push(CupertinoPageRoute(
                             builder: (context) => FollowRequestsPage(
-                                  followRequests: _followRequests!,
+                                  followRequests: _followRequests,
                                 )))
                         .then((value) => init())
                   },
@@ -79,24 +80,21 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Follow Requests'),
-                      _followRequests == null
-                          ? const SizedBox()
-                          : _followRequests!.isNotEmpty
-                              ? Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color:
-                                        CupertinoTheme.of(context).primaryColor,
-                                  ),
-                                  child: Text(
-                                    _followRequests!.length.toString(),
-                                    style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox()
+                      _followRequests.isNotEmpty
+                          ? Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: CupertinoTheme.of(context).primaryColor,
+                              ),
+                              child: Text(
+                                _followRequests.length.toString(),
+                                style: const TextStyle(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                            )
+                          : const SizedBox()
                     ],
                   ),
                 ),
@@ -106,35 +104,29 @@ class ShowRequestPageState extends State<ShowRequestPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Group Requests'),
-                      _groupRequests == null
-                          ? const SizedBox()
-                          : _groupRequests!.isNotEmpty
-                              ? Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color:
-                                        CupertinoTheme.of(context).primaryColor,
-                                  ),
-                                  child: Text(
-                                    _groupRequests!.length.toString(),
-                                    style: const TextStyle(
-                                      color: CupertinoColors.white,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox()
+                      _groupRequests.isNotEmpty
+                          ? Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: CupertinoTheme.of(context).primaryColor,
+                              ),
+                              child: Text(
+                                _groupRequests.length.toString(),
+                                style: const TextStyle(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                            )
+                          : const SizedBox()
                     ],
                   ),
-                  onTap: () => {
-                    if (_groupRequests != null)
-                      {
-                        Navigator.of(context, rootNavigator: true)
-                            .push(CupertinoPageRoute(
-                                builder: (context) => UserGroupsRequestsPage(
-                                    groupRequests: _groupRequests!)))
-                            .then((value) => init())
-                      }
+                  onTap: () async => {
+                    await Navigator.of(context, rootNavigator: true)
+                        .push(CupertinoPageRoute(
+                            builder: (context) => UserGroupsRequestsPage(
+                                groupRequests: _groupRequests)))
+                        .then((value) => init())
                   },
                 ),
               ],
