@@ -11,8 +11,11 @@ import 'package:mockito/mockito.dart';
 import '../../mocks/mock_database_service.mocks.dart';
 
 void main() {
-  testWidgets('PrivateChatTileTablet displays username and last message',
+  testWidgets(
+      'PrivateChatTileTablet displays username and last message when it is not selected',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1194.0, 834.0);
+    tester.view.devicePixelRatio = 1.0;
     final privateChat = PrivateChat(
         id: "1",
         members: ['uid1', 'uid2'],
@@ -39,18 +42,15 @@ void main() {
     when(mockDatabaseService.getUnreadMessages(any, any))
         .thenAnswer((_) => Stream.value(1));
     await tester.pumpWidget(
-      MediaQuery(
-        data: const MediaQueryData(size: Size(1200, 700)),
-        child: CupertinoApp(
-          home: CupertinoPageScaffold(
-            child: PrivateChatTileTablet(
-              databaseService: mockDatabaseService,
-              selectedChatId: '',
-              privateChat: privateChat,
-              onPressed: (chat) {},
-              other: user,
-              onDismissed: (direction) {},
-            ),
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: PrivateChatTileTablet(
+            databaseService: mockDatabaseService,
+            selectedChatId: '',
+            privateChat: privateChat,
+            onPressed: (chat) {},
+            other: user,
+            onDismissed: (direction) {},
           ),
         ),
       ),
@@ -62,10 +62,62 @@ void main() {
     expect(find.text('Hello!'), findsOneWidget);
     expect(find.text("1"), findsOneWidget); // Check for unread message badge
   });
+  testWidgets(
+      'PrivateChatTileTablet displays username and last message when it is selected',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1194.0, 834.0);
+    tester.view.devicePixelRatio = 1.0;
+    final privateChat = PrivateChat(
+        id: "1",
+        members: ['uid1', 'uid2'],
+        lastMessage: LastMessage(
+          recentMessage: "Hello!",
+          recentMessageType: Type.text,
+          recentMessageTimestamp: Timestamp.fromDate(
+            DateTime(2024, 8, 5, 1, 1),
+          ),
+          unreadMessages: 1,
+          sentByMe: false,
+          recentMessageSender: 'user',
+        ));
+
+    final user = UserData(
+      username: 'user',
+      imagePath: '',
+      categories: ["category"],
+      name: 'name',
+      surname: 'surname',
+      email: 'email',
+    );
+    final MockDatabaseService mockDatabaseService = MockDatabaseService();
+    when(mockDatabaseService.getUnreadMessages(any, any))
+        .thenAnswer((_) => Stream.value(0));
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: PrivateChatTileTablet(
+            databaseService: mockDatabaseService,
+            selectedChatId: '1',
+            privateChat: privateChat,
+            onPressed: (chat) {},
+            other: user,
+            onDismissed: (direction) {},
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('user'), findsOneWidget);
+    expect(find.text('Hello!'), findsOneWidget);
+  });
 
   testWidgets(
       'PrivateChatTileTablet displays correct icon for event message type',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1194.0, 834.0);
+    tester.view.devicePixelRatio = 1.0;
     final MockDatabaseService mockDatabaseService = MockDatabaseService();
     when(mockDatabaseService.getUnreadMessages(any, any))
         .thenAnswer((_) => Stream.value(1));
@@ -92,18 +144,15 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MediaQuery(
-        data: const MediaQueryData(size: Size(1200, 700)),
-        child: CupertinoApp(
-          home: CupertinoPageScaffold(
-            child: PrivateChatTileTablet(
-              databaseService: mockDatabaseService,
-              selectedChatId: '',
-              privateChat: privateChatEvent,
-              onPressed: (chat) {},
-              other: user,
-              onDismissed: (direction) {},
-            ),
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: PrivateChatTileTablet(
+            databaseService: mockDatabaseService,
+            selectedChatId: '',
+            privateChat: privateChatEvent,
+            onPressed: (chat) {},
+            other: user,
+            onDismissed: (direction) {},
           ),
         ),
       ),
@@ -116,6 +165,8 @@ void main() {
 
   testWidgets('PrivateChatTileTablet handles dismiss action',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1194.0, 834.0);
+    tester.view.devicePixelRatio = 1.0;
     final privateChat = PrivateChat(
       id: "1",
       members: ['uid1', 'uid2'],
@@ -143,20 +194,17 @@ void main() {
     when(mockDatabaseService.getUnreadMessages(any, any))
         .thenAnswer((_) => Stream.value(1));
     await tester.pumpWidget(
-      MediaQuery(
-        data: const MediaQueryData(size: Size(1200, 700)),
-        child: CupertinoApp(
-          home: CupertinoPageScaffold(
-            child: PrivateChatTileTablet(
-              databaseService: mockDatabaseService,
-              selectedChatId: '',
-              privateChat: privateChat,
-              onPressed: (chat) {},
-              other: user,
-              onDismissed: (direction) {
-                isDismissed = true;
-              },
-            ),
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: PrivateChatTileTablet(
+            databaseService: mockDatabaseService,
+            selectedChatId: '',
+            privateChat: privateChat,
+            onPressed: (chat) {},
+            other: user,
+            onDismissed: (direction) {
+              isDismissed = true;
+            },
           ),
         ),
       ),
