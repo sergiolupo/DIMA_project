@@ -170,7 +170,7 @@ class RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              !_isEnteredWithGoogle
+              !_isEnteredWithGoogle && _currentPage != 4
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
