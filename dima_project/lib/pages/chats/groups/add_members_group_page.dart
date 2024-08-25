@@ -243,7 +243,8 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                     itemCount: filteredUsers.length,
                     itemBuilder: (context, index) {
                       final userData = filteredUsers[index];
-
+                      debugPrint(userData.groups.toString());
+                      debugPrint(widget.group.id);
                       return Column(
                         children: [
                           AddMemberTile(

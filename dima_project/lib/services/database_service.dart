@@ -1253,6 +1253,9 @@ class DatabaseService {
         .contains(AuthService.uid)) {
       return;
     }
+    await usersRef.doc(AuthService.uid).update({
+      'groups': FieldValue.arrayUnion([groupId])
+    });
     await Future.wait([
       groupsRef.doc(groupId).update({
         'members': FieldValue.arrayUnion([AuthService.uid]),
