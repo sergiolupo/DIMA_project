@@ -267,7 +267,7 @@ class DetailPageState extends ConsumerState<DetailEventPage> {
                         context: context,
                         builder: (BuildContext newContext) {
                           return CupertinoAlertDialog(
-                            title: const Text('Error while joining event'),
+                            title: const Text('Error'),
                             content: Text(message),
                             actions: <Widget>[
                               CupertinoDialogAction(
