@@ -279,6 +279,7 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                       leading: const Icon(CupertinoIcons.person_3_fill),
                       trailing: const Icon(CupertinoIcons.forward),
                       onTap: () {
+                        ref.invalidate(followerProvider);
                         Navigator.of(context).push(
                           CupertinoPageRoute(
                               builder: (context) => InviteUserPage(
