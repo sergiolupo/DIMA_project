@@ -1214,23 +1214,22 @@ class DatabaseService {
       throw Exception('User is already a member of the event');
     }
 
-    await Future.wait([
+    await usersRef.doc(uid).update({
+      'events': FieldValue.arrayUnion(["$eventId:$detailId"])
+    });
+    await eventsRef.doc(eventId).collection('details').doc(detailId).update({
+      'members': FieldValue.arrayUnion([uid]),
+    });
+    if ((await eventsRef
+            .doc(eventId)
+            .collection('details')
+            .doc(detailId)
+            .get())['requests']
+        .contains(uid)) {
       eventsRef.doc(eventId).collection('details').doc(detailId).update({
-        'members': FieldValue.arrayUnion([uid]),
-      }),
-      usersRef.doc(uid).update({
-        'events': FieldValue.arrayUnion(["$eventId:$detailId"])
-      }),
-      if ((await eventsRef
-              .doc(eventId)
-              .collection('details')
-              .doc(detailId)
-              .get())['requests']
-          .contains(uid))
-        eventsRef.doc(eventId).collection('details').doc(detailId).update({
-          'requests': FieldValue.arrayRemove([uid])
-        }),
-    ]);
+        'requests': FieldValue.arrayRemove([uid])
+      });
+    }
   }
 
   Future<void> denyUserGroupRequest(String groupId) async {
@@ -1791,6 +1790,7 @@ class DatabaseService {
       );
     }
     deleteGroupRequests(AuthService.uid);
+    deleteEventRequests(AuthService.uid);
     //exit all events
     for (var event in userDoc['events']) {
       final eventId = event.split(':')[0];
@@ -1996,6 +1996,26 @@ class DatabaseService {
           }
         }
       });
+    });
+  }
+
+  Future<void> deleteEventRequests(String uid) async {
+    await eventsRef.get().then((value) {
+      for (var doc in value.docs) {
+        eventsRef.doc(doc.id).collection('details').get().then((value) {
+          for (var detail in value.docs) {
+            if (detail['requests'].contains(uid)) {
+              eventsRef
+                  .doc(doc.id)
+                  .collection('details')
+                  .doc(detail.id)
+                  .update({
+                'requests': FieldValue.arrayRemove([uid])
+              });
+            }
+          }
+        });
+      }
     });
   }
 }
