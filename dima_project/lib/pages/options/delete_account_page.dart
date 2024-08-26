@@ -47,101 +47,106 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
       child: SafeArea(
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Enter your email and password to delete your account',
-                style: TextStyle(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  fontSize: 18,
-                ),
-              ),
-              const SizedBox(height: 20),
-              EmailInputField(_emailController),
-              PasswordInputField(_passwordController),
-              const SizedBox(height: 10),
-              CupertinoButton(
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
-
-                  if (await checkReauthentication()) {
-                    BuildContext context1 = context;
-                    if (!context.mounted) return;
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (BuildContext newBuildContext) {
-                        context1 = newBuildContext;
-                        return const CupertinoAlertDialog(
-                          content: CupertinoActivityIndicator(),
-                        );
-                      },
-                    );
-                    await databaseService.updateToken('');
-                    await databaseService.deleteUser();
-                    await widget.notificationService
-                        .unsubscribeAndClearTopics();
-                    ref.invalidate(userProvider);
-                    ref.invalidate(followerProvider);
-                    ref.invalidate(followingProvider);
-                    ref.invalidate(groupsProvider);
-                    ref.invalidate(joinedEventsProvider);
-                    ref.invalidate(createdEventsProvider);
-                    ref.invalidate(eventProvider);
-
-                    ref.invalidate(newsPrivateChatProvider);
-                    ref.invalidate(eventsPrivateChatProvider);
-                    ref.invalidate(imagesPrivateChatProvider);
-                    ref.invalidate(imagesGroupProvider);
-                    ref.invalidate(newsGroupProvider);
-                    ref.invalidate(eventsGroupProvider);
-                    ref.invalidate(requestsGroupProvider);
-
-                    await widget.authService.deleteUser();
-                    if (!context1.mounted) return;
-                    Navigator.of(context1).pop();
-                    if (!context.mounted) return;
-                    context.go('/login');
-                  } else {
-                    if (!context.mounted) return;
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (BuildContext newContext) {
-                        return CupertinoAlertDialog(
-                          title: const Text('Error'),
-                          content: const Text(
-                              'The email or password you entered is incorrect'),
-                          actions: <CupertinoDialogAction>[
-                            CupertinoDialogAction(
-                              child: const Text('Ok'),
-                              onPressed: () {
-                                if (!context.mounted) return;
-                                setState(() {
-                                  _emailController.clear();
-                                  _passwordController.clear();
-                                });
-
-                                Navigator.of(newContext).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Text(
-                  'Delete Account',
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Enter your credentials to delete your account:',
                   style: TextStyle(
                     color: CupertinoTheme.of(context).primaryColor,
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                EmailInputField(_emailController),
+                PasswordInputField(_passwordController),
+                const SizedBox(height: 10),
+                CupertinoButton(
+                  borderRadius: BorderRadius.circular(10),
+                  color: CupertinoTheme.of(context).primaryColor,
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) {
+                      return;
+                    }
+
+                    if (await checkReauthentication()) {
+                      BuildContext context1 = context;
+                      if (!context.mounted) return;
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext newBuildContext) {
+                          context1 = newBuildContext;
+                          return const CupertinoAlertDialog(
+                            content: CupertinoActivityIndicator(),
+                          );
+                        },
+                      );
+                      await databaseService.updateToken('');
+                      await databaseService.deleteUser();
+                      await widget.notificationService
+                          .unsubscribeAndClearTopics();
+                      ref.invalidate(userProvider);
+                      ref.invalidate(followerProvider);
+                      ref.invalidate(followingProvider);
+                      ref.invalidate(groupsProvider);
+                      ref.invalidate(joinedEventsProvider);
+                      ref.invalidate(createdEventsProvider);
+                      ref.invalidate(eventProvider);
+
+                      ref.invalidate(newsPrivateChatProvider);
+                      ref.invalidate(eventsPrivateChatProvider);
+                      ref.invalidate(imagesPrivateChatProvider);
+                      ref.invalidate(imagesGroupProvider);
+                      ref.invalidate(newsGroupProvider);
+                      ref.invalidate(eventsGroupProvider);
+                      ref.invalidate(requestsGroupProvider);
+
+                      await widget.authService.deleteUser();
+                      if (!context1.mounted) return;
+                      Navigator.of(context1).pop();
+                      if (!context.mounted) return;
+                      context.go('/login');
+                    } else {
+                      if (!context.mounted) return;
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext newContext) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Error'),
+                            content: const Text(
+                                'The email or password you entered is incorrect'),
+                            actions: <CupertinoDialogAction>[
+                              CupertinoDialogAction(
+                                child: const Text('Ok'),
+                                onPressed: () {
+                                  if (!context.mounted) return;
+                                  setState(() {
+                                    _emailController.clear();
+                                    _passwordController.clear();
+                                  });
+
+                                  Navigator.of(newContext).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Delete Account',
+                    style: TextStyle(
+                      color: CupertinoColors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
