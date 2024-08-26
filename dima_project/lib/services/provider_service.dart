@@ -177,6 +177,10 @@ final groupProvider =
 
 final followingsStreamProvider =
     StreamProvider.family<List<dynamic>, String>((ref, uuid) {
-  final stream = DatabaseService().getFollowingsStream(uuid);
-  return stream;
+  try {
+    final stream = DatabaseService().getFollowingsStream(uuid);
+    return stream;
+  } catch (e) {
+    return Stream.value([]);
+  }
 });

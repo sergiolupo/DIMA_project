@@ -91,6 +91,15 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                     ref.invalidate(joinedEventsProvider);
                     ref.invalidate(createdEventsProvider);
                     ref.invalidate(eventProvider);
+
+                    ref.invalidate(newsPrivateChatProvider);
+                    ref.invalidate(eventsPrivateChatProvider);
+                    ref.invalidate(imagesPrivateChatProvider);
+                    ref.invalidate(imagesGroupProvider);
+                    ref.invalidate(newsGroupProvider);
+                    ref.invalidate(eventsGroupProvider);
+                    ref.invalidate(requestsGroupProvider);
+
                     await widget.authService.deleteUser();
                     if (!context1.mounted) return;
                     Navigator.of(context1).pop();
