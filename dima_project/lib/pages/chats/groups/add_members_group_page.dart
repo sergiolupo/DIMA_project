@@ -194,18 +194,19 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                           MediaQuery.of(context).platformBrightness ==
                                   Brightness.dark
                               ? SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.5,
+                                  height: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? MediaQuery.of(context).size.width * 0.4
+                                      : MediaQuery.of(context).size.width * 0.7,
                                   child: Image.asset(
-                                      'assets/darkMode/search_followers.png'),
-                                )
+                                      'assets/darkMode/search_followers.png'))
                               : SizedBox(
+                                  height: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? MediaQuery.of(context).size.width * 0.4
+                                      : MediaQuery.of(context).size.width * 0.7,
                                   child: Image.asset(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.5,
-                                      'assets/images/search_followers.png'),
-                                ),
+                                      'assets/images/search_followers.png')),
                           const Text(
                             'No followers',
                             style: TextStyle(
@@ -233,13 +234,19 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                           MediaQuery.of(context).platformBrightness ==
                                   Brightness.dark
                               ? SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.4,
+                                  height: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? MediaQuery.of(context).size.height * 0.5
+                                      : MediaQuery.of(context).size.height *
+                                          0.4,
                                   child: Image.asset(
                                       'assets/darkMode/no_followers.png'))
                               : SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.4,
+                                  height: MediaQuery.of(context).size.width >
+                                          Constants.limitWidth
+                                      ? MediaQuery.of(context).size.height * 0.5
+                                      : MediaQuery.of(context).size.height *
+                                          0.4,
                                   child: Image.asset(
                                       'assets/images/no_followers.png')),
                           MediaQuery.of(context).size.width >

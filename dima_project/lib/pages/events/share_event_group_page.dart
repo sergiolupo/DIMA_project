@@ -2,6 +2,7 @@ import 'package:dima_project/models/group.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/group_invitation_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,8 +92,18 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
             child: Column(
               children: [
                 MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/search_groups.png')
-                    : Image.asset('assets/images/search_groups.png'),
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.6
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset('assets/darkMode/search_groups.png'))
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.6
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset('assets/images/search_groups.png')),
                 const Center(
                   child: Text(
                     'No groups',
@@ -116,8 +127,20 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
             child: Column(
               children: [
                 MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/no_groups_found.png')
-                    : Image.asset('assets/images/no_groups_found.png'),
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.6
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child:
+                            Image.asset('assets/darkMode/no_groups_found.png'))
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.6
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child:
+                            Image.asset('assets/images/no_groups_found.png')),
                 const Center(
                   child: Text(
                     'No groups found',

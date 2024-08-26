@@ -3,6 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:dima_project/widgets/share_user_tile.dart';
@@ -132,8 +133,20 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
             return Column(
               children: [
                 MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/search_followers.png')
-                    : Image.asset('assets/images/search_followers.png'),
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.width * 0.4
+                            : MediaQuery.of(context).size.width * 0.7,
+                        child:
+                            Image.asset('assets/darkMode/search_followers.png'))
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.width * 0.4
+                            : MediaQuery.of(context).size.width * 0.7,
+                        child:
+                            Image.asset('assets/images/search_followers.png')),
                 const Center(
                   child: Text(
                     "No followers",
@@ -155,8 +168,18 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
             return Column(
               children: [
                 MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/no_followers.png')
-                    : Image.asset('assets/images/no_followers.png'),
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.55
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset('assets/darkMode/no_followers.png'))
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.6
+                            : MediaQuery.of(context).size.height * 0.5,
+                        child: Image.asset('assets/images/no_followers.png')),
                 const Center(
                   child: Text(
                     "No followers found",
@@ -220,9 +243,27 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               child: Column(
                 children: [
                   MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/search_groups.png')
-                      : Image.asset('assets/images/search_groups.png'),
-                  const Text("No groups"),
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.55
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child:
+                              Image.asset('assets/darkMode/search_groups.png'))
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.55
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child:
+                              Image.asset('assets/images/search_groups.png')),
+                  const Text(
+                    "No groups",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey2),
+                  ),
                 ],
               ),
             );
@@ -236,9 +277,30 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               child: Column(
                 children: [
                   MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/no_groups_found.png')
-                      : Image.asset('assets/images/no_groups_found.png'),
-                  const Text("No groups found"),
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            'assets/darkMode/no_groups_found.png',
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            'assets/images/no_groups_found.png',
+                            fit: BoxFit.fill,
+                          )),
+                  const Text("No groups found",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.systemGrey2)),
                 ],
               ),
             );

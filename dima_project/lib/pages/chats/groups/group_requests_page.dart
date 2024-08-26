@@ -210,4 +210,9 @@ class GroupRequestsPageState extends ConsumerState<GroupRequestsPage> {
             ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

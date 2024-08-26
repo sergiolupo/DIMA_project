@@ -29,6 +29,8 @@ void main() {
     testWidgets(
         "User profile of the current user renders correctly and navigations work for tablet layout",
         (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       AuthService.setUid('test');
       await tester.pumpWidget(
         ProviderScope(
@@ -154,18 +156,15 @@ void main() {
               ),
             ),
           ],
-          child: MediaQuery(
-            data: const MediaQueryData(size: Size(820, 1200)),
-            child: CupertinoApp(
-                home: ResponsiveLayout(
-              mobileLayout: UserProfile(
-                user: AuthService.uid,
-              ),
-              tabletLayout: UserProfileTablet(
-                user: AuthService.uid,
-              ),
-            )),
-          ),
+          child: CupertinoApp(
+              home: ResponsiveLayout(
+            mobileLayout: UserProfile(
+              user: AuthService.uid,
+            ),
+            tabletLayout: UserProfileTablet(
+              user: AuthService.uid,
+            ),
+          )),
         ),
       );
       await tester.pumpAndSettle();
@@ -181,7 +180,7 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.bars));
       await tester.pumpAndSettle();
       expect(find.text("Options"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text('username'), findsOneWidget);
       expect(find.text('name surname'), findsOneWidget);
@@ -198,7 +197,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
       expect(find.text('No groups found'), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Followers"));
       await tester.pumpAndSettle();
@@ -208,7 +207,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
       expect(find.text('No followers found'), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Following"));
       await tester.pumpAndSettle();
@@ -218,7 +217,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
       expect(find.text('Not following found'), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
       await tester.drag(find.byType(ListView), const Offset(0, -700));
@@ -246,6 +245,8 @@ void main() {
     testWidgets(
         "User profile of another user renders correctly and navigations work for tablet layout",
         (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       AuthService.setUid('test');
       when(mockDatabaseService.getPrivateChatIdFromMembers(any))
           .thenAnswer((_) => Stream.value(null));
@@ -285,18 +286,15 @@ void main() {
               (ref, id) => Future.value([]),
             ),
           ],
-          child: const MediaQuery(
-            data: MediaQueryData(size: Size(820, 1200)),
-            child: CupertinoApp(
-                home: ResponsiveLayout(
-              mobileLayout: UserProfile(
-                user: 'uid1',
-              ),
-              tabletLayout: UserProfileTablet(
-                user: 'uid1',
-              ),
-            )),
-          ),
+          child: const CupertinoApp(
+              home: ResponsiveLayout(
+            mobileLayout: UserProfile(
+              user: 'uid1',
+            ),
+            tabletLayout: UserProfileTablet(
+              user: 'uid1',
+            ),
+          )),
         ),
       );
       await tester.pumpAndSettle();
@@ -307,17 +305,17 @@ void main() {
       await tester.tap(find.text("Groups"));
       await tester.pumpAndSettle();
       expect(find.text("No groups"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Followers"));
       await tester.pumpAndSettle();
       expect(find.text("No followers"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Following"));
       await tester.pumpAndSettle();
       expect(find.text("Not following anyone"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Follow"));
       await tester.pumpAndSettle();

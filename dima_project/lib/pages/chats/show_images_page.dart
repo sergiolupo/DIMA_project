@@ -148,6 +148,7 @@ class ShowImagesPage extends ConsumerWidget {
                                         isGroup: isGroup,
                                         groupId: groupId,
                                         privateChat: privateChat,
+                                        user: user,
                                         canNavigate: canNavigate,
                                         navigateToPage: navigateToPage,
                                         media: message,
@@ -164,6 +165,7 @@ class ShowImagesPage extends ConsumerWidget {
                                           builder: (context) => ImageViewPage(
                                             isGroup: isGroup,
                                             groupId: groupId,
+                                            user: user,
                                             privateChat: privateChat,
                                             canNavigate: canNavigate,
                                             navigateToPage: navigateToPage,

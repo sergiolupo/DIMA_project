@@ -20,6 +20,7 @@ class ImageViewPage extends ConsumerStatefulWidget {
   final PrivateChat? privateChat;
   final DatabaseService databaseService;
   final NotificationService notificationService;
+  final UserData? user;
   const ImageViewPage(
       {super.key,
       required this.media,
@@ -30,7 +31,8 @@ class ImageViewPage extends ConsumerStatefulWidget {
       this.groupId,
       this.navigateToPage,
       required this.databaseService,
-      required this.notificationService});
+      required this.notificationService,
+      this.user});
 
   @override
   ImageViewPageState createState() => ImageViewPageState();
@@ -77,7 +79,8 @@ class ImageViewPageState extends ConsumerState<ImageViewPage> {
                         privateChat: widget.privateChat,
                         navigateToPage: widget.navigateToPage,
                         databaseService: _databaseService,
-                        notificationService: widget.notificationService));
+                        notificationService: widget.notificationService,
+                        user: widget.user));
 
                     return;
                   }

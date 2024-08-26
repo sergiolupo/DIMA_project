@@ -60,22 +60,27 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
           ? Center(
               child: Column(
                 children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.width > Constants.limitWidth
-                            ? 600
-                            : 400,
-                    child:
-                        CupertinoTheme.of(context).brightness == Brightness.dark
-                            ? Image.asset(
-                                "assets/darkMode/no_event_requests.png",
-                                fit: BoxFit.contain,
-                              )
-                            : Image.asset(
-                                "assets/images/no_event_requests.png",
-                                fit: BoxFit.contain,
-                              ),
-                  ),
+                  CupertinoTheme.of(context).brightness == Brightness.dark
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.65
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            "assets/darkMode/no_event_requests.png",
+                            fit: BoxFit.contain,
+                          ),
+                        )
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.65
+                              : MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            "assets/images/no_event_requests.png",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                   const Text("No event requests",
                       style: TextStyle(
                           color: CupertinoColors.systemGrey2,
@@ -105,23 +110,42 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
                           Center(
                             child: Column(
                               children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.width >
-                                          Constants.limitWidth
-                                      ? 600
-                                      : 400,
-                                  child:
-                                      CupertinoTheme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Image.asset(
-                                              "assets/darkMode/no_event_requests.png",
-                                              fit: BoxFit.contain,
-                                            )
-                                          : Image.asset(
-                                              "assets/images/no_event_requests.png",
-                                              fit: BoxFit.contain,
-                                            ),
-                                ),
+                                CupertinoTheme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.65
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.5,
+                                        child: Image.asset(
+                                          "assets/darkMode/no_event_requests.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.65
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.5,
+                                        child: Image.asset(
+                                          "assets/images/no_event_requests.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
                                 const Text("No event requests",
                                     style: TextStyle(
                                         color: CupertinoColors.systemGrey2,

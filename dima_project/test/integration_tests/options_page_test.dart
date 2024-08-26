@@ -130,7 +130,7 @@ void main() {
       await tester.tap(find.text("Deny"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNothing);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(
           find.byIcon(CupertinoIcons.person_2_square_stack)); //Group requests
@@ -144,14 +144,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNothing);
 
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.settings)); //Settings page
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(CupertinoIcons.settings)); //Settings page
       await tester.pumpAndSettle();
@@ -183,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Options'), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
     });
     testWidgets("Test logout functionality", (WidgetTester tester) async {
       AuthService.setUid('test-uid');
@@ -571,7 +571,7 @@ void main() {
       expect(find.text("User deleted his account"), findsOneWidget);
       await tester.tap(find.text("Ok"));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(
           find.byIcon(CupertinoIcons.person_2_square_stack)); //Group requests
@@ -582,7 +582,7 @@ void main() {
       expect(find.text("Group has been deleted"), findsOneWidget);
       await tester.tap(find.text("Ok"));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text('Requests'), findsOneWidget);
     });

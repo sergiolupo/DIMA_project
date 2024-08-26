@@ -82,12 +82,12 @@ class EventPageState extends ConsumerState<EventPage> {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.all(30),
-                  child: event.when(
-                    data: (event) {
-                      return Column(
+              child: event.when(
+                data: (event) {
+                  return SafeArea(
+                    child: Container(
+                      padding: const EdgeInsets.all(30),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CreateImageUtils.getEventImage(
@@ -335,121 +335,130 @@ class EventPageState extends ConsumerState<EventPage> {
                                 )
                               : Container(),
                         ],
-                      );
-                    },
-                    loading: () => Shimmer.fromColors(
-                      baseColor:
-                          CupertinoTheme.of(context).primaryContrastingColor,
-                      highlightColor: CupertinoTheme.of(context)
-                          .primaryContrastingColor
-                          .withOpacity(0.5),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            SafeArea(
-                              child: Container(
-                                padding: const EdgeInsets.all(30),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: ClipOval(
-                                        child: Container(
-                                            width: 100,
-                                            height: 100,
-                                            color: CupertinoTheme.of(context)
-                                                .primaryContrastingColor),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Container(
-                                      width: 180,
-                                      alignment: Alignment.centerLeft,
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          color: CupertinoTheme.of(context)
-                                              .primaryContrastingColor,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 20,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.9,
-                                      alignment: Alignment.centerLeft,
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          color: CupertinoTheme.of(context)
-                                              .primaryContrastingColor,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 100,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: 3,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: CupertinoTheme.of(context)
-                                                  .primaryContrastingColor,
-                                            ),
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.9,
-                                            height: 50,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
-                    error: (error, stackTrace) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        color:
-                            CupertinoTheme.of(context).scaffoldBackgroundColor,
-                        child: MediaQuery.of(context).size.width >
-                                Constants.limitWidth
-                            ? MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/event_canceled_tablet.png',
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'assets/images/event_canceled_tablet.png',
-                                    fit: BoxFit.cover)
-                            : MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? Image.asset(
-                                    'assets/darkMode/event_canceled.png',
-                                    fit: BoxFit.cover)
-                                : Image.asset(
-                                    'assets/images/event_canceled.png',
-                                    fit: BoxFit.cover),
-                      );
-                    },
+                  );
+                },
+                loading: () => Shimmer.fromColors(
+                  baseColor: CupertinoTheme.of(context).primaryContrastingColor,
+                  highlightColor: CupertinoTheme.of(context)
+                      .primaryContrastingColor
+                      .withOpacity(0.5),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SafeArea(
+                          child: Container(
+                            padding: const EdgeInsets.all(30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: ClipOval(
+                                    child: Container(
+                                        width: 100,
+                                        height: 100,
+                                        color: CupertinoTheme.of(context)
+                                            .primaryContrastingColor),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  width: 180,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryContrastingColor,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  height: 20,
+                                ),
+                                const SizedBox(height: 20),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color: CupertinoTheme.of(context)
+                                          .primaryContrastingColor,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  height: 100,
+                                ),
+                                const SizedBox(height: 20),
+                                ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: 3,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: CupertinoTheme.of(context)
+                                              .primaryContrastingColor,
+                                        ),
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        height: 50,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                error: (error, stackTrace) {
+                  return MediaQuery.of(context).size.width >
+                          Constants.limitWidth
+                      ? MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Container(
+                              color: CupertinoTheme.of(context)
+                                  .scaffoldBackgroundColor,
+                              width: MediaQuery.of(context).size.width,
+                              child: Image.asset(
+                                'assets/darkMode/event_canceled_tablet.png',
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Container(
+                              color: CupertinoTheme.of(context)
+                                  .scaffoldBackgroundColor,
+                              width: MediaQuery.of(context).size.width,
+                              child: Image.asset(
+                                  'assets/images/event_canceled_tablet.png',
+                                  fit: BoxFit.cover),
+                            )
+                      : MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.75,
+                              child: Image.asset(
+                                  'assets/darkMode/event_canceled.png',
+                                  fit: BoxFit.cover),
+                            )
+                          : Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.75,
+                              color: CupertinoTheme.of(context)
+                                  .scaffoldBackgroundColor,
+                              child: Image.asset(
+                                  'assets/images/event_canceled.png',
+                                  fit: BoxFit.cover),
+                            );
+                },
               ),
             ),
           ),

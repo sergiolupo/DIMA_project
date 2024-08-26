@@ -77,7 +77,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
             if (widget.privateChat.id != null) {
               ref.invalidate(newsPrivateChatProvider);
               ref.invalidate(eventsPrivateChatProvider);
-              ref.invalidate(newsPrivateChatProvider);
+              ref.invalidate(imagesPrivateChatProvider);
               if (!widget.canNavigate) {
                 Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => PrivateInfoPage(

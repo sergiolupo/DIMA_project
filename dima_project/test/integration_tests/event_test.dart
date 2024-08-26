@@ -186,7 +186,7 @@ void main() {
       expect(find.text("username"), findsOneWidget);
       expect(find.text("name surname"), findsOneWidget);
       expect(find.text("Host"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text("Test Event"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.location_solid));
@@ -491,7 +491,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(CupertinoAlertDialog), findsOneWidget);
         expect(find.text("Event or date has been deleted"), findsOneWidget);
-        expect(find.text("Error while joining event"), findsOneWidget);
+        expect(find.text("Error"), findsOneWidget);
         await tester.tap(find.text("Ok"));
         await tester.pumpAndSettle();
       });
@@ -790,7 +790,7 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
       await tester.pumpAndSettle();
       expect(find.text("Select location"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
