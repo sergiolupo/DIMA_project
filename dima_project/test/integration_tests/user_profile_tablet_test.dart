@@ -216,7 +216,7 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
-      expect(find.text('Not following found'), findsOneWidget);
+      expect(find.text('No following found'), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 

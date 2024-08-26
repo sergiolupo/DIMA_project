@@ -281,6 +281,7 @@ void main() {
         'isPublic': true,
         'token': 'token2',
         'isSignedInWithGoogle': false,
+        'groups': ['123', '456'],
       });
       await firestore.collection('users').doc('user1').set({
         'uid': 'user1',
@@ -297,6 +298,7 @@ void main() {
           {'value': 'category1'},
           {'value': 'category2'},
         ],
+        'groups': ['123', '456'],
       });
       DocumentSnapshot documentSnapshot2 =
           await firestore.collection('users').doc('user2').get();
@@ -313,7 +315,8 @@ void main() {
       });
       when(mockDatabaseService.getUserDataFromUID('user1'))
           .thenAnswer((_) => Stream.value(documentSnapshot1));
-
+      when(mockDatabaseService.getUnreadMessages(any, any))
+          .thenAnswer((_) => Stream.value(0));
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -333,7 +336,7 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.add_circled_solid));
       await tester.pumpAndSettle();
       expect(find.text('Create'), findsOneWidget); // Create group page
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text('Group1'), findsOneWidget); // Chat page
       expect(find.text('Group2'), findsOneWidget);
@@ -393,7 +396,7 @@ void main() {
         await tester.enterText(
             find.byType(CupertinoTextField).at(1), 'Description');
         await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(CupertinoIcons.clear_circled_solid));
+        await tester.tap(find.byIcon(CupertinoIcons.clear_circled_solid).last);
         await tester.tap(find.text('Create'));
         await tester.pumpAndSettle();
         expect(find.byType(CupertinoAlertDialog), findsOneWidget);
@@ -448,6 +451,7 @@ void main() {
           'isPublic': true,
           'token': 'token2',
           'isSignedInWithGoogle': false,
+          'groups': ['123', '456'],
         });
         await firestore.collection('users').doc('user1').set({
           'uid': 'user1',
@@ -464,6 +468,7 @@ void main() {
             {'value': 'category1'},
             {'value': 'category2'},
           ],
+          'groups': ['123', '456'],
         });
         DocumentSnapshot documentSnapshot2 =
             await firestore.collection('users').doc('user2').get();
@@ -482,6 +487,16 @@ void main() {
         when(mockDatabaseService.getUserDataFromUID('user3')).thenAnswer((_) {
           return Stream.error('User not found');
         });
+        when(mockDatabaseService.getUserData('user1')).thenAnswer(
+            (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+        when(mockDatabaseService.getUserData('user2')).thenAnswer(
+            (_) => Future.value(UserData.fromSnapshot(documentSnapshot2)));
+        when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
+          return Future.value(UserData.fromSnapshot(
+              await firestore.collection('users').doc('user3').get()));
+        });
+        when(mockDatabaseService.getUnreadMessages(any, any))
+            .thenAnswer((_) => Stream.value(0));
         tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
           SystemChannels.platform,
           (MethodCall methodCall) async {
@@ -518,6 +533,11 @@ void main() {
                   imagePath: '',
                   admin: 'user1',
                   isPublic: true,
+                  details: [
+                    EventDetails(
+                      members: ['user1', 'user2'],
+                    ),
+                  ],
                 ),
               ),
               databaseServiceProvider.overrideWithValue(mockDatabaseService),
@@ -526,6 +546,12 @@ void main() {
               ),
               notificationServiceProvider
                   .overrideWithValue(mockNotificationService),
+              groupProvider.overrideWith(
+                (ref, groupId) => fakeGroup1,
+              ),
+              userProvider.overrideWith(
+                (ref, uid) async => mockDatabaseService.getUserData(uid),
+              ),
             ],
             child: CupertinoApp(
               home: ChatPage(
@@ -542,7 +568,7 @@ void main() {
         await tester.tap(find.text('Group1'));
         await tester.pumpAndSettle();
         expect(find.text('Group1'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group1'), findsOneWidget);
         expect(find.text('You: '), findsOneWidget);
@@ -591,6 +617,7 @@ void main() {
           'isPublic': true,
           'token': 'token2',
           'isSignedInWithGoogle': false,
+          'groups': ['123', '456'],
         });
         await firestore.collection('users').doc('user1').set({
           'uid': 'user1',
@@ -607,6 +634,7 @@ void main() {
             {'value': 'category1'},
             {'value': 'category2'},
           ],
+          'groups': ['123', '456'],
         });
         DocumentSnapshot documentSnapshot2 =
             await firestore.collection('users').doc('user2').get();
@@ -625,7 +653,9 @@ void main() {
             .thenAnswer((_) => Stream.value(documentSnapshot1));
         when(mockDatabaseService.getUserDataFromUID('user2'))
             .thenAnswer((_) => Stream.value(documentSnapshot2));
-
+        when(mockDatabaseService.getUnreadMessages(any, any)).thenAnswer((_) {
+          return Stream.value(0);
+        });
         tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
           SystemChannels.platform,
           (MethodCall methodCall) async {
@@ -651,18 +681,39 @@ void main() {
         when(mockStorageService.uploadImageToStorage(any, any)).thenAnswer((_) {
           return Future.value('image_url');
         });
+        when(mockDatabaseService.getUserData('user1')).thenAnswer(
+            (_) => Future.value(UserData.fromSnapshot(documentSnapshot1)));
+        when(mockDatabaseService.getUserData('user2')).thenAnswer(
+            (_) => Future.value(UserData.fromSnapshot(documentSnapshot2)));
+        when(mockDatabaseService.getUserData('user3')).thenAnswer((_) async {
+          return Future.value(UserData.fromSnapshot(
+              await firestore.collection('users').doc('user3').get()));
+        });
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
               eventProvider.overrideWith(
                 (ref, eventId) async => Event(
-                  id: 'event_id',
-                  name: 'Sample Event',
-                  description: 'Event Description',
-                  imagePath: '',
-                  admin: 'user1',
-                  isPublic: true,
-                ),
+                    id: 'event_id',
+                    name: 'Sample Event',
+                    description: 'Event Description',
+                    imagePath: '',
+                    admin: 'user1',
+                    isPublic: true,
+                    details: [
+                      EventDetails(
+                        startDate: DateTime.now(),
+                        startTime: DateTime.now(),
+                        endDate: DateTime.now(),
+                        endTime: DateTime.now(),
+                        latlng: const LatLng(0, 0),
+                        location: 'Location',
+                        id: 'event_id',
+                        requests: [],
+                        members: ['user1'],
+                      ),
+                    ]),
               ),
               databaseServiceProvider.overrideWithValue(mockDatabaseService),
               followerProvider.overrideWith(
@@ -670,6 +721,24 @@ void main() {
               ),
               notificationServiceProvider
                   .overrideWithValue(mockNotificationService),
+              imagesGroupProvider.overrideWith(
+                (ref, groupId) => [messages[2]],
+              ),
+              eventsGroupProvider.overrideWith(
+                (ref, groupId) => [messages[3]],
+              ),
+              newsGroupProvider.overrideWith(
+                (ref, groupId) => [messages[1]],
+              ),
+              requestsGroupProvider.overrideWith(
+                (ref, groupId) => [fakeUserData1, fakeUserData2, fakeUserData3],
+              ),
+              groupProvider.overrideWith(
+                (ref, groupId) => fakeGroup1,
+              ),
+              userProvider.overrideWith(
+                (ref, uid) async => mockDatabaseService.getUserData(uid),
+              ),
             ],
             child: CupertinoApp(
               home: ChatPage(
@@ -688,7 +757,7 @@ void main() {
         await tester.tap(find.text('username2'));
         await tester.pumpAndSettle();
         expect(find.text('username2'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('username2'), findsOneWidget);
         expect(find.text('You: '), findsOneWidget);
@@ -735,6 +804,7 @@ void main() {
             {'value': 'category1'},
             {'value': 'category2'},
           ],
+          'groups': ['123', '456'],
         });
         await firestore.collection('users').doc('user2').set({
           'uid': 'user2',
@@ -751,6 +821,7 @@ void main() {
           'isPublic': true,
           'token': 'token2',
           'isSignedInWithGoogle': false,
+          'groups': ['123', '456'],
         });
 
         AuthService.setUid('user1');
@@ -831,6 +902,7 @@ void main() {
 
         when(mockDatabaseService.getGroupFromId(any))
             .thenAnswer((_) => Future.value(fakeGroup1));
+
         when(mockDatabaseService.getEvent('event_id')).thenAnswer(
           (_) => Future.value(
             Event(
@@ -855,9 +927,28 @@ void main() {
                 ]),
           ),
         );
+
+        when(mockDatabaseService.getUnreadMessages(any, any)).thenAnswer((_) {
+          return Stream.value(0);
+        });
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
+              imagesGroupProvider.overrideWith(
+                (ref, groupId) => [messages[2]],
+              ),
+              eventsGroupProvider.overrideWith(
+                (ref, groupId) => [messages[3]],
+              ),
+              newsGroupProvider.overrideWith(
+                (ref, groupId) => [messages[1]],
+              ),
+              requestsGroupProvider.overrideWith(
+                (ref, groupId) => [fakeUserData1, fakeUserData2, fakeUserData3],
+              ),
+              groupProvider.overrideWith(
+                (ref, groupId) => fakeGroup1,
+              ),
               eventProvider.overrideWith(
                 (ref, eventId) async => Event(
                     id: 'event_id',
@@ -939,14 +1030,14 @@ void main() {
         await tester.tap(find.text('Deny'));
         await tester.pumpAndSettle();
         expect(find.text('username3'), findsNothing);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group Info'), findsOneWidget);
 
-        await tester.tap(find.text('Media')); //Media
+        await tester.tap(find.text('Images')); //Images
         await tester.pumpAndSettle();
-        expect(find.text('Medias'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        expect(find.text('Images'), findsOneWidget);
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group Info'), findsOneWidget);
         await tester.tap(find.text('Events')); //Events
@@ -961,18 +1052,18 @@ void main() {
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Events'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group Info'), findsOneWidget);
         await tester.tap(find.text('News')); //News
         await tester.pumpAndSettle();
         expect(find.text('News'), findsOneWidget);
         expect(find.text('Title'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group Info'), findsOneWidget);
-        expect(find.byIcon(CupertinoIcons.bell), findsNWidgets(2));
-        await tester.tap(find.text('Notifications'));
+        expect(find.byIcon(CupertinoIcons.bell), findsOneWidget);
+        await tester.tap(find.byType(CupertinoSwitch));
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
       });
@@ -994,6 +1085,7 @@ void main() {
             {'value': 'category1'},
             {'value': 'category2'},
           ],
+          'groups': ['123', '456'],
         });
         await firestore.collection('users').doc('user2').set({
           'uid': 'user2',
@@ -1010,6 +1102,7 @@ void main() {
           'isPublic': true,
           'token': 'token2',
           'isSignedInWithGoogle': false,
+          'groups': ['123', '456'],
         });
 
         AuthService.setUid('user1');
@@ -1062,7 +1155,8 @@ void main() {
             .thenAnswer((_) {
           return Future.value();
         });
-
+        when(mockDatabaseService.getUnreadMessages(any, any))
+            .thenAnswer((_) => Stream.value(0));
         when(mockDatabaseService.getEvent('event_id')).thenAnswer(
           (_) => Future.value(
             Event(
@@ -1090,6 +1184,15 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
+              imagesPrivateChatProvider.overrideWith(
+                (ref, groupId) => [messages[2]],
+              ),
+              eventsPrivateChatProvider.overrideWith(
+                (ref, groupId) => [messages[3]],
+              ),
+              newsPrivateChatProvider.overrideWith(
+                (ref, groupId) => [messages[1]],
+              ),
               eventProvider.overrideWith(
                 (ref, eventId) async => Event(
                     id: 'event_id',
@@ -1145,10 +1248,10 @@ void main() {
         expect(find.text('Private Chat Info'), findsOneWidget);
         expect(find.text('username2'), findsOneWidget);
 
-        await tester.tap(find.text('Media')); //Media
+        await tester.tap(find.text('Images')); //Images
         await tester.pumpAndSettle();
-        expect(find.text('Medias'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        expect(find.text('Images'), findsOneWidget);
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Private Chat Info'), findsOneWidget);
         await tester.tap(find.text('Events')); //Events
@@ -1163,18 +1266,18 @@ void main() {
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Events'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Private Chat Info'), findsOneWidget);
         await tester.tap(find.text('News')); //News
         await tester.pumpAndSettle();
         expect(find.text('News'), findsOneWidget);
         expect(find.text('Title'), findsOneWidget);
-        await tester.tap(find.byIcon(CupertinoIcons.back));
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Private Chat Info'), findsOneWidget);
         expect(find.byIcon(CupertinoIcons.bell), findsOneWidget);
-        await tester.tap(find.text('Notifications'));
+        await tester.tap(find.byType(CupertinoSwitch));
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
       });
@@ -1198,6 +1301,7 @@ void main() {
           {'value': 'category1'},
           {'value': 'category2'},
         ],
+        'groups': ['123', '456'],
       });
 
       AuthService.setUid('user1');
@@ -1247,6 +1351,8 @@ void main() {
           .thenAnswer((_) {
         return Future.value();
       });
+      when(mockDatabaseService.getUnreadMessages(any, any))
+          .thenAnswer((_) => Stream.value(0));
       await mockNetworkImagesFor(() async {
         await tester.pumpWidget(
           ProviderScope(
@@ -1259,6 +1365,15 @@ void main() {
                   .overrideWithValue(mockNotificationService),
               userProvider.overrideWith(
                 (ref, uid) async => mockDatabaseService.getUserData(uid),
+              ),
+              imagesPrivateChatProvider.overrideWith(
+                (ref, groupId) => medias,
+              ),
+              eventsPrivateChatProvider.overrideWith(
+                (ref, groupId) => [],
+              ),
+              newsPrivateChatProvider.overrideWith(
+                (ref, groupId) => [],
               ),
             ],
             child: CupertinoApp(
@@ -1285,10 +1400,10 @@ void main() {
       expect(find.text('Private Chat Info'), findsOneWidget);
       expect(find.text('Deleted Account'), findsOneWidget);
 
-      await tester.tap(find.text('Media')); //Media
+      await tester.tap(find.text('Images')); //Images
       await tester.pumpAndSettle();
 
-      expect(find.text('Medias'), findsOneWidget);
+      expect(find.text('Images'), findsOneWidget);
       expect(find.byType(CachedNetworkImage), findsNWidgets(2));
       expect(find.byType(CupertinoButton), findsNWidgets(3));
 
@@ -1296,9 +1411,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text("username1"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
-      expect(find.text('Medias'), findsOneWidget);
+      expect(find.text('Images'), findsOneWidget);
       expect(find.byType(CachedNetworkImage), findsNWidgets(2));
       expect(find.byType(CupertinoButton), findsNWidgets(3));
 
@@ -1332,6 +1447,7 @@ void main() {
           {'value': 'category1'},
           {'value': 'category2'},
         ],
+        'groups': ['123', '456'],
       });
       await firestore.collection('users').doc('user2').set({
         'uid': 'user2',
@@ -1348,6 +1464,7 @@ void main() {
         'isPublic': true,
         'token': 'token2',
         'isSignedInWithGoogle': false,
+        'groups': ['123', '456'],
       });
       final DocumentSnapshot documentSnapshot1 =
           await firestore.collection('users').doc('user1').get();
@@ -1400,13 +1517,29 @@ void main() {
                   sentByMe: true),
             ))),
       );
-
+      when(mockDatabaseService.getUnreadMessages(any, any))
+          .thenAnswer((_) => Stream.value(0));
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            requestsGroupProvider.overrideWith(
+              (ref, groupId) => [fakeUserData1, fakeUserData2, fakeUserData3],
+            ),
+            imagesGroupProvider.overrideWith(
+              (ref, groupId) => [messages[2]],
+            ),
+            eventsGroupProvider.overrideWith(
+              (ref, groupId) => [messages[3]],
+            ),
+            newsGroupProvider.overrideWith(
+              (ref, groupId) => [messages[1]],
+            ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             followerProvider.overrideWith(
               (ref, uid) async => [],
+            ),
+            groupProvider.overrideWith(
+              (ref, groupId) => mockDatabaseService.getGroupFromId(groupId),
             ),
             notificationServiceProvider
                 .overrideWithValue(mockNotificationService),
@@ -1449,7 +1582,7 @@ void main() {
       await tester.enterText(find.byType(CupertinoTextField).at(0), 'Group1');
       await tester.tap(find.text('Members'));
       await tester.pumpAndSettle();
-      expect(find.text("Add Members"), findsOneWidget);
+      expect(find.text("Invite Followers"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Categories'));
@@ -1483,6 +1616,7 @@ void main() {
           {'value': 'category1'},
           {'value': 'category2'},
         ],
+        'groups': ['123', '456'],
       });
       await firestore.collection('users').doc('user2').set({
         'uid': 'user2',
@@ -1499,6 +1633,7 @@ void main() {
         'isPublic': true,
         'token': 'token2',
         'isSignedInWithGoogle': false,
+        'groups': ['123', '456'],
       });
       final DocumentSnapshot documentSnapshot1 =
           await firestore.collection('users').doc('user1').get();
@@ -1537,10 +1672,26 @@ void main() {
       when(mockDatabaseService.toggleGroupJoin(any)).thenAnswer(
         ((_) => Future.value()),
       );
-
+      when(mockDatabaseService.getUnreadMessages(any, any))
+          .thenAnswer((_) => Stream.value(0));
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            groupProvider.overrideWith(
+              (ref, groupId) => fakeGroup1,
+            ),
+            requestsGroupProvider.overrideWith(
+              (ref, groupId) => [fakeUserData1, fakeUserData2, fakeUserData3],
+            ),
+            imagesGroupProvider.overrideWith(
+              (ref, groupId) => [messages[2]],
+            ),
+            eventsGroupProvider.overrideWith(
+              (ref, groupId) => [messages[3]],
+            ),
+            newsGroupProvider.overrideWith(
+              (ref, groupId) => [messages[1]],
+            ),
             databaseServiceProvider.overrideWithValue(mockDatabaseService),
             followerProvider.overrideWith(
               (ref, uid) async => [],
@@ -1578,7 +1729,7 @@ void main() {
       expect(find.text('Leave Group'), findsNWidgets(2));
       expect(find.text('Are you sure you want to leave this group?'),
           findsOneWidget);
-      await tester.tap(find.text('Cancel'));
+      await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Leave Group'));
       await tester.pumpAndSettle();

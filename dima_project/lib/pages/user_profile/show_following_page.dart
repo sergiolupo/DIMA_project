@@ -103,7 +103,7 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                                 child: Image.asset(
                                     'assets/images/no_following.png')),
                         const Text(
-                          'Not following anyone',
+                          'No following anyone',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

@@ -214,7 +214,7 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
-      expect(find.text('Not following found'), findsOneWidget);
+      expect(find.text('No following found'), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(EventGrid));
@@ -516,7 +516,7 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), "ss");
       await tester.pumpAndSettle();
-      expect(find.text('Not following found'), findsOneWidget);
+      expect(find.text('No following found'), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(EventGrid));
@@ -625,12 +625,12 @@ void main() {
       await tester.tap(find.text("Followers"));
       await tester.pumpAndSettle();
       expect(find.text("No followers"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Following"));
       await tester.pumpAndSettle();
-      expect(find.text("Not following anyone"), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.back));
+      expect(find.text("No following anyone"), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Follow"));
       await tester.pumpAndSettle();
