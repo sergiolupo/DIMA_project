@@ -49,7 +49,6 @@ class DatabaseService {
       'selectedCategories': serializedList,
       'groups': [],
       'privateChats': [],
-      'lastSeen': Timestamp.now(),
       'isPublic': true,
       'token': '',
       'events': [],
