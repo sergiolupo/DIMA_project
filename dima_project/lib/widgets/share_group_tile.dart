@@ -6,12 +6,16 @@ class ShareGroupTile extends StatefulWidget {
   final Group group;
   final ValueChanged<String> onSelected;
   final bool active;
+  final bool isFirstOne;
+  final bool isLastOne;
   @override
   const ShareGroupTile({
     super.key,
     required this.group,
     required this.onSelected,
     required this.active,
+    required this.isFirstOne,
+    required this.isLastOne,
   });
 
   @override
@@ -31,30 +35,48 @@ class ShareGroupTileState extends State<ShareGroupTile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: CupertinoListTile(
-        trailing: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? CupertinoTheme.of(context).primaryColor
-                  : CupertinoTheme.of(context).scaffoldBackgroundColor,
-              shape: BoxShape.circle,
-            ),
-            child: isActive
-                ? const Icon(
-                    CupertinoIcons.checkmark,
-                    color: CupertinoColors.white,
-                    size: 15,
-                  )
-                : Icon(
-                    CupertinoIcons.circle,
-                    color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-                    size: 15,
-                  )),
-        leading: Stack(
-          children: [
-            ClipOval(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: CupertinoTheme.of(context).primaryContrastingColor,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(widget.isFirstOne ? 10 : 0),
+              topRight: Radius.circular(widget.isFirstOne ? 10 : 0),
+              bottomLeft: Radius.circular(widget.isLastOne ? 10 : 0),
+              bottomRight: Radius.circular(widget.isLastOne ? 10 : 0)),
+        ),
+        child: CupertinoButton(
+          padding: EdgeInsets.zero,
+          pressedOpacity: 1.0,
+          onPressed: () {
+            setState(() {
+              isActive = !isActive;
+            });
+            widget.onSelected(widget.group.id);
+          },
+          child: CupertinoListTile(
+            trailing: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? CupertinoTheme.of(context).primaryColor
+                      : CupertinoTheme.of(context).scaffoldBackgroundColor,
+                  shape: BoxShape.circle,
+                ),
+                child: isActive
+                    ? const Icon(
+                        CupertinoIcons.checkmark,
+                        color: CupertinoColors.white,
+                        size: 15,
+                      )
+                    : Icon(
+                        CupertinoIcons.circle,
+                        color:
+                            CupertinoTheme.of(context).scaffoldBackgroundColor,
+                        size: 15,
+                      )),
+            leading: ClipOval(
               child: Container(
                 width: 100,
                 height: 100,
@@ -62,27 +84,21 @@ class ShareGroupTileState extends State<ShareGroupTile> {
                 child: CreateImageUtils.getGroupImage(widget.group.imagePath!),
               ),
             ),
-          ],
-        ),
-        title: Text(
-          widget.group.name,
-          style: TextStyle(
-              color: CupertinoTheme.of(context).textTheme.textStyle.color,
-              fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          widget.group.description!,
-          style: TextStyle(
-            color: CupertinoTheme.of(context).textTheme.textStyle.color,
+            title: Text(
+              widget.group.name,
+              style: TextStyle(
+                  color: CupertinoTheme.of(context).textTheme.textStyle.color,
+                  fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              widget.group.description!,
+              style: TextStyle(
+                color: CupertinoTheme.of(context).textTheme.textStyle.color,
+              ),
+            ),
           ),
         ),
       ),
-      onTap: () {
-        setState(() {
-          isActive = !isActive;
-        });
-        widget.onSelected(widget.group.id);
-      },
     );
   }
 }

@@ -188,40 +188,36 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
               ],
             );
           }
-          return Container(
-            height: filteredUsers.length * 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: CupertinoTheme.of(context).primaryContrastingColor),
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: filteredUsers.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    ShareUserTile(
-                      user: filteredUsers[index],
-                      onSelected: (String uuid) {
-                        setState(() {
-                          if (uuids.contains(uuid)) {
-                            uuids.remove(uuid);
-                          } else {
-                            uuids.add(uuid);
-                          }
-                        });
-                      },
-                      active: uuids.contains(filteredUsers[index].uid!),
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredUsers.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ShareUserTile(
+                    isLastOne: index == filteredUsers.length - 1,
+                    isFirstOne: index == 0,
+                    user: filteredUsers[index],
+                    onSelected: (String uuid) {
+                      setState(() {
+                        if (uuids.contains(uuid)) {
+                          uuids.remove(uuid);
+                        } else {
+                          uuids.add(uuid);
+                        }
+                      });
+                    },
+                    active: uuids.contains(filteredUsers[index].uid!),
+                  ),
+                  if (index != filteredUsers.length - 1)
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                     ),
-                    if (index != filteredUsers.length - 1)
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                      ),
-                  ],
-                );
-              },
-            ),
+                ],
+              );
+            },
           );
         });
   }
@@ -300,40 +296,36 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
               ),
             );
           }
-          return Container(
-            height: filteredGroups.length * 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: CupertinoTheme.of(context).primaryContrastingColor),
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: filteredGroups.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    ShareGroupTile(
-                      group: filteredGroups[index],
-                      onSelected: (String id) {
-                        setState(() {
-                          if (groupsIds.contains(id)) {
-                            groupsIds.remove(id);
-                          } else {
-                            groupsIds.add(id);
-                          }
-                        });
-                      },
-                      active: groupsIds.contains(filteredGroups[index].id),
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredGroups.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ShareGroupTile(
+                    group: filteredGroups[index],
+                    onSelected: (String id) {
+                      setState(() {
+                        if (groupsIds.contains(id)) {
+                          groupsIds.remove(id);
+                        } else {
+                          groupsIds.add(id);
+                        }
+                      });
+                    },
+                    active: groupsIds.contains(filteredGroups[index].id),
+                    isLastOne: index == filteredGroups.length - 1,
+                    isFirstOne: index == 0,
+                  ),
+                  if (index != filteredGroups.length - 1)
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                     ),
-                    if (index != filteredGroups.length - 1)
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                      ),
-                  ],
-                );
-              },
-            ),
+                ],
+              );
+            },
           );
         });
   }

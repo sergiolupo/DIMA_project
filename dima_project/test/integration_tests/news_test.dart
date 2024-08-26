@@ -6,12 +6,12 @@ import 'package:dima_project/pages/news/news_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/category_util.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/news/category_tile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -266,7 +266,7 @@ void main() {
       expect(find.byIcon(CupertinoIcons.paperplane), findsOneWidget);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsNothing);
+      expect(find.byIcon(CupertinoIcons.paperplane), findsNothing);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -285,8 +285,12 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       expect(find.text("No followers found"), findsOneWidget);
-      await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
+      await tester.tap(find.byIcon(CupertinoIcons.paperplane));
       await tester.pumpAndSettle();
+      verify(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .called(1);
+      verify(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .called(1);
     });
     testWidgets("News page renders correctly on tablet",
         (WidgetTester tester) async {
@@ -587,6 +591,30 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([
+                Group(
+                    name: "name",
+                    id: "id",
+                    isPublic: true,
+                    members: ["test", "user"],
+                    imagePath: "",
+                    description: "description",
+                    admin: "test"),
+              ]),
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([
+                UserData(
+                    uid: 'test',
+                    email: 'mail',
+                    username: 'username',
+                    imagePath: '',
+                    categories: [CategoryUtil.categories.first],
+                    name: 'name',
+                    surname: 'surname')
+              ]),
+            ),
             userProvider.overrideWith(
               (ref, uid) => Future.value(UserData(
                   uid: 'test',
@@ -604,6 +632,18 @@ void main() {
               platformBrightness: Brightness.dark,
             ),
             child: CupertinoApp(
+              theme: const CupertinoThemeData(
+                brightness: Brightness.dark,
+                primaryColor: Constants.primaryColorDark,
+                primaryContrastingColor: Constants.primaryContrastingColorDark,
+                scaffoldBackgroundColor: Constants.scaffoldBackgroundColorDark,
+                barBackgroundColor: Constants.barBackgroundColorDark,
+                textTheme: CupertinoTextThemeData(
+                  textStyle: TextStyle(
+                    color: Constants.textColorDark,
+                  ),
+                ),
+              ),
               home: ArticleView(
                 blogUrl: 'https://example.com',
                 description: 'Test Description',
@@ -626,10 +666,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.paperplane), findsOneWidget);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.byIcon(LineAwesomeIcons.paper_plane), findsNothing);
+      expect(find.byIcon(CupertinoIcons.paperplane), findsNothing);
       await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -648,8 +688,12 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       expect(find.text("No followers found"), findsOneWidget);
-      await tester.tap(find.byIcon(LineAwesomeIcons.paper_plane));
+      await tester.tap(find.byIcon(CupertinoIcons.paperplane));
       await tester.pumpAndSettle();
+      verify(mockDatabaseService.shareNewsOnFollower(any, any, any, any, any))
+          .called(1);
+      verify(mockDatabaseService.shareNewsOnGroups(any, any, any, any, any))
+          .called(1);
     });
   });
 }

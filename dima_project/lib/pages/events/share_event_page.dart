@@ -208,6 +208,8 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                 return Column(
                   children: [
                     ShareUserTile(
+                      isFirstOne: index == 0,
+                      isLastOne: index == filteredUsers.length - 1,
                       user: filteredUsers[index],
                       onSelected: (String uuid) {
                         setState(() {
@@ -305,43 +307,36 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               ),
             );
           }
-          return Container(
-            constraints: BoxConstraints(
-              maxHeight: filteredGroups.length * 50,
-            ),
-            height: filteredGroups.length * 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: CupertinoTheme.of(context).primaryContrastingColor),
-            child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
-              itemCount: filteredGroups.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    ShareGroupTile(
-                      group: filteredGroups[index],
-                      onSelected: (String id) {
-                        setState(() {
-                          if (groupsIds.contains(id)) {
-                            groupsIds.remove(id);
-                          } else {
-                            groupsIds.add(id);
-                          }
-                        });
-                      },
-                      active: groupsIds.contains(filteredGroups[index].id),
+          return ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            itemCount: filteredGroups.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ShareGroupTile(
+                    isFirstOne: index == 0,
+                    isLastOne: index == filteredGroups.length - 1,
+                    group: filteredGroups[index],
+                    onSelected: (String id) {
+                      setState(() {
+                        if (groupsIds.contains(id)) {
+                          groupsIds.remove(id);
+                        } else {
+                          groupsIds.add(id);
+                        }
+                      });
+                    },
+                    active: groupsIds.contains(filteredGroups[index].id),
+                  ),
+                  if (index != filteredGroups.length - 1)
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                     ),
-                    if (index != filteredGroups.length - 1)
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                      ),
-                  ],
-                );
-              },
-            ),
+                ],
+              );
+            },
           );
         });
   }
