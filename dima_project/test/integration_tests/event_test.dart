@@ -1056,7 +1056,14 @@ void main() {
       expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), "hhh");
+      await tester.pumpAndSettle();
+      expect(find.text("No groups found"), findsOneWidget);
+
       await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      expect(find.text("No followers found"), findsOneWidget);
+      await tester.enterText(find.byType(CupertinoSearchTextField), "");
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.circle), findsNWidgets(3));
 
