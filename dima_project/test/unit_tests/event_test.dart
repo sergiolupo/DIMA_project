@@ -92,10 +92,8 @@ void main() {
           .doc('eventId')
           .collection('details')
           .add({
-        'startDate': Timestamp.fromDate(DateTime(2021, 1, 1)),
-        'endDate': Timestamp.fromDate(DateTime(2021, 1, 2)),
-        'startTime': Timestamp.fromDate(DateTime(2021, 1, 1, 10, 0)),
-        'endTime': Timestamp.fromDate(DateTime(2021, 1, 1, 12, 0)),
+        'startDate': Timestamp.fromDate(DateTime(2021, 1, 1, 10, 0)),
+        'endDate': Timestamp.fromDate(DateTime(2021, 1, 2, 12, 0)),
         'latlng': const GeoPoint(0, 0),
         'members': ['admin'],
         'requests': [],
@@ -115,10 +113,10 @@ void main() {
       expect(eventModel.isPublic, true);
       expect(eventModel.id, 'eventId');
       expect(eventModel.createdAt, Timestamp.fromDate(DateTime(2021, 1, 1)));
-      expect(eventModel.details![0].startDate, DateTime(2021, 1, 1));
-      expect(eventModel.details![0].endDate, DateTime(2021, 1, 2));
+      expect(eventModel.details![0].startDate, DateTime(2021, 1, 1, 10, 0));
       expect(eventModel.details![0].startTime, DateTime(2021, 1, 1, 10, 0));
-      expect(eventModel.details![0].endTime, DateTime(2021, 1, 1, 12, 0));
+      expect(eventModel.details![0].endDate, DateTime(2021, 1, 2, 12, 0));
+      expect(eventModel.details![0].endTime, DateTime(2021, 1, 2, 12, 0));
       expect(eventModel.details![0].latlng, const LatLng(0, 0));
       expect(eventModel.details![0].members, ['admin']);
       expect(eventModel.details![0].requests, []);
@@ -180,10 +178,8 @@ void main() {
         location: 'location',
       );
       Map<String, dynamic> map = EventDetails.toMap(eventDetails);
-      expect(map['startDate'], DateTime(2021, 1, 1));
-      expect(map['endDate'], DateTime(2021, 1, 2));
-      expect(map['startTime'], DateTime(2021, 1, 1, 10, 0));
-      expect(map['endTime'], DateTime(2021, 1, 1, 12, 0));
+      expect(map['startDate'], DateTime(2021, 1, 1, 10, 0));
+      expect(map['endDate'], DateTime(2021, 1, 2, 12, 0));
       expect(map['latlng'], const GeoPoint(0, 0));
       expect(map['members'], ['admin']);
       expect(map['requests'], []);
