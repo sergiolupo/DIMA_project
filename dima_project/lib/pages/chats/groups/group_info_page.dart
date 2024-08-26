@@ -353,7 +353,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                             .primaryColor,
                                       ),
                                       const SizedBox(width: 10),
-                                      const Text("Media"),
+                                      const Text("Images"),
                                     ],
                                   ),
                                   trailing: Row(

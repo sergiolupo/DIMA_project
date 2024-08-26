@@ -142,7 +142,7 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                               color: CupertinoTheme.of(context).primaryColor,
                             ),
                             const SizedBox(width: 10),
-                            const Text("Media"),
+                            const Text("Images"),
                           ],
                         ),
                         trailing: Row(
