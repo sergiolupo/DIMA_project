@@ -76,7 +76,10 @@ class NewsTile extends StatelessWidget {
                 Column(
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.30,
+                      width: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? MediaQuery.of(context).size.width * 0.30
+                          : MediaQuery.of(context).size.width * 0.50,
                       child: Text(
                         title,
                         maxLines: 2,
@@ -94,7 +97,10 @@ class NewsTile extends StatelessWidget {
                       height: 7.0,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.30,
+                      width: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
+                          ? MediaQuery.of(context).size.width * 0.30
+                          : MediaQuery.of(context).size.width * 0.50,
                       child: Text(
                         description,
                         maxLines: 3,
