@@ -7,6 +7,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/events/event_tile.dart';
 import 'package:dima_project/widgets/group_tile.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
@@ -131,25 +132,107 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             searchIdx == 0
                                 ? MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/no_users_found.png')
-                                    : Image.asset(
-                                        'assets/images/no_users_found.png')
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                        child: Image.asset(
+                                            'assets/darkMode/no_users_found.png'),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                        child: Image.asset(
+                                            'assets/images/no_users_found.png'),
+                                      )
                                 : searchIdx == 1
                                     ? MediaQuery.of(context)
                                                 .platformBrightness ==
                                             Brightness.dark
-                                        ? Image.asset(
-                                            'assets/darkMode/no_groups_found.png')
-                                        : Image.asset(
-                                            'assets/images/no_groups_found.png')
+                                        ? SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/darkMode/no_groups_found.png'),
+                                          )
+                                        : SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/images/no_groups_found.png'),
+                                          )
                                     : MediaQuery.of(context)
                                                 .platformBrightness ==
                                             Brightness.dark
-                                        ? Image.asset(
-                                            'assets/darkMode/no_events_found.png')
-                                        : Image.asset(
-                                            'assets/images/no_events_found.png'),
+                                        ? SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/darkMode/no_events_found.png'),
+                                          )
+                                        : SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/images/no_events_found.png'),
+                                          ),
                             Text(
                                 "No ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"} found",
                                 style: const TextStyle(
@@ -157,13 +240,13 @@ class SearchPageState extends ConsumerState<SearchPage> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 )),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 5),
                             Text(
                               searchIdx == 0
-                                  ? "Do not exist an account with this username"
+                                  ? "There is no account with this username"
                                   : searchIdx == 1
-                                      ? "Do not exist a group with this name"
-                                      : "Do not exist an event with this name",
+                                      ? "There is no group with this name"
+                                      : "There is no event with this name",
                               style: const TextStyle(
                                   color: CupertinoColors.systemGrey,
                                   fontSize: 15),
@@ -188,25 +271,107 @@ class SearchPageState extends ConsumerState<SearchPage> {
                             searchIdx == 0
                                 ? MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/search_users.png')
-                                    : Image.asset(
-                                        'assets/images/search_users.png')
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                        child: Image.asset(
+                                            'assets/darkMode/search_users.png'),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                        child: Image.asset(
+                                            'assets/images/search_users.png'),
+                                      )
                                 : searchIdx == 1
                                     ? MediaQuery.of(context)
                                                 .platformBrightness ==
                                             Brightness.dark
-                                        ? Image.asset(
-                                            'assets/darkMode/search_groups.png')
-                                        : Image.asset(
-                                            'assets/images/search_groups.png')
+                                        ? SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/darkMode/search_groups.png'),
+                                          )
+                                        : SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/images/search_groups.png'),
+                                          )
                                     : MediaQuery.of(context)
                                                 .platformBrightness ==
                                             Brightness.dark
-                                        ? Image.asset(
-                                            'assets/darkMode/search_events.png')
-                                        : Image.asset(
-                                            'assets/images/search_events.png'),
+                                        ? SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/darkMode/search_events.png'),
+                                          )
+                                        : SizedBox(
+                                            height: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.45
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.35,
+                                            child: Image.asset(
+                                                'assets/images/search_events.png'),
+                                          ),
                             Text(
                                 "Search for ${searchIdx == 0 ? "users" : searchIdx == 1 ? "groups" : "events"}",
                                 style: const TextStyle(
@@ -214,13 +379,13 @@ class SearchPageState extends ConsumerState<SearchPage> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 )),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 5),
                             Text(
                               searchIdx == 0
-                                  ? "Digit to find new users"
+                                  ? "Digit to find users"
                                   : searchIdx == 1
-                                      ? "Digit to find new groups"
-                                      : "Digit to find new events",
+                                      ? "Digit to find groups"
+                                      : "Digit to find events",
                               style: const TextStyle(
                                   color: CupertinoColors.systemGrey,
                                   fontSize: 15),

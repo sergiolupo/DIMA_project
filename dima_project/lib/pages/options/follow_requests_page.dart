@@ -41,22 +41,27 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
           ? Center(
               child: Column(
                 children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.width > Constants.limitWidth
-                            ? 600
-                            : 400,
-                    child:
-                        CupertinoTheme.of(context).brightness == Brightness.dark
-                            ? Image.asset(
-                                "assets/darkMode/no_follow_requests.png",
-                                fit: BoxFit.contain,
-                              )
-                            : Image.asset(
-                                "assets/images/no_follow_requests.png",
-                                fit: BoxFit.contain,
-                              ),
-                  ),
+                  CupertinoTheme.of(context).brightness == Brightness.dark
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child: Image.asset(
+                            "assets/darkMode/no_follow_requests.png",
+                            fit: BoxFit.contain,
+                          ),
+                        )
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child: Image.asset(
+                            "assets/images/no_follow_requests.png",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                   const Text("No follow requests",
                       style: TextStyle(
                           color: CupertinoColors.systemGrey2,

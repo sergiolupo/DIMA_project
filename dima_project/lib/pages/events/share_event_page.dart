@@ -172,13 +172,13 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                         height: MediaQuery.of(context).size.width >
                                 Constants.limitWidth
                             ? MediaQuery.of(context).size.height * 0.55
-                            : MediaQuery.of(context).size.height * 0.5,
+                            : MediaQuery.of(context).size.height * 0.4,
                         child: Image.asset('assets/darkMode/no_followers.png'))
                     : SizedBox(
                         height: MediaQuery.of(context).size.width >
                                 Constants.limitWidth
-                            ? MediaQuery.of(context).size.height * 0.6
-                            : MediaQuery.of(context).size.height * 0.5,
+                            ? MediaQuery.of(context).size.height * 0.55
+                            : MediaQuery.of(context).size.height * 0.4,
                         child: Image.asset('assets/images/no_followers.png')),
                 const Center(
                   child: Text(
@@ -247,14 +247,14 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                           height: MediaQuery.of(context).size.width >
                                   Constants.limitWidth
                               ? MediaQuery.of(context).size.height * 0.55
-                              : MediaQuery.of(context).size.height * 0.5,
+                              : MediaQuery.of(context).size.height * 0.4,
                           child:
                               Image.asset('assets/darkMode/search_groups.png'))
                       : SizedBox(
                           height: MediaQuery.of(context).size.width >
                                   Constants.limitWidth
                               ? MediaQuery.of(context).size.height * 0.55
-                              : MediaQuery.of(context).size.height * 0.5,
+                              : MediaQuery.of(context).size.height * 0.4,
                           child:
                               Image.asset('assets/images/search_groups.png')),
                   const Text(
@@ -281,7 +281,7 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                           height: MediaQuery.of(context).size.width >
                                   Constants.limitWidth
                               ? MediaQuery.of(context).size.height * 0.6
-                              : MediaQuery.of(context).size.height * 0.5,
+                              : MediaQuery.of(context).size.height * 0.4,
                           child: Image.asset(
                             'assets/darkMode/no_groups_found.png',
                             fit: BoxFit.fill,
@@ -291,7 +291,7 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                           height: MediaQuery.of(context).size.width >
                                   Constants.limitWidth
                               ? MediaQuery.of(context).size.height * 0.6
-                              : MediaQuery.of(context).size.height * 0.5,
+                              : MediaQuery.of(context).size.height * 0.4,
                           child: Image.asset(
                             'assets/images/no_groups_found.png',
                             fit: BoxFit.fill,

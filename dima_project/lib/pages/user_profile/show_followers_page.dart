@@ -1,6 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/deleted_account_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,8 +82,20 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                       children: [
                         MediaQuery.of(context).platformBrightness ==
                                 Brightness.dark
-                            ? Image.asset('assets/darkMode/no_followers.png')
-                            : Image.asset('assets/images/no_followers.png'),
+                            ? SizedBox(
+                                height: MediaQuery.of(context).size.width >
+                                        Constants.limitWidth
+                                    ? MediaQuery.of(context).size.height * 0.55
+                                    : MediaQuery.of(context).size.height * 0.4,
+                                child: Image.asset(
+                                    'assets/darkMode/no_followers.png'))
+                            : SizedBox(
+                                height: MediaQuery.of(context).size.width >
+                                        Constants.limitWidth
+                                    ? MediaQuery.of(context).size.height * 0.55
+                                    : MediaQuery.of(context).size.height * 0.4,
+                                child: Image.asset(
+                                    'assets/images/no_followers.png')),
                         const Center(
                           child: Text(
                             'No followers',
@@ -109,10 +122,26 @@ class ShowFollowersPageState extends ConsumerState<ShowFollowersPage> {
                               children: [
                                 MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/search_followers.png')
-                                    : Image.asset(
-                                        'assets/images/search_followers.png'),
+                                    ? SizedBox(
+                                        height: MediaQuery.of(context).size.width >
+                                                Constants.limitWidth
+                                            ? MediaQuery.of(context).size.height *
+                                                0.55
+                                            : MediaQuery.of(context).size.height *
+                                                0.35,
+                                        child: Image.asset(
+                                            'assets/darkMode/search_followers.png'))
+                                    : SizedBox(
+                                        height: MediaQuery.of(context)
+                                                    .size
+                                                    .width >
+                                                Constants.limitWidth
+                                            ? MediaQuery.of(context).size.height *
+                                                0.55
+                                            : MediaQuery.of(context).size.height *
+                                                0.35,
+                                        child: Image.asset(
+                                            'assets/images/search_followers.png')),
                                 const Center(
                                   child: Text(
                                     'No followers found',

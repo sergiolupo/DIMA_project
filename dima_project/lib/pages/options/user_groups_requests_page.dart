@@ -39,31 +39,39 @@ class UserGroupsRequestsPageState
         ),
       ),
       child: groupsRequests.isEmpty
-          ? Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.width > Constants.limitWidth
-                            ? 600
-                            : 400,
-                    child:
-                        CupertinoTheme.of(context).brightness == Brightness.dark
-                            ? Image.asset(
-                                "assets/darkMode/no_group_requests.png",
-                                fit: BoxFit.contain,
-                              )
-                            : Image.asset(
-                                "assets/images/no_group_requests.png",
-                                fit: BoxFit.contain,
-                              ),
-                  ),
-                  const Text("No group requests",
-                      style: TextStyle(
-                          color: CupertinoColors.systemGrey2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20)),
-                ],
+          ? Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    CupertinoTheme.of(context).brightness == Brightness.dark
+                        ? SizedBox(
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? MediaQuery.of(context).size.height * 0.6
+                                : MediaQuery.of(context).size.height * 0.4,
+                            child: Image.asset(
+                              "assets/darkMode/no_group_requests.png",
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : SizedBox(
+                            height: MediaQuery.of(context).size.width >
+                                    Constants.limitWidth
+                                ? MediaQuery.of(context).size.height * 0.6
+                                : MediaQuery.of(context).size.height * 0.4,
+                            child: Image.asset(
+                              "assets/images/no_group_requests.png",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                    const Text("No group requests",
+                        style: TextStyle(
+                            color: CupertinoColors.systemGrey2,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20)),
+                  ],
+                ),
               ),
             )
           : SafeArea(

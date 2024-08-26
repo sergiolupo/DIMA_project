@@ -64,11 +64,17 @@ class ShowEventState extends ConsumerState<ShowEvent> {
               child: Column(
                 children: [
                   MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset(
-                          'assets/darkMode/no_events.png',
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            'assets/darkMode/no_events.png',
+                          ),
                         )
-                      : Image.asset(
-                          'assets/images/no_events.png',
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Image.asset(
+                            'assets/images/no_events.png',
+                          ),
                         ),
                   const Text('No events found',
                       style: TextStyle(

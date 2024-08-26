@@ -1,6 +1,7 @@
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/deleted_account_widget.dart';
 import 'package:dima_project/widgets/user_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -87,8 +88,20 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                       children: [
                         MediaQuery.of(context).platformBrightness ==
                                 Brightness.dark
-                            ? Image.asset('assets/darkMode/no_following.png')
-                            : Image.asset('assets/images/no_following.png'),
+                            ? SizedBox(
+                                height: MediaQuery.of(context).size.width >
+                                        Constants.limitWidth
+                                    ? MediaQuery.of(context).size.height * 0.6
+                                    : MediaQuery.of(context).size.height * 0.4,
+                                child: Image.asset(
+                                    'assets/darkMode/no_following.png'))
+                            : SizedBox(
+                                height: MediaQuery.of(context).size.width >
+                                        Constants.limitWidth
+                                    ? MediaQuery.of(context).size.height * 0.6
+                                    : MediaQuery.of(context).size.height * 0.4,
+                                child: Image.asset(
+                                    'assets/images/no_following.png')),
                         const Text(
                           'Not following anyone',
                           style: TextStyle(
@@ -113,13 +126,39 @@ class ShowFollowingPageState extends ConsumerState<ShowFollowingPage> {
                               children: [
                                 MediaQuery.of(context).platformBrightness ==
                                         Brightness.dark
-                                    ? Image.asset(
-                                        'assets/darkMode/search_following.png')
-                                    : Image.asset(
-                                        'assets/images/search_following.png'),
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.6
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.4,
+                                        child: Image.asset(
+                                            'assets/darkMode/search_following.png'),
+                                      )
+                                    : SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.width >
+                                                    Constants.limitWidth
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.6
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.4,
+                                        child: Image.asset(
+                                            'assets/images/search_following.png'),
+                                      ),
                                 const Center(
                                   child: Text(
-                                    'Not following found',
+                                    'No following found',
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,

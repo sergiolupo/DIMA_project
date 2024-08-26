@@ -3,6 +3,7 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/utils/constants.dart';
 import 'package:dima_project/widgets/custom_selection_option_widget.dart';
 import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:dima_project/widgets/share_user_tile.dart';
@@ -116,27 +117,42 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
         error: (error, stack) => const Center(child: Text('Error')),
         data: (users) {
           if (users.isEmpty) {
-            return Column(
-              children: [
-                MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/search_followers.png')
-                    : Image.asset('assets/images/search_followers.png'),
-                const Column(
-                  children: [
-                    Text(
-                      "No followers",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoColors.systemGrey2),
-                    ),
-                    SizedBox(height: 10),
-                    Text("Follow other accounts to share news",
+            return Center(
+              child: Column(
+                children: [
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.55
+                              : MediaQuery.of(context).size.height * 0.35,
+                          child: Image.asset(
+                              'assets/darkMode/search_followers.png'))
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.55
+                              : MediaQuery.of(context).size.height * 0.35,
+                          child: Image.asset(
+                              'assets/images/search_followers.png')),
+                  const Column(
+                    children: [
+                      Text(
+                        "No followers",
                         style: TextStyle(
-                            fontSize: 15, color: CupertinoColors.systemGrey2)),
-                  ],
-                ),
-              ],
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: CupertinoColors.systemGrey2),
+                      ),
+                      SizedBox(height: 10),
+                      Text("Follow other accounts to share news",
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: CupertinoColors.systemGrey2)),
+                    ],
+                  ),
+                ],
+              ),
             );
           }
           final filteredUsers = users.where((user) {
@@ -148,8 +164,18 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
             return Column(
               children: [
                 MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Image.asset('assets/darkMode/no_followers.png')
-                    : Image.asset('assets/images/no_followers.png'),
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.55
+                            : MediaQuery.of(context).size.height * 0.4,
+                        child: Image.asset('assets/darkMode/no_followers.png'))
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.width >
+                                Constants.limitWidth
+                            ? MediaQuery.of(context).size.height * 0.55
+                            : MediaQuery.of(context).size.height * 0.4,
+                        child: Image.asset('assets/images/no_followers.png')),
                 const Center(
                   child: Text(
                     "No followers found",
@@ -210,8 +236,20 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
               child: Column(
                 children: [
                   MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/search_groups.png')
-                      : Image.asset('assets/images/search_groups.png'),
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child:
+                              Image.asset('assets/darkMode/search_groups.png'))
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child:
+                              Image.asset('assets/images/search_groups.png')),
                   const Column(
                     children: [
                       Text("No groups",
@@ -239,9 +277,25 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
               child: Column(
                 children: [
                   MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Image.asset('assets/darkMode/no_groups_found.png')
-                      : Image.asset('assets/images/no_groups_found.png'),
-                  const Text("No groups found"),
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child: Image.asset(
+                              'assets/darkMode/no_groups_found.png'))
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? MediaQuery.of(context).size.height * 0.6
+                              : MediaQuery.of(context).size.height * 0.4,
+                          child:
+                              Image.asset('assets/images/no_groups_found.png')),
+                  const Text("No groups found",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.systemGrey2)),
                 ],
               ),
             );

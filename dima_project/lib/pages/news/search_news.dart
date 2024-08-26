@@ -173,11 +173,31 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                             children: [
                               MediaQuery.of(context).platformBrightness ==
                                       Brightness.dark
-                                  ? Image.asset(
-                                      'assets/darkMode/no_news_found.png',
+                                  ? SizedBox(
+                                      height: MediaQuery.of(context)
+                                                  .size
+                                                  .width >
+                                              Constants.limitWidth
+                                          ? MediaQuery.of(context).size.height *
+                                              0.6
+                                          : MediaQuery.of(context).size.height *
+                                              0.5,
+                                      child: Image.asset(
+                                        'assets/darkMode/no_news_found.png',
+                                      ),
                                     )
-                                  : Image.asset(
-                                      'assets/images/no_news_found.png'),
+                                  : SizedBox(
+                                      height: MediaQuery.of(context)
+                                                  .size
+                                                  .width >
+                                              Constants.limitWidth
+                                          ? MediaQuery.of(context).size.height *
+                                              0.6
+                                          : MediaQuery.of(context).size.height *
+                                              0.5,
+                                      child: Image.asset(
+                                          'assets/images/no_news_found.png'),
+                                    ),
                               const Text("No news found",
                                   style: TextStyle(
                                     color: CupertinoColors.systemGrey,
@@ -204,15 +224,31 @@ class SearchNewsPageState extends State<SearchNewsPage> {
                           children: [
                             MediaQuery.of(context).platformBrightness ==
                                     Brightness.dark
-                                ? Image.asset('assets/darkMode/search_news.png')
-                                : Image.asset('assets/images/search_news.png'),
+                                ? SizedBox(
+                                    height: MediaQuery.of(context).size.width >
+                                            Constants.limitWidth
+                                        ? MediaQuery.of(context).size.height *
+                                            0.6
+                                        : MediaQuery.of(context).size.height *
+                                            0.4,
+                                    child: Image.asset(
+                                        'assets/darkMode/search_news.png'))
+                                : SizedBox(
+                                    height: MediaQuery.of(context).size.width >
+                                            Constants.limitWidth
+                                        ? MediaQuery.of(context).size.height *
+                                            0.6
+                                        : MediaQuery.of(context).size.height *
+                                            0.4,
+                                    child: Image.asset(
+                                        'assets/images/search_news.png')),
                             const Text("Search for news",
                                 style: TextStyle(
                                   color: CupertinoColors.systemGrey,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 )),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
                             const Text(
                               "Digit to find news",
                               style: TextStyle(

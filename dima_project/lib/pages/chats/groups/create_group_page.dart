@@ -161,7 +161,7 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
     }
     if (mounted) {
       if (widget.canNavigate) {
-        widget.navigateToPage!(const SizedBox());
+        widget.navigateToPage!(const StartMessagingWidget());
         return;
       }
       Navigator.of(context).pop();
