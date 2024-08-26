@@ -26,25 +26,36 @@ class EventDetails {
 
   static Map<String, dynamic> toMap(EventDetails details) {
     return {
-      'startDate': details.startDate,
-      'endDate': details.endDate,
+      'startDate': DateTime(
+          details.startDate!.year,
+          details.startDate!.month,
+          details.startDate!.day,
+          details.startTime!.hour,
+          details.startTime!.minute),
+      'endDate': DateTime(
+        details.endDate!.year,
+        details.endDate!.month,
+        details.endDate!.day,
+        details.endTime!.hour,
+        details.endTime!.minute,
+      ),
       'location': details.location,
-      'startTime': details.startTime,
-      'endTime': details.endTime,
       'latlng': GeoPoint(details.latlng!.latitude, details.latlng!.longitude),
-      'members': details.members,
+      'members': details.members ?? [],
       'requests': details.requests ?? [],
     };
   }
 
   static EventDetails fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final DateTime startDate = snapshot['startDate'].toDate();
+    final DateTime endDate = snapshot['endDate'].toDate();
     return EventDetails(
-      startDate: snapshot['startDate'].toDate(),
-      endDate: snapshot['endDate'].toDate(),
+      startDate: startDate,
+      endDate: endDate,
       location: snapshot['location'],
-      startTime: snapshot['startTime'].toDate(),
-      endTime: snapshot['endTime'].toDate(),
+      startTime: startDate,
+      endTime: endDate,
       latlng: LatLng(snapshot['latlng'].latitude, snapshot['latlng'].longitude),
       id: snapshot.id,
       members: List<String>.from(snapshot['members']),

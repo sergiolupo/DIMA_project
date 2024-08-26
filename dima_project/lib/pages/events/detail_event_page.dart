@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dima_project/models/event.dart' as event_model;
 import 'package:dima_project/pages/events/event_requests_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
@@ -71,10 +72,25 @@ class DetailPageState extends ConsumerState<DetailEventPage> {
             },
           )),
       child: event.when(data: (event) {
-        final detail = event.details!.firstWhere(
-          (element) => element.id == widget.detailId,
-          orElse: () => throw Exception('Detail not found'),
+        event_model.EventDetails detail = event_model.EventDetails(
+          id: '',
+          location: '',
+          startDate: DateTime.now(),
+          startTime: DateTime.now(),
+          endDate: DateTime.now(),
+          endTime: DateTime.now(),
+          latlng: const LatLng(0, 0),
+          members: [],
+          requests: [],
         );
+        try {
+          detail = event.details!.firstWhere(
+            (element) => element.id == widget.detailId,
+            orElse: () => throw Exception('Detail not found'),
+          );
+        } catch (e) {
+          const SizedBox.shrink();
+        }
         return SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

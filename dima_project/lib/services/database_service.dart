@@ -1653,11 +1653,19 @@ class DatabaseService {
     for (EventDetails detail in event.details!) {
       if (detail.id == null) {
         await eventsRef.doc(event.id).collection('details').add({
-          'startDate': detail.startDate,
-          'endDate': detail.endDate,
+          'startDate': DateTime(
+              detail.startDate!.year,
+              detail.startDate!.month,
+              detail.startDate!.day,
+              detail.startTime!.hour,
+              detail.startTime!.minute),
+          'endDate': DateTime(
+              detail.endDate!.year,
+              detail.endDate!.month,
+              detail.endDate!.day,
+              detail.endTime!.hour,
+              detail.endTime!.minute),
           'location': detail.location,
-          'startTime': detail.startTime,
-          'endTime': detail.endTime,
           'latlng': GeoPoint(detail.latlng!.latitude, detail.latlng!.longitude),
           'members': detail.members,
           'requests': detail.requests ?? [],
@@ -1668,11 +1676,19 @@ class DatabaseService {
             .collection('details')
             .doc(detail.id)
             .update({
-          'startDate': detail.startDate,
-          'endDate': detail.endDate,
+          'startDate': DateTime(
+              detail.startDate!.year,
+              detail.startDate!.month,
+              detail.startDate!.day,
+              detail.startTime!.hour,
+              detail.startTime!.minute),
+          'endDate': DateTime(
+              detail.endDate!.year,
+              detail.endDate!.month,
+              detail.endDate!.day,
+              detail.endTime!.hour,
+              detail.endTime!.minute),
           'location': detail.location,
-          'startTime': detail.startTime,
-          'endTime': detail.endTime,
           'latlng': GeoPoint(detail.latlng!.latitude, detail.latlng!.longitude),
         });
       }
