@@ -32,50 +32,67 @@ class GroupInvitationTileState extends State<GroupInvitationTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: CupertinoListTile(
-            leading: Transform.scale(
-                scale: MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? 1.3
-                    : 1,
-                child: CreateImageUtils.getGroupImage(widget.group.imagePath!)),
-            title: Text(
-              widget.group.name,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize:
-                      MediaQuery.of(context).size.width > Constants.limitWidth
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: CupertinoTheme.of(context).primaryContrastingColor,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(widget.isFirst ? 10 : 0),
+              topRight: Radius.circular(widget.isFirst ? 10 : 0),
+              bottomLeft: Radius.circular(widget.isLast ? 10 : 0),
+              bottomRight: Radius.circular(widget.isLast ? 10 : 0)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: CupertinoListTile(
+                leading: Transform.scale(
+                    scale:
+                        MediaQuery.of(context).size.width > Constants.limitWidth
+                            ? 1.3
+                            : 1,
+                    child: CreateImageUtils.getGroupImage(
+                        widget.group.imagePath!)),
+                title: Text(
+                  widget.group.name,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: MediaQuery.of(context).size.width >
+                              Constants.limitWidth
                           ? 20
                           : 17),
-            ),
-          ),
-        ),
-        GestureDetector(
-          key: const Key('invite_button'),
-          onTap: () {
-            widget.onSelected(widget.group.id);
-            setState(() {
-              invited = !invited;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.only(right: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: CupertinoTheme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                invited ? 'Invited' : 'Invite',
-                style: const TextStyle(color: CupertinoColors.white),
+                ),
               ),
             ),
-          ),
+            GestureDetector(
+              key: const Key('invite_button'),
+              onTap: () {
+                widget.onSelected(widget.group.id);
+                setState(() {
+                  invited = !invited;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.only(right: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: CupertinoTheme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Text(
+                    invited ? 'Invited' : 'Invite',
+                    style: const TextStyle(color: CupertinoColors.white),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

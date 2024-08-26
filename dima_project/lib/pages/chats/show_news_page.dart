@@ -83,6 +83,7 @@ class ShowNewsPage extends ConsumerWidget {
             final groupedMedias = DateUtil.groupMediasByDate(news);
 
             return ListView.builder(
+              shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               itemCount: groupedMedias.keys.length,
               itemBuilder: (context, index) {

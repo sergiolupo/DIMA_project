@@ -399,6 +399,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
                 final data =
                     docs as List<QueryDocumentSnapshot<Map<String, dynamic>>>;
                 return ListView.builder(
+                  shrinkWrap: true,
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     if (searchIdx == 0 &&

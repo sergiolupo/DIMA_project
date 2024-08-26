@@ -268,6 +268,7 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                 return ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: filteredUsers.length,
+                  shrinkWrap: true,
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
 

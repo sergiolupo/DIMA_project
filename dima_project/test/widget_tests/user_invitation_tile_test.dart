@@ -27,6 +27,8 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: UserInvitationTile(
+            isFirst: false,
+            isLast: false,
             user: user,
             invitePageKey: (uid) {},
             invited: false,
@@ -48,6 +50,8 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: UserInvitationTile(
+            isFirst: false,
+            isLast: false,
             user: user,
             invitePageKey: (uid) {
               wasInvited = true;
@@ -74,6 +78,8 @@ void main() {
       await tester.pumpWidget(
         CupertinoApp(
           home: UserInvitationTile(
+            isFirst: false,
+            isLast: false,
             user: user,
             invitePageKey: (uid) {},
             invited: false,
@@ -104,6 +110,8 @@ void main() {
           ],
           child: CupertinoApp(
             home: UserInvitationTile(
+              isFirst: false,
+              isLast: false,
               user: user,
               invitePageKey: (uid) {},
               invited: false,

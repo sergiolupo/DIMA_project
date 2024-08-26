@@ -85,6 +85,7 @@ class ShowEventsPage extends ConsumerWidget {
             final groupedMedias = DateUtil.groupMediasByDate(events);
 
             return ListView.builder(
+              shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               itemCount: groupedMedias.keys.length,
               itemBuilder: (context, index) {

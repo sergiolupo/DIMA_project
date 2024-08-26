@@ -72,6 +72,7 @@ class FollowRequestsPageState extends ConsumerState<FollowRequestsPage> {
             )
           : SafeArea(
               child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: followRequests.length,
                 itemBuilder: (context, index) {
                   final user = followRequests[index];

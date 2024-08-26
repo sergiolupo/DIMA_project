@@ -76,6 +76,7 @@ class UserGroupsRequestsPageState
             )
           : SafeArea(
               child: ListView.builder(
+                  shrinkWrap: true,
                   itemCount: groupsRequests.length,
                   itemBuilder: (context, index) {
                     final group = groupsRequests[index];

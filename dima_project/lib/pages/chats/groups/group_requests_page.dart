@@ -113,6 +113,8 @@ class GroupRequestsPageState extends ConsumerState<GroupRequestsPage> {
               ),
             )
           : ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              shrinkWrap: true,
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final UserData user = users[index];

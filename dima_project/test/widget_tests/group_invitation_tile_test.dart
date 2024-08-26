@@ -19,6 +19,8 @@ void main() {
       CupertinoApp(
         home: CupertinoPageScaffold(
           child: GroupInvitationTile(
+            isFirst: false,
+            isLast: false,
             group: testGroup,
             onSelected: (groupId) {
               if (groupId == 'group123') {

@@ -653,6 +653,7 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                               : group.members!.length * 50,
                           child: (group.admin == uid)
                               ? ListView(
+                                  shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   children: [
                                     Row(
