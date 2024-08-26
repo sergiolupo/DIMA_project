@@ -81,7 +81,7 @@ class EventRequestsPageState extends ConsumerState<EventRequestsPage> {
                             fit: BoxFit.contain,
                           ),
                         ),
-                  const Text("No event requests",
+                  const Text("No Event Requests",
                       style: TextStyle(
                           color: CupertinoColors.systemGrey2,
                           fontWeight: FontWeight.bold,
