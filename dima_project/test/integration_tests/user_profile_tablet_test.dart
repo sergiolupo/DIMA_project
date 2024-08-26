@@ -314,7 +314,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text("Following"));
       await tester.pumpAndSettle();
-      expect(find.text("Not following anyone"), findsOneWidget);
+      expect(find.text("No following anyone"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       await tester.tap(find.text("Follow"));

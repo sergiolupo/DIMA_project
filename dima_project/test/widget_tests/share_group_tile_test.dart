@@ -19,6 +19,8 @@ void main() {
         home: Column(
           children: [
             ShareGroupTile(
+              isLastOne: false,
+              isFirstOne: false,
               group: testGroup,
               onSelected: (_) {},
               active: false,
@@ -42,6 +44,8 @@ void main() {
         home: Column(
           children: [
             ShareGroupTile(
+              isLastOne: false,
+              isFirstOne: false,
               group: testGroup,
               onSelected: (id) {
                 selectedGroupId = id;
@@ -78,6 +82,8 @@ void main() {
         home: Column(
           children: [
             ShareGroupTile(
+              isLastOne: false,
+              isFirstOne: false,
               group: testGroup,
               onSelected: (_) {},
               active: true,
