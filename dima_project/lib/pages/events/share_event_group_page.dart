@@ -155,39 +155,36 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
           );
         }
 
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: CupertinoTheme.of(context).primaryContrastingColor),
-          child: ListView.builder(
-            itemCount: filteredGroups.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              final group = filteredGroups[index];
-              return Column(
-                children: [
-                  GroupInvitationTile(
-                    group: group,
-                    onSelected: (String id) {
-                      setState(() {
-                        if (groupsIds.contains(id)) {
-                          groupsIds.remove(id);
-                        } else {
-                          groupsIds.add(id);
-                        }
-                      });
-                    },
-                    invited: groupsIds.contains(groups[index].id),
+        return ListView.builder(
+          itemCount: filteredGroups.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            final group = filteredGroups[index];
+            return Column(
+              children: [
+                GroupInvitationTile(
+                  isFirst: index == 0,
+                  isLast: index == filteredGroups.length - 1,
+                  group: group,
+                  onSelected: (String id) {
+                    setState(() {
+                      if (groupsIds.contains(id)) {
+                        groupsIds.remove(id);
+                      } else {
+                        groupsIds.add(id);
+                      }
+                    });
+                  },
+                  invited: groupsIds.contains(groups[index].id),
+                ),
+                if (index != filteredGroups.length - 1)
+                  Container(
+                    height: 1,
+                    color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                   ),
-                  if (index != filteredGroups.length - 1)
-                    Container(
-                      height: 1,
-                      color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                    ),
-                ],
-              );
-            },
-          ),
+              ],
+            );
+          },
         );
       },
     );

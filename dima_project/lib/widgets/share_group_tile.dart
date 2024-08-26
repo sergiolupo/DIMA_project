@@ -6,16 +6,16 @@ class ShareGroupTile extends StatefulWidget {
   final Group group;
   final ValueChanged<String> onSelected;
   final bool active;
-  final bool isFirstOne;
-  final bool isLastOne;
+  final bool isFirst;
+  final bool isLast;
   @override
   const ShareGroupTile({
     super.key,
     required this.group,
     required this.onSelected,
     required this.active,
-    required this.isFirstOne,
-    required this.isLastOne,
+    required this.isFirst,
+    required this.isLast,
   });
 
   @override
@@ -41,10 +41,10 @@ class ShareGroupTileState extends State<ShareGroupTile> {
         decoration: BoxDecoration(
           color: CupertinoTheme.of(context).primaryContrastingColor,
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(widget.isFirstOne ? 10 : 0),
-              topRight: Radius.circular(widget.isFirstOne ? 10 : 0),
-              bottomLeft: Radius.circular(widget.isLastOne ? 10 : 0),
-              bottomRight: Radius.circular(widget.isLastOne ? 10 : 0)),
+              topLeft: Radius.circular(widget.isFirst ? 10 : 0),
+              topRight: Radius.circular(widget.isFirst ? 10 : 0),
+              bottomLeft: Radius.circular(widget.isLast ? 10 : 0),
+              bottomRight: Radius.circular(widget.isLast ? 10 : 0)),
         ),
         child: CupertinoButton(
           padding: EdgeInsets.zero,

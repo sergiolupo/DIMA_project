@@ -265,48 +265,39 @@ class AddMembersGroupPageState extends ConsumerState<AddMembersGroupPage> {
                     ),
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Container(
-                    height: filteredUsers.length * 50.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color:
-                            CupertinoTheme.of(context).primaryContrastingColor),
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final userData = filteredUsers[index];
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    final userData = filteredUsers[index];
 
-                        return Column(
-                          children: [
-                            UserInvitationTile(
-                              user: userData,
-                              invitePageKey: (String uuid) {
-                                setState(() {
-                                  if (uids.contains(uuid)) {
-                                    uids.remove(uuid);
-                                  } else {
-                                    uids.add(uuid);
-                                  }
-                                });
-                              },
-                              invited: uids.contains(userData.uid!),
-                              isJoining:
-                                  userData.groups!.contains(widget.group.id),
-                            ),
-                            if (index != filteredUsers.length - 1)
-                              Container(
-                                height: 1,
-                                color: CupertinoColors.opaqueSeparator
-                                    .withOpacity(0.2),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                    return Column(
+                      children: [
+                        UserInvitationTile(
+                          isFirst: index == 0,
+                          isLast: index == filteredUsers.length - 1,
+                          user: userData,
+                          invitePageKey: (String uuid) {
+                            setState(() {
+                              if (uids.contains(uuid)) {
+                                uids.remove(uuid);
+                              } else {
+                                uids.add(uuid);
+                              }
+                            });
+                          },
+                          invited: uids.contains(userData.uid!),
+                          isJoining: userData.groups!.contains(widget.group.id),
+                        ),
+                        if (index != filteredUsers.length - 1)
+                          Container(
+                            height: 1,
+                            color: CupertinoColors.opaqueSeparator
+                                .withOpacity(0.2),
+                          ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

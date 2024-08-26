@@ -19,8 +19,8 @@ void main() {
     await tester.pumpWidget(
       CupertinoApp(
         home: ShareUserTile(
-          isFirstOne: false,
-          isLastOne: false,
+          isFirst: false,
+          isLast: false,
           user: testUser,
           onSelected: (_) {},
           active: false,
@@ -40,8 +40,8 @@ void main() {
     await tester.pumpWidget(
       CupertinoApp(
         home: ShareUserTile(
-          isFirstOne: false,
-          isLastOne: false,
+          isFirst: false,
+          isLast: false,
           user: testUser,
           onSelected: (id) {
             selectedUserId = id;
@@ -74,8 +74,8 @@ void main() {
     await tester.pumpWidget(
       CupertinoApp(
         home: ShareUserTile(
-          isFirstOne: false,
-          isLastOne: false,
+          isFirst: false,
+          isLast: false,
           user: testUser,
           onSelected: (_) {},
           active: true,

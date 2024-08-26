@@ -192,45 +192,36 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               ],
             );
           }
-          return Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: CupertinoTheme.of(context).primaryContrastingColor),
-            constraints: BoxConstraints(
-              maxHeight: filteredUsers.length * 50,
-            ),
-            height: filteredUsers.length * 50,
-            child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
-              itemCount: filteredUsers.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    ShareUserTile(
-                      isFirstOne: index == 0,
-                      isLastOne: index == filteredUsers.length - 1,
-                      user: filteredUsers[index],
-                      onSelected: (String uuid) {
-                        setState(() {
-                          if (uuids.contains(uuid)) {
-                            uuids.remove(uuid);
-                          } else {
-                            uuids.add(uuid);
-                          }
-                        });
-                      },
-                      active: uuids.contains(filteredUsers[index].uid!),
+          return ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            itemCount: filteredUsers.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ShareUserTile(
+                    isFirst: index == 0,
+                    isLast: index == filteredUsers.length - 1,
+                    user: filteredUsers[index],
+                    onSelected: (String uuid) {
+                      setState(() {
+                        if (uuids.contains(uuid)) {
+                          uuids.remove(uuid);
+                        } else {
+                          uuids.add(uuid);
+                        }
+                      });
+                    },
+                    active: uuids.contains(filteredUsers[index].uid!),
+                  ),
+                  if (index != filteredUsers.length - 1)
+                    Container(
+                      height: 1,
+                      color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
                     ),
-                    if (index != filteredUsers.length - 1)
-                      Container(
-                        height: 1,
-                        color: CupertinoColors.opaqueSeparator.withOpacity(0.2),
-                      ),
-                  ],
-                );
-              },
-            ),
+                ],
+              );
+            },
           );
         });
   }
@@ -315,8 +306,8 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
               return Column(
                 children: [
                   ShareGroupTile(
-                    isFirstOne: index == 0,
-                    isLastOne: index == filteredGroups.length - 1,
+                    isFirst: index == 0,
+                    isLast: index == filteredGroups.length - 1,
                     group: filteredGroups[index],
                     onSelected: (String id) {
                       setState(() {

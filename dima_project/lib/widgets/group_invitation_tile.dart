@@ -7,11 +7,15 @@ class GroupInvitationTile extends StatefulWidget {
   final Group group;
   final Function onSelected;
   final bool invited;
+  final bool isFirst;
+  final bool isLast;
   const GroupInvitationTile({
     super.key,
     required this.group,
     required this.onSelected,
     required this.invited,
+    required this.isFirst,
+    required this.isLast,
   });
 
   @override

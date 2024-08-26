@@ -69,7 +69,8 @@ void main() {
     expect(find.text("Invite"), findsOneWidget);
     expect(find.text("test_user1"), findsNWidgets(2));
 
-    await tester.tap(find.byKey(const Key('invite_button')));
+    //await tester.tap(find.byKey(const Key('invite_button')));
+    await tester.tap(find.text("Invite"));
     await tester.pumpAndSettle();
 
     expect(find.text("Invited"), findsOneWidget);

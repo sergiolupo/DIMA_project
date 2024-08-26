@@ -196,8 +196,8 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
               return Column(
                 children: [
                   ShareUserTile(
-                    isLastOne: index == filteredUsers.length - 1,
-                    isFirstOne: index == 0,
+                    isLast: index == filteredUsers.length - 1,
+                    isFirst: index == 0,
                     user: filteredUsers[index],
                     onSelected: (String uuid) {
                       setState(() {
@@ -315,8 +315,8 @@ class ShareNewsPageState extends ConsumerState<ShareNewsPage> {
                       });
                     },
                     active: groupsIds.contains(filteredGroups[index].id),
-                    isLastOne: index == filteredGroups.length - 1,
-                    isFirstOne: index == 0,
+                    isLast: index == filteredGroups.length - 1,
+                    isFirst: index == 0,
                   ),
                   if (index != filteredGroups.length - 1)
                     Container(

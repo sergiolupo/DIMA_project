@@ -6,16 +6,16 @@ class ShareUserTile extends StatefulWidget {
   final UserData user;
   final ValueChanged<String> onSelected;
   final bool active;
-  final bool isFirstOne;
-  final bool isLastOne;
+  final bool isFirst;
+  final bool isLast;
   @override
   const ShareUserTile({
     super.key,
     required this.user,
     required this.onSelected,
     required this.active,
-    required this.isFirstOne,
-    required this.isLastOne,
+    required this.isFirst,
+    required this.isLast,
   });
 
   @override
@@ -41,10 +41,10 @@ class ShareUserTileState extends State<ShareUserTile> {
         decoration: BoxDecoration(
           color: CupertinoTheme.of(context).primaryContrastingColor,
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(widget.isFirstOne ? 10 : 0),
-              topRight: Radius.circular(widget.isFirstOne ? 10 : 0),
-              bottomLeft: Radius.circular(widget.isLastOne ? 10 : 0),
-              bottomRight: Radius.circular(widget.isLastOne ? 10 : 0)),
+              topLeft: Radius.circular(widget.isFirst ? 10 : 0),
+              topRight: Radius.circular(widget.isFirst ? 10 : 0),
+              bottomLeft: Radius.circular(widget.isLast ? 10 : 0),
+              bottomRight: Radius.circular(widget.isLast ? 10 : 0)),
         ),
         child: CupertinoButton(
           padding: EdgeInsets.zero,

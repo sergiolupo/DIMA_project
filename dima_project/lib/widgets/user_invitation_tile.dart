@@ -10,12 +10,16 @@ class UserInvitationTile extends StatefulWidget {
   final ValueChanged<String> invitePageKey;
   final bool invited;
   final bool isJoining;
+  final bool isFirst;
+  final bool isLast;
   const UserInvitationTile({
     super.key,
     required this.user,
     required this.invitePageKey,
     required this.invited,
     required this.isJoining,
+    required this.isFirst,
+    required this.isLast,
   });
 
   @override
@@ -32,67 +36,81 @@ class UserInvitationTileState extends State<UserInvitationTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(context, CupertinoPageRoute(builder: (context) {
-                return ResponsiveLayout(
-                  mobileLayout: UserProfile(
-                    user: widget.user.uid!,
-                  ),
-                  tabletLayout: UserProfileTablet(
-                    user: widget.user.uid!,
-                  ),
-                );
-              }));
-            },
-            child: CupertinoListTile(
-              leading: ClipOval(
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  color: CupertinoColors.lightBackgroundGray,
-                  child:
-                      CreateImageUtils.getUserImage(widget.user.imagePath!, 1),
-                ),
-              ),
-              title: Text(
-                widget.user.username,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text("${widget.user.name} ${widget.user.surname}"),
-            ),
-          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: CupertinoTheme.of(context).primaryContrastingColor,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(widget.isFirst ? 10 : 0),
+              topRight: Radius.circular(widget.isFirst ? 10 : 0),
+              bottomLeft: Radius.circular(widget.isLast ? 10 : 0),
+              bottomRight: Radius.circular(widget.isLast ? 10 : 0)),
         ),
-        widget.isJoining
-            ? const SizedBox.shrink()
-            : GestureDetector(
-                key: const Key('invite_button'),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
                 onTap: () {
-                  widget.invitePageKey(widget.user.uid!);
-                  setState(() {
-                    invited = !invited;
-                  });
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (context) {
+                    return ResponsiveLayout(
+                      mobileLayout: UserProfile(
+                        user: widget.user.uid!,
+                      ),
+                      tabletLayout: UserProfileTablet(
+                        user: widget.user.uid!,
+                      ),
+                    );
+                  }));
                 },
-                child: Container(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: CupertinoTheme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Text(
-                      invited ? 'Invited' : 'Invite',
-                      style: const TextStyle(color: CupertinoColors.white),
+                child: CupertinoListTile(
+                  leading: ClipOval(
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      color: CupertinoColors.lightBackgroundGray,
+                      child: CreateImageUtils.getUserImage(
+                          widget.user.imagePath!, 1),
                     ),
                   ),
+                  title: Text(
+                    widget.user.username,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text("${widget.user.name} ${widget.user.surname}"),
                 ),
-              )
-      ],
+              ),
+            ),
+            widget.isJoining
+                ? const SizedBox.shrink()
+                : GestureDetector(
+                    key: const Key('invite_button'),
+                    onTap: () {
+                      widget.invitePageKey(widget.user.uid!);
+                      setState(() {
+                        invited = !invited;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Text(
+                          invited ? 'Invited' : 'Invite',
+                          style: const TextStyle(color: CupertinoColors.white),
+                        ),
+                      ),
+                    ),
+                  )
+          ],
+        ),
+      ),
     );
   }
 }

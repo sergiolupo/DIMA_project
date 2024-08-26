@@ -147,44 +147,35 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
                     ],
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                    height: filteredUsers.length * 50.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color:
-                            CupertinoTheme.of(context).primaryContrastingColor),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final userData = filteredUsers[index];
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    final userData = filteredUsers[index];
 
-                        final isJoining = widget.isGroup
-                            ? userData.groups!.contains(widget.id)
-                            : false;
+                    final isJoining = widget.isGroup
+                        ? userData.groups!.contains(widget.id)
+                        : false;
 
-                        return Column(
-                          children: [
-                            UserInvitationTile(
-                              user: userData,
-                              invitePageKey: widget.invitePageKey,
-                              invited:
-                                  widget.invitedUsers.contains(userData.uid),
-                              isJoining: isJoining,
-                            ),
-                            if (index != filteredUsers.length - 1)
-                              Container(
-                                height: 1,
-                                color: CupertinoColors.opaqueSeparator
-                                    .withOpacity(0.2),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                    return Column(
+                      children: [
+                        UserInvitationTile(
+                          isFirst: index == 0,
+                          isLast: index == filteredUsers.length - 1,
+                          user: userData,
+                          invitePageKey: widget.invitePageKey,
+                          invited: widget.invitedUsers.contains(userData.uid),
+                          isJoining: isJoining,
+                        ),
+                        if (index != filteredUsers.length - 1)
+                          Container(
+                            height: 1,
+                            color: CupertinoColors.opaqueSeparator
+                                .withOpacity(0.2),
+                          ),
+                      ],
+                    );
+                  },
                 );
               },
             ),
