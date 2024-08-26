@@ -349,6 +349,8 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
   }
 
   Future<void> updateEvent(DatabaseService databaseService) async {
+    debugPrint("Updating event");
+
     for (int i = 0; i < details.length; i++) {
       details[i]!.members = [uid];
     }

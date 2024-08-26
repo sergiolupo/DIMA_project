@@ -568,10 +568,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsOneWidget);
 
-      expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
       await tester.tap(find.byType(CupertinoSwitch));
       await tester.pumpAndSettle();
-      expect(find.byIcon(CupertinoIcons.lock_fill), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
 
       await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
