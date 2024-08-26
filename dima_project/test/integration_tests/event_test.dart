@@ -841,7 +841,7 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets("Event requests page works correctly",
+    testWidgets("Event Requests Page works correctly",
         (WidgetTester tester) async {
       AuthService.setUid("uid");
       when(mockDatabaseService.getGroups(any)).thenAnswer(
@@ -961,6 +961,129 @@ void main() {
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.text("Test Event"), findsOneWidget);
+    });
+    testWidgets("Share Event Page works correctly",
+        (WidgetTester tester) async {
+      AuthService.setUid("uid");
+
+      when(mockDatabaseService.sendEventsOnPrivateChat(any, any))
+          .thenAnswer((_) {
+        return Future.value();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            eventProvider.overrideWith(
+              (ref, id) async => fakeEvent2,
+            ),
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            followingProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+            groupsProvider.overrideWith(
+              (ref, uid) async => [
+                Group(
+                    name: "name",
+                    id: "id",
+                    isPublic: true,
+                    members: ["uid"],
+                    admin: "uid",
+                    imagePath: "",
+                    description: "description")
+              ],
+            ),
+            followerProvider.overrideWith((ref, uid) async {
+              return Future.value([
+                UserData(
+                  uid: "1",
+                  email: "email1",
+                  imagePath: "",
+                  categories: [],
+                  name: "name1",
+                  surname: "surname1",
+                  username: "username1",
+                  requests: [],
+                ),
+                UserData(
+                  uid: "2",
+                  email: "email2",
+                  imagePath: "",
+                  categories: [],
+                  name: "name2",
+                  surname: "surname2",
+                  username: "username2",
+                  requests: [],
+                ),
+                UserData(
+                  uid: "3",
+                  email: "email3",
+                  imagePath: "",
+                  categories: [],
+                  name: "name3",
+                  surname: "surname3",
+                  username: "username3",
+                  requests: [],
+                )
+              ]);
+            }),
+          ],
+          child: CupertinoApp(
+            home: EventPage(
+              imagePicker: mockImagePicker,
+              eventService: mockEventService,
+              eventId: fakeEvent2.id!,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("Event"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
+      expect(find.text("Test Description"), findsOneWidget);
+      expect(
+          find.text(
+              '${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].endDate!)}'),
+          findsOneWidget);
+      expect(find.text('Test Location'), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.share));
+      await tester.pumpAndSettle();
+      expect(find.text("Send To"), findsOneWidget);
+      await tester.tap(find.text("name"));
+      expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.circle), findsNWidgets(3));
+
+      await tester.tap(find.text("username1"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.tap(find.text("Followers"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.circle), findsNWidgets(2));
+
+      await tester.tap(find.text("username1"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsNothing);
+      await tester.tap(find.text("username1"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.tap(find.byIcon(CupertinoIcons.paperplane));
+      await tester.pumpAndSettle();
+      expect(find.text("Event"), findsOneWidget);
+      expect(find.text("Test Event"), findsOneWidget);
+      expect(find.text("Test Description"), findsOneWidget);
+      expect(
+          find.text(
+              '${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].startDate!)} - ${DateFormat('dd/MM/yyyy').format(fakeEvent1.details![0].endDate!)}'),
+          findsOneWidget);
+      expect(find.text('Test Location'), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
     });
   });
 }
