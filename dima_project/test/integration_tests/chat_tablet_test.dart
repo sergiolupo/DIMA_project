@@ -1468,6 +1468,13 @@ void main() {
         await tester.tap(find.byType(CupertinoSwitch));
         await tester.pumpAndSettle();
         expect(find.text('Notifications'), findsOneWidget);
+        await tester.tap(find.text('Add Members')); //Add Members
+        await tester.pumpAndSettle();
+        expect(find.text('Add Members'), findsOneWidget);
+        expect(find.text('No followers'), findsOneWidget);
+        await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+        await tester.pumpAndSettle();
+        expect(find.text('Group Info'), findsOneWidget);
       });
       testWidgets("Private chat page navigations work correctly for tablet",
           (WidgetTester tester) async {
