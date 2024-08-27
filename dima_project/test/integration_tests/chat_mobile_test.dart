@@ -473,7 +473,7 @@ void main() {
             .thenAnswer((_) => Stream.value([fakePrivateChat1]));
         when(mockDatabaseService.getGroupsStream())
             .thenAnswer((_) => Stream.value([fakeGroup1]));
-        when(mockNotificationService.sendNotificationOnGroup(any, any))
+        when(mockNotificationService.sendGroupNotification(any, any))
             .thenAnswer((_) => Future.value());
         when(mockDatabaseService.getUserDataFromUID('user1'))
             .thenAnswer((_) => Stream.value(documentSnapshot1));
@@ -642,7 +642,7 @@ void main() {
             .thenAnswer((_) => Stream.value([fakePrivateChat1]));
         when(mockDatabaseService.getGroupsStream())
             .thenAnswer((_) => Stream.value([]));
-        when(mockNotificationService.sendNotificationOnPrivateChat(any, any))
+        when(mockNotificationService.sendPrivateChatNotification(any, any))
             .thenAnswer((_) => Future.value());
         when(mockDatabaseService.getUserDataFromUID('user1'))
             .thenAnswer((_) => Stream.value(documentSnapshot1));
@@ -861,7 +861,7 @@ void main() {
               await firestore.collection('users').doc('user3').get()));
         });
 
-        when(mockNotificationService.sendNotificationOnGroup(any, any))
+        when(mockNotificationService.sendGroupNotification(any, any))
             .thenAnswer((_) => Future.value());
         when(mockDatabaseService.sendMessage(any, any))
             .thenAnswer((_) => Future.value());

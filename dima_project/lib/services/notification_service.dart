@@ -264,7 +264,7 @@ class NotificationService {
     return credentials.accessToken.data;
   }
 
-  Future<void> sendNotificationOnPrivateChat(
+  Future<void> sendPrivateChatNotification(
       PrivateChat privateChat, chat_message.Message chatMessage) async {
     String deviceToken =
         await DatabaseService().getDeviceTokenPrivateChat(privateChat);
@@ -314,7 +314,7 @@ class NotificationService {
     }
   }
 
-  Future<void> sendNotificationOnGroup(
+  Future<void> sendGroupNotification(
       String groupId, chat_message.Message chatMessage) async {
     List<String> devicesTokens =
         await DatabaseService().getDevicesTokensGroup(groupId);

@@ -264,7 +264,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
       );
       await _databaseService.sendMessage(widget.groupId, message);
       await widget.notificationService
-          .sendNotificationOnGroup(widget.groupId, message);
+          .sendGroupNotification(widget.groupId, message);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -307,7 +307,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
         );
         await _databaseService.sendMessage(widget.groupId, message);
         await widget.notificationService
-            .sendNotificationOnGroup(widget.groupId, message);
+            .sendGroupNotification(widget.groupId, message);
         if (mounted) {
           setState(() {
             isUploading = false;
@@ -421,7 +421,7 @@ class GroupChatPageState extends ConsumerState<GroupChatPage> {
       });
       await _databaseService.sendMessage(widget.groupId, message);
       await widget.notificationService
-          .sendNotificationOnGroup(widget.groupId, message);
+          .sendGroupNotification(widget.groupId, message);
     }
   }
 

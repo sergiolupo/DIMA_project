@@ -198,7 +198,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
       await _databaseService.sendMessage(widget.privateChat.id!, message);
 
       await widget.notificationService
-          .sendNotificationOnPrivateChat(widget.privateChat, message);
+          .sendPrivateChatNotification(widget.privateChat, message);
       if (mounted) {
         setState(() {
           isUploading = false;
@@ -241,7 +241,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
           type: Type.image,
         );
         await _databaseService.sendMessage(widget.privateChat.id!, message);
-        await widget.notificationService.sendNotificationOnPrivateChat(
+        await widget.notificationService.sendPrivateChatNotification(
           widget.privateChat,
           message,
         );
@@ -396,7 +396,7 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
       widget.privateChat.id ??=
           await _databaseService.createPrivateChat(widget.privateChat);
       await _databaseService.sendMessage(widget.privateChat.id!, message);
-      await widget.notificationService.sendNotificationOnPrivateChat(
+      await widget.notificationService.sendPrivateChatNotification(
         widget.privateChat,
         message,
       );

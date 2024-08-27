@@ -1340,8 +1340,7 @@ class DatabaseService {
           'recentMessageTime': message.time,
           'recentMessageType': message.type.toString(),
         });
-        await NotificationService(databaseService: this)
-            .sendNotificationOnGroup(
+        await NotificationService(databaseService: this).sendGroupNotification(
           id,
           message,
         );
@@ -1386,7 +1385,7 @@ class DatabaseService {
             'recentMessageType': message.type.toString(),
           }),
           NotificationService(databaseService: this)
-              .sendNotificationOnPrivateChat(
+              .sendPrivateChatNotification(
             privateChat,
             message,
           ),
@@ -1585,7 +1584,7 @@ class DatabaseService {
         'recentMessageTime': message.time,
         'recentMessageType': message.type.toString(),
       }),
-      NotificationService(databaseService: this).sendNotificationOnGroup(
+      NotificationService(databaseService: this).sendGroupNotification(
         id,
         message,
       ),
@@ -1630,8 +1629,7 @@ class DatabaseService {
           'recentMessageTime': message.time,
           'recentMessageType': message.type.toString(),
         }),
-        NotificationService(databaseService: this)
-            .sendNotificationOnPrivateChat(
+        NotificationService(databaseService: this).sendPrivateChatNotification(
           privateChat,
           message,
         ),

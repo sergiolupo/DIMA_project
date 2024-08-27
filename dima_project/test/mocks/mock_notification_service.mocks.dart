@@ -234,7 +234,7 @@ class MockNotificationService extends _i1.Mock
       ) as _i5.Future<String>);
 
   @override
-  _i5.Future<void> sendNotificationOnPrivateChat(
+  _i5.Future<void> sendPrivateChatNotification(
     _i9.PrivateChat? privateChat,
     _i10.Message? chatMessage,
   ) =>
@@ -251,7 +251,7 @@ class MockNotificationService extends _i1.Mock
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<void> sendNotificationOnGroup(
+  _i5.Future<void> sendGroupNotification(
     String? groupId,
     _i10.Message? chatMessage,
   ) =>
