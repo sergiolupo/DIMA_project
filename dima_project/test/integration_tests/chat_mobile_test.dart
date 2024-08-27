@@ -417,11 +417,6 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
-        /*await tester.tap(find.byType(Image));
-      await tester.pumpAndSettle();
-      expect(find.text('Edit'), findsOneWidget); //Image Crop Page
-      await tester.tap(find.byIcon(CupertinoIcons.back));
-      await tester.pumpAndSettle();*/
 
         await tester.tap(find.text('Create'));
         await tester.pumpAndSettle();
