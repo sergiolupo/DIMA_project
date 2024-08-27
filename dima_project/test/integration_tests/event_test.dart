@@ -861,7 +861,7 @@ void main() {
             child: CupertinoApp(
               home: EventRequestsPage(
                 eventId: "123",
-                requests: [],
+                requests: const [],
                 detailId: '1',
                 databaseService: mockDatabaseService,
               ),

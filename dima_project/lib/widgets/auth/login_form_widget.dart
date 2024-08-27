@@ -170,13 +170,9 @@ class LoginForm extends StatelessWidget {
 
 class PasswordInputField extends StatefulWidget {
   final TextEditingController _passwordController;
-  final bool isConfirmPassword;
-  final TextEditingController? confirmValue;
 
   const PasswordInputField(
     this._passwordController, {
-    this.isConfirmPassword = false,
-    this.confirmValue,
     super.key,
   });
 
@@ -192,15 +188,13 @@ class PasswordInputFieldState extends State<PasswordInputField> {
   void initState() {
     super.initState();
     _passwordController = widget._passwordController;
-    isConfirmPassword = widget.isConfirmPassword;
-    confirmValue = widget.confirmValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTextFormFieldRow(
       controller: _passwordController,
-      placeholder: isConfirmPassword ? 'Confirm password' : 'Password',
+      placeholder: 'Password',
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
           color: CupertinoTheme.of(context).primaryContrastingColor,
@@ -211,16 +205,12 @@ class PasswordInputFieldState extends State<PasswordInputField> {
           )),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter a ${isConfirmPassword ? 'confirm password' : 'password'}';
+          return 'Please enter a password';
         }
-        if (!isConfirmPassword && value.length < 6) {
+        if (value.length < 6) {
           return 'Password must be at least 6 characters long';
         }
-        if (isConfirmPassword && value != confirmValue?.text) {
-          return 'Passwords do not match';
-        }
-
-        return null; // Return null if the input is valid
+        return null;
       },
       obscureText: true,
       prefix: const Padding(

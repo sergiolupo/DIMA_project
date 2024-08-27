@@ -131,11 +131,6 @@ class CredentialsInformationForm extends StatelessWidget {
         children: [
           EmailInputField(emailController),
           PasswordInputField(passwordController),
-          PasswordInputField(
-            confirmPasswordController,
-            isConfirmPassword: true,
-            confirmValue: passwordController,
-          ),
         ],
       ),
     );

@@ -1308,8 +1308,12 @@ class DatabaseService {
           ])
         });
       }
-      await sendEventsOnGroups(docRef.id, groupIds);
-      await sendEventsOnPrivateChat(docRef.id, uuids);
+      if (groupIds.isNotEmpty) {
+        await sendEventsOnGroups(docRef.id, groupIds);
+      }
+      if (uuids.isNotEmpty) {
+        await sendEventsOnPrivateChat(docRef.id, uuids);
+      }
     } catch (e) {
       debugPrint("Error while creating the event: $e");
     }

@@ -85,6 +85,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp.router(
+      debugShowCheckedModeBanner: false,
       theme: MediaQuery.of(context).platformBrightness == Brightness.dark
           ? const CupertinoThemeData(
               brightness: Brightness.dark,
