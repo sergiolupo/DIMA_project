@@ -242,6 +242,117 @@ void main() {
       expect(find.text('event name'), findsOneWidget);
       expect(find.text('description'), findsOneWidget);
     });
+    testWidgets("User profile of the current user with no events",
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('test');
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            userProvider.overrideWith(
+              (ref, uid) => Future.value(UserData(
+                  uid: 'test',
+                  email: 'mail',
+                  username: 'username',
+                  imagePath: '',
+                  categories: ['Sports'],
+                  name: 'name',
+                  surname: 'surname')),
+            ),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([
+                UserData(
+                    uid: 'uid1',
+                    email: 'mail1',
+                    username: 'username1',
+                    imagePath: '',
+                    categories: ['Sports'],
+                    name: 'name1',
+                    surname: 'surname1')
+              ]),
+            ),
+            followingProvider.overrideWith(
+              (ref, uid) => Future.value([
+                UserData(
+                    uid: 'uid2',
+                    email: 'mail2',
+                    username: 'username2',
+                    imagePath: '',
+                    categories: ['Sports'],
+                    name: 'name2',
+                    surname: 'surname2')
+              ]),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([
+                Group(
+                  name: "group name",
+                  id: "id",
+                  imagePath: '',
+                  isPublic: true,
+                  members: ['test'],
+                )
+              ]),
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+            eventProvider.overrideWith(
+              (ref, id) => Future.value(
+                Event(
+                  id: '123',
+                  imagePath: '',
+                  admin: 'test',
+                  name: 'name',
+                  description: 'description',
+                  isPublic: true,
+                  details: [
+                    EventDetails(
+                        startDate: DateTime(2024, 3, 2, 1, 1, 1),
+                        startTime: DateTime(2024, 3, 2, 1, 1, 1),
+                        endDate: DateTime(2025, 3, 2, 1, 1, 1),
+                        endTime: DateTime(2025, 3, 2, 1, 1, 1),
+                        location: 'Location',
+                        latlng: const LatLng(0, 0),
+                        id: 'id',
+                        members: ['test'],
+                        requests: [])
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: CupertinoApp(
+              home: ResponsiveLayout(
+            mobileLayout: UserProfile(
+              user: AuthService.uid,
+            ),
+            tabletLayout: UserProfileTablet(
+              user: AuthService.uid,
+            ),
+          )),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("username"), findsOneWidget);
+      expect(find.text("name surname"), findsOneWidget);
+      expect(find.text("Followers"), findsOneWidget);
+      expect(find.text("Following"), findsOneWidget);
+      expect(find.text("Groups"), findsOneWidget);
+      expect(find.text('1'), findsNWidgets(3));
+      expect(find.text("Sports"), findsOneWidget);
+      expect(find.text("Events created"), findsOneWidget);
+      expect(find.text("Events joined"), findsOneWidget);
+
+      expect(find.text('No events yet'), findsOneWidget);
+    });
     testWidgets(
         "User profile of another user renders correctly and navigations work for tablet layout",
         (WidgetTester tester) async {
