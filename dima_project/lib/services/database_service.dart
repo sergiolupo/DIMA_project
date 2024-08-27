@@ -425,7 +425,7 @@ class DatabaseService {
     }
   }
 
-  Future<PrivateChat> getPrivateChatsFromMember(List<String> members) async {
+  Future<PrivateChat> getPrivateChatsFromMembers(List<String> members) async {
     members.sort();
     QuerySnapshot<Object?> value =
         await privateChatRef.where("members", isEqualTo: members).get();
@@ -1369,7 +1369,7 @@ class DatabaseService {
     for (var uuid in uuids) {
       try {
         final PrivateChat privateChat =
-            await getPrivateChatsFromMember([uuid, AuthService.uid]);
+            await getPrivateChatsFromMembers([uuid, AuthService.uid]);
         if (privateChat.id == null) {
           final id = await createPrivateChat(privateChat);
           privateChat.id = id;
@@ -1612,7 +1612,7 @@ class DatabaseService {
       ],
     );
     try {
-      final PrivateChat privateChat = await getPrivateChatsFromMember(
+      final PrivateChat privateChat = await getPrivateChatsFromMembers(
           [uid, FirebaseAuth.instance.currentUser!.uid]);
 
       if (privateChat.id == null) {

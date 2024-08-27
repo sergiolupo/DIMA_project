@@ -469,7 +469,7 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<_i6.PrivateChat> getPrivateChatsFromMember(
+  _i9.Future<_i6.PrivateChat> getPrivateChatsFromMembers(
           List<String>? members) =>
       (super.noSuchMethod(
         Invocation.method(
