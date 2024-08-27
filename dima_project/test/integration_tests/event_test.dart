@@ -802,8 +802,17 @@ void main() {
       expect(find.text("Test Location"), findsOneWidget);
 
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
-
       await tester.pumpAndSettle();
+
+      await tester.tap(find.text("Add more dates"));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(CupertinoIcons.trash).last);
+      await tester.pumpAndSettle();
+
       await tester.tap(find.text("Participants"));
       await tester.pumpAndSettle();
       expect(find.text("Invite Followers"), findsOneWidget);
