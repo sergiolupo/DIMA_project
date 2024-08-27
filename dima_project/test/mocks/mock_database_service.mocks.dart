@@ -1007,7 +1007,7 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ) as _i9.Future<List<_i7.Event>>);
 
   @override
-  _i9.Future<dynamic> shareNewsOnGroups(
+  _i9.Future<dynamic> shareNewsWithGroups(
     String? title,
     String? description,
     String? imageUrl,
@@ -1029,7 +1029,7 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ) as _i9.Future<dynamic>);
 
   @override
-  _i9.Future<dynamic> shareNewsOnFollower(
+  _i9.Future<dynamic> shareNewsWithFollowers(
     String? title,
     String? description,
     String? imageUrl,

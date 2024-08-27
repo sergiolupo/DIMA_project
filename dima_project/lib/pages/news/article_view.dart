@@ -43,13 +43,13 @@ class ArticleView extends ConsumerWidget {
                           )));
               if (ids is Map && ids['groups'].isNotEmpty) {
                 for (var id in ids['groups']) {
-                  await databaseService.shareNewsOnGroups(
+                  await databaseService.shareNewsWithGroups(
                       title, description, imageUrl, blogUrl, id);
                 }
               }
               if (ids is Map && ids['users'].isNotEmpty) {
                 for (var id in ids['users']) {
-                  await databaseService.shareNewsOnFollower(
+                  await databaseService.shareNewsWithFollowers(
                       title, description, imageUrl, blogUrl, id);
                 }
               }

@@ -1559,7 +1559,7 @@ class DatabaseService {
     return eventsList;
   }
 
-  Future shareNewsOnGroups(String title, String description, String imageUrl,
+  Future shareNewsWithGroups(String title, String description, String imageUrl,
       String blogUrl, String id) async {
     Message message = Message(
       content: '$title\n$description\n$blogUrl\n$imageUrl',
@@ -1591,7 +1591,7 @@ class DatabaseService {
     ]);
   }
 
-  Future shareNewsOnFollower(
+  Future shareNewsWithFollowers(
     String title,
     String description,
     String imageUrl,
