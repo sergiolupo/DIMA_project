@@ -191,7 +191,7 @@ class NotificationService {
         message.notification!.body == "Event has been modified") {
       Navigator.popUntil(context, (route) => route.isFirst);
       clearNavigatorKeys();
-      changeIndex(4);
+      changeIndex(4, null, null, null);
       Navigator.push(
           context,
           CupertinoPageRoute(
