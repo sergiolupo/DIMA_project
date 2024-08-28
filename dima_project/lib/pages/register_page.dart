@@ -104,7 +104,7 @@ class RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.all(3),
                 onPressed: () => {managePage()},
                 child: Text(
-                  'Register',
+                  _isEnteredWithGoogle ? 'Sign in' : 'Register',
                   style: TextStyle(
                       fontSize: 16,
                       color: CupertinoTheme.of(context).primaryColor,
