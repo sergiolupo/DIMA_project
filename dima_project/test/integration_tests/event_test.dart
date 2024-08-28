@@ -824,17 +824,16 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("name"), findsOneWidget);
       expect(find.text("Share with Groups"), findsOneWidget);
-      expect(find.text("Invite"), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
 
       expect(find.byType(CupertinoListTile), findsOneWidget);
 
-      expect(find.byKey(const Key('invite_button')), findsOneWidget);
-      await tester.tap(find.byKey(const Key('invite_button')));
+      await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.text("Invited"), findsOneWidget);
-      await tester.tap(find.byKey(const Key('invite_button')));
+      expect(find.byIcon(CupertinoIcons.checkmark), findsOneWidget);
+      await tester.tap(find.text("name"));
       await tester.pumpAndSettle();
-      expect(find.text("Invite"), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.circle), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
       expect(find.byIcon(CupertinoIcons.lock_open_fill), findsOneWidget);
