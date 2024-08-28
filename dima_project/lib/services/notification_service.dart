@@ -433,13 +433,14 @@ class NotificationService {
   }
 
   Future<void> updateTopicSubscriptions(List<String> newCategories) async {
-    List<String> oldCategories = topics;
+    List<String> oldCategories = topics.toList();
     for (String category in oldCategories) {
       if (!newCategories.contains(category)) {
         await messaging.unsubscribeFromTopic(categoryToTopicMap[category]!);
         topics.remove(category);
       }
     }
+
     for (String category in newCategories) {
       if (!oldCategories.contains(category)) {
         await messaging.subscribeToTopic(categoryToTopicMap[category]!);

@@ -243,7 +243,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       _showDialog('Invalid choice', 'Please fill all the fields');
       return false;
     }
-    debugPrint('Validating first page');
 
     if (_oldUsername != _usernameController.text &&
         !await _validateUsername(_usernameController.text, databaseService)) {
@@ -265,7 +264,10 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
           'Invalid choice', 'The username can be a maximum of 20 characters.');
       return false;
     }
-
+    if (selectedCategories.isEmpty) {
+      _showDialog('Invalid choice', 'Please select at least one category');
+      return false;
+    }
     return true;
   }
 
@@ -294,10 +296,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       selectedImagePath != null,
       _oldIsPublic != isPublic,
     );
-
     await widget.notificationService
         .updateTopicSubscriptions(selectedCategories);
-    debugPrint('User data updated');
     ref.invalidate(userProvider(AuthService.uid));
   }
 
