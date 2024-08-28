@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dima_project/models/article_model.dart';
 import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/home_page.dart';
@@ -51,13 +49,39 @@ void main() {
   });
 
   group("Login Page Tests ", () {
-    testWidgets("Login and Forgot Password pages display correctly",
+    testWidgets(
+        "Login and Forgot Password pages display correctly for smartphone",
         (WidgetTester tester) async {
       await tester.pumpWidget(
         CupertinoApp(
           home: LoginPage(
             databaseService: mockDatabaseService,
             authService: mockAuthService,
+          ),
+        ),
+      );
+
+      expect(find.text('AGORAPP'), findsOneWidget);
+      expect(find.text('Login'), findsOneWidget);
+      expect(find.text('Sign In with Google'), findsOneWidget);
+      await tester.tap(find.text('Forgot Password?'));
+      await tester.pumpAndSettle();
+      expect(find.text('Reset Password'), findsOneWidget);
+      await tester.tap(find.text('Back to Login'));
+      await tester.pumpAndSettle();
+      expect(find.text('Login'), findsOneWidget);
+    });
+    testWidgets("Login and Forgot Password pages display correctly for tablet",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(
+              size: Size(1194.0, 834.0), devicePixelRatio: 1.0),
+          child: CupertinoApp(
+            home: LoginPage(
+              databaseService: mockDatabaseService,
+              authService: mockAuthService,
+            ),
           ),
         ),
       );
@@ -479,6 +503,7 @@ void main() {
       await tester.tap(find.text(CategoryUtil.categories[1]));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Sign in'));
+      await tester.pump();
       await tester.pumpAndSettle();
       expect(find.text("Trending News"), findsOneWidget);
       expect(find.text("Breaking News"), findsOneWidget);
