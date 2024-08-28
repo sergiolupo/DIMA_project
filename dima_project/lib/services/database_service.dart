@@ -1440,13 +1440,12 @@ class DatabaseService {
     if (!eventDoc.exists || !detailDoc.exists) {
       throw Exception('Event or date has been deleted');
     }
-
     if (!DateTime.now().isBefore(DateTime(
       detailDoc['startDate'].toDate().year,
       detailDoc['startDate'].toDate().month,
       detailDoc['startDate'].toDate().day,
-      detailDoc['startTime'].toDate().hour,
-      detailDoc['startTime'].toDate().minute,
+      detailDoc['startDate'].toDate().hour,
+      detailDoc['startDate'].toDate().minute,
     ))) {
       throw Exception('Event has already started');
     }
