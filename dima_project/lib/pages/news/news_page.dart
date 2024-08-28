@@ -566,7 +566,11 @@ class NewsPageState extends ConsumerState<NewsPage> {
 
   Widget buildIndicator() => AnimatedSmoothIndicator(
       activeIndex: activeIndex,
-      count: sliders == null ? 0 : sliders!.length,
+      count: sliders == null
+          ? 0
+          : sliders!.length > numberOfNews
+              ? numberOfNews
+              : sliders!.length,
       effect: SlideEffect(
         dotWidth: 15,
         dotHeight: 15,
