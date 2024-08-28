@@ -11,6 +11,7 @@ class InviteUserPage extends ConsumerStatefulWidget {
   final List<String> invitedUsers;
   final bool isGroup;
   final String? id;
+  final String name;
   @override
   const InviteUserPage({
     super.key,
@@ -18,6 +19,7 @@ class InviteUserPage extends ConsumerStatefulWidget {
     required this.invitedUsers,
     required this.isGroup,
     required this.id,
+    required this.name,
   });
 
   @override
@@ -51,7 +53,7 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
               )
             : null,
         middle: Text(
-          "Invite Followers",
+          widget.name,
           style: TextStyle(
             fontSize: 18,
             color: CupertinoTheme.of(context).primaryColor,

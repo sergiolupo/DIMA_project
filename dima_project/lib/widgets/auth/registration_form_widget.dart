@@ -113,12 +113,10 @@ class UsernameInputTextField extends StatelessWidget {
 class CredentialsInformationForm extends StatelessWidget {
   final TextEditingController passwordController;
   final TextEditingController emailController;
-  final TextEditingController confirmPasswordController;
 
   const CredentialsInformationForm({
     required this.emailController,
     required this.passwordController,
-    required this.confirmPasswordController,
     super.key,
   });
 

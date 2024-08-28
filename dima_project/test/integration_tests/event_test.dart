@@ -814,16 +814,16 @@ void main() {
       await tester.tap(find.byIcon(CupertinoIcons.trash).last);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text("Participants"));
+      await tester.tap(find.text("Share with Followers"));
       await tester.pumpAndSettle();
-      expect(find.text("Invite Followers"), findsOneWidget);
+      expect(find.text("Share with Followers"), findsOneWidget);
       expect(find.text("No followers"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
-      await tester.tap(find.text("Groups"));
+      await tester.tap(find.text("Share with Groups"));
       await tester.pumpAndSettle();
       expect(find.text("name"), findsOneWidget);
-      expect(find.text("Invite Groups"), findsOneWidget);
+      expect(find.text("Share with Groups"), findsOneWidget);
       expect(find.text("Invite"), findsOneWidget);
 
       expect(find.byType(CupertinoListTile), findsOneWidget);

@@ -349,7 +349,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               children: [
                                 Icon(CupertinoIcons.person_3_fill),
                                 SizedBox(width: 10),
-                                Text('Participants'),
+                                Text('Share with Followers'),
                               ],
                             ),
                             trailing: const Icon(CupertinoIcons.forward),
@@ -357,6 +357,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               Navigator.of(context, rootNavigator: true).push(
                                 CupertinoPageRoute(
                                   builder: (context) => InviteUserPage(
+                                    name: 'Share with Followers',
                                     invitedUsers: uids,
                                     invitePageKey: (String uuid) {
                                       setState(() {
@@ -384,7 +385,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               children: [
                                 Icon(CupertinoIcons.person_2_square_stack),
                                 SizedBox(width: 10),
-                                Text('Groups'),
+                                Text('Share with Groups'),
                               ],
                             ),
                             trailing: const Icon(CupertinoIcons.forward),

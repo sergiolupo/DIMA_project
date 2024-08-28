@@ -54,8 +54,7 @@ void main() {
         find.byType(CupertinoTextField).first, 'test@example.com');
     await tester.enterText(
         find.byType(CupertinoTextField).at(1), 'password123');
-    await tester.enterText(
-        find.byType(CupertinoTextField).at(2), 'password123');
+
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
@@ -81,8 +80,7 @@ void main() {
         find.byType(CupertinoTextField).first, 'test@example.com');
     await tester.enterText(
         find.byType(CupertinoTextField).at(1), 'password123');
-    await tester.enterText(
-        find.byType(CupertinoTextField).at(2), 'password123');
+
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
@@ -107,10 +105,8 @@ void main() {
     // Fill in the credentials form and press next
     await tester.enterText(
         find.byType(CupertinoTextField).first, 'test@example.com');
-    await tester.enterText(
-        find.byType(CupertinoTextField).at(1), 'password123');
-    await tester.enterText(
-        find.byType(CupertinoTextField).at(2), 'password123');
+    await tester.enterText(find.byType(CupertinoTextField).last, 'password123');
+
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
@@ -157,8 +153,7 @@ void main() {
         find.byType(CupertinoTextField).first, 'test@example.com');
     await tester.enterText(
         find.byType(CupertinoTextField).at(1), 'password123');
-    await tester.enterText(
-        find.byType(CupertinoTextField).at(2), 'password123');
+
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 

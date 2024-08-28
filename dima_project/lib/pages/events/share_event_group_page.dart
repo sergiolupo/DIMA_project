@@ -45,7 +45,7 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
           },
         ),
         middle: Text(
-          "Invite Groups",
+          "Share with Groups",
           style: TextStyle(
             fontSize: 18,
             color: CupertinoTheme.of(context).primaryColor,

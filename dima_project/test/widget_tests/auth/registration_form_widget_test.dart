@@ -153,7 +153,6 @@ void main() {
   group('CredentialsInformationForm Widget Tests', () {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
 
     testWidgets('CredentialsInformationForm renders correctly',
         (WidgetTester tester) async {
@@ -162,14 +161,12 @@ void main() {
           child: CredentialsInformationForm(
             emailController: emailController,
             passwordController: passwordController,
-            confirmPasswordController: confirmPasswordController,
           ),
         ),
       ));
 
       expect(find.text('Email'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
-      expect(find.text('Confirm password'), findsOneWidget);
     });
 
     testWidgets('Email field validation works', (WidgetTester tester) async {
@@ -183,7 +180,6 @@ void main() {
                 CredentialsInformationForm(
                   emailController: emailController,
                   passwordController: passwordController,
-                  confirmPasswordController: confirmPasswordController,
                 ),
                 const SizedBox(height: 20.0),
                 CupertinoButton(
@@ -224,7 +220,6 @@ void main() {
                 CredentialsInformationForm(
                   emailController: emailController,
                   passwordController: passwordController,
-                  confirmPasswordController: confirmPasswordController,
                 ),
                 const SizedBox(height: 20.0),
                 CupertinoButton(
@@ -268,7 +263,6 @@ void main() {
                 CredentialsInformationForm(
                   emailController: emailController,
                   passwordController: passwordController,
-                  confirmPasswordController: confirmPasswordController,
                 ),
                 const SizedBox(height: 20.0),
                 CupertinoButton(
@@ -280,24 +274,19 @@ void main() {
           ),
         ),
       ));
-
-      confirmPasswordController.text = '';
+      emailController.text = '';
+      passwordController.text = '';
       await tester.tap(find.text('Submit'));
       await tester.pump();
-      expect(find.text('Please enter a confirm password'), findsOneWidget);
+      expect(find.text('Please enter a password'), findsOneWidget);
+      expect(find.text('Please enter a valid email address'), findsOneWidget);
 
-      confirmPasswordController.text = 'validpassword';
+      emailController.text = 'email@gmail.com';
       passwordController.text = 'validpassword';
       await tester.tap(find.text('Submit'));
       await tester.pump();
-      expect(find.text('Passwords do not match'), findsNothing);
-      expect(find.text('Please enter a confirm password'), findsNothing);
-
-      confirmPasswordController.text = 'differentpassword';
-      passwordController.text = 'validpassword';
-      await tester.tap(find.text('Submit'));
-      await tester.pump();
-      expect(find.text('Passwords do not match'), findsOneWidget);
+      expect(find.text('Please enter a password'), findsNothing);
+      expect(find.text('Please enter a valid email address'), findsNothing);
     });
   });
 }

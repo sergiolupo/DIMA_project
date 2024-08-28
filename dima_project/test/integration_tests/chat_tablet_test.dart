@@ -409,7 +409,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byType(CupertinoSwitch));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Members')); // Invite Page
+        await tester.tap(find.text('Invite Followers')); // Invite Page
         await tester.pumpAndSettle();
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
@@ -2031,7 +2031,7 @@ void main() {
       await tester.tap(find.text('Ok'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoTextField).at(1), 'Group1');
-      await tester.tap(find.text('Members'));
+      await tester.tap(find.text('Invite Followers'));
       await tester.pumpAndSettle();
       expect(find.text("Invite Followers"), findsOneWidget);
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));

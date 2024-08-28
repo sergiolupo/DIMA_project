@@ -270,13 +270,14 @@ class CreateGroupPageState extends ConsumerState<CreateGroupPage> {
           child: Column(
             children: [
               CupertinoListTile(
-                title: const Text('Members'),
+                title: const Text('Invite Followers'),
                 leading: const Icon(CupertinoIcons.person_3_fill),
                 trailing: const Icon(CupertinoIcons.forward),
                 onTap: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                         builder: (context) => InviteUserPage(
+                            name: 'Invite Followers',
                             invitePageKey: (String uuid) {
                               setState(() {
                                 if (uuids.contains(uuid)) {

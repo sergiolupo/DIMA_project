@@ -90,7 +90,6 @@ class RegisterPageState extends State<RegisterPage> {
         page = CredentialsInformationForm(
           emailController: _emailController,
           passwordController: _passwordController,
-          confirmPasswordController: _confirmPassword,
         );
         pageName = 'Credentials Information';
         break;

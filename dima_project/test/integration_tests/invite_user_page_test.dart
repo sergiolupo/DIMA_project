@@ -46,6 +46,7 @@ void main() {
         ],
         child: CupertinoApp(
           home: InviteUserPage(
+            name: 'Share with Followers',
             invitePageKey: (String key) {
               users.add(key);
             },

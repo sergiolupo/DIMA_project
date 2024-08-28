@@ -93,7 +93,7 @@ void main() {
           overrides: [
             userProvider.overrideWith(
               (ref, uid) => Future.value(UserData(
-                  categories: [],
+                  categories: ['Culture'],
                   email: "test_email",
                   name: "test_name",
                   surname: "test_surname",
