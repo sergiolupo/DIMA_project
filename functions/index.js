@@ -38,7 +38,7 @@ const NEWS_API_KEY = "b7481c07197e4c23adb0d826b421fe82";
 const NEWS_API_URL1 = "https://newsapi.org/v2/everything?q=";
 const NEWS_API_URL2 = `&apiKey=${NEWS_API_KEY}`;
 
-exports.checkCategoryNewsUpdate = functions.pubsub.schedule("every 3 hours").onRun(async (context) => {
+exports.checkCategoryNewsUpdate = functions.pubsub.schedule("every 4 hours").onRun(async (context) => {
   try {
     for (let i = 0; i < categories.length; i++) {
       console.log("Checking for news in category " + categories[i]);
