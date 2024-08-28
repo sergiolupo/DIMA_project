@@ -4,9 +4,13 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/pages/events/detail_event_page.dart';
 import 'package:dima_project/pages/events/event_page.dart';
 import 'package:dima_project/pages/events/event_requests_page.dart';
+import 'package:dima_project/pages/events/share_event_followers_page.dart';
+import 'package:dima_project/pages/events/share_event_groups_page.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/share_group_tile.dart';
+import 'package:dima_project/widgets/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -1124,6 +1128,321 @@ void main() {
           findsOneWidget);
       expect(find.text('Test Location'), findsOneWidget);
       expect(find.byIcon(CupertinoIcons.circle_fill), findsOneWidget);
+    });
+  });
+  group('ShareEventFollowersPage Tests', () {
+    testWidgets(
+        'ShareEventFollowersPage displays no followers when followers list is empty',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            followerProvider.overrideWith(
+              (ref, uid) async => Future.value([]),
+            ),
+          ],
+          child: const CupertinoApp(
+              home: ShareEventFollowersPage(invitedUsers: [])),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('No followers'), findsOneWidget);
+    });
+    testWidgets(
+        'ShareEventFollowersPage displays no followers when followers list is empty in dark mode',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            followerProvider.overrideWith(
+              (ref, uid) async => Future.value([]),
+            ),
+          ],
+          child: const CupertinoApp(
+              home: MediaQuery(
+                  data: MediaQueryData(
+                    platformBrightness: Brightness.dark,
+                  ),
+                  child: ShareEventFollowersPage(invitedUsers: []))),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('No followers'), findsOneWidget);
+    });
+    testWidgets('ShareEventFollowersPage displays followers list',
+        (WidgetTester tester) async {
+      final followers = [
+        UserData(
+            uid: '1',
+            username: 'user1',
+            imagePath: '',
+            categories: [],
+            email: 'email@gmail.com',
+            name: 'name',
+            surname: 'surname',
+            requests: []),
+        UserData(
+            uid: '2',
+            username: 'user2',
+            imagePath: '',
+            categories: [],
+            email: 'email2@gmail.com',
+            name: 'name2',
+            surname: 'surname2',
+            requests: []),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            followerProvider.overrideWith((ref, uid) async {
+              return followers;
+            }),
+          ],
+          child: const CupertinoApp(
+              home: ShareEventFollowersPage(invitedUsers: [])),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.byType(ShareUserTile), findsNWidgets(2));
+      expect(find.text('user1'), findsOneWidget);
+      expect(find.text('user2'), findsOneWidget);
+    });
+
+    testWidgets(
+        'ShareEventFollowersPage filters followers based on search input',
+        (WidgetTester tester) async {
+      final followers = [
+        UserData(
+            uid: '1',
+            username: 'user1',
+            imagePath: '',
+            categories: [],
+            email: 'email@gmail.com',
+            name: 'name',
+            surname: 'surname',
+            requests: []),
+        UserData(
+            uid: '2',
+            username: 'user2',
+            imagePath: '',
+            categories: [],
+            email: 'email2@gmail.com',
+            name: 'name2',
+            surname: 'surname2',
+            requests: []),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            followerProvider.overrideWith(
+              (ref, uid) async => followers,
+            ),
+          ],
+          child: const CupertinoApp(
+              home: ShareEventFollowersPage(invitedUsers: [])),
+        ),
+      );
+
+      await tester.pump();
+
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'user2');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ShareUserTile), findsOneWidget);
+      expect(find.text('user2'), findsNWidgets(2));
+      expect(find.text('user1'), findsNothing);
+
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'hhh');
+      await tester.pumpAndSettle();
+      expect(find.byType(ShareUserTile), findsNothing);
+      expect(find.text('user2'), findsNothing);
+      expect(find.text('user1'), findsNothing);
+    });
+
+    testWidgets('ShareEventFollowersPage toggles selected user',
+        (WidgetTester tester) async {
+      List<String> users = [];
+      final followers = [
+        UserData(
+            uid: '1',
+            username: 'user1',
+            imagePath: '',
+            categories: [],
+            email: 'email@gmail.com',
+            name: 'name',
+            surname: 'surname',
+            requests: []),
+        UserData(
+            uid: '2',
+            username: 'user2',
+            imagePath: '',
+            categories: [],
+            email: 'email2@gmail.com',
+            name: 'name2',
+            surname: 'surname2',
+            requests: []),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            followerProvider.overrideWith(
+              (ref, uid) async => followers,
+            ),
+          ],
+          child:
+              CupertinoApp(home: ShareEventFollowersPage(invitedUsers: users)),
+        ),
+      );
+
+      await tester.pump();
+      expect(find.byIcon(CupertinoIcons.circle), findsNWidgets(2));
+
+      await tester.tap(find.text('user1'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ShareUserTile), findsNWidgets(2));
+      expect(find.byIcon(CupertinoIcons.check_mark), findsOneWidget);
+    });
+  });
+
+  group('ShareEventsGroupPage Tests', () {
+    testWidgets(
+        'ShareEventsGroupPage displays no groups message when there are no groups',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            groupsProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+          ],
+          child: CupertinoApp(
+            home: ShareEventsGroupPage(
+              groupIds: const [],
+              databaseService: MockDatabaseService(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text('No groups'), findsOneWidget);
+    });
+    testWidgets(
+        'ShareEventsGroupPage displays no groups message when there are no groups in dark mode',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            groupsProvider.overrideWith(
+              (ref, uid) async => [],
+            ),
+          ],
+          child: CupertinoApp(
+            home: MediaQuery(
+              data: const MediaQueryData(
+                platformBrightness: Brightness.dark,
+              ),
+              child: ShareEventsGroupPage(
+                groupIds: const [],
+                databaseService: MockDatabaseService(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text('No groups'), findsOneWidget);
+    });
+
+    testWidgets(
+        'ShareEventsGroupPage displays groups correctly when data is available',
+        (WidgetTester tester) async {
+      final mockGroups = [
+        Group(
+            id: '1',
+            name: 'Group 1',
+            isPublic: true,
+            imagePath: '',
+            description: 'Description1'),
+        Group(
+            id: '2',
+            name: 'Group 2',
+            isPublic: true,
+            imagePath: '',
+            description: 'Description2'),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            groupsProvider.overrideWith(
+              (ref, uid) async => mockGroups,
+            ),
+          ],
+          child: CupertinoApp(
+            home: ShareEventsGroupPage(
+              groupIds: const [],
+              databaseService: MockDatabaseService(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(ShareGroupTile), findsNWidgets(2));
+      expect(find.text('Group 1'), findsOneWidget);
+      expect(find.text('Group 2'), findsOneWidget);
+    });
+
+    testWidgets('ShareEventsGroupPage filters groups based on search input',
+        (WidgetTester tester) async {
+      final mockGroups = [
+        Group(
+            id: '1',
+            name: 'Group 1',
+            isPublic: true,
+            imagePath: '',
+            description: 'Description1'),
+        Group(
+            id: '2',
+            name: 'Test Group',
+            isPublic: true,
+            imagePath: '',
+            description: 'Description2'),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            groupsProvider.overrideWith(
+              (ref, uid) => (mockGroups),
+            ),
+          ],
+          child: CupertinoApp(
+            home: ShareEventsGroupPage(
+              groupIds: const [],
+              databaseService: MockDatabaseService(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'Test');
+      await tester.pump();
+
+      expect(find.text('Test Group'), findsOneWidget);
+      expect(find.text('Group 1'), findsNothing);
+      await tester.enterText(find.byType(CupertinoSearchTextField), 'hhh');
+      await tester.pump();
+      expect(find.byType(ShareGroupTile), findsNothing);
     });
   });
 }
