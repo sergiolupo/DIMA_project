@@ -3,31 +3,31 @@ import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/group_invitation_tile.dart';
+import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShareEventGroupPage extends ConsumerStatefulWidget {
+class ShareEventsGroupPage extends ConsumerStatefulWidget {
   final List<String> groupIds;
   final DatabaseService databaseService;
   @override
-  const ShareEventGroupPage(
+  const ShareEventsGroupPage(
       {super.key, required this.groupIds, required this.databaseService});
 
   @override
-  ConsumerState<ShareEventGroupPage> createState() =>
+  ConsumerState<ShareEventsGroupPage> createState() =>
       ShareEventGroupPageState();
 }
 
-class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
+class ShareEventGroupPageState extends ConsumerState<ShareEventsGroupPage> {
   List<String> groupsIds = [];
 
-  List<Group>? groups;
   final TextEditingController _searchController = TextEditingController();
   String searchText = '';
   @override
   void initState() {
     ref.read(groupsProvider(AuthService.uid));
+    groupsIds = widget.groupIds;
     super.initState();
   }
 
@@ -162,7 +162,7 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
             final group = filteredGroups[index];
             return Column(
               children: [
-                GroupInvitationTile(
+                ShareGroupTile(
                   isFirst: index == 0,
                   isLast: index == filteredGroups.length - 1,
                   group: group,
@@ -175,7 +175,7 @@ class ShareEventGroupPageState extends ConsumerState<ShareEventGroupPage> {
                       }
                     });
                   },
-                  invited: groupsIds.contains(groups[index].id),
+                  active: groupsIds.contains(groups[index].id),
                 ),
                 if (index != filteredGroups.length - 1)
                   Container(

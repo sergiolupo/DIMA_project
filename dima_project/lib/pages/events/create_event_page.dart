@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/event.dart';
-import 'package:dima_project/pages/events/share_event_group_page.dart';
+import 'package:dima_project/pages/events/share_event_followers_page.dart';
+import 'package:dima_project/pages/events/share_event_groups_page.dart';
 import 'package:dima_project/pages/chats/groups/group_chat_page.dart';
 import 'package:dima_project/widgets/button_image_widget.dart';
-import 'package:dima_project/pages/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/event_service.dart';
@@ -353,26 +353,22 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                               ],
                             ),
                             trailing: const Icon(CupertinoIcons.forward),
-                            onTap: () {
-                              Navigator.of(context, rootNavigator: true).push(
+                            onTap: () async {
+                              final List<String>? users = await Navigator.of(
+                                      context,
+                                      rootNavigator: true)
+                                  .push(
                                 CupertinoPageRoute(
-                                  builder: (context) => InviteUserPage(
-                                    name: 'Share with Followers',
+                                  builder: (context) => ShareEventFollowersPage(
                                     invitedUsers: uids,
-                                    invitePageKey: (String uuid) {
-                                      setState(() {
-                                        if (uids.contains(uuid)) {
-                                          uids.remove(uuid);
-                                        } else {
-                                          uids.add(uuid);
-                                        }
-                                      });
-                                    },
-                                    isGroup: false,
-                                    id: null,
                                   ),
                                 ),
                               );
+                              if (users != null) {
+                                setState(() {
+                                  uids = users;
+                                });
+                              }
                             },
                           ),
                           Container(
@@ -395,7 +391,7 @@ class CreateEventPageState extends ConsumerState<CreateEventPage>
                                       rootNavigator: true)
                                   .push(
                                 CupertinoPageRoute(
-                                  builder: (context) => ShareEventGroupPage(
+                                  builder: (context) => ShareEventsGroupPage(
                                     groupIds: groupIds,
                                     databaseService: databaseService,
                                   ),

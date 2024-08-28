@@ -2,36 +2,31 @@ import 'package:dima_project/models/user.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
 import 'package:dima_project/utils/constants.dart';
-import 'package:dima_project/widgets/user_invitation_tile.dart';
+import 'package:dima_project/widgets/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class InviteUserPage extends ConsumerStatefulWidget {
-  final ValueChanged<String> invitePageKey;
+class ShareEventFollowersPage extends ConsumerStatefulWidget {
   final List<String> invitedUsers;
-  final bool isGroup;
-  final String? id;
-  final String name;
   @override
-  const InviteUserPage({
+  const ShareEventFollowersPage({
     super.key,
-    required this.invitePageKey,
     required this.invitedUsers,
-    required this.isGroup,
-    required this.id,
-    required this.name,
   });
 
   @override
-  InviteUserPageState createState() => InviteUserPageState();
+  ShareEventFollowersPageState createState() => ShareEventFollowersPageState();
 }
 
-class InviteUserPageState extends ConsumerState<InviteUserPage> {
+class ShareEventFollowersPageState
+    extends ConsumerState<ShareEventFollowersPage> {
   final TextEditingController _searchController = TextEditingController();
   String searchText = '';
   final String uid = AuthService.uid;
+  List<String> uids = [];
   @override
   void initState() {
+    uids = widget.invitedUsers;
     ref.read(followerProvider(uid));
     super.initState();
   }
@@ -53,7 +48,7 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
               )
             : null,
         middle: Text(
-          widget.name,
+          "Share with Followers",
           style: TextStyle(
             fontSize: 18,
             color: CupertinoTheme.of(context).primaryColor,
@@ -155,19 +150,22 @@ class InviteUserPageState extends ConsumerState<InviteUserPage> {
                   itemBuilder: (context, index) {
                     final userData = filteredUsers[index];
 
-                    final isJoining = widget.isGroup
-                        ? userData.groups!.contains(widget.id)
-                        : false;
-
                     return Column(
                       children: [
-                        UserInvitationTile(
+                        ShareUserTile(
                           isFirst: index == 0,
                           isLast: index == filteredUsers.length - 1,
                           user: userData,
-                          invitePageKey: widget.invitePageKey,
-                          invited: widget.invitedUsers.contains(userData.uid),
-                          isJoining: isJoining,
+                          onSelected: (String id) {
+                            setState(() {
+                              if (uids.contains(id)) {
+                                uids.remove(id);
+                              } else {
+                                uids.add(id);
+                              }
+                            });
+                          },
+                          active: uids.contains(userData.uid),
                         ),
                         if (index != filteredUsers.length - 1)
                           Container(

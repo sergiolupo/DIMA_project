@@ -6,7 +6,7 @@ import 'package:dima_project/services/notification_service.dart';
 import 'package:dima_project/utils/create_image_utils.dart';
 import 'package:dima_project/utils/group_helper.dart';
 import 'package:dima_project/pages/chats/groups/group_info_page.dart';
-import 'package:dima_project/pages/invite_user_page.dart';
+import 'package:dima_project/pages/chats/groups/invite_user_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
 import 'package:dima_project/services/provider_service.dart';
@@ -285,7 +285,6 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                         Navigator.of(context).push(
                           CupertinoPageRoute(
                               builder: (context) => InviteUserPage(
-                                  name: 'Invite Followers',
                                   invitePageKey: (String uuid) {
                                     setState(() {
                                       if (uuids.contains(uuid)) {
@@ -296,7 +295,6 @@ class EditGroupPageState extends ConsumerState<EditGroupPage> {
                                     });
                                   },
                                   invitedUsers: uuids,
-                                  isGroup: true,
                                   id: widget.group.id)),
                         );
                       },
