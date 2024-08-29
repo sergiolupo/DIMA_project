@@ -191,20 +191,23 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
                             Text(
                               DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                           .isBefore(DateTime.now()) &&
-                                      DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(
-                                              const Duration(days: 1)))
-                                  ? DateFormat.jm().format(
-                                      DateTime.fromMicrosecondsSinceEpoch(widget
-                                          .group
-                                          .lastMessage!
-                                          .recentMessageTimestamp
-                                          .microsecondsSinceEpoch))
-                                  : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                          DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                              .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                      ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                      : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                      DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 1)))
+                                  ? DateFormat.jm().format(DateTime.fromMicrosecondsSinceEpoch(widget
+                                      .group
+                                      .lastMessage!
+                                      .recentMessageTimestamp
+                                      .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(widget
+                                              .group
+                                              .lastMessage!
+                                              .recentMessageTimestamp
+                                              .microsecondsSinceEpoch)
+                                          .isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                      ? 'Yesterday'
+                                      : DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                          ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                          : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.group.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: snapshot.data! > 0

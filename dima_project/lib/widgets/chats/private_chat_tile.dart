@@ -86,7 +86,7 @@ class PrivateChatTileState extends State<PrivateChatTile> {
           );
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,20 +180,23 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                             Text(
                               DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
                                           .isBefore(DateTime.now()) &&
-                                      DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(
-                                              const Duration(days: 1)))
-                                  ? DateFormat.jm().format(
-                                      DateTime.fromMicrosecondsSinceEpoch(widget
-                                          .privateChat
-                                          .lastMessage!
-                                          .recentMessageTimestamp
-                                          .microsecondsSinceEpoch))
-                                  : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                          DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                              .isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                      ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                      : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                      DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 1)))
+                                  ? DateFormat.jm().format(DateTime.fromMicrosecondsSinceEpoch(widget
+                                      .privateChat
+                                      .lastMessage!
+                                      .recentMessageTimestamp
+                                      .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(widget
+                                              .privateChat
+                                              .lastMessage!
+                                              .recentMessageTimestamp
+                                              .microsecondsSinceEpoch)
+                                          .isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                      ? 'Yesterday'
+                                      : DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                          ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                          : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(widget.privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: snapshot.data! > 0
