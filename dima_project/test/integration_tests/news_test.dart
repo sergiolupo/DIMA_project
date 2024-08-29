@@ -185,9 +185,9 @@ void main() {
       when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
         (_) => Future.value(follower),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       when(mockDatabaseService.getUserData(any)).thenAnswer(
         (_) => Future.value(UserData(
@@ -199,9 +199,9 @@ void main() {
             name: 'name',
             surname: 'surname')),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       await tester.pumpWidget(
         ProviderScope(
@@ -287,10 +287,9 @@ void main() {
       expect(find.text("No followers found"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.paperplane));
       await tester.pumpAndSettle();
-      verify(mockDatabaseService.shareNewsWithFollowers(
-              any, any, any, any, any))
+      verify(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .called(1);
-      verify(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      verify(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .called(1);
     });
     testWidgets("News page renders correctly on tablet",
@@ -421,14 +420,14 @@ void main() {
       when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
         (_) => Future.value(follower),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
 
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       await tester.pumpWidget(
         ProviderScope(
@@ -489,14 +488,14 @@ void main() {
       when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
         (_) => Future.value(follower),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
 
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       await tester.pumpWidget(
         ProviderScope(
@@ -571,9 +570,9 @@ void main() {
       when(mockDatabaseService.getFollowersUser(any)).thenAnswer(
         (_) => Future.value(follower),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       when(mockDatabaseService.getUserData(any)).thenAnswer(
         (_) => Future.value(UserData(
@@ -585,9 +584,9 @@ void main() {
             name: 'name',
             surname: 'surname')),
       );
-      when(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
-      when(mockDatabaseService.shareNewsWithFollowers(any, any, any, any, any))
+      when(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .thenAnswer((_) => Future.value());
       await tester.pumpWidget(
         ProviderScope(
@@ -691,10 +690,9 @@ void main() {
       expect(find.text("No followers found"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.paperplane));
       await tester.pumpAndSettle();
-      verify(mockDatabaseService.shareNewsWithFollowers(
-              any, any, any, any, any))
+      verify(mockDatabaseService.shareNewsWithFollower(any, any, any, any, any))
           .called(1);
-      verify(mockDatabaseService.shareNewsWithGroups(any, any, any, any, any))
+      verify(mockDatabaseService.shareNewsWithGroup(any, any, any, any, any))
           .called(1);
     });
   });
