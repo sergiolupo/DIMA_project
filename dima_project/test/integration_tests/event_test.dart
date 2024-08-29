@@ -1003,7 +1003,7 @@ void main() {
         (WidgetTester tester) async {
       AuthService.setUid("uid");
 
-      when(mockDatabaseService.sendEventsOnPrivateChat(any, any))
+      when(mockDatabaseService.sendEventsToPrivateChats(any, any))
           .thenAnswer((_) {
         return Future.value();
       });

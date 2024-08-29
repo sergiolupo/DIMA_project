@@ -1309,17 +1309,17 @@ class DatabaseService {
         });
       }
       if (groupIds.isNotEmpty) {
-        await sendEventsOnGroups(docRef.id, groupIds);
+        await sendEventsToGroups(docRef.id, groupIds);
       }
       if (uuids.isNotEmpty) {
-        await sendEventsOnPrivateChat(docRef.id, uuids);
+        await sendEventsToPrivateChats(docRef.id, uuids);
       }
     } catch (e) {
       debugPrint("Error while creating the event: $e");
     }
   }
 
-  Future<void> sendEventsOnGroups(String eventId, List<String> groupIds) async {
+  Future<void> sendEventsToGroups(String eventId, List<String> groupIds) async {
     Message message = Message(
       content: eventId,
       sender: AuthService.uid,
@@ -1354,7 +1354,7 @@ class DatabaseService {
     }
   }
 
-  Future<void> sendEventsOnPrivateChat(
+  Future<void> sendEventsToPrivateChats(
       String eventId, List<String> uuids) async {
     Message message = Message(
       content: eventId,

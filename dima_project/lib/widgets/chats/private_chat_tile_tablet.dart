@@ -53,7 +53,7 @@ class PrivateChatTileTablet extends StatelessWidget {
           onPressed(privateChat);
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.4),
           child: Row(

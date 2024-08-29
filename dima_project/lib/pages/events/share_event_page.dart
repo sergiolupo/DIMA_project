@@ -75,9 +75,9 @@ class ShareEventPageState extends ConsumerState<ShareEventPage> {
                 },
               );
               await widget.databaseService
-                  .sendEventsOnGroups(widget.eventId, groupsIds);
+                  .sendEventsToGroups(widget.eventId, groupsIds);
               await widget.databaseService
-                  .sendEventsOnPrivateChat(widget.eventId, uuids);
+                  .sendEventsToPrivateChats(widget.eventId, uuids);
               if (buildContext.mounted) {
                 Navigator.of(buildContext).pop();
               }

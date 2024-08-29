@@ -915,7 +915,7 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<void> sendEventsOnGroups(
+  _i9.Future<void> sendEventsToGroups(
     String? eventId,
     List<String>? groupIds,
   ) =>
@@ -932,7 +932,7 @@ class MockDatabaseService extends _i1.Mock implements _i8.DatabaseService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<void> sendEventsOnPrivateChat(
+  _i9.Future<void> sendEventsToPrivateChats(
     String? eventId,
     List<String>? uuids,
   ) =>
