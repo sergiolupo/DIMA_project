@@ -147,19 +147,21 @@ class PrivateChatTileTablet extends StatelessWidget {
                               children: [
                                 Text(
                                   DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                              .isBefore(DateTime.now()) &&
-                                          DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                              .isAfter(DateTime.now().subtract(
-                                                  const Duration(days: 1)))
-                                      ? DateFormat.jm().format(
-                                          DateTime.fromMicrosecondsSinceEpoch(
-                                              privateChat
-                                                  .lastMessage!
-                                                  .recentMessageTimestamp
-                                                  .microsecondsSinceEpoch))
-                                      : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) &&
-                                              DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                                  .isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                          .isBefore(DateTime.now()) &&
+                                      DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 1)))
+                                  ? DateFormat.jm().format(DateTime.fromMicrosecondsSinceEpoch(
+                                      privateChat
+                                      .lastMessage!
+                                      .recentMessageTimestamp
+                                      .microsecondsSinceEpoch))
+                                  : DateTime.fromMicrosecondsSinceEpoch(privateChat
+                                              .lastMessage!
+                                              .recentMessageTimestamp
+                                              .microsecondsSinceEpoch)
+                                          .isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                      ? 'Yesterday'
+                                      : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
                                           ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
                                           : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
                                   style: TextStyle(

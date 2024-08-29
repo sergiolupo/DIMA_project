@@ -617,12 +617,13 @@ void main() {
           details: [
             EventDetails(
                 startDate:
-                    DateTime(DateTime.now().year, DateTime.now().month, 3),
-                endDate: DateTime(DateTime.now().year, DateTime.now().month, 4),
+                    DateTime(DateTime.now().year, DateTime.now().month, 13),
+                endDate:
+                    DateTime(DateTime.now().year, DateTime.now().month, 14),
                 startTime: DateTime(
-                    DateTime.now().year, DateTime.now().month, 3, 0, 0),
+                    DateTime.now().year, DateTime.now().month, 13, 0, 0),
                 endTime: DateTime(
-                    DateTime.now().year, DateTime.now().month, 4, 1, 0),
+                    DateTime.now().year, DateTime.now().month, 14, 1, 0),
                 location: "Test Location",
                 latlng: const LatLng(0, 0),
                 id: "654",
@@ -679,7 +680,7 @@ void main() {
       await tester.longPress(find.text("1"));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text("4"));
+      await tester.tap(find.text("14"));
       await tester.pumpAndSettle();
       expect(find.text("Event1"), findsNWidgets(2));
       expect(find.text("Event2"), findsNWidgets(2));
