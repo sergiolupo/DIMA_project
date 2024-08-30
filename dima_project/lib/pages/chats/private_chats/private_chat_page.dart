@@ -360,8 +360,8 @@ class PrivateChatPageState extends ConsumerState<PrivateChatPage> {
           _inputBarKey.currentContext!.findRenderObject() as RenderBox;
       final Size size = renderBox.size;
       _clipboardOverlay = OverlayEntry(
-        builder: (context) =>
-            BannerMessage(size: size, canNavigate: false, isCopy: isCopy),
+        builder: (context) => BannerMessage(
+            size: size, canNavigate: widget.canNavigate, isCopy: isCopy),
       );
       Overlay.of(context).insert(_clipboardOverlay!);
 
