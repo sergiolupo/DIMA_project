@@ -110,7 +110,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
     ref.invalidate(joinedEventsProvider);
     ref.invalidate(createdEventsProvider);
     ref.invalidate(eventProvider);
-
+    ref.invalidate(notifyGroupProvider);
+    ref.invalidate(notifyPrivateChatProvider);
     ref.invalidate(newsPrivateChatProvider);
     ref.invalidate(eventsPrivateChatProvider);
     ref.invalidate(imagesPrivateChatProvider);
@@ -173,6 +174,8 @@ class OptionsPageState extends ConsumerState<OptionsPage> {
                       ref.invalidate(createdEventsProvider);
                       ref.invalidate(eventProvider);
 
+                      ref.invalidate(notifyGroupProvider);
+                      ref.invalidate(notifyPrivateChatProvider);
                       ref.invalidate(newsPrivateChatProvider);
                       ref.invalidate(eventsPrivateChatProvider);
                       ref.invalidate(imagesPrivateChatProvider);

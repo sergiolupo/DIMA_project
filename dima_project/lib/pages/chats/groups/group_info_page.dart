@@ -49,21 +49,11 @@ class GroupInfoPage extends ConsumerStatefulWidget {
 class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
   final String uid = AuthService.uid;
   late final DatabaseService _databaseService;
-  bool notify = true;
 
   @override
   void initState() {
     _databaseService = widget.databaseService;
-    init();
     super.initState();
-  }
-
-  init() async {
-    _databaseService.getNotification(widget.groupId, true).then((value) {
-      setState(() {
-        notify = value;
-      });
-    });
   }
 
   @override
@@ -79,6 +69,8 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
         ref.watch(eventsGroupProvider(widget.groupId));
     final AsyncValue<List<UserData>> requests =
         ref.watch(requestsGroupProvider(widget.groupId));
+    final AsyncValue<bool> notify =
+        ref.watch(notifyGroupProvider(widget.groupId));
     return asyncValue.when(
         loading: () => const SizedBox.shrink(),
         error: (error, stack) => const Text("Error"),
@@ -602,12 +594,20 @@ class GroupInfoPageState extends ConsumerState<GroupInfoPage> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10.0),
-                                  child: NotificationWidget(
-                                      notify: notify,
-                                      notifyFunction: (value) {
-                                        _databaseService.updateNotification(
-                                            widget.groupId, value, true);
-                                      }),
+                                  child: notify.when(
+                                    loading: () => const SizedBox.shrink(),
+                                    error: (error, stack) =>
+                                        const Text("Error"),
+                                    data: (data) => NotificationWidget(
+                                        notify: data,
+                                        notifyFunction: (value) async {
+                                          await _databaseService
+                                              .updateNotification(
+                                                  widget.groupId, value, true);
+                                          ref.invalidate(notifyGroupProvider(
+                                              widget.groupId));
+                                        }),
+                                  ),
                                 ),
                               ],
                             ),

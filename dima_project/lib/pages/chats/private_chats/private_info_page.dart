@@ -40,22 +40,10 @@ class PrivateInfoPage extends ConsumerStatefulWidget {
 class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
   final String uid = AuthService.uid;
   late final DatabaseService _databaseService;
-  bool notify = true;
   @override
   void initState() {
     _databaseService = widget.databaseService;
-    init();
     super.initState();
-  }
-
-  init() {
-    _databaseService
-        .getNotification(widget.privateChat.id!, false)
-        .then((value) {
-      setState(() {
-        notify = value;
-      });
-    });
   }
 
   @override
@@ -66,6 +54,8 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
         ref.watch(newsPrivateChatProvider(widget.privateChat.id!));
     final AsyncValue<List<Message>> events =
         ref.watch(eventsPrivateChatProvider(widget.privateChat.id!));
+    final AsyncValue<bool> notify =
+        ref.watch(notifyPrivateChatProvider(widget.privateChat.id!));
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
@@ -133,244 +123,288 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.photo_on_rectangle,
-                              color: CupertinoTheme.of(context).primaryColor,
-                            ),
-                            const SizedBox(width: 10),
-                            const Text("Images"),
-                          ],
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: CupertinoTheme.of(context)
+                              .primaryContrastingColor,
                         ),
-                        trailing: Row(
+                        child: Column(
                           children: [
-                            images.when(
-                                loading: () => const SizedBox(),
-                                error: (error, stack) => const Text(
-                                      "Error",
-                                    ),
-                                data: (data) {
-                                  return data.isEmpty
-                                      ? const SizedBox()
-                                      : Text(
-                                          data.length.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.normal,
-                                            color:
-                                                CupertinoColors.opaqueSeparator,
-                                          ),
-                                        );
-                                }),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          images.when(
-                            loading: () => (),
-                            error: (error, stack) => (),
-                            data: (data) {
-                              if (widget.canNavigate) {
-                                widget.navigateToPage!(ShowImagesPage(
-                                  privateChat: widget.privateChat,
-                                  medias: data,
-                                  canNavigate: true,
-                                  navigateToPage: widget.navigateToPage,
-                                  isGroup: false,
-                                  user: widget.user,
-                                  databaseService: _databaseService,
-                                  notificationService:
-                                      widget.notificationService,
-                                ));
-                                return;
-                              }
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) => ShowImagesPage(
-                                    privateChat: widget.privateChat,
-                                    canNavigate: false,
-                                    isGroup: false,
-                                    medias: data,
-                                    user: widget.user,
-                                    databaseService: _databaseService,
-                                    notificationService:
-                                        widget.notificationService,
+                            CupertinoListTile(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              title: Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.photo_on_rectangle,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
                                   ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.calendar,
-                              color: CupertinoTheme.of(context).primaryColor,
-                            ),
-                            const SizedBox(width: 10),
-                            const Text("Events"),
-                          ],
-                        ),
-                        trailing: Row(
-                          children: [
-                            events.when(
-                                loading: () => const SizedBox(),
-                                error: (error, stack) => const Text('Error'),
-                                data: (data) {
-                                  return data.isEmpty
-                                      ? const SizedBox()
-                                      : Text(
-                                          data.length.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.normal,
-                                            color:
-                                                CupertinoColors.opaqueSeparator,
+                                  const SizedBox(width: 10),
+                                  const Text("Images"),
+                                ],
+                              ),
+                              trailing: Row(
+                                children: [
+                                  images.when(
+                                      loading: () => const SizedBox(),
+                                      error: (error, stack) => const Text(
+                                            "Error",
                                           ),
-                                        );
-                                }),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
+                                      data: (data) {
+                                        return data.isEmpty
+                                            ? const SizedBox()
+                                            : Text(
+                                                data.length.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: CupertinoColors
+                                                      .opaqueSeparator,
+                                                ),
+                                              );
+                                      }),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    CupertinoIcons.right_chevron,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                images.when(
+                                  loading: () => (),
+                                  error: (error, stack) => (),
+                                  data: (data) {
+                                    if (widget.canNavigate) {
+                                      widget.navigateToPage!(ShowImagesPage(
+                                        privateChat: widget.privateChat,
+                                        medias: data,
+                                        canNavigate: true,
+                                        navigateToPage: widget.navigateToPage,
+                                        isGroup: false,
+                                        user: widget.user,
+                                        databaseService: _databaseService,
+                                        notificationService:
+                                            widget.notificationService,
+                                      ));
+                                      return;
+                                    }
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowImagesPage(
+                                          privateChat: widget.privateChat,
+                                          canNavigate: false,
+                                          isGroup: false,
+                                          medias: data,
+                                          user: widget.user,
+                                          databaseService: _databaseService,
+                                          notificationService:
+                                              widget.notificationService,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
-                          ],
-                        ),
-                        onTap: () {
-                          events.when(
-                            loading: () => (),
-                            error: (error, stack) => (),
-                            data: (data) {
-                              if (widget.canNavigate) {
-                                widget.navigateToPage!(ShowEventsPage(
-                                  privateChat: widget.privateChat,
-                                  events: data,
-                                  canNavigate: true,
-                                  navigateToPage: widget.navigateToPage,
-                                  isGroup: false,
-                                  user: widget.user,
-                                  databaseService: _databaseService,
-                                  notificationService:
-                                      widget.notificationService,
-                                ));
-                                return;
-                              }
+                            Container(
+                              height: 1,
+                              color: CupertinoColors.opaqueSeparator
+                                  .withOpacity(0.2),
+                            ),
+                            CupertinoListTile(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              title: Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.calendar,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text("Events"),
+                                ],
+                              ),
+                              trailing: Row(
+                                children: [
+                                  events.when(
+                                      loading: () => const SizedBox(),
+                                      error: (error, stack) =>
+                                          const Text('Error'),
+                                      data: (data) {
+                                        return data.isEmpty
+                                            ? const SizedBox()
+                                            : Text(
+                                                data.length.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: CupertinoColors
+                                                      .opaqueSeparator,
+                                                ),
+                                              );
+                                      }),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    CupertinoIcons.right_chevron,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                events.when(
+                                  loading: () => (),
+                                  error: (error, stack) => (),
+                                  data: (data) {
+                                    if (widget.canNavigate) {
+                                      widget.navigateToPage!(ShowEventsPage(
+                                        privateChat: widget.privateChat,
+                                        events: data,
+                                        canNavigate: true,
+                                        navigateToPage: widget.navigateToPage,
+                                        isGroup: false,
+                                        user: widget.user,
+                                        databaseService: _databaseService,
+                                        notificationService:
+                                            widget.notificationService,
+                                      ));
+                                      return;
+                                    }
 
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) => ShowEventsPage(
-                                    privateChat: widget.privateChat,
-                                    canNavigate: false,
-                                    isGroup: false,
-                                    events: data,
-                                    user: widget.user,
-                                    databaseService: _databaseService,
-                                    notificationService:
-                                        widget.notificationService,
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowEventsPage(
+                                          privateChat: widget.privateChat,
+                                          canNavigate: false,
+                                          isGroup: false,
+                                          events: data,
+                                          user: widget.user,
+                                          databaseService: _databaseService,
+                                          notificationService:
+                                              widget.notificationService,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            Container(
+                              height: 1,
+                              color: CupertinoColors.opaqueSeparator
+                                  .withOpacity(0.2),
+                            ),
+                            CupertinoListTile(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              title: Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.news,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
                                   ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      CupertinoListTile(
-                        padding: const EdgeInsets.all(0),
-                        title: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.photo_on_rectangle,
-                              color: CupertinoTheme.of(context).primaryColor,
-                            ),
-                            const SizedBox(width: 10),
-                            const Text("News"),
-                          ],
-                        ),
-                        trailing: Row(
-                          children: [
-                            news.when(
-                                loading: () => const SizedBox(),
-                                error: (error, stack) => const Text('Error'),
-                                data: (data) {
-                                  return data.isEmpty
-                                      ? const SizedBox()
-                                      : Text(
-                                          data.length.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.normal,
-                                            color:
-                                                CupertinoColors.opaqueSeparator,
-                                          ),
-                                        );
-                                }),
-                            const SizedBox(width: 10),
-                            Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoTheme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          news.when(
-                            loading: () => (),
-                            error: (error, stack) => (),
-                            data: (data) {
-                              if (widget.canNavigate) {
-                                widget.navigateToPage!(ShowNewsPage(
-                                  privateChat: widget.privateChat,
-                                  news: data,
-                                  canNavigate: true,
-                                  navigateToPage: widget.navigateToPage,
-                                  isGroup: false,
-                                  user: widget.user,
-                                  databaseService: _databaseService,
-                                  notificationService:
-                                      widget.notificationService,
-                                ));
-                                return;
-                              }
+                                  const SizedBox(width: 10),
+                                  const Text("News"),
+                                ],
+                              ),
+                              trailing: Row(
+                                children: [
+                                  news.when(
+                                      loading: () => const SizedBox(),
+                                      error: (error, stack) =>
+                                          const Text('Error'),
+                                      data: (data) {
+                                        return data.isEmpty
+                                            ? const SizedBox()
+                                            : Text(
+                                                data.length.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: CupertinoColors
+                                                      .opaqueSeparator,
+                                                ),
+                                              );
+                                      }),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    CupertinoIcons.right_chevron,
+                                    color:
+                                        CupertinoTheme.of(context).primaryColor,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                news.when(
+                                  loading: () => (),
+                                  error: (error, stack) => (),
+                                  data: (data) {
+                                    if (widget.canNavigate) {
+                                      widget.navigateToPage!(ShowNewsPage(
+                                        privateChat: widget.privateChat,
+                                        news: data,
+                                        canNavigate: true,
+                                        navigateToPage: widget.navigateToPage,
+                                        isGroup: false,
+                                        user: widget.user,
+                                        databaseService: _databaseService,
+                                        notificationService:
+                                            widget.notificationService,
+                                      ));
+                                      return;
+                                    }
 
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) => ShowNewsPage(
-                                    privateChat: widget.privateChat,
-                                    canNavigate: false,
-                                    isGroup: false,
-                                    news: data,
-                                    user: widget.user,
-                                    databaseService: _databaseService,
-                                    notificationService:
-                                        widget.notificationService,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (context) => ShowNewsPage(
+                                          privateChat: widget.privateChat,
+                                          canNavigate: false,
+                                          isGroup: false,
+                                          news: data,
+                                          user: widget.user,
+                                          databaseService: _databaseService,
+                                          notificationService:
+                                              widget.notificationService,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            Container(
+                              height: 1,
+                              color: CupertinoColors.opaqueSeparator
+                                  .withOpacity(0.2),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: notify.when(
+                                loading: () => const SizedBox.shrink(),
+                                error: (error, stack) => const Text("Error"),
+                                data: (data) => NotificationWidget(
+                                    notify: data,
+                                    notifyFunction: (value) async {
+                                      await _databaseService.updateNotification(
+                                          widget.privateChat.id!, value, false);
+                                      ref.invalidate(notifyPrivateChatProvider(
+                                          widget.privateChat.id!));
+                                    }),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      NotificationWidget(
-                          notify: notify,
-                          notifyFunction: (value) {
-                            _databaseService.updateNotification(
-                                widget.privateChat.id!, value, false);
-                          }),
                     ],
                   ),
                 ),

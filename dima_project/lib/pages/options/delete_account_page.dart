@@ -95,7 +95,8 @@ class DeleteAccountPageState extends ConsumerState<DeleteAccountPage> {
                       ref.invalidate(joinedEventsProvider);
                       ref.invalidate(createdEventsProvider);
                       ref.invalidate(eventProvider);
-
+                      ref.invalidate(notifyGroupProvider);
+                      ref.invalidate(notifyPrivateChatProvider);
                       ref.invalidate(newsPrivateChatProvider);
                       ref.invalidate(eventsPrivateChatProvider);
                       ref.invalidate(imagesPrivateChatProvider);

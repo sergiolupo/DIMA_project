@@ -21,6 +21,25 @@ final userProvider = FutureProvider.family<UserData, String>((ref, uuid) async {
   return userData;
 });
 
+final notifyGroupProvider =
+    FutureProvider.family<bool, String>((ref, id) async {
+  try {
+    final notification = await DatabaseService().getNotification(id, true);
+    return notification;
+  } catch (e) {
+    return true;
+  }
+});
+final notifyPrivateChatProvider =
+    FutureProvider.family<bool, String>((ref, id) async {
+  try {
+    final notification = await DatabaseService().getNotification(id, false);
+    return notification;
+  } catch (e) {
+    return true;
+  }
+});
+
 final followerProvider =
     FutureProvider.family<List<UserData>, String>((ref, uuid) async {
   try {
