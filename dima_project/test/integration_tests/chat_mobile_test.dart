@@ -342,8 +342,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Group1'), findsOneWidget); // Chat page
       expect(find.text('Group2'), findsOneWidget);
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsOneWidget);
+      expect(find.text('You: Hello'), findsOneWidget);
       expect(find.text('Join the conversation!'), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), 'AAA');
       await tester.pumpAndSettle();
@@ -355,8 +354,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsOneWidget);
       expect(find.text('Deleted Account'), findsOneWidget);
-      expect(find.text('You: '), findsNWidgets(2));
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsNWidgets(2));
     });
     group('Create Group Page Tests', () {
       testWidgets(
@@ -568,8 +566,7 @@ void main() {
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('Group1'), findsOneWidget);
-        expect(find.text('You: '), findsOneWidget);
-        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('You: Hello'), findsOneWidget);
         await tester.tap(find.text('Group1'));
         await tester.pumpAndSettle();
         await tester.longPress(find.text('Hello'));
@@ -757,8 +754,7 @@ void main() {
         await tester.tap(find.byType(CupertinoNavigationBarBackButton));
         await tester.pumpAndSettle();
         expect(find.text('username2'), findsOneWidget);
-        expect(find.text('You: '), findsOneWidget);
-        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('You: Hello'), findsOneWidget);
         await tester.tap(find.text('username2'));
         await tester.pumpAndSettle();
         await tester.longPress(find.text('Hello'));

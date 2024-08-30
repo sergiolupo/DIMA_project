@@ -67,64 +67,83 @@ class PrivateChatTileTablet extends StatelessWidget {
                     0,
                   ),
                   const SizedBox(width: 16),
-                  Container(
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          other.username,
-                          style: TextStyle(
-                              color: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
-                        ),
-                        const SizedBox(height: 2),
-                        (privateChat.lastMessage != null)
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    privateChat.lastMessage!.sentByMe == true
-                                        ? "You: "
-                                        : "${other.username}: ",
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: CupertinoColors.inactiveGray),
-                                  ),
-                                  if (privateChat
-                                          .lastMessage!.recentMessageType !=
-                                      Type.text)
-                                    map[privateChat
-                                        .lastMessage!.recentMessageType]!,
-                                  Container(
-                                    constraints: BoxConstraints(
-                                        maxWidth:
-                                            MediaQuery.of(context).size.width *
-                                                0.15),
-                                    child: Text(
-                                      maxLines: 2,
-                                      privateChat.lastMessage!.recentMessage,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: CupertinoColors.inactiveGray),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const Text(
-                                "Join the conversation!",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: CupertinoColors.inactiveGray),
-                              ),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        other.username,
+                        style: TextStyle(
+                            color: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                      const SizedBox(height: 2),
+                      (privateChat.lastMessage != null)
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.25),
+                                  child: privateChat
+                                              .lastMessage!.recentMessageType !=
+                                          Type.text
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              privateChat.lastMessage!
+                                                          .sentByMe ==
+                                                      true
+                                                  ? "You: "
+                                                  : "${other.username}: ",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: CupertinoColors
+                                                    .inactiveGray,
+                                              ),
+                                            ),
+                                            map[privateChat.lastMessage!
+                                                .recentMessageType]!,
+                                            Text(
+                                              privateChat
+                                                  .lastMessage!.recentMessage,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: CupertinoColors
+                                                    .inactiveGray,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Text(
+                                          '${privateChat.lastMessage!.sentByMe == true ? "You: " : "${other.username}: "}'
+                                          '${privateChat.lastMessage!.recentMessage}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: CupertinoColors.inactiveGray,
+                                          ),
+                                        ),
+                                )
+                              ],
+                            )
+                          : const Text(
+                              "Join the conversation!",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: CupertinoColors.inactiveGray),
+                            ),
+                    ],
                   ),
                 ],
               ),
@@ -141,59 +160,65 @@ class PrivateChatTileTablet extends StatelessWidget {
                                 snapshot.data == null) {
                               return const SizedBox();
                             }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)
-                                          .isBefore(DateTime.now()) &&
-                                      DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now()
-                                          .subtract(const Duration(days: 1)))
-                                  ? DateFormat.jm().format(DateTime.fromMicrosecondsSinceEpoch(
-                                      privateChat
-                                      .lastMessage!
-                                      .recentMessageTimestamp
-                                      .microsecondsSinceEpoch))
-                                  : DateTime.fromMicrosecondsSinceEpoch(privateChat
-                                              .lastMessage!
-                                              .recentMessageTimestamp
-                                              .microsecondsSinceEpoch)
-                                          .isAfter(DateTime.now().subtract(const Duration(days: 2)))
-                                      ? 'Yesterday'
-                                      : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
-                                          ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
-                                          : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: snapshot.data! > 0 &&
-                                            privateChat.id != selectedChatId
-                                        ? CupertinoTheme.of(context)
-                                            .primaryColor
-                                        : CupertinoColors.inactiveGray,
+                            return Container(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.07),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateTime.fromMicrosecondsSinceEpoch(privateChat
+                                                    .lastMessage!
+                                                    .recentMessageTimestamp
+                                                    .microsecondsSinceEpoch)
+                                                .isBefore(DateTime.now()) &&
+                                            DateTime.fromMicrosecondsSinceEpoch(
+                                                    privateChat
+                                                        .lastMessage!
+                                                        .recentMessageTimestamp
+                                                        .microsecondsSinceEpoch)
+                                                .isAfter(DateTime.now().subtract(
+                                                    const Duration(days: 1)))
+                                        ? DateFormat.jm().format(
+                                            DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                        : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 2)))
+                                            ? 'Yesterday'
+                                            : DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isBefore(DateTime.now().subtract(const Duration(days: 1))) && DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch).isAfter(DateTime.now().subtract(const Duration(days: 7)))
+                                                ? DateFormat.EEEE().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch))
+                                                : DateFormat.yMd().format(DateTime.fromMicrosecondsSinceEpoch(privateChat.lastMessage!.recentMessageTimestamp.microsecondsSinceEpoch)),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: snapshot.data! > 0 &&
+                                              privateChat.id != selectedChatId
+                                          ? CupertinoTheme.of(context)
+                                              .primaryColor
+                                          : CupertinoColors.inactiveGray,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 1),
-                                snapshot.data! > 0 &&
-                                        privateChat.id != selectedChatId
-                                    ? Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: CupertinoTheme.of(context)
-                                              .primaryColor,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        child: Text(
-                                          snapshot.data!.toString(),
-                                          style: const TextStyle(
-                                              color: CupertinoColors.white,
-                                              fontSize: 12),
-                                        ),
-                                      )
-                                    : const SizedBox(),
-                              ],
+                                  const SizedBox(height: 1),
+                                  snapshot.data! > 0 &&
+                                          privateChat.id != selectedChatId
+                                      ? Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: CupertinoTheme.of(context)
+                                                .primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
+                                          child: Text(
+                                            snapshot.data!.toString(),
+                                            style: const TextStyle(
+                                                color: CupertinoColors.white,
+                                                fontSize: 12),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
+                              ),
                             );
                           })
                       : Column(

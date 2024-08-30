@@ -110,9 +110,8 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text("Test Group"), findsOneWidget);
-    expect(find.text("Hello!"), findsOneWidget);
+    expect(find.text("User1: Hello!"), findsOneWidget);
 
-    expect(find.text("User1: "), findsOneWidget);
     expect(find.text("Join the conversation!"), findsNothing);
     expect(find.text("1"), findsOneWidget); // Check for unread message badge
   });

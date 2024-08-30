@@ -24,11 +24,11 @@ class GroupChatTileTablet extends StatelessWidget {
 
   final Map<Type, Icon> map = {
     Type.event: const Icon(CupertinoIcons.calendar,
-        color: CupertinoColors.inactiveGray, size: 16),
+        color: CupertinoColors.inactiveGray, size: 14),
     Type.news: const Icon(CupertinoIcons.news,
-        color: CupertinoColors.inactiveGray, size: 16),
+        color: CupertinoColors.inactiveGray, size: 14),
     Type.image: const Icon(CupertinoIcons.photo,
-        color: CupertinoColors.inactiveGray, size: 16),
+        color: CupertinoColors.inactiveGray, size: 14),
   };
 
   @override
@@ -52,7 +52,7 @@ class GroupChatTileTablet extends StatelessWidget {
           onPressed(group);
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.4),
           child: Row(
@@ -87,31 +87,53 @@ class GroupChatTileTablet extends StatelessWidget {
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  group.lastMessage!.sentByMe == true
-                                      ? "You: "
-                                      : "$username: ",
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      color: CupertinoColors.inactiveGray),
-                                ),
-                                if (group.lastMessage!.recentMessageType !=
-                                    Type.text)
-                                  map[group.lastMessage!.recentMessageType]!,
                                 Container(
                                   constraints: BoxConstraints(
                                       maxWidth:
                                           MediaQuery.of(context).size.width *
-                                              0.15),
-                                  child: Text(
-                                    maxLines: 2,
-                                    group.lastMessage!.recentMessage,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: CupertinoColors.inactiveGray),
-                                  ),
-                                ),
+                                              0.25),
+                                  child: group.lastMessage!.recentMessageType !=
+                                          Type.text
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              group.lastMessage!.sentByMe ==
+                                                      true
+                                                  ? "You: "
+                                                  : "${username}: ",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: CupertinoColors
+                                                    .inactiveGray,
+                                              ),
+                                            ),
+                                            map[group.lastMessage!
+                                                .recentMessageType]!,
+                                            Text(
+                                              group.lastMessage!.recentMessage,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: CupertinoColors
+                                                    .inactiveGray,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Text(
+                                          '${group.lastMessage!.sentByMe == true ? "You: " : "${username}: "}'
+                                          '${group.lastMessage!.recentMessage}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: CupertinoColors.inactiveGray,
+                                          ),
+                                        ),
+                                )
                               ],
                             )
                           : const Text(
@@ -140,7 +162,7 @@ class GroupChatTileTablet extends StatelessWidget {
                             return Container(
                               constraints: BoxConstraints(
                                   maxWidth:
-                                      MediaQuery.of(context).size.width * 0.05),
+                                      MediaQuery.of(context).size.width * 0.07),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.start,

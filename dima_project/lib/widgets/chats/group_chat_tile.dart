@@ -113,7 +113,7 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
                         Container(
                           constraints: BoxConstraints(
                               maxWidth:
-                                  MediaQuery.of(context).size.width * 0.4),
+                                  MediaQuery.of(context).size.width * 0.6),
                           child: Text(
                             maxLines: 2,
                             widget.group.name,
@@ -132,33 +132,55 @@ class GroupChatTileState extends ConsumerState<GroupChatTile> {
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    widget.group.lastMessage!.sentByMe == true
-                                        ? "You: "
-                                        : "${widget.username!}: ",
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: CupertinoColors.inactiveGray),
-                                  ),
-                                  if (widget.group.lastMessage!
-                                          .recentMessageType !=
-                                      Type.text)
-                                    map[widget
-                                        .group.lastMessage!.recentMessageType]!,
                                   Container(
                                     constraints: BoxConstraints(
                                         maxWidth:
                                             MediaQuery.of(context).size.width *
-                                                0.4),
-                                    child: Text(
-                                      maxLines: 2,
-                                      widget.group.lastMessage!.recentMessage,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: CupertinoColors.inactiveGray),
-                                    ),
-                                  ),
+                                                0.6),
+                                    child: widget.group.lastMessage!
+                                                .recentMessageType !=
+                                            Type.text
+                                        ? Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.group.lastMessage!
+                                                            .sentByMe ==
+                                                        true
+                                                    ? "You: "
+                                                    : "${widget.username!}: ",
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: CupertinoColors
+                                                      .inactiveGray,
+                                                ),
+                                              ),
+                                              map[widget.group.lastMessage!
+                                                  .recentMessageType]!,
+                                              Text(
+                                                widget.group.lastMessage!
+                                                    .recentMessage,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: CupertinoColors
+                                                      .inactiveGray,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            '${widget.group.lastMessage!.sentByMe == true ? "You: " : "${widget.username!}: "}'
+                                            '${widget.group.lastMessage!.recentMessage}',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color:
+                                                  CupertinoColors.inactiveGray,
+                                            ),
+                                          ),
+                                  )
                                 ],
                               )
                             : const Text(

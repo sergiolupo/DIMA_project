@@ -119,35 +119,57 @@ class PrivateChatTileState extends State<PrivateChatTile> {
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    widget.privateChat.lastMessage!.sentByMe ==
-                                            true
-                                        ? "You: "
-                                        : "${widget.other.username}: ",
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: CupertinoColors.inactiveGray),
-                                  ),
-                                  if (widget.privateChat.lastMessage!
-                                          .recentMessageType !=
-                                      Type.text)
-                                    map[widget.privateChat.lastMessage!
-                                        .recentMessageType]!,
                                   Container(
                                     constraints: BoxConstraints(
                                         maxWidth:
                                             MediaQuery.of(context).size.width *
-                                                0.4),
-                                    child: Text(
-                                      maxLines: 2,
-                                      widget.privateChat.lastMessage!
-                                          .recentMessage,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: CupertinoColors.inactiveGray),
-                                    ),
-                                  ),
+                                                0.6),
+                                    child: widget.privateChat.lastMessage!
+                                                .recentMessageType !=
+                                            Type.text
+                                        ? Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.privateChat.lastMessage!
+                                                            .sentByMe ==
+                                                        true
+                                                    ? "You: "
+                                                    : "${widget.other.username}: ",
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: CupertinoColors
+                                                      .inactiveGray,
+                                                ),
+                                              ),
+                                              map[widget
+                                                  .privateChat
+                                                  .lastMessage!
+                                                  .recentMessageType]!,
+                                              Text(
+                                                widget.privateChat.lastMessage!
+                                                    .recentMessage,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: CupertinoColors
+                                                      .inactiveGray,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            '${widget.privateChat.lastMessage!.sentByMe == true ? "You: " : "${widget.other.username}: "}'
+                                            '${widget.privateChat.lastMessage!.recentMessage}',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color:
+                                                  CupertinoColors.inactiveGray,
+                                            ),
+                                          ),
+                                  )
                                 ],
                               )
                             : const Text(

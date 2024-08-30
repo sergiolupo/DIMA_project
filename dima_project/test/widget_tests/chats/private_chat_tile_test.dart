@@ -61,7 +61,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('user'), findsOneWidget);
-    expect(find.text('Hello!'), findsOneWidget);
+    expect(find.text('user: Hello!'), findsOneWidget);
     expect(find.text("1"), findsOneWidget); // Check for unread message badge
   });
 
@@ -160,7 +160,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('user'), findsOneWidget);
-    expect(find.text('Hello!'), findsOneWidget);
+    expect(find.text('user: Hello!'), findsOneWidget);
 
     await tester.drag(find.byType(Dismissible), const Offset(-500.0, 0.0));
     await tester.pumpAndSettle();

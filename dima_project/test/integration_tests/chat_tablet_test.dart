@@ -329,8 +329,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Group1'), findsOneWidget); // Chat page
       expect(find.text('Group2'), findsOneWidget);
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsOneWidget);
+      expect(find.text('You: Hello'), findsOneWidget);
       expect(find.text('Join the conversation!'), findsOneWidget);
       await tester.enterText(find.byType(CupertinoSearchTextField), 'AAA');
       await tester.pumpAndSettle();
@@ -343,8 +342,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsOneWidget);
       expect(find.text('Deleted Account'), findsOneWidget);
-      expect(find.text('You: '), findsNWidgets(2));
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsNWidgets(2));
     });
 
     group('Create Group Page Tests', () {
@@ -550,8 +548,8 @@ void main() {
       await tester.tap(find.text('username2'));
       await tester.pumpAndSettle();
       expect(find.text('username2'), findsNWidgets(2));
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsOneWidget);
+      expect(find.text('Hello'), findsOneWidget);
 
       await tester.longPress(find.text('Hello').last);
       await tester.pumpAndSettle();
@@ -701,8 +699,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Group1'), findsNWidgets(2));
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsOneWidget);
+      expect(find.text('Hello'), findsOneWidget);
     });
     testWidgets(
         "Dismiss groups and private chats works correctly on ChatPage for tablet",
@@ -861,8 +859,8 @@ void main() {
       await tester.tap(find.text('Group1'));
       await tester.pumpAndSettle();
       expect(find.text('Group1'), findsNWidgets(2));
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsOneWidget);
+      expect(find.text('Hello'), findsOneWidget);
 
       await tester.drag(find.text("Group1").first, const Offset(-500.0, 0.0));
       await tester.pumpAndSettle();
@@ -1009,8 +1007,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('username2'), findsNWidgets(2));
-      expect(find.text('You: '), findsOneWidget);
-      expect(find.text('Hello'), findsNWidgets(2));
+      expect(find.text('You: Hello'), findsOneWidget);
+      expect(find.text('Hello'), findsOneWidget);
     });
     group('Test chat functionality', () {
       testWidgets(
@@ -1156,10 +1154,10 @@ void main() {
         await tester.tap(find.text('Group1'));
         await tester.pumpAndSettle();
         expect(find.text('Group1'), findsNWidgets(2));
-        expect(find.text('You: '), findsOneWidget);
-        expect(find.text('Hello'), findsNWidgets(2));
+        expect(find.text('You: Hello'), findsOneWidget);
+        expect(find.text('Hello'), findsOneWidget);
 
-        await tester.longPress(find.text('Hello').last);
+        await tester.longPress(find.text('Hello'));
         await tester.pumpAndSettle();
         expect(find.text('Copy Text'), findsOneWidget);
         expect(find.text('Delete Message'), findsOneWidget);
