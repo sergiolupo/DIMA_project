@@ -11,7 +11,7 @@ class NewsService {
   List<ArticleModel> news = [];
   List<ArticleModel> categories = [];
   List<ArticleModel> sliders = [];
-  static const newsApiKey = "61f777e67a9346cebb7cecf45b243af9";
+  static const newsApiKey = "b0c96299b05f4084a3b2cf516e2d775d";
   Future<void> getNews() async {
     try {
       String url =

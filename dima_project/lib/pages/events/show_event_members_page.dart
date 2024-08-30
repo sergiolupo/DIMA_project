@@ -60,14 +60,13 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
               return user.when(
                 data: (userData) {
                   return followings.when(
-                      data: (followings) {
+                      data: (data) {
                         final isFollowing =
-                            followings.any((element) => element.uid! == uid)
+                            data.any((element) => element.uid! == userData.uid)
                                 ? 1
                                 : userData.requests!.contains(uid)
                                     ? 2
                                     : 0;
-
                         if (userData.uid == widget.admin) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -79,7 +78,7 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
                                 ),
                               ),
                               const Padding(
-                                padding: EdgeInsets.only(right: 8.0),
+                                padding: EdgeInsets.only(right: 20.0),
                                 child: Text(
                                   "Host",
                                   style: TextStyle(
@@ -92,10 +91,15 @@ class ShowEventMembersPageState extends ConsumerState<ShowEventMembersPage> {
                           );
                         }
 
-                        return UserTile(
-                          user: userData,
-                          isFollowing: isFollowing,
-                        );
+                        return Row(children: [
+                          Expanded(
+                            child: UserTile(
+                              user: userData,
+                              isFollowing: isFollowing,
+                            ),
+                          ),
+                          const SizedBox(width: 53),
+                        ]);
                       },
                       loading: () => const CupertinoActivityIndicator(),
                       error: (error, stack) => Text('Error: $error'));

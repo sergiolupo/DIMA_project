@@ -233,7 +233,7 @@ class EditEventPageState extends ConsumerState<EditEventPage> {
                   leading: isPublic
                       ? const Icon(CupertinoIcons.lock_open_fill)
                       : const Icon(CupertinoIcons.lock_fill),
-                  title: const Text('Public Group'),
+                  title: const Text('Public Event'),
                   trailing: CupertinoSwitch(
                     value: isPublic,
                     onChanged: (bool value) {
