@@ -176,7 +176,7 @@ class NewsPageState extends ConsumerState<NewsPage> {
                             CupertinoPageRoute(
                                 builder: (context) => AllNews(
                                       news: "Breaking",
-                                      articles: sliders != null ||
+                                      articles: sliders == null ||
                                               sliders!.isEmpty
                                           ? []
                                           : sliders!.sublist(0, numberOfNews),
