@@ -90,7 +90,11 @@ class LoginForm extends StatelessWidget {
       debugPrint("Navigating to Home Page");
       //pass the user object to the home page
       context.go('/home');
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
+      String errorMessage = e.toString();
+      int errorCodeIndex = errorMessage.indexOf(']') + 1;
+      String errorMessageSubstring =
+          errorMessage.substring(errorCodeIndex).trim();
       Navigator.of(context).pop();
       debugPrint("Failed to login: $e");
       showCupertinoDialog(
@@ -98,7 +102,7 @@ class LoginForm extends StatelessWidget {
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: const Text('Login Failed'),
-            content: const Text('Invalid username or password'),
+            content: Text('Failed to login: $errorMessageSubstring'),
             actions: <Widget>[
               CupertinoDialogAction(
                 child: const Text('OK'),

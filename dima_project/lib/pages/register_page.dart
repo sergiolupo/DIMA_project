@@ -325,14 +325,40 @@ class RegisterPageState extends State<RegisterPage> {
         );
       },
     );
-
-    await widget.authService.registerUser(
-      user,
-      imagePath,
-    );
-    if (!mounted) return;
-    Navigator.of(context).pop();
-    context.go('/login');
+    try {
+      await widget.authService.registerUser(
+        user,
+        imagePath,
+      );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      context.go('/login');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      String errorMessage = e.toString();
+      int errorCodeIndex = errorMessage.indexOf(']') + 1;
+      String errorMessageSubstring =
+          errorMessage.substring(errorCodeIndex).trim();
+      debugPrint("Failed to register: $e");
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('Registration Failed'),
+            content: Text('Failed to register: $errorMessageSubstring'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> registerUserGoogle(
@@ -345,12 +371,8 @@ class RegisterPageState extends State<RegisterPage> {
         );
       },
     );
-    try {
-      await widget.databaseService
-          .registerUserWithUUID(userData, uuid, imagePath);
-    } catch (e) {
-      return;
-    }
+    await widget.databaseService
+        .registerUserWithUUID(userData, uuid, imagePath);
     debugPrint('Navigating to Home Page');
 
     if (!mounted) return;

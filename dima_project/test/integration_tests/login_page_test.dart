@@ -113,12 +113,8 @@ void main() {
       expect(find.text('Please enter a password'), findsOneWidget);
     });
     testWidgets("Login with invalid credentials", (WidgetTester tester) async {
-      when(mockAuthService.signInWithEmailAndPassword(
-              'test@example.com', 'password123'))
-          .thenThrow(FirebaseAuthException(
-              message: "Invalid username or password",
-              code: "invalid-credentials"));
-
+      when(mockAuthService.signInWithEmailAndPassword(any, any))
+          .thenThrow(Exception("[ERROR 101] Invalid email or password"));
       await tester.pumpWidget(
         CupertinoApp(
           home: LoginPage(
@@ -135,7 +131,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Login Failed'), findsOneWidget);
-      expect(find.text('Invalid username or password'), findsOneWidget);
+      expect(find.text('Failed to login: Invalid email or password'),
+          findsOneWidget);
     });
     testWidgets("Login with valid credentials", (WidgetTester tester) async {
       when(mockAuthService.signInWithEmailAndPassword(

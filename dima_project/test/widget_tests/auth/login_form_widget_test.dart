@@ -87,9 +87,7 @@ void main() {
     // Mocking the signInWithEmailAndPassword method to throw an exception
     when(mockAuthService.signInWithEmailAndPassword(
             "not-exist@gmail.com", '123456'))
-        .thenThrow(FirebaseAuthException(
-            message: "Invalid username or password",
-            code: "invalid-credentials"));
+        .thenThrow(Exception("[ERROR 101] Invalid email or password"));
 
     await tester.pumpWidget(CupertinoApp(
       home: LoginForm(
@@ -106,7 +104,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Login Failed'), findsOneWidget);
-    expect(find.text('Invalid username or password'), findsOneWidget);
+    expect(find.text('Failed to login: Invalid email or password'),
+        findsOneWidget);
   });
 
   testWidgets('LoginForm calls signInWithGoogle on button tap',
