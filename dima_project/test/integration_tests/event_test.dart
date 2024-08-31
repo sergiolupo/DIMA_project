@@ -9,6 +9,7 @@ import 'package:dima_project/pages/events/share_event_groups_page.dart';
 import 'package:dima_project/pages/events/table_calendar_page.dart';
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/provider_service.dart';
+import 'package:dima_project/widgets/button_image_widget.dart';
 import 'package:dima_project/widgets/share_group_tile.dart';
 import 'package:dima_project/widgets/share_user_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -511,7 +512,10 @@ void main() {
       when(mockDatabaseService.updateEvent(any, any, any, any)).thenAnswer((_) {
         return Future.value();
       });
-
+      when(mockEventService.getCurrentLocation())
+          .thenAnswer((_) => Future.value(const LatLng(0, 0)));
+      when(mockEventService.getAddressFromLatLng(any))
+          .thenAnswer((_) => Future.value("Test Location"));
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -550,6 +554,13 @@ void main() {
       await tester.tap(find.text("Edit Event"));
       await tester.pumpAndSettle();
       expect(find.text("Edit Event"), findsOneWidget);
+      await tester.tap(find.byType(ButtonImageWidget));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoActionSheet), findsOneWidget);
+      expect(find.text("Set New Photo"), findsOneWidget);
+      expect(find.text("Remove Photo"), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoTextField).at(0), "");
       await tester.tap(find.text("Done"));
       await tester.pumpAndSettle();
@@ -565,8 +576,38 @@ void main() {
       await tester.tap(find.text("Add more dates"));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoListTile), findsNWidgets(6));
+
       await tester.pumpAndSettle();
       await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(CupertinoIcons.map_pin_ellipse));
+      await tester.pumpAndSettle();
+      expect(find.text("Select location"), findsOneWidget);
+      await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(FontAwesomeIcons.calendar).first);
+      await tester.pumpAndSettle();
+      await tester.drag(
+          find.text(DateTime.now().year.toString()), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done").last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(FontAwesomeIcons.calendar).last);
+      await tester.pumpAndSettle();
+      await tester.drag(
+          find.text(DateTime.now().year.toString()), const Offset(0, -400));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done").last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(FontAwesomeIcons.clock).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done").last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(FontAwesomeIcons.clock).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Done").last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(CupertinoIcons.trash));
