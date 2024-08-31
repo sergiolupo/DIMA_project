@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
@@ -23,6 +25,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mockito/mockito.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_image_picker.mocks.dart';
@@ -1803,5 +1806,65 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("Invited"), findsOneWidget);
+  });
+  group("Shimmer Effect Tests", () {
+    StreamController<List<PrivateChat>>? privateChatStreamController;
+    StreamController<List<Group>>? groupStreamController;
+
+    setUp(() {
+      privateChatStreamController = StreamController<List<PrivateChat>>();
+      groupStreamController = StreamController<List<Group>>();
+    });
+
+    tearDown(() {
+      privateChatStreamController?.close();
+      groupStreamController?.close();
+    });
+
+    testWidgets('Displays shimmer effect during private chat list loading',
+        (WidgetTester tester) async {
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => groupStreamController!.stream);
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => privateChatStreamController!.stream);
+      await tester.pumpWidget(
+        CupertinoApp(
+          home: ChatPage(
+            databaseService: mockDatabaseService,
+            notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
+            storageService: mockStorageService,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Private'));
+      await tester.pump();
+
+      expect(
+          find.byWidgetPredicate((widget) => widget is Shimmer), findsWidgets);
+    });
+
+    testWidgets('Displays shimmer effect during group chat list loading',
+        (WidgetTester tester) async {
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => groupStreamController!.stream);
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => privateChatStreamController!.stream);
+
+      await tester.pumpWidget(
+        CupertinoApp(
+          home: ChatPage(
+            databaseService: mockDatabaseService,
+            notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
+            storageService: mockStorageService,
+          ),
+        ),
+      );
+
+      expect(
+          find.byWidgetPredicate((widget) => widget is Shimmer), findsWidgets);
+    });
   });
 }

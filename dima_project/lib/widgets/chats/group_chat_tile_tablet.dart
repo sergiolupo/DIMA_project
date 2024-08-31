@@ -104,7 +104,7 @@ class GroupChatTileTablet extends StatelessWidget {
                                               group.lastMessage!.sentByMe ==
                                                       true
                                                   ? "You: "
-                                                  : "${username}: ",
+                                                  : "$username: ",
                                               style: const TextStyle(
                                                 fontSize: 14,
                                                 color: CupertinoColors
@@ -124,7 +124,7 @@ class GroupChatTileTablet extends StatelessWidget {
                                           ],
                                         )
                                       : Text(
-                                          '${group.lastMessage!.sentByMe == true ? "You: " : "${username}: "}'
+                                          '${group.lastMessage!.sentByMe == true ? "You: " : "$username: "}'
                                           '${group.lastMessage!.recentMessage}',
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,

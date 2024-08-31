@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
@@ -22,6 +24,7 @@ import 'package:dima_project/models/message.dart';
 import 'package:mocktail/mocktail.dart' as mocktail;
 import 'package:mockito/mockito.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_event_service.mocks.dart';
@@ -2219,6 +2222,78 @@ void main() {
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
       expect(find.text('Chats'), findsOneWidget);
+    });
+  });
+  group("Shimmer Effect Tests", () {
+    StreamController<List<PrivateChat>>? privateChatStreamController;
+    StreamController<List<Group>>? groupStreamController;
+
+    setUp(() {
+      privateChatStreamController = StreamController<List<PrivateChat>>();
+      groupStreamController = StreamController<List<Group>>();
+    });
+
+    tearDown(() {
+      privateChatStreamController?.close();
+      groupStreamController?.close();
+    });
+
+    testWidgets('Displays shimmer effect during private chat list loading',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => groupStreamController!.stream);
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => privateChatStreamController!.stream);
+      await tester.pumpWidget(
+        CupertinoApp(
+          home: ChatTabletPage(
+            databaseService: mockDatabaseService,
+            notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
+            storageService: mockStorageService,
+            eventService: mockEventService,
+            selectedGroup: null,
+            selectedPrivateChat: null,
+            selectedUser: null,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Private'));
+      await tester.pump();
+
+      expect(
+          find.byWidgetPredicate((widget) => widget is Shimmer), findsWidgets);
+    });
+
+    testWidgets('Displays shimmer effect during group chat list loading',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      when(mockDatabaseService.getGroupsStream())
+          .thenAnswer((_) => groupStreamController!.stream);
+      when(mockDatabaseService.getPrivateChatsStream())
+          .thenAnswer((_) => privateChatStreamController!.stream);
+
+      await tester.pumpWidget(
+        CupertinoApp(
+          home: ChatTabletPage(
+            databaseService: mockDatabaseService,
+            notificationService: mockNotificationService,
+            imagePicker: mockImagePicker,
+            storageService: mockStorageService,
+            eventService: mockEventService,
+            selectedGroup: null,
+            selectedPrivateChat: null,
+            selectedUser: null,
+          ),
+        ),
+      );
+
+      expect(
+          find.byWidgetPredicate((widget) => widget is Shimmer), findsWidgets);
     });
   });
 }
