@@ -36,7 +36,7 @@ void main() {
     fakeFirestore = FakeFirebaseFirestore();
   });
 
-  Widget createWidgetTest(bool isDarkMode) {
+  Widget createWidgetTest(bool isDarkMode, bool isTablet) {
     return ProviderScope(
       overrides: [
         followingProvider.overrideWith(
@@ -52,6 +52,7 @@ void main() {
       child: MediaQuery(
         data: MediaQueryData(
           platformBrightness: isDarkMode ? Brightness.dark : Brightness.light,
+          size: isTablet ? const Size(1194.0, 834.0) : const Size(375.0, 812.0),
         ),
         child: CupertinoApp(
           home: SearchPage(
@@ -66,7 +67,7 @@ void main() {
     testWidgets('SearchPage has search field and options',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
 
       expect(find.text('Search'), findsOneWidget);
       expect(find.byType(CupertinoSearchTextField), findsOneWidget);
@@ -75,81 +76,174 @@ void main() {
       expect(find.text('Events'), findsOneWidget);
     });
 
-    testWidgets('Displays search for users when search field is empty',
+    testWidgets(
+        'Displays search for users when search field is empty for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByUsernameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
+
+      expect(find.text('Search for users'), findsOneWidget);
+    });
+    testWidgets(
+        'Displays search for users when search field is empty for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByUsernameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(false, true));
 
       expect(find.text('Search for users'), findsOneWidget);
     });
 
     testWidgets(
-        'Displays search for users when search field is empty in dark mode',
+        'Displays search for users when search field is empty in dark mode for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByUsernameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(true, false));
+
+      expect(find.text('Search for users'), findsOneWidget);
+    });
+    testWidgets(
+        'Displays search for users when search field is empty in dark mode for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByUsernameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(true, true));
 
       expect(find.text('Search for users'), findsOneWidget);
     });
 
     testWidgets(
-        'SearchPage displays search for groups when search field is empty',
+        'SearchPage displays search for groups when search field is empty for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
       await tester.tap(find.text('Groups'));
       await tester.pumpAndSettle();
       expect(find.text('Search for groups'), findsOneWidget);
     });
     testWidgets(
-        'SearchPage displays search for groups when search field is empty in dark mode',
+        'SearchPage displays search for groups when search field is empty for tablet',
         (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       AuthService.setUid('testuid');
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(false, true));
       await tester.tap(find.text('Groups'));
       await tester.pumpAndSettle();
       expect(find.text('Search for groups'), findsOneWidget);
     });
-
     testWidgets(
-        'SearchPage displays search for events when search field is empty',
+        'SearchPage displays search for groups when search field is empty in dark mode for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(true, false));
+      await tester.tap(find.text('Groups'));
+      await tester.pumpAndSettle();
+      expect(find.text('Search for groups'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage displays search for groups when search field is empty in dark mode for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      await tester.pumpWidget(createWidgetTest(true, true));
+      await tester.tap(find.text('Groups'));
+      await tester.pumpAndSettle();
+      expect(find.text('Search for groups'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage displays search for events when search field is empty for phone',
+        (WidgetTester tester) async {
+      AuthService.setUid('testuid');
+
+      await tester.pumpWidget(createWidgetTest(false, false));
+      await tester.tap(find.text('Events'));
+      await tester.pumpAndSettle();
+      expect(find.text('Search for events'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage displays search for events when search field is empty for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      await tester.pumpWidget(createWidgetTest(false, true));
       await tester.tap(find.text('Events'));
       await tester.pumpAndSettle();
       expect(find.text('Search for events'), findsOneWidget);
     });
 
     testWidgets(
-        'SearchPage displays search for events when search field is empty in dark mode',
+        'SearchPage displays search for events when search field is empty in dark mode for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(true, false));
+      await tester.tap(find.text('Events'));
+      await tester.pumpAndSettle();
+      expect(find.text('Search for events'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage displays search for events when search field is empty in dark mode for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      await tester.pumpWidget(createWidgetTest(true, true));
       await tester.tap(find.text('Events'));
       await tester.pumpAndSettle();
       expect(find.text('Search for events'), findsOneWidget);
     });
 
-    testWidgets('SearchPage performs user search and displays no results',
+    testWidgets(
+        'SearchPage performs user search and displays no results for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
       when(mockDatabaseService.searchByUsernameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test user');
+      await tester.pump();
+
+      expect(find.text('No users found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs user search and displays no results for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+      when(mockDatabaseService.searchByUsernameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(false, true));
       await tester.enterText(
           find.byType(CupertinoSearchTextField), 'test user');
       await tester.pump();
@@ -158,13 +252,29 @@ void main() {
     });
 
     testWidgets(
-        'SearchPage performs user search and displays no results in dark mode',
+        'SearchPage performs user search and displays no results in dark mode for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
       when(mockDatabaseService.searchByUsernameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(true, false));
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test user');
+      await tester.pump();
+
+      expect(find.text('No users found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs user search and displays no results in dark mode for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+      when(mockDatabaseService.searchByUsernameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(true, true));
       await tester.enterText(
           find.byType(CupertinoSearchTextField), 'test user');
       await tester.pump();
@@ -172,14 +282,51 @@ void main() {
       expect(find.text('No users found'), findsOneWidget);
     });
 
-    testWidgets('SearchPage performs groups search and displays no results',
+    testWidgets(
+        'SearchPage performs groups search and displays no results for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByGroupNameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
+      await tester.tap(find.text('Groups'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test group');
+      await tester.pump();
+
+      expect(find.text('No groups found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs groups search and displays no results for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByGroupNameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(false, true));
+      await tester.tap(find.text('Groups'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test group');
+      await tester.pump();
+
+      expect(find.text('No groups found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs groups search and displays no results in dark mode for phone',
+        (WidgetTester tester) async {
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByGroupNameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(true, false));
       await tester.tap(find.text('Groups'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -190,14 +337,16 @@ void main() {
     });
 
     testWidgets(
-        'SearchPage performs groups search and displays no results in dark mode',
+        'SearchPage performs groups search and displays no results in dark mode for tablet',
         (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByGroupNameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(true, true));
       await tester.tap(find.text('Groups'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -207,14 +356,34 @@ void main() {
       expect(find.text('No groups found'), findsOneWidget);
     });
 
-    testWidgets('SearchPage performs events search and displays no results',
+    testWidgets(
+        'SearchPage performs events search and displays no results for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByEventNameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
+      await tester.tap(find.text('Events'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test event');
+      await tester.pump();
+
+      expect(find.text('No events found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs events search and displays no results for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByEventNameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(false, true));
       await tester.tap(find.text('Events'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -225,14 +394,33 @@ void main() {
     });
 
     testWidgets(
-        'SearchPage performs events search and displays no results in dark mode',
+        'SearchPage performs events search and displays no results in dark mode for phone',
         (WidgetTester tester) async {
       AuthService.setUid('testuid');
 
       when(mockDatabaseService.searchByEventNameStream(any))
           .thenAnswer((_) => Stream.value([]));
 
-      await tester.pumpWidget(createWidgetTest(true));
+      await tester.pumpWidget(createWidgetTest(true, false));
+      await tester.tap(find.text('Events'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byType(CupertinoSearchTextField), 'test event');
+      await tester.pump();
+
+      expect(find.text('No events found'), findsOneWidget);
+    });
+    testWidgets(
+        'SearchPage performs events search and displays no results in dark mode for tablet',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('testuid');
+
+      when(mockDatabaseService.searchByEventNameStream(any))
+          .thenAnswer((_) => Stream.value([]));
+
+      await tester.pumpWidget(createWidgetTest(true, true));
       await tester.tap(find.text('Events'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -274,7 +462,7 @@ void main() {
         });
       });
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
       await tester.enterText(
           find.byType(CupertinoSearchTextField), usernameTest);
       await tester.pumpAndSettle();
@@ -317,7 +505,7 @@ void main() {
         });
       });
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
       await tester.enterText(
           find.byType(CupertinoSearchTextField), usernameTest);
       await tester.pumpAndSettle();
@@ -358,7 +546,7 @@ void main() {
         });
       });
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
       await tester.tap(find.text('Groups'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoSearchTextField), groupName);
@@ -406,7 +594,7 @@ void main() {
         });
       });
 
-      await tester.pumpWidget(createWidgetTest(false));
+      await tester.pumpWidget(createWidgetTest(false, false));
       await tester.tap(find.text('Events'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(CupertinoSearchTextField), eventName);
