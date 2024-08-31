@@ -340,13 +340,13 @@ class RegisterPageState extends State<RegisterPage> {
       int errorCodeIndex = errorMessage.indexOf(']') + 1;
       String errorMessageSubstring =
           errorMessage.substring(errorCodeIndex).trim();
-      debugPrint("Failed to register: $e");
+      debugPrint("Registration failed: $e");
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: const Text('Registration Failed'),
-            content: Text('Failed to register: $errorMessageSubstring'),
+            title: const Text('Registration Error'),
+            content: Text('Registration failed: $errorMessageSubstring'),
             actions: <Widget>[
               CupertinoDialogAction(
                 child: const Text('OK'),

@@ -434,5 +434,72 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("username1"), findsOneWidget);
     });
+    testWidgets(
+        "UserProfile page prevents following a user who has deleted their account",
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1194.0, 834.0);
+      tester.view.devicePixelRatio = 1.0;
+      AuthService.setUid('test');
+
+      when(mockDatabaseService.toggleFollowUnfollow(any, any))
+          .thenAnswer((_) => Future.error("User deleted his/her account"));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            userProvider.overrideWith((ref, uid) => Future.value(
+                  UserData(
+                      requests: [],
+                      isPublic: false,
+                      uid: 'uid1',
+                      email: 'mail1',
+                      username: 'username1',
+                      imagePath: '',
+                      categories: ['Sports'],
+                      name: 'name1',
+                      surname: 'surname1'),
+                )),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            followingProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+          ],
+          child: const CupertinoApp(
+              home: ResponsiveLayout(
+            mobileLayout: UserProfile(
+              user: 'uid1',
+            ),
+            tabletLayout: UserProfileTablet(
+              user: 'uid1',
+            ),
+          )),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("username1"), findsOneWidget);
+      expect(find.text("name1 surname1"), findsOneWidget);
+      expect(find.text("This Account is private"), findsOneWidget);
+      expect(find.text("Follow"), findsOneWidget);
+
+      await tester.tap(find.text("Follow"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("User deleted his/her account"), findsOneWidget);
+      expect(find.text("Error"), findsOneWidget);
+    });
   });
 }

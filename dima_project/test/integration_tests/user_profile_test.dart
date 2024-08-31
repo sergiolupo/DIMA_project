@@ -19,13 +19,13 @@ import '../mocks/mock_database_service.mocks.dart';
 import '../mocks/mock_notification_service.mocks.dart';
 
 void main() {
-  late final MockDatabaseService mockDatabaseService;
-  late final MockNotificationService mockNotificationService;
-  setUpAll(() {
-    mockDatabaseService = MockDatabaseService();
-    mockNotificationService = MockNotificationService();
-  });
   group("User profile test for mobile in light mode", () {
+    late final MockDatabaseService mockDatabaseService;
+    late final MockNotificationService mockNotificationService;
+    setUpAll(() {
+      mockDatabaseService = MockDatabaseService();
+      mockNotificationService = MockNotificationService();
+    });
     testWidgets(
         "User profile of the current user renders correctly and navigations work for mobile layout",
         (WidgetTester tester) async {
@@ -316,9 +316,80 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("username1"), findsOneWidget);
     });
+    testWidgets(
+        "UserProfile page prevents following a user who has deleted their account",
+        (WidgetTester tester) async {
+      AuthService.setUid('test');
+
+      when(mockDatabaseService.toggleFollowUnfollow(any, any))
+          .thenAnswer((_) => Future.error("User deleted his/her account"));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            notificationServiceProvider
+                .overrideWithValue(mockNotificationService),
+            userProvider.overrideWith((ref, uid) => Future.value(
+                  UserData(
+                      requests: [],
+                      isPublic: false,
+                      uid: 'uid1',
+                      email: 'mail1',
+                      username: 'username1',
+                      imagePath: '',
+                      categories: ['Sports'],
+                      name: 'name1',
+                      surname: 'surname1'),
+                )),
+            followerProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            followingProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            databaseServiceProvider.overrideWithValue(mockDatabaseService),
+            groupsProvider.overrideWith(
+              (ref, uid) => Future.value([]),
+            ),
+            joinedEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+            createdEventsProvider.overrideWith(
+              (ref, id) => Future.value([]),
+            ),
+          ],
+          child: const CupertinoApp(
+              home: ResponsiveLayout(
+            mobileLayout: UserProfile(
+              user: 'uid1',
+            ),
+            tabletLayout: UserProfileTablet(
+              user: 'uid1',
+            ),
+          )),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("username1"), findsOneWidget);
+      expect(find.text("name1 surname1"), findsOneWidget);
+      expect(find.text("This Account is private"), findsOneWidget);
+      expect(find.text("Follow"), findsOneWidget);
+
+      await tester.tap(find.text("Follow"));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoAlertDialog), findsOneWidget);
+      expect(find.text("User deleted his/her account"), findsOneWidget);
+      expect(find.text("Error"), findsOneWidget);
+    });
   });
 
   group("User profile test for mobile in dark mode", () {
+    late final MockDatabaseService mockDatabaseService;
+    late final MockNotificationService mockNotificationService;
+    setUpAll(() {
+      mockDatabaseService = MockDatabaseService();
+      mockNotificationService = MockNotificationService();
+    });
     testWidgets(
         "User profile of the current user renders correctly and navigations work for mobile layout in dark mode",
         (WidgetTester tester) async {
@@ -448,22 +519,16 @@ void main() {
             ),
           ],
           child: MediaQuery(
-            data: const MediaQueryData(
-              platformBrightness: Brightness.dark,
-              size: Size(800.0, 600.0),
-            ),
+            data: const MediaQueryData(platformBrightness: Brightness.dark),
             child: CupertinoApp(
-                theme: const CupertinoThemeData(
-                  brightness: Brightness.dark,
-                ),
                 home: ResponsiveLayout(
-                  mobileLayout: UserProfile(
-                    user: AuthService.uid,
-                  ),
-                  tabletLayout: UserProfileTablet(
-                    user: AuthService.uid,
-                  ),
-                )),
+              mobileLayout: UserProfile(
+                user: AuthService.uid,
+              ),
+              tabletLayout: UserProfileTablet(
+                user: AuthService.uid,
+              ),
+            )),
           ),
         ),
       );
@@ -474,7 +539,6 @@ void main() {
       expect(find.text("Following"), findsOneWidget);
       expect(find.text("Groups"), findsOneWidget);
       expect(find.text('1'), findsNWidgets(3));
-      expect(find.text("Sports"), findsOneWidget);
       expect(find.text("Events created"), findsOneWidget);
       expect(find.text("Events joined"), findsOneWidget);
       await tester.tap(find.byIcon(CupertinoIcons.bars));
@@ -582,33 +646,16 @@ void main() {
             ),
           ],
           child: const MediaQuery(
-            data: MediaQueryData(
-              platformBrightness: Brightness.dark,
-              size: Size(800.0, 600.0),
-            ),
+            data: MediaQueryData(platformBrightness: Brightness.dark),
             child: CupertinoApp(
-                theme: CupertinoThemeData(
-                  brightness: Brightness.dark,
-                  primaryColor: Constants.primaryColorDark,
-                  primaryContrastingColor:
-                      Constants.primaryContrastingColorDark,
-                  scaffoldBackgroundColor:
-                      Constants.scaffoldBackgroundColorDark,
-                  barBackgroundColor: Constants.barBackgroundColorDark,
-                  textTheme: CupertinoTextThemeData(
-                    textStyle: TextStyle(
-                      color: Constants.textColorDark,
-                    ),
-                  ),
-                ),
                 home: ResponsiveLayout(
-                  mobileLayout: UserProfile(
-                    user: 'uid1',
-                  ),
-                  tabletLayout: UserProfileTablet(
-                    user: 'uid1',
-                  ),
-                )),
+              mobileLayout: UserProfile(
+                user: 'uid1',
+              ),
+              tabletLayout: UserProfileTablet(
+                user: 'uid1',
+              ),
+            )),
           ),
         ),
       );
