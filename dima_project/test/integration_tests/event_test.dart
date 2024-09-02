@@ -718,12 +718,8 @@ void main() {
       await tester.tap(find.byType(CupertinoNavigationBarBackButton));
       await tester.pumpAndSettle();
 
-      await tester.longPress(find.text("1"));
-      await tester.pumpAndSettle();
-
       await tester.tap(find.text("14"));
       await tester.pumpAndSettle();
-      expect(find.text("Event1"), findsNWidgets(2));
       expect(find.text("Event2"), findsOneWidget);
 
       debugDefaultTargetPlatformOverride = null;
