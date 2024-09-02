@@ -660,11 +660,11 @@ void main() {
                 startDate:
                     DateTime(DateTime.now().year, DateTime.now().month, 13),
                 endDate:
-                    DateTime(DateTime.now().year, DateTime.now().month, 14),
+                    DateTime(DateTime.now().year, DateTime.now().month, 15),
                 startTime: DateTime(
                     DateTime.now().year, DateTime.now().month, 13, 0, 0),
                 endTime: DateTime(
-                    DateTime.now().year, DateTime.now().month, 14, 1, 0),
+                    DateTime.now().year, DateTime.now().month, 15, 1, 0),
                 location: "Test Location",
                 latlng: const LatLng(0, 0),
                 id: "654",
@@ -724,7 +724,7 @@ void main() {
       await tester.tap(find.text("14"));
       await tester.pumpAndSettle();
       expect(find.text("Event1"), findsNWidgets(2));
-      expect(find.text("Event2"), findsNWidgets(2));
+      expect(find.text("Event2"), findsOneWidget);
 
       debugDefaultTargetPlatformOverride = null;
     });

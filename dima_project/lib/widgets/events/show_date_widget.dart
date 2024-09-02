@@ -25,7 +25,7 @@ class ShowDateWidget extends StatelessWidget {
         ),
         Positioned(
           top: 40,
-          left: 13,
+          left: 15,
           child: Text(
             '${DateFormat('EEE').format(date)} ${date.day}',
             style: const TextStyle(color: CupertinoColors.black, fontSize: 22),
