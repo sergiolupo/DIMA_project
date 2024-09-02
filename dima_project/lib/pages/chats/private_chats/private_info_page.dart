@@ -114,7 +114,7 @@ class PrivateInfoPageState extends ConsumerState<PrivateInfoPage> {
                               Text(
                                 "${widget.user.name} ${widget.user.surname}",
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   color: CupertinoColors.systemGrey,
                                 ),
                               ),
