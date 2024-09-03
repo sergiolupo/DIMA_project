@@ -115,11 +115,17 @@ class DetailPageState extends ConsumerState<DetailEventPage> {
                     LineAwesomeIcons.map_pin_solid,
                     color: CupertinoTheme.of(context).primaryColor,
                   ),
-                  Text(
-                    'Location: ${detail.location}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.9,
+                    ),
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      'Location: ${detail.location}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
