@@ -267,11 +267,19 @@ class EventMessageTileState extends ConsumerState<EventMessageTile> {
                 Positioned(
                   bottom: widget.message.sentByMe! ? 7 : 10,
                   right: widget.message.sentByMe! ? 2 : null,
-                  left: widget.message.sentByMe!
-                      ? 20
-                      : MediaQuery.of(context).size.width > Constants.limitWidth
-                          ? 190
-                          : MediaQuery.of(context).size.width / 2 - 3,
+                  left: widget.message.isGroupMessage
+                      ? widget.message.sentByMe!
+                          ? 20
+                          : MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? 190
+                              : MediaQuery.of(context).size.width / 2 - 3
+                      : widget.message.sentByMe!
+                          ? 20
+                          : MediaQuery.of(context).size.width >
+                                  Constants.limitWidth
+                              ? 150
+                              : MediaQuery.of(context).size.width / 2 - 40,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,

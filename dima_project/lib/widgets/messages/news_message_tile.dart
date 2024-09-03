@@ -171,9 +171,13 @@ class NewsMessageTile extends StatelessWidget {
             right: message.sentByMe! ? 8 : null,
             left: message.sentByMe!
                 ? null
-                : MediaQuery.of(context).size.width > Constants.limitWidth
-                    ? 195
-                    : MediaQuery.of(context).size.width / 2,
+                : message.isGroupMessage
+                    ? MediaQuery.of(context).size.width > Constants.limitWidth
+                        ? 195
+                        : MediaQuery.of(context).size.width / 2
+                    : MediaQuery.of(context).size.width > Constants.limitWidth
+                        ? 150
+                        : MediaQuery.of(context).size.width / 2 - 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
