@@ -196,14 +196,20 @@ class ShowEventState extends ConsumerState<ShowEventTablet> {
                           ),
                         ),
                         const SizedBox(height: 10.0),
-                        Text(
-                          event.description,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: CupertinoTheme.of(context)
-                                .textTheme
-                                .textStyle
-                                .color,
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width / 3,
+                          ),
+                          child: Text(
+                            event.description,
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .color,
+                            ),
                           ),
                         ),
                       ],
