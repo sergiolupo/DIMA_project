@@ -1,11 +1,13 @@
 import 'package:dima_project/services/auth_service.dart';
 import 'package:dima_project/services/database_service.dart';
+import 'package:dima_project/services/provider_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends ConsumerWidget {
   final TextEditingController _usernameController;
   final TextEditingController _passwordController;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -20,7 +22,7 @@ class LoginForm extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Form(
       key: _formKey,
       child: Column(
@@ -33,7 +35,7 @@ class LoginForm extends StatelessWidget {
               // Validate the form before proceeding
               if (_formKey.currentState!.validate()) {
                 _checkCredentials(context, _usernameController.text,
-                    _passwordController.text);
+                    _passwordController.text, ref);
               }
             },
             padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -44,7 +46,7 @@ class LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           CupertinoButton(
-              onPressed: () => _signInWithGoogle(context),
+              onPressed: () => _signInWithGoogle(context, ref),
               color: CupertinoColors.systemBlue,
               padding: const EdgeInsets.symmetric(horizontal: 50),
               borderRadius: BorderRadius.circular(20),
@@ -69,8 +71,8 @@ class LoginForm extends StatelessWidget {
     );
   }
 
-  Future<void> _checkCredentials(
-      BuildContext context, String email, String password) async {
+  Future<void> _checkCredentials(BuildContext context, String email,
+      String password, WidgetRef ref) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -89,6 +91,8 @@ class LoginForm extends StatelessWidget {
       Navigator.of(context).pop();
       debugPrint("Navigating to Home Page");
       //pass the user object to the home page
+      ref.invalidate(userProvider);
+
       context.go('/home');
     } catch (e) {
       String errorMessage = e.toString();
@@ -117,7 +121,7 @@ class LoginForm extends StatelessWidget {
     }
   }
 
-  Future<void> _signInWithGoogle(BuildContext context) async {
+  Future<void> _signInWithGoogle(BuildContext context, WidgetRef ref) async {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -144,6 +148,8 @@ class LoginForm extends StatelessWidget {
 
         if (!context.mounted) return;
         Navigator.of(context).pop();
+
+        ref.invalidate(userProvider);
         context.go('/home');
       }
     } catch (e) {
