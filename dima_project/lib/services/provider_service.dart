@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/event.dart';
 import 'package:dima_project/models/group.dart';
 import 'package:dima_project/models/message.dart';
@@ -176,20 +175,8 @@ final createdEventsProvider =
 
 final eventProvider =
     FutureProvider.family<Event, String>((ref, eventId) async {
-  try {
-    final event = await DatabaseService().getEvent(eventId);
-    return event;
-  } catch (e) {
-    return Event(
-        id: '',
-        name: '',
-        description: '',
-        createdAt: Timestamp.now(),
-        imagePath: '',
-        admin: '',
-        isPublic: false,
-        details: [EventDetails(members: [], requests: [])]);
-  }
+  final event = await DatabaseService().getEvent(eventId);
+  return event;
 });
 final groupProvider =
     FutureProvider.family<Group, String>((ref, groupId) async {
