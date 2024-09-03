@@ -109,6 +109,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             _usernameController = TextEditingController(text: user.username);
             _oldUsername = user.username;
             _oldIsPublic = user.isPublic!;
+            isPublic = user.isPublic!;
             selectedCategories = user.categories;
           }
 
